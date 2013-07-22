@@ -1,0 +1,155 @@
+<alfresco-config>
+
+	<!--  add webable aspect properties to property sheet -->
+	<config evaluator="aspect-name" condition="sc:webable">
+		<property-sheet>
+			<show-property name="sc:published" display-label-id="published" />
+			<show-property name="sc:isActive" display-label-id="isActive" read-only="true" />
+		</property-sheet>
+	</config>
+
+	<!--  add product related aspect properties to property sheet -->
+	<config evaluator="aspect-name" condition="sc:productRelated">
+		<property-sheet>
+			<show-property name="sc:product" display-label-id="product" />
+			<show-property name="sc:version" display-label-id="version" read-only="true" />
+		</property-sheet>
+	</config>
+
+	<!-- show related documents association on doc property sheet -->
+	<config evaluator="node-type" condition="sc:doc">
+		<property-sheet>
+			<show-association name="sc:relatedDocuments" />
+		</property-sheet>
+	</config>
+
+	<!-- show related documents association on whitepaper property sheet -->
+	<config evaluator="node-type" condition="sc:whitepaper">
+		<property-sheet>
+			<show-association name="sc:relatedDocuments" />
+		</property-sheet>
+	</config>
+		
+	<!--  add someco types to add content list -->
+	<config evaluator="string-compare" condition="Content Wizards">
+		<content-types>
+			<type name="sc:doc" />
+			<type name="sc:whitepaper" />
+		</content-types>
+	</config>
+
+	<config evaluator="string-compare" condition="Action Wizards">
+	    <!-- The list of aspects to show in the add/remove features action -->
+    	<!-- and the has-aspect condition -->	
+		<aspects>
+			<aspect name="sc:webable"/>
+			<aspect name="sc:productRelated"/>
+            <aspect name="cm:replaceable"/>
+		</aspects>
+
+		<!-- The list of types shown in the is-subtype condition -->
+		<subtypes>
+			<type name="sc:doc" />
+			<type name="sc:whitepaper" />
+		</subtypes>		
+
+		<!-- The list of content and/or folder types shown in the specialise-type action -->
+		<specialise-types>
+			<type name="sc:doc" />
+			<type name="sc:whitepaper" />
+		</specialise-types>		
+	</config>	
+	
+	<config evaluator="string-compare" condition="Advanced Search">
+		<advanced-search>
+			<content-types>
+				<type name="sc:doc" />
+				<type name="sc:whitepaper" />
+			</content-types>
+			<custom-properties>
+				<meta-data aspect="sc:webable" property="sc:published" display-label-id="published" />
+				<meta-data aspect="sc:webable" property="sc:isActive" display-label-id="isActive" />
+				<meta-data aspect="sc:productRelated" property="sc:product" display-label-id="product" />
+				<meta-data aspect="sc:productRelated" property="sc:version" display-label-id="version" />				
+			</custom-properties>
+		</advanced-search>
+	</config>
+
+	<config evaluator="aspect-name" condition="cm:replaceable">
+		<property-sheet>
+			<show-association name="cm:replaces" display-label-id="replaces" />
+		</property-sheet>
+	</config>
+
+	<!-- action handlers -->
+
+	<config evaluator="string-compare" condition="Action Wizards">
+		<!-- add custom action handler for "Move Replaced" action -->
+		<action-handlers>
+			<handler name="move-replaced" class="com.someco.action.handler.MoveReplacedHandler" />
+		</action-handlers>
+	</config>
+
+    <!-- UI Actions -->
+    <config>
+        <actions>
+            
+            <action-group id="document_browse">
+				<action idref="web_site" />
+			</action-group>
+		
+			<!-- Actions Menu for a document in the Browse screen -->
+			<action-group id="document_browse_menu">
+				<action idref="web_site" />
+			</action-group>
+
+	  		<!-- Actions Menu for Document Details screen -->
+			<action-group id="doc_details_actions">
+				<action idref="web_enable" />
+				<action idref="web_disable" />
+				<action idref="web_site" />
+			</action-group>
+
+            <!--  Link to SomeCo's web site -->
+            <action id="web_site">
+				<label>SomeCo</label>
+				<href>http://ecmarchitect.com</href>
+				<image>/someco/images/icons/website.gif</image>
+				<target>new</target>
+			</action>
+
+            <!--  set sc:isActive to true -->
+            <action id="web_enable">
+				<permissions>
+					<!-- each permission can be an Allow or Deny check -->
+					<permission allow="true">PortalPublisher</permission>
+				</permissions>
+				<evaluator>com.someco.action.evaluator.WebEnableEvaluator</evaluator>
+				<label-id>enableWeb</label-id>
+				<image>/someco/images/icons/create_website.gif</image>
+				<action-listener>#{WebSettingsBean.setActive}</action-listener>
+				<params>
+					<param name="id">#{actionContext.id}</param>
+					<param name="active">true</param>   
+				</params>
+			</action>
+
+			<!--  set sc:isActive to false -->
+			<action id="web_disable">
+				<permissions>
+					<!-- each permission can be an Allow or Deny check -->
+					<permission allow="true">PortalPublisher</permission>
+				</permissions>
+				<evaluator>com.someco.action.evaluator.WebDisableEvaluator</evaluator>
+				<label-id>disableWeb</label-id>
+				<image>/someco/images/icons/delete_website.gif</image>
+				<action-listener>#{WebSettingsBean.setActive}</action-listener>
+				<params>
+					<param name="id">#{actionContext.id}</param>
+					<param name="active">false</param>       
+				</params>
+			</action>
+		</actions>
+	</config>
+	  		
+</alfresco-config>

@@ -1,0 +1,364 @@
+<alfresco-config>
+   <!-- Document Library config section -->
+   <config evaluator="string-compare" condition="DocumentLibrary">
+      <!--
+         Used by the "Manage Aspects" action
+
+         For custom aspects, remember to also add the relevant i18n string(s)
+            cm_myaspect=My Aspect
+      -->
+      <aspects>
+         <!-- Aspects that a user can see -->
+         <visible>
+            <aspect name="sc:webable" />
+            <aspect name="sc:productRelated" />            
+         </visible>
+
+         <!-- Aspects that a user can add. Same as "visible" if left empty -->
+         <addable>
+         </addable>
+
+         <!-- Aspects that a user can remove. Same as "visible" if left empty -->
+         <removeable>
+         </removeable>
+      </aspects>
+
+      <!--
+         Used by the "Change Type" action
+
+         Define valid subtypes using the following example:
+            <type name="cm:content">
+               <subtype name="cm:mysubtype" />
+            </type>
+
+         Remember to also add the relevant i18n string(s):
+            cm_mysubtype=My SubType
+      -->
+      <types>
+	      	 <type name="cm:content">
+                <subtype name="sc:doc" />
+                <subtype name="sc:whitepaper" />
+             </type>
+             <type name="sc:doc">
+                <subtype name="sc:whitepaper" />
+             </type>
+      </types>
+   </config>
+   
+   <config replace="true" evaluator="string-compare" condition="AdvancedSearch">
+      <advanced-search>
+         <!-- Forms for the advanced search type list -->
+         <forms>
+            <!--
+               The 'form' config element contains the name of the model type
+               of the form to display.
+               
+               The element supports the following optional attributes:
+                  id = form id, the id of "search" will be assumed if not set
+                  label = label text to display - defaults to model type if not set
+                  labelId = I18N message id of label text to display
+                  description = description text to display
+                  descriptionId = I18N message id of description text to display
+            -->
+            <form labelId="search.form.label.cm_content" descriptionId="search.form.desc.cm_content">cm:content</form>
+            <form labelId="search.form.label.cm_folder" descriptionId="search.form.desc.cm_folder">cm:folder</form>            
+            <form labelId="type.sc_whitepaper" descriptionId="search.form.desc.sc_whitepaper">sc:whitepaper</form>
+         </forms>
+      </advanced-search>
+   </config>
+
+   <!-- sc:whitepaper type (existing nodes) -->
+   <config evaluator="node-type" condition="sc:whitepaper">
+      <forms>
+         <!-- Default form configuration for the sc:whitepaper type -->
+         <form>
+            <field-visibility>
+               <show id="cm:name" />
+               <show id="cm:title" force="true" />
+               <show id="cm:description" force="true" />
+               <show id="mimetype" />
+               <show id="cm:author" force="true" />
+               <show id="size" for-mode="view" />
+               <show id="cm:creator" for-mode="view" />
+               <show id="cm:created" for-mode="view" />
+               <show id="cm:modifier" for-mode="view" />
+               <show id="cm:modified" for-mode="view" />
+               
+               <!-- tags and categories -->
+               <show id="cm:taggable" for-mode="edit" force="true" />
+               <show id="cm:categories" />
+               
+               <!-- cm:dublincore aspect -->
+               <show id="cm:publisher"/>
+               <show id="cm:contributor"/>
+               <show id="cm:type"/>
+               <show id="cm:identifier"/>
+               <show id="cm:dcsource"/>
+               <show id="cm:coverage"/>
+               <show id="cm:rights"/>
+               <show id="cm:subject"/>
+               
+               <!-- cm:complianceable aspect -->
+               <show id="cm:removeAfter" />
+               
+               <!-- cm:effectivity aspect -->
+               <show id="cm:from"/>
+               <show id="cm:to"/>
+               
+               <!--  cm:summarizable aspect -->
+               <show id="cm:summary" />
+               
+               <!-- cm:translatable aspect -->
+               <show id="cm:translations" />
+               
+               <!-- cm:localizable aspect -->
+               <show id="cm:locale" />
+               
+               <!-- cm:ownable aspect -->
+               <show id="cm:owner" />
+               
+               <!-- cm:attachable aspect -->
+               <show id="cm:attachments" />
+               
+               <!-- cm:emailed aspect -->
+               <show id="cm:originator" />
+               <show id="cm:addressee" />
+               <show id="cm:addressees" />
+               <show id="cm:sentdate" />
+               <show id="cm:subjectline" />
+               
+               <!-- exif:exif aspect -->
+               <show id="exif:dateTimeOriginal" />
+               <show id="exif:pixelXDimension" />
+               <show id="exif:pixelYDimension" />
+               <show id="exif:exposureTime" />
+               <show id="exif:fNumber" />
+               <show id="exif:flash" />
+               <show id="exif:focalLength" />
+               <show id="exif:isoSpeedRatings" />
+               <show id="exif:manufacturer" />
+               <show id="exif:model" />
+               <show id="exif:software" />
+               <show id="exif:orientation" />
+               <show id="exif:xResolution" />
+               <show id="exif:yResolution" />
+               <show id="exif:resolutionUnit" />
+
+               <!-- audio:audio aspect -->
+               <show id="audio:album" />
+               <show id="audio:artist" />
+               <show id="audio:composer" />
+               <show id="audio:engineer" />
+               <show id="audio:genre" />
+               <show id="audio:trackNumber" />
+               <show id="audio:releaseDate" />
+               <show id="audio:sampleRate" />
+               <show id="audio:sampleType" />
+               <show id="audio:channelType" />
+               <show id="audio:compressor" />
+               
+               <!-- cm:indexControl aspect -->
+               <show id="cm:isIndexed" />
+               <show id="cm:isContentIndexed" />
+               
+               <!-- cm:geographic aspect -->
+               <show id="cm:latitude" />
+               <show id="cm:longitude" />
+               
+               <!-- sc:doc -->
+               <show id="sc:relatedDocuments" />
+            </field-visibility>
+            <appearance>
+               <field id="cm:name">
+                 <control>
+                    <control-param name="maxLength">255</control-param>
+                 </control>
+               </field>
+               <field id="cm:title">
+                  <control template="/org/alfresco/components/form/controls/textfield.ftl" />
+               </field>
+               <field id="cm:description">
+                  <control>
+                     <control-param name="activateLinks">true</control-param>
+                  </control>
+               </field>
+               <field id="mimetype">
+                  <control template="/org/alfresco/components/form/controls/mimetype.ftl" />
+               </field>
+               <field id="size">
+                  <control template="/org/alfresco/components/form/controls/size.ftl" />
+               </field>
+               <field id="cm:taggable">
+                  <control>
+                     <control-param name="compactMode">true</control-param>
+                     <control-param name="params">aspect=cm:taggable</control-param>
+                     <control-param name="createNewItemUri">/api/tag/workspace/SpacesStore</control-param>
+                     <control-param name="createNewItemIcon">tag</control-param>
+                  </control>
+               </field>
+               <field id="cm:categories">
+                  <control>
+                     <control-param name="compactMode">true</control-param>
+                  </control>
+               </field>
+               <field id="cm:originator" read-only="true" />
+               <field id="cm:addressee" read-only="true" />
+               <field id="cm:addressees" read-only="true" />
+               <field id="cm:sentdate" read-only="true" />
+               <field id="cm:subjectline" read-only="true" />
+               <field id="sc:relatedDocuments" label-id="assoc.sc_relatedDocuments"/>
+            </appearance>
+         </form>
+
+         <!-- Document Library pop-up Edit Metadata form -->
+         <form id="doclib-simple-metadata">
+            <field-visibility>
+               <show id="cm:name" />
+               <show id="cm:title" force="true" />
+               <show id="cm:description" force="true" />
+               <!-- tags and categories -->
+               <show id="cm:taggable" for-mode="edit" force="true" />
+               <show id="cm:categories" />
+               <!-- sc:doc -->
+               <show id="sc:relatedDocuments" />               
+            </field-visibility>
+            <edit-form template="../documentlibrary/forms/doclib-simple-metadata.ftl" />
+            <appearance>
+               <field id="cm:name">
+                 <control>
+                    <control-param name="maxLength">255</control-param>
+                 </control>
+               </field>
+               <field id="cm:title">
+                  <control template="/org/alfresco/components/form/controls/textfield.ftl" />
+               </field>
+               <field id="cm:description">
+                  <control>
+                     <control-param name="activateLinks">true</control-param>
+                  </control>
+               </field>
+               <field id="cm:taggable">
+                  <control>
+                     <control-param name="compactMode">true</control-param>
+                     <control-param name="params">aspect=cm:taggable</control-param>
+                     <control-param name="createNewItemUri">/api/tag/workspace/SpacesStore</control-param>
+                     <control-param name="createNewItemIcon">tag</control-param>
+                  </control>
+               </field>
+               <field id="cm:categories">
+                  <control>
+                     <control-param name="compactMode">true</control-param>
+                  </control>
+               </field>
+               <field id="sc:relatedDocuments" label-id="assoc.sc_relatedDocuments" />
+            </appearance>
+         </form>
+         
+         <!-- Document Library Inline Edit form -->
+         <form id="doclib-inline-edit">
+            <field-visibility>
+               <show id="cm:name" />
+               <show id="cm:title" force="true" />
+               <show id="cm:description" force="true" />
+               <show id="cm:content" force="true" />
+            </field-visibility>
+            <appearance>
+               <field id="cm:name">
+                 <control>
+                    <control-param name="maxLength">255</control-param>
+                 </control>
+               </field>
+               <field id="cm:title">
+                  <control template="/org/alfresco/components/form/controls/textfield.ftl" />
+               </field>
+               <field id="cm:content">
+                  <control>
+                     <control-param name="editorAppearance">explorer</control-param>
+                     <control-param name="forceEditor">true</control-param>
+                  </control>
+               </field>
+            </appearance>
+         </form>
+      </forms>
+   </config>
+   
+   <config evaluator="aspect" condition="sc:webable">
+       <forms>
+	       <form>
+	           <field-visibility>
+                   <show id="sc:published" />
+                   <show id="sc:isActive" />
+	           </field-visibility>
+	           <appearance> 				    
+		           <field id="sc:published" label-id="prop.sc_published" />
+		           <field id="sc:isActive" label-id="prop.sc_isActive" />
+               </appearance>
+          </form>
+	   </forms>
+   </config>
+
+   <config evaluator="aspect" condition="sc:productRelated">
+	   <forms>
+	      <form>
+	         <field-visibility>
+                <show id="sc:version" />
+                <show id="sc:product" />
+	         </field-visibility>
+	         <appearance> 				    
+                <field id="sc:product" label-id="prop.sc_product" />
+                <field id="sc:version" label-id="prop.sc_version" />
+			</appearance>
+	      </form>
+	   </forms>
+   </config>
+   
+   <!-- sc:whitepaper type (new nodes) -->
+   <config evaluator="model-type" condition="sc:whitepaper">
+      <forms>
+         <!-- Search form -->
+         <form id="search">
+            <field-visibility>
+               <show id="cm:name" />
+               <show id="cm:title" force="true" />
+               <show id="cm:description" force="true" />
+               <show id="mimetype" />
+               <show id="cm:modified" />
+               <show id="cm:modifier" />
+               <!-- sc:productRelated -->
+               <show id="sc:product" />
+               <show id="sc:version" />
+               <!-- sc:webable -->
+               <show id="sc:isActive" />
+               <show id="sc:published" />
+            </field-visibility>
+            <appearance>
+               <field id="mimetype">
+                  <control template="/org/alfresco/components/form/controls/mimetype.ftl" />
+               </field>
+               <field id="cm:modifier">
+                  <control>
+                     <control-param name="forceEditable">true</control-param>
+                  </control>
+               </field>
+               <field id="cm:modified">
+                  <control template="/org/alfresco/components/form/controls/daterange.ftl" />
+               </field>
+               <!-- sc:productRelated -->
+               <field id="sc:product" label-id="prop.sc_product">
+                   <control template="/org/alfresco/components/form/controls/textfield.ftl" />
+               </field>
+               <field id="sc:version" label-id="prop.sc_version">
+                   <control template="/org/alfresco/components/form/controls/textfield.ftl" />
+			   </field>               
+               <!-- sc:webable -->
+               <field id="sc:isActive" label-id="prop.sc_isActive">
+                   <control template="/org/alfresco/components/form/controls/checkbox.ftl" />
+               </field>
+               <field id="sc:published" label-id="prop.sc_published">
+                   <control template="/org/alfresco/components/form/controls/daterange.ftl" />
+               </field>
+            </appearance>
+         </form>
+      </forms>
+   </config>
+</alfresco-config>

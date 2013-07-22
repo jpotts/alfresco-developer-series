@@ -1,0 +1,8 @@
+<webscript>
+  <shortname>BPM Review</shortname>
+  <description>Review and approve a BPM task</description>
+  <url>/someco/bpm/review?id={idArgument}&amp;action={transArgument}</url>
+  <format default="html">extension</format>
+  <authentication runas="admin">guest</authentication>
+  <transaction>required</transaction>
+</webscript>

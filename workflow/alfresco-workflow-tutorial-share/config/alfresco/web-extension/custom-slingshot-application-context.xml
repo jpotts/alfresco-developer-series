@@ -1,0 +1,35 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE beans PUBLIC '-//SPRING//DTD BEAN//EN' 'http://www.springframework.org/dtd/spring-beans.dtd'>
+
+<beans>
+
+    <!-- Add Someco messages -->
+    <bean id="someco.resources" class="org.springframework.extensions.surf.util.ResourceBundleBootstrapComponent">
+        <property name="resourceBundles">
+            <list>
+                <value>alfresco.web-extension.messages.scModel</value>
+                <value>alfresco.web-extension.messages.scWorkflow</value>
+            </list>
+        </property>
+    </bean>
+
+    <!-- Custom evaluators -->
+    <!--
+    <bean id="someco.evaluator.doclib.action.webable" parent="evaluator.doclib.action.hasAspect">
+      <property name="aspects">
+         <list>
+            <value>sc:webable</value>
+         </list>
+      </property>
+    </bean>
+    -->
+
+    <bean id="someco.evaluator.doclib.action.isActive" parent="evaluator.doclib.action.value">
+        <property name="accessor" value="node.properties.sc:isActive" />
+        <property name="comparator">
+            <bean class="org.alfresco.web.evaluator.StringEqualsComparator">
+                <property name="value" value="true" />
+            </bean>
+        </property>
+   </bean>
+</beans>

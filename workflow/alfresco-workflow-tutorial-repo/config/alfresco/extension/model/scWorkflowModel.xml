@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Definition of new Model -->
+<model name="scwf:workflowmodel"
+	xmlns="http://www.alfresco.org/model/dictionary/1.0">
+
+	<!-- Optional meta-data about the model -->
+	<description>Someco Workflow Model</description>
+	<author>Jeff Potts</author>
+	<version>1.0</version>
+
+	<!-- Imports are required to allow references to definitions in other models -->
+	<imports>
+		<import uri="http://www.alfresco.org/model/dictionary/1.0"
+			prefix="d" />
+		<import uri="http://www.alfresco.org/model/bpm/1.0"
+			prefix="bpm" />
+	</imports>
+
+	<!-- Introduction of new namespaces defined by this model -->
+	<namespaces>
+		<namespace uri="http://www.someco.com/model/workflow/1.0"
+			prefix="scwf" />
+	</namespaces>
+
+	<types>
+		<type name="scwf:submitHelloWorldTask">
+			<parent>bpm:startTask</parent>
+			<properties>
+				<property name="scwf:helloName">
+					<type>d:text</type>
+					<mandatory>true</mandatory>
+					<multiple>false</multiple>
+				</property>
+			</properties>
+		</type>
+		
+		<type name="scwf:submitReviewTask">
+			<parent>bpm:startTask</parent>
+			<mandatory-aspects>
+				<aspect>scwf:thirdPartyReviewable</aspect>
+			</mandatory-aspects>
+		</type>
+
+        <type name="scwf:activitiMarketingReview">
+            <parent>scwf:activitiReviewTask</parent>
+        </type>
+
+        <type name="scwf:activitiOperationsReview">
+            <parent>scwf:activitiReviewTask</parent>
+        </type>
+
+        <type name="scwf:activitiThirdPartyReview">
+            <parent>scwf:activitiReviewTask</parent>
+        </type>
+        
+        <type name="scwf:activitiRevise">
+            <parent>bpm:activitiOutcomeTask</parent>
+            <properties>
+                <property name="scwf:reviseOutcome">
+                    <type>d:text</type>
+                    <default>Abort</default>
+                    <constraints>
+                        <constraint type="LIST">
+                            <parameter name="allowedValues">
+                                <list>
+                                    <value>Re-submit</value>
+                                    <value>Abort</value>
+                                </list>
+                            </parameter>
+                        </constraint>
+                    </constraints>
+                </property>
+            </properties>               
+            <overrides>
+                <property name="bpm:packageItemActionGroup">
+                    <default>edit_package_item_actions</default>
+                </property>
+                <property name="bpm:outcomePropertyName">
+                    <default>{http://www.someco.com/model/workflow/1.0}reviseOutcome</default>
+                </property>
+            </overrides>
+        </type>
+
+        <type name="scwf:activitiReviewTask">
+            <parent>bpm:activitiOutcomeTask</parent>
+            <properties>
+                <property name="scwf:approveRejectOutcome">
+                    <type>d:text</type>
+                    <default>Reject</default>
+                    <constraints>
+                        <constraint type="LIST">
+                            <parameter name="allowedValues">
+                                <list>
+                                    <value>Approve</value>
+                                    <value>Reject</value>
+                                </list>
+                            </parameter>
+                        </constraint>
+                    </constraints>
+                </property>
+            </properties>               
+            <overrides>
+                <property name="bpm:packageItemActionGroup">
+                    <default>read_package_item_actions</default>
+                </property>
+                <property name="bpm:outcomePropertyName">
+                    <default>{http://www.someco.com/model/workflow/1.0}approveRejectOutcome</default>
+                </property>
+            </overrides>
+        </type>
+
+		<type name="scwf:activitiApprovedNotification">
+		    <parent>bpm:workflowTask</parent>
+            <overrides>
+                <property name="bpm:packageItemActionGroup">
+                    <default>read_package_item_actions</default>
+                </property>
+            </overrides>		    
+		</type>
+	</types>
+
+	<aspects>
+		<aspect name="scwf:thirdPartyReviewable">
+			<title>Someco Third Party Reviewable</title>
+			<properties>
+				<property name="scwf:reviewerEmail">
+					<type>d:text</type>
+					<mandatory>false</mandatory>
+					<multiple>false</multiple>
+				</property>
+			</properties>
+		</aspect>
+	</aspects>
+</model>
+

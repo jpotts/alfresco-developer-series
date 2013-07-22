@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="ecmarchitect.com Alfresco Content Types Tutorial" default="compile" basedir=".">
+	<property file="build.properties" />
+
+	<property name="project.dir" value="." />
+	<property name="project.name" value="alfresco-content-tutorial" />
+	<property name="src.dir" value="${project.dir}/src" />
+	<property name="build.dir" value="${project.dir}/build" />	
+	<property name="bin.dir" value="${project.dir}/bin" />
+	<property name="package.repo.zip" value="${build.dir}/${project.name}-repo.zip" />
+	<property name="package.share.zip" value="${build.dir}/${project.name}-share.zip" />
+	<property name="package.repo.jar" value="${build.dir}/${project.name}.jar" />
+	<property name="project.file.zip" value="${build.dir}/${project.name}-project.zip" />
+	<property name="config.dir" value="/config" />
+	<property name="repo.extension.dir" value="/alfresco/extension" />
+	<property name="share.extension.dir" value="/alfresco/web-extension" />
+
+	<target name="clean" description="removes all generated files">
+		<delete dir="${build.dir}" />
+		<delete dir="${bin.dir}" />		
+	</target>
+
+	<target name="setup">
+		<mkdir dir="${build.dir}" />
+	</target>
+
+	<target name="package-extension-repo" depends="setup">
+		<delete file="${package.repo.zip}" />
+		<zip destfile="${package.repo.zip}">
+			<zipfileset dir="${project.dir}${config.dir}${repo.extension.dir}" prefix="WEB-INF/classes${repo.extension.dir}" />
+		</zip>
+	</target>
+
+	<target name="package-extension-share" depends="setup">
+		<delete file="${package.share.zip}" />
+		<zip destfile="${package.share.zip}">
+			<zipfileset dir="${project.dir}${config.dir}${share.extension.dir}" prefix="WEB-INF/classes${share.extension.dir}" />
+		</zip>
+	</target>
+
+	<target name="deploy" depends="deploy-repo, deploy-share" />
+	
+	<target name="deploy-repo" depends="package-extension-repo">
+		<unzip src="${package.repo.zip}" dest="${alfresco.webapp.dir}" />
+	</target>
+
+	<target name="deploy-share" depends="package-extension-share">
+		<unzip src="${package.share.zip}" dest="${share.webapp.dir}" />
+	</target>
+
+	<target name="zip-project" depends="setup">
+		<delete file="${project.file.zip}" />
+		<zip destfile="${project.file.zip}">
+			<zipfileset dir="${project.dir}" excludes="build/** bin/**" prefix="${project.name}" />
+		</zip>
+	</target>	
+
+	<!-- Code Examples -->
+	<path id="classpath.remote">
+		<fileset dir="${alfresco.sdk.dir}/lib/remote" includes="**/*.jar" />
+	</path>
+    <path id="classpath.build">
+		<fileset dir="${build.dir}" includes="**/*.jar" />
+	</path>
+	<path id="classpath.cmis">
+		<fileset dir="${alfresco.sdk.dir}/lib/server/dependencies" includes="alfresco-opencmis*.jar" />
+		<fileset dir="${alfresco.sdk.dir}/lib/server/dependencies" includes="chemistry-opencmis-client-api*.jar" />
+		<fileset dir="${alfresco.sdk.dir}/lib/server/dependencies" includes="chemistry-opencmis-client-bindings*.jar" />
+		<fileset dir="${alfresco.sdk.dir}/lib/server/dependencies" includes="chemistry-opencmis-client-impl*.jar" />
+		<fileset dir="${alfresco.sdk.dir}/lib/server/dependencies" includes="chemistry-opencmis-commons*.jar" />
+		<fileset dir="${alfresco.sdk.dir}/lib/server/dependencies" includes="wstx*.jar" />
+		<fileset dir="${alfresco.sdk.dir}/lib/server/dependencies/commons" includes="commons-logging*.jar" />
+		<fileset dir="${alfresco.sdk.dir}/lib/server/dependencies/commons" includes="commons-codec*.jar" />		
+		<fileset dir="${alfresco.sdk.dir}/lib/server/dependencies" includes="jaxws*.jar" /><!--WS binding-->
+		<fileset dir="${alfresco.sdk.dir}/lib/server/dependencies" includes="streambuffer*.jar" /><!--WS binding-->
+		<fileset dir="${alfresco.sdk.dir}/lib/server/dependencies" includes="stax*.jar" /><!--WS binding-->
+		<fileset dir="${alfresco.sdk.dir}/lib/server/dependencies" includes="jaxb*.jar" /><!--WS binding-->
+		<fileset dir="${alfresco.sdk.dir}/lib/server/dependencies" includes="mimepull*.jar" /><!--WS binding-->
+	</path>
+	
+	<target name="compile" description="compiles src to the build/classes folder">
+		<mkdir dir="${bin.dir}" />
+		<javac srcdir="${src.dir}" destdir="${bin.dir}" source="1.6" target="1.6" debug="on" fork="yes">
+			<classpath refid="classpath.remote" />
+			<classpath refid="classpath.cmis" />
+		</javac>
+		<copy todir="${bin.dir}">
+			<fileset dir="${src.dir}" excludes="**/*.java"/>
+		</copy>
+	</target>
+
+	<target name="package-jar" depends="setup, compile"
+		description="Jars up the compiled classes and ${web.dir}/META-INF into ${package.repo.jar}">
+			<delete file="${package.repo.jar}" />
+			<jar destfile="${package.repo.jar}">
+				<fileset dir="${bin.dir}" includes="com/**" />
+			</jar>
+	</target>
+
+	<!-- OpenCMIS API Examples -->
+	<target name="cmis-data-creator" depends="package-jar" description="Run the Someco CMIS examples">
+		<java dir="./bin" fork="true" classname="com.someco.cmis.examples.SomeCoCMISDataCreator">
+			<classpath refid="classpath.cmis"/>
+			<classpath refid="classpath.build"/>
+			<arg line="admin admin test whitepaper whitepaper"/>
+        </java>
+    </target>
+
+	<target name="cmis-data-relater" depends="package-jar" description="Run the Someco CMIS examples">
+		<java dir="./bin" fork="true" classname="com.someco.cmis.examples.SomeCoCMISDataRelater">
+			<classpath refid="classpath.cmis"/>
+			<classpath refid="classpath.build"/>
+            <arg line="admin admin ${sourceId} ${targetId}"/>
+        </java>
+    </target>
+
+	<target name="cmis-data-queries" depends="package-jar" description="Run the Someco CMIS examples">
+		<java dir="./bin" fork="true" classname="com.someco.cmis.examples.SomeCoCMISDataQueries">
+			<classpath refid="classpath.cmis"/>
+			<classpath refid="classpath.build"/>
+			<arg line="admin admin test"/>
+        </java>
+    </target>
+
+	<target name="cmis-data-cleaner" depends="package-jar" description="Run the Someco CMIS examples">
+		<java dir="./bin" fork="true" classname="com.someco.cmis.examples.SomeCoCMISDataCleaner">
+			<classpath refid="classpath.cmis"/>
+			<classpath refid="classpath.build"/>
+            <arg line="admin admin"/>
+        </java>
+    </target>
+
+	<!-- Alfresco Web Services API Examples -->
+	<target name="data-creator" depends="package-jar" description="Run the Someco web services examples">
+		<java dir="./bin" fork="true" classname="com.someco.webservice.examples.SomeCoDataCreator">
+			<classpath refid="classpath.remote"/>
+			<classpath refid="classpath.build"/>
+			<arg line="admin admin test whitepaper whitepaper"/>
+        </java>
+    </target>
+
+	<target name="data-relater" depends="package-jar" description="Run the Someco web services examples">
+		<java dir="./bin" fork="true" classname="com.someco.webservice.examples.SomeCoDataRelater">
+			<classpath refid="classpath.remote"/>
+			<classpath refid="classpath.build"/>
+            <arg line="admin admin ${sourceId} ${targetId}"/>
+        </java>
+    </target>
+
+	<target name="data-queries" depends="package-jar" description="Run the Someco web services examples">
+		<java dir="./bin" fork="true" classname="com.someco.webservice.examples.SomeCoDataQueries">
+			<classpath refid="classpath.remote"/>
+			<classpath refid="classpath.build"/>
+            <arg line="admin admin test"/>
+        </java>
+    </target>
+
+	<target name="data-cleaner" depends="package-jar" description="Run the Someco web services examples">
+		<java dir="./bin" fork="true" classname="com.someco.webservice.examples.SomeCoDataCleaner">
+			<classpath refid="classpath.remote"/>
+			<classpath refid="classpath.build"/>
+            <arg line="admin admin"/>
+        </java>
+    </target>
+	
+</project>

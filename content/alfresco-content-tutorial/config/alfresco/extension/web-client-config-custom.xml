@@ -1,0 +1,76 @@
+<alfresco-config>
+
+	<!--  add webable aspect properties to property sheet -->
+	<config evaluator="aspect-name" condition="sc:webable">
+		<property-sheet>
+			<show-property name="sc:published" display-label-id="published" />
+			<show-property name="sc:isActive" display-label-id="isActive" read-only="true" />
+		</property-sheet>
+	</config>
+
+	<!--  add product related aspect properties to property sheet -->
+	<config evaluator="aspect-name" condition="sc:productRelated">
+		<property-sheet>
+			<show-property name="sc:product" display-label-id="product" />
+			<show-property name="sc:version" display-label-id="version" read-only="true" />
+		</property-sheet>
+	</config>
+
+	<!-- show related documents association on doc property sheet -->
+	<config evaluator="node-type" condition="sc:doc">
+		<property-sheet>
+			<show-association name="sc:relatedDocuments" />
+		</property-sheet>
+	</config>
+
+	<!-- show related documents association on whitepaper property sheet -->
+	<config evaluator="node-type" condition="sc:whitepaper">
+		<property-sheet>
+			<show-association name="sc:relatedDocuments" />
+		</property-sheet>
+	</config>
+		
+	<!--  add someco types to add content list -->
+	<config evaluator="string-compare" condition="Content Wizards">
+		<content-types>
+			<type name="sc:doc" />
+			<type name="sc:whitepaper" />
+		</content-types>
+	</config>
+
+	<config evaluator="string-compare" condition="Action Wizards">
+	    <!-- The list of aspects to show in the add/remove features action -->
+    	<!-- and the has-aspect condition -->	
+		<aspects>
+			<aspect name="sc:webable"/>
+			<aspect name="sc:productRelated"/>
+		</aspects>
+
+		<!-- The list of types shown in the is-subtype condition -->
+		<subtypes>
+			<type name="sc:doc" />
+			<type name="sc:whitepaper" />
+		</subtypes>		
+
+		<!-- The list of content and/or folder types shown in the specialise-type action -->
+		<specialise-types>
+			<type name="sc:doc" />
+			<type name="sc:whitepaper" />
+		</specialise-types>		
+	</config>	
+	
+	<config evaluator="string-compare" condition="Advanced Search">
+		<advanced-search>
+			<content-types>
+				<type name="sc:doc" />
+				<type name="sc:whitepaper" />
+			</content-types>
+			<custom-properties>
+				<meta-data aspect="sc:webable" property="sc:published" display-label-id="published" />
+				<meta-data aspect="sc:webable" property="sc:isActive" display-label-id="isActive" />
+				<meta-data aspect="sc:productRelated" property="sc:product" display-label-id="product" />
+				<meta-data aspect="sc:productRelated" property="sc:version" display-label-id="version" />				
+			</custom-properties>
+		</advanced-search>
+	</config>
+</alfresco-config>

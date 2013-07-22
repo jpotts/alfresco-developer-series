@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:activiti="http://activiti.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.activiti.org/test">
+  <process id="TimerTest" name="timerTest">
+    <documentation>Place documentation for the 'timerTest' process here.</documentation>
+    <endEvent id="endevent1" name="End"></endEvent>
+    <userTask id="alfrescoUsertask1" name="Alfresco User Task" activiti:assignee="${initiator.properties.userName}" activiti:formKey="wf:activitiReviewTask">
+      <extensionElements>
+        <activiti:taskListener event="complete" class="org.alfresco.repo.workflow.activiti.tasklistener.ScriptTaskListener">
+          <activiti:field name="script">
+            <activiti:string>execution.setVariable('wf_reviewOutcome', task.getVariableLocal('wf_reviewOutcome'));</activiti:string>
+          </activiti:field>
+        </activiti:taskListener>
+      </extensionElements>    
+    </userTask>
+    <serviceTask id="rejectScriptTask" name="Alfresco Script Task" activiti:class="org.alfresco.repo.workflow.activiti.script.AlfrescoScriptDelegate">
+      <extensionElements>
+        <activiti:field name="script">
+          <activiti:string>logger.log("Rejected");</activiti:string>
+        </activiti:field>
+      </extensionElements>
+    </serviceTask>
+    <serviceTask id="approveScriptTask" name="Alfresco Script Task" activiti:class="org.alfresco.repo.workflow.activiti.script.AlfrescoScriptDelegate">
+      <extensionElements>
+        <activiti:field name="script">
+          <activiti:string>logger.log("Approved");</activiti:string>
+        </activiti:field>
+      </extensionElements>
+    </serviceTask>
+    <sequenceFlow id="toReject" name="" sourceRef="alfrescoUsertask1" targetRef="rejectScriptTask">
+          <conditionExpression xsi:type="tFormalExpression"><![CDATA[${wf_reviewOutcome == 'Reject'}]]></conditionExpression>   
+    </sequenceFlow>
+    <sequenceFlow id="flow3" name="" sourceRef="rejectScriptTask" targetRef="endevent1"></sequenceFlow>
+    <sequenceFlow id="toApprove" name="" sourceRef="alfrescoUsertask1" targetRef="approveScriptTask">
+          <conditionExpression xsi:type="tFormalExpression"><![CDATA[${wf_reviewOutcome == 'Approve'}]]></conditionExpression>    
+    </sequenceFlow>
+    <sequenceFlow id="flow5" name="" sourceRef="approveScriptTask" targetRef="endevent1"></sequenceFlow>
+    <startEvent id="startevent1" name="Start"></startEvent>
+    <sequenceFlow id="flow6" name="" sourceRef="startevent1" targetRef="alfrescoUsertask1"></sequenceFlow>
+    <boundaryEvent id="boundarytimer1" cancelActivity="true" attachedToRef="alfrescoUsertask1">
+      <timerEventDefinition>
+        <timeDuration>PT5M</timeDuration>
+      </timerEventDefinition>
+    </boundaryEvent>
+    <sequenceFlow id="toExpiredApprove" name="" sourceRef="boundarytimer1" targetRef="approveScriptTask"></sequenceFlow>
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_TimerTest">
+    <bpmndi:BPMNPlane bpmnElement="TimerTest" id="BPMNPlane_TimerTest">
+      <bpmndi:BPMNShape bpmnElement="endevent1" id="BPMNShape_endevent1">
+        <omgdc:Bounds height="35" width="35" x="650" y="260"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="alfrescoUsertask1" id="BPMNShape_alfrescoUsertask1">
+        <omgdc:Bounds height="55" width="105" x="320" y="230"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="rejectScriptTask" id="BPMNShape_rejectScriptTask">
+        <omgdc:Bounds height="55" width="105" x="510" y="170"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="approveScriptTask" id="BPMNShape_approveScriptTask">
+        <omgdc:Bounds height="55" width="105" x="510" y="284"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="startevent1" id="BPMNShape_startevent1">
+        <omgdc:Bounds height="35" width="35" x="180" y="240"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="boundarytimer1" id="BPMNShape_boundarytimer1">
+        <omgdc:Bounds height="30" width="30" x="370" y="270"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="toReject" id="BPMNEdge_toReject">
+        <omgdi:waypoint x="425" y="257"></omgdi:waypoint>
+        <omgdi:waypoint x="562" y="225"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow3" id="BPMNEdge_flow3">
+        <omgdi:waypoint x="615" y="197"></omgdi:waypoint>
+        <omgdi:waypoint x="667" y="197"></omgdi:waypoint>
+        <omgdi:waypoint x="667" y="260"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="toApprove" id="BPMNEdge_toApprove">
+        <omgdi:waypoint x="372" y="285"></omgdi:waypoint>
+        <omgdi:waypoint x="510" y="311"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow5" id="BPMNEdge_flow5">
+        <omgdi:waypoint x="615" y="311"></omgdi:waypoint>
+        <omgdi:waypoint x="667" y="295"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow6" id="BPMNEdge_flow6">
+        <omgdi:waypoint x="215" y="257"></omgdi:waypoint>
+        <omgdi:waypoint x="320" y="257"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="toExpiredApprove" id="BPMNEdge_toExpiredApprove">
+        <omgdi:waypoint x="385" y="300"></omgdi:waypoint>
+        <omgdi:waypoint x="510" y="311"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

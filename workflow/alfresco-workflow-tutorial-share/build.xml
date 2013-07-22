@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="ecmarchitect.com Alfresco Advanced Workflows Share" default="deploy" basedir=".">
+	<property file="build.properties" />
+
+	<property name="project.dir" value="." />
+	<property name="project.name" value="alfresco-workflow-tutorial-share" />
+	<property name="src.dir" value="${project.dir}/src" />
+	<property name="web.dir" value="${src.dir}/web" />
+	<property name="work.dir" value="${project.dir}/work" />
+	<property name="build.dir" value="${project.dir}/build" />	
+	<property name="package.share.zip" value="${build.dir}/${project.name}.zip" />
+	<property name="project.file.zip" value="${build.dir}/${project.name}-project.zip" />
+	<property name="config.dir" value="/config" />
+	<property name="share.extension.dir" value="/alfresco/web-extension" />
+
+	<target name="clean" description="removes all generated files">
+		<delete dir="${build.dir}" />
+		<delete dir="${work.dir}" />		
+	</target>
+
+	<target name="setup">
+		<mkdir dir="${build.dir}" />
+		<mkdir dir="${work.dir}" />		
+	</target>
+
+	<target name="package-extension" depends="setup, compress-client-js">
+		<delete file="${package.share.zip}" />
+		<zip destfile="${package.share.zip}">
+			<zipfileset dir="${project.dir}${config.dir}${share.extension.dir}" prefix="WEB-INF/classes${share.extension.dir}" />
+			<zipfileset dir="${work.dir}/web" />
+		</zip>
+	</target>
+
+	<target name="deploy" depends="package-extension">
+		<unzip src="${package.share.zip}" dest="${share.webapp.dir}" />
+	</target>
+
+	<target name="zip-project" depends="setup">
+		<delete file="${project.file.zip}" />
+		<zip destfile="${project.file.zip}">
+			<zipfileset dir="${project.dir}" excludes="build/** bin/**" prefix="${project.name}" />
+		</zip>
+	</target>	
+
+	<target name="compress-client-js" depends="setup">
+		<echo>Copying the client-side JS to work dir</echo>
+		<copy todir="${work.dir}/web/">
+			<fileset dir="${web.dir}">
+				<exclude name="**/*~" />
+            </fileset>
+        </copy>
+
+		<echo>Running the compressor on work dir</echo>
+		<apply executable="java" parallel="false" dest="${work.dir}/web/">
+			<fileset dir="${work.dir}/web/">
+				<include name="**/*.js" />
+		        <exclude name="**/*-min.js" />
+		    </fileset>
+		    <arg line="-jar" />
+		    <arg path="${yuicompressor.jar.path}" />
+		    <arg line="-o" />
+		    <targetfile />
+		    <srcfile />
+		    <mapper type="glob" from="*.js" to="*-min.js" />
+		</apply>
+	</target>
+</project>

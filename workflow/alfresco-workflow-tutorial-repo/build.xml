@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="ecmarchitect.com Alfresco Advanced Workflows Repo" default="compile" basedir=".">
+	<property file="build.properties" />
+
+	<property name="project.dir" value="." />
+	<property name="project.name" value="alfresco-workflow-tutorial-repo" />
+	<property name="src.dir" value="${project.dir}/src" />
+	<property name="web.dir" value="${src.dir}/web" />
+	<property name="build.dir" value="${project.dir}/build" />	
+	<property name="bin.dir" value="${project.dir}/bin" />
+	<property name="package.repo.zip" value="${build.dir}/${project.name}.zip" />
+	<property name="package.repo.jar" value="${build.dir}/${project.name}.jar" />
+	<property name="project.file.zip" value="${build.dir}/${project.name}-project.zip" />
+	<property name="config.dir" value="/config" />
+	<property name="repo.extension.dir" value="/alfresco/extension" />
+
+	<target name="clean" description="removes all generated files">
+		<delete dir="${build.dir}" />
+		<delete dir="${bin.dir}" />		
+	</target>
+
+	<target name="setup">
+		<mkdir dir="${build.dir}" />
+	</target>
+
+	<target name="package-extension" depends="setup, package-jar">
+		<delete file="${package.repo.zip}" />
+		<zip destfile="${package.repo.zip}">
+			<zipfileset dir="${project.dir}${config.dir}${repo.extension.dir}" prefix="WEB-INF/classes${repo.extension.dir}" />
+			<zipfileset file="${package.repo.jar}" prefix="WEB-INF/lib" />
+			<zipfileset dir="${web.dir}" />
+		</zip>
+	</target>
+
+	<target name="deploy" depends="package-extension">
+		<unzip src="${package.repo.zip}" dest="${alfresco.webapp.dir}" />
+	</target>
+
+	<target name="zip-project" depends="setup">
+		<delete file="${project.file.zip}" />
+		<zip destfile="${project.file.zip}">
+			<zipfileset dir="${project.dir}" excludes="build/** bin/**" prefix="${project.name}" />
+		</zip>
+	</target>	
+
+	<path id="classpath.embedded">
+		<fileset dir="${alfresco.sdk.dir}/lib/server" includes="**/*.jar" />
+	</path>
+
+    <path id="classpath.build">
+		<fileset dir="${build.dir}" includes="**/*.jar" />
+	</path>
+	
+	<target name="compile" description="compiles src to the build/classes folder">
+		<mkdir dir="${bin.dir}" />
+		<javac srcdir="${src.dir}" destdir="${bin.dir}" source="1.6" target="1.6" debug="on" fork="yes">
+			<classpath refid="classpath.embedded" />
+		</javac>
+		<copy todir="${bin.dir}">
+			<fileset dir="${src.dir}" excludes="**/*.java"/>
+		</copy>
+	</target>
+
+	<target name="package-jar" depends="setup, compile"
+		description="Jars up the compiled classes and ${web.dir}/META-INF into ${package.repo.jar}">
+			<delete file="${package.repo.jar}" />
+			<jar destfile="${package.repo.jar}">
+				<fileset dir="${bin.dir}" includes="com/**" />
+			</jar>
+	</target>
+	
+</project>
