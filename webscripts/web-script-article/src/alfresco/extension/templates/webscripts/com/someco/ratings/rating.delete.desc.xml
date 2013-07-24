@@ -1,0 +1,9 @@
+<webscript>
+  <shortname>Delete Content Ratings</shortname>
+  <description>Deletes all ratings for the specified node</description>
+  <url>/someco/rating/delete?id={id}</url>
+  <url>/someco/rating/delete.html?id={id}</url>
+  <format default="html">extension</format>
+  <authentication>admin</authentication>
+  <transaction>none</transaction>
+</webscript>

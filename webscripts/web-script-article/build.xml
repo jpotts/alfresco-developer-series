@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="ecmarchitect.com Web Scripts Tutorial" default="deploy" basedir=".">
+	<property file="build.properties" />
+
+	<property name="project.dir" value="." />
+	<property name="build.dir" value="${project.dir}/build" />
+	<property name="bin.dir" value="${project.dir}/bin" />
+	<property name="package.file.zip" value="${build.dir}/someco-alfresco.zip" />
+	<property name="package.file.jar" value="${build.dir}/someco-alfresco.jar" />
+	<property name="project.file.zip" value="${build.dir}/web-script-article-project.zip" />
+	<property name="source.dir" value="${project.dir}/src" />
+	<property name="web.dir" value="${project.dir}/web" />
+	<property name="extension.config.dir" value="/alfresco/extension" />
+
+	<path id="classpath">
+		<fileset dir="${alfresco.sdk.remote.home}" includes="**/*.jar" />
+		<fileset dir="${alfresco.sdk.server.home}" includes="**/*.jar" />
+	</path>
+
+	<target name="clean" description="removes all generated files">
+		<delete dir="${build.dir}" />
+		<delete dir="${bin.dir}" />		
+	</target>
+
+	<target name="setup">
+		<mkdir dir="${build.dir}" />
+	</target>
+
+	<target name="package-extension" depends="setup, package-jar">
+		<delete file="${package.file.zip}" />
+		<zip destfile="${package.file.zip}">
+			<zipfileset dir="${source.dir}${extension.config.dir}" prefix="WEB-INF/classes${extension.config.dir}" />
+			<zipfileset file="${package.file.jar}" prefix="WEB-INF/lib" />
+			<zipfileset dir="${web.dir}" />
+		</zip>
+	</target>
+
+	<target name="deploy" depends="package-extension">
+		<unzip src="${package.file.zip}" dest="${alfresco.web.root}" />
+	</target>
+
+	<target name="zip-project" depends="setup">
+		<delete file="${project.file.zip}" />
+		<zip destfile="${project.file.zip}">
+			<zipfileset dir="${project.dir}" excludes="build/** bin/**" prefix="web-script-article" />
+		</zip>
+	</target>	
+
+	<target name="compile" description="compiles src to the build/classes folder">
+		<mkdir dir="${bin.dir}" />
+		<javac srcdir="${source.dir}" destdir="${bin.dir}" source="1.5" target="1.5" debug="on" fork="yes">
+			<classpath refid="classpath"/>
+		</javac>
+		<copy todir="${bin.dir}">
+			<fileset dir="${source.dir}" excludes="**/*.java"/>
+		</copy>
+	</target>
+	
+	<target name="package-jar" depends="compile"
+		description="Compile and package the java source into the ${build.dir}/target/spde-alfresco.jar">
+			<delete file="${package.file.jar}" />
+			<jar destfile="${package.file.jar}">
+				<fileset dir="${bin.dir}" includes="com/**" />
+			</jar>
+		</target>
+</project>

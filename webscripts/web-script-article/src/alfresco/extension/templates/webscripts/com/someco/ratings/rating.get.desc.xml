@@ -1,0 +1,10 @@
+<webscript>
+  <shortname>Get Content Rating</shortname>
+  <description>Returns rating data for the specified node</description>
+  <url>/someco/rating?id={id}&amp;user={user?}</url>
+  <url>/someco/rating.json?id={id}&amp;user={user?}</url>
+  <url>/someco/rating.html?id={id}&amp;user={user?}</url>
+  <format default="json">extension</format>
+  <authentication>guest</authentication>
+  <transaction>none</transaction>
+</webscript>
