@@ -70,20 +70,29 @@ public class Rating
 		List<ChildAssociationRef> children = nodeService.getChildAssocs(parentRef);
 		
 		Double average = 0d;
+		int count = 0;
+		int total = 0;
 		// This actually happens when the last rating is deleted
 		if (children.size() == 0) {
 			// No children so no work to do
 			if (logger.isDebugEnabled()) logger.debug("No children found");			
 		} else {
 			// iterate through the children to compute the total
-			int total = 0;
-			for (ChildAssociationRef child : children) {
-				int rating = (Integer)nodeService.getProperty(child.getChildRef(), QName.createQName(SomeCoModel.NAMESPACE_SOMECO_CONTENT_MODEL, SomeCoModel.PROP_RATING));
+			
+			for (ChildAssociationRef child : children) { 				
+				if (!child.getTypeQName().isMatch(QName.createQName(SomeCoModel.NAMESPACE_SOMECO_CONTENT_MODEL, SomeCoModel.ASSN_SC_RATINGS))) {
+					continue;
+				}
+				int rating = 0;
+				rating = (Integer)nodeService.getProperty(child.getChildRef(), QName.createQName(SomeCoModel.NAMESPACE_SOMECO_CONTENT_MODEL, SomeCoModel.PROP_RATING));
+				count += 1;
 				total += rating;
 			}
 						
 			// compute the average
-			average = total / (children.size() / 1.0d);
+			if (count != 0) {
+				average = total / (count / 1.0d);
+			}
 		
 			if (logger.isDebugEnabled()) logger.debug("Computed average:" + average);			
 		}
