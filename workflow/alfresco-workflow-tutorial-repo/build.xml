@@ -39,7 +39,7 @@
 	<target name="zip-project" depends="setup">
 		<delete file="${project.file.zip}" />
 		<zip destfile="${project.file.zip}">
-			<zipfileset dir="${project.dir}" excludes="build/** bin/**" prefix="${project.name}" />
+			<zipfileset dir="${project.dir}" excludes="build/** bin/**" prefix="content-article" />
 		</zip>
 	</target>	
 
