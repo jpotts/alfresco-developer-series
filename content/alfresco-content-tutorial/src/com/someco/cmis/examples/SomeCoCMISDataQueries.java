@@ -1,7 +1,6 @@
 package com.someco.cmis.examples;
 
 import java.text.DateFormat;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -45,7 +44,7 @@ public class SomeCoCMISDataQueries extends CMISExampleBase {
 		System.out.println("Finding content of type:" + SomeCoModel.TYPE_SC_DOC.toString());
 		queryString = "select * from sc:doc";
 		dumpQueryResults(getQueryResults(queryString));
-		
+
 		System.out.println(RESULT_SEP);
 		System.out.println("Find content in the root folder with text like 'sample'");
 		queryString = "select * from cmis:document where contains('sample') and in_folder('" + getFolderId(getFolderName()) + "')";
@@ -72,23 +71,6 @@ public class SomeCoCMISDataQueries extends CMISExampleBase {
 	                         "where w.sc:published > TIMESTAMP '2006-01-01T00:00:00.000-05:00' " +
                              "  and w.sc:published < TIMESTAMP '2007-06-02T00:00:00.000-05:00'";
 		dumpQueryResults(getQueryResults(queryString));
-
-	}
-	
-	/**
-	 * Gets the object ID for a folder of a specified name which is assumed to be unique across the
-	 * entire repository.
-	 * 
-	 * @return String
-	 */
-	public String getFolderId(String folderName) {
-		String objectId = null;
-		String queryString = "select cmis:objectId from cmis:folder where cmis:name = '" + folderName + "'";
-    	ItemIterable<QueryResult> results = getSession().query(queryString, false);
-    	for (QueryResult qResult : results) {
-    		objectId = qResult.getPropertyValueByQueryName("cmis:objectId");
-    	}
-    	return objectId;
 	}
 	
 	/**
@@ -101,8 +83,7 @@ public class SomeCoCMISDataQueries extends CMISExampleBase {
     	List<CmisObject> objList = new ArrayList<CmisObject>();
     	
     	// execute query
-    	ItemIterable<QueryResult> results = session.query(queryString, false);
-
+    	ItemIterable<QueryResult> results = session.query(queryString, false).getPage(5);
     	for (QueryResult qResult : results) {
     		String objectId = "";
     		PropertyData<?> propData = qResult.getPropertyById("cmis:objectId"); // Atom Pub binding
@@ -114,8 +95,7 @@ public class SomeCoCMISDataQueries extends CMISExampleBase {
 		   CmisObject obj = session.getObject(session.createObjectId(objectId));
 		   objList.add(obj);
     	}
-    	        
-        return objList;
+    	return objList;
     }
 
     /**

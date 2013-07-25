@@ -9,6 +9,11 @@
                 <value>alfresco/extension/model/scModel.xml</value>
             </list>
         </property>
+        <property name="labels">
+            <list>
+                <value>alfresco.extension.messages.scModel</value>
+            </list>        
+        </property>
     </bean>
 
 </beans>

@@ -48,6 +48,7 @@
 			<title>Someco Whitepaper</title>
 			<parent>sc:doc</parent>
 		</type>
+
 	</types>
 
 	<aspects>
@@ -68,12 +69,14 @@
 			<title>Someco Product Metadata</title>
 			<properties>
 				<property name="sc:product">
-					<type>d:text</type>
+					<type>d:text</type>					
 					<mandatory>true</mandatory>
+					<multiple>true</multiple>					
 				</property>				
 				<property name="sc:version">
 					<type>d:text</type>
 					<mandatory>true</mandatory>
+					<multiple>true</multiple>
 				</property>
 			</properties>
 		</aspect>	

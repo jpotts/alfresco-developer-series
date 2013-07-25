@@ -51,7 +51,7 @@
 	<target name="zip-project" depends="setup">
 		<delete file="${project.file.zip}" />
 		<zip destfile="${project.file.zip}">
-			<zipfileset dir="${project.dir}" excludes="build/** bin/**" prefix="${project.name}" />
+			<zipfileset dir="${project.dir}" excludes="build/** bin/**" prefix="content-article" />
 		</zip>
 	</target>	
 
@@ -102,7 +102,15 @@
 		<java dir="./bin" fork="true" classname="com.someco.cmis.examples.SomeCoCMISDataCreator">
 			<classpath refid="classpath.cmis"/>
 			<classpath refid="classpath.build"/>
-			<arg line="admin admin test whitepaper whitepaper"/>
+			<arg line="admin admin cmis-demo whitepaper whitepaper"/>
+        </java>
+    </target>
+	
+    <target name="cmis-test2" depends="package-jar" description="Run the Someco CMIS examples">
+        <java dir="./bin" fork="true" classname="com.someco.cmis.examples.CmisTest2">
+            <classpath refid="classpath.cmis"/>
+            <classpath refid="classpath.build"/>
+            <arg line="admin admin cmis-demo whitepaper whitepaper"/>
         </java>
     </target>
 
@@ -110,7 +118,7 @@
 		<java dir="./bin" fork="true" classname="com.someco.cmis.examples.SomeCoCMISDataRelater">
 			<classpath refid="classpath.cmis"/>
 			<classpath refid="classpath.build"/>
-            <arg line="admin admin ${sourceId} ${targetId}"/>
+            <arg line="admin admin cmis-demo whitepaper whitepaper ${sourceId} ${targetId}"/>
         </java>
     </target>
 
@@ -118,7 +126,7 @@
 		<java dir="./bin" fork="true" classname="com.someco.cmis.examples.SomeCoCMISDataQueries">
 			<classpath refid="classpath.cmis"/>
 			<classpath refid="classpath.build"/>
-			<arg line="admin admin test"/>
+			<arg line="admin admin cmis-demo"/>
         </java>
     </target>
 
@@ -126,7 +134,7 @@
 		<java dir="./bin" fork="true" classname="com.someco.cmis.examples.SomeCoCMISDataCleaner">
 			<classpath refid="classpath.cmis"/>
 			<classpath refid="classpath.build"/>
-            <arg line="admin admin"/>
+            <arg line="admin admin cmis-demo"/>
         </java>
     </target>
 
