@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project name="ecmarchitect.com Web Scripts Tutorial" default="deploy" basedir=".">
+<project name="ecmarchitect.com Alfresco Web Scripts Tutorial" default="deploy" basedir=".">
 	<property file="build.properties" />
 
 	<property name="project.dir" value="." />
