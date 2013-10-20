@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Definition of new Model -->
+<model name="sc:somecomodel" xmlns="http://www.alfresco.org/model/dictionary/1.0">
+
+	<!-- Optional meta-data about the model -->
+	<description>Someco Model</description>
+	<author>Jeff Potts</author>
+	<version>1.0</version>
+
+	<!-- Imports are required to allow references to definitions in other models -->
+	<imports>
+		<!-- Import Alfresco Dictionary Definitions -->
+		<import uri="http://www.alfresco.org/model/dictionary/1.0" prefix="d" />
+		<!-- Import Alfresco Content Domain Model Definitions -->
+		<import uri="http://www.alfresco.org/model/content/1.0" prefix="cm" />
+	</imports>
+
+	<!-- Introduction of new namespaces defined by this model -->
+	<namespaces>
+		<namespace uri="http://www.someco.com/model/content/1.0" prefix="sc" />
+	</namespaces>
+	<constraints>
+    	<constraint name="sc:campaignList" type="LIST">
+            <parameter name="allowedValues">
+                <list>
+                    <value>Application Syndication</value>
+                    <value>Private Event Retailing</value>
+                    <value>Social Shopping</value>
+                </list>
+            </parameter>
+        </constraint>
+    </constraints>
+
+	<types>
+		<!-- Enterprise-wide generic document type -->
+		<type name="sc:doc">
+			<title>Someco Document</title>
+			<parent>cm:content</parent>
+			<associations>
+				<association name="sc:relatedDocuments">
+					<title>Related Documents</title>
+					<source>
+						<mandatory>false</mandatory>
+						<many>true</many>
+					</source>
+					<target>
+						<class>sc:doc</class>
+						<mandatory>false</mandatory>
+						<many>true</many>
+					</target>
+				</association>
+			</associations>
+			<mandatory-aspects>
+			  <aspect>cm:generalclassifiable</aspect>
+			</mandatory-aspects>
+		</type>
+
+		<type name="sc:whitepaper">
+			<title>Someco Whitepaper</title>
+			<parent>sc:doc</parent>
+		</type>
+
+        <type name="sc:marketingDoc">
+                <title>Someco Marketing Document</title>
+                <parent>sc:doc</parent>
+                <properties>
+                        <property name="sc:campaign">
+                                <type>d:text</type>
+                                <multiple>true</multiple>
+                                <constraints>
+                                        <constraint ref="sc:campaignList" />
+                                </constraints>
+                        </property>
+                </properties>
+        </type>
+
+	</types>
+
+	<aspects>
+		<aspect name="sc:webable">
+			<title>Someco Webable</title>
+			<properties>
+				<property name="sc:published">
+					<type>d:date</type>
+				</property>
+				<property name="sc:isActive">
+					<type>d:boolean</type>
+					<default>false</default>
+				</property>
+			</properties>
+		</aspect>
+		
+		<aspect name="sc:productRelated">
+			<title>Someco Product Metadata</title>
+			<properties>
+				<property name="sc:product">
+					<type>d:text</type>					
+					<mandatory>true</mandatory>
+					<multiple>true</multiple>					
+				</property>				
+				<property name="sc:version">
+					<type>d:text</type>
+					<mandatory>true</mandatory>
+					<multiple>true</multiple>
+				</property>
+			</properties>
+		</aspect>	
+	</aspects>
+</model>
+
