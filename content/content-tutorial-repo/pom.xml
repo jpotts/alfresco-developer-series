@@ -54,6 +54,12 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
+            <dependency>
+                <groupId>com.someco</groupId>
+                <artifactId>content-tutorial-common</artifactId>
+                <type>jar</type>
+                <scope>import</scope>
+            </dependency>
         </dependencies>
     </dependencyManagement>
     <!-- Following dependencies are needed for compiling Java code in src/main/java; 
@@ -64,11 +70,6 @@
             <groupId>${alfresco.groupId}</groupId>
             <artifactId>alfresco-repository</artifactId>
         </dependency>
-        <dependency>
-	  		<groupId>org.alfresco.cmis.client</groupId>
-	  		<artifactId>alfresco-opencmis-extension</artifactId>
-	  		<version>0.7</version>
-  		</dependency>
         
         <!-- Test dependencies -->
         <dependency>
@@ -101,4 +102,62 @@
             </snapshots>
         </repository>
     </repositories>
+    <build>
+    	<pluginManagement>
+    		<plugins>
+    			<!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
+    			<plugin>
+    				<groupId>org.eclipse.m2e</groupId>
+    				<artifactId>lifecycle-mapping</artifactId>
+    				<version>1.0.0</version>
+    				<configuration>
+    					<lifecycleMappingMetadata>
+    						<pluginExecutions>
+    							<pluginExecution>
+    								<pluginExecutionFilter>
+    									<groupId>
+    										org.codehaus.mojo
+    									</groupId>
+    									<artifactId>
+    										build-helper-maven-plugin
+    									</artifactId>
+    									<versionRange>
+    										[1.7,)
+    									</versionRange>
+    									<goals>
+    										<goal>
+    											add-test-resource
+    										</goal>
+    									</goals>
+    								</pluginExecutionFilter>
+    								<action>
+    									<ignore></ignore>
+    								</action>
+    							</pluginExecution>
+    							<pluginExecution>
+    								<pluginExecutionFilter>
+    									<groupId>
+    										org.alfresco.maven.plugin
+    									</groupId>
+    									<artifactId>
+    										alfresco-maven-plugin
+    									</artifactId>
+    									<versionRange>
+    										[1.0.2,)
+    									</versionRange>
+    									<goals>
+    										<goal>set-version</goal>
+    									</goals>
+    								</pluginExecutionFilter>
+    								<action>
+    									<ignore></ignore>
+    								</action>
+    							</pluginExecution>
+    						</pluginExecutions>
+    					</lifecycleMappingMetadata>
+    				</configuration>
+    			</plugin>
+    		</plugins>
+    	</pluginManagement>
+    </build>
 </project>
