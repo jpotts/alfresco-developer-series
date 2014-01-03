@@ -47,7 +47,7 @@
             <action id="web_site">
 				<label>SomeCo</label>
 				<href>http://ecmarchitect.com</href>
-				<image>/someco/images/icons/website.gif</image>
+				<image>/images/icons/someco/website.gif</image>
 				<target>new</target>
 			</action>
 
@@ -59,7 +59,7 @@
 				</permissions>
 				<evaluator>com.someco.action.evaluator.WebEnableEvaluator</evaluator>
 				<label-id>enableWeb</label-id>
-				<image>/someco/images/icons/create_website.gif</image>
+				<image>/images/icons/someco/create_website.gif</image>
 				<action-listener>#{WebSettingsBean.setActive}</action-listener>
 				<params>
 					<param name="id">#{actionContext.id}</param>
@@ -75,7 +75,7 @@
 				</permissions>
 				<evaluator>com.someco.action.evaluator.WebDisableEvaluator</evaluator>
 				<label-id>disableWeb</label-id>
-				<image>/someco/images/icons/delete_website.gif</image>
+				<image>/images/icons/someco/delete_website.gif</image>
 				<action-listener>#{WebSettingsBean.setActive}</action-listener>
 				<params>
 					<param name="id">#{actionContext.id}</param>

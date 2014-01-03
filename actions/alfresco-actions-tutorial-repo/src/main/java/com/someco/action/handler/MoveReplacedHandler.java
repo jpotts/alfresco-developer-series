@@ -19,7 +19,7 @@ public class MoveReplacedHandler extends BaseActionHandler {
 
 	private static final long serialVersionUID = 1955418924878986036L;
 	
-	public final static String CUSTOM_ACTION_JSP = "/someco/jsp/actions/" +
+	public final static String CUSTOM_ACTION_JSP = "/jsp/someco/actions/" +
 		MoveReplacedActionExecuter.NAME + ".jsp";
 
 	public String getJSPPath() {
