@@ -63,9 +63,12 @@
 		<group>
 			<action name="counter"/>
 		</group>
-      <group>
-         <action name="*"/>
-      </group>
+		<group>
+            <action name="set-property-value"/>
+        </group>
+        <group>
+            <action name="*"/>
+        </group>
    </menu>
 
    <customise>
@@ -85,6 +88,7 @@
       <action name="transform">Transform</action>
       <action name="transform-image">Transform</action>
       <action name="import">Import</action>
+      <action name="set-property-value">SetPropertyValue</action>
    </customise>
 
 </rule-config>   
