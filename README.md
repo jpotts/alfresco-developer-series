@@ -17,7 +17,7 @@ Progress
 | Tutorial | Move to Maven/AMP | Move tutorial to markdown | Update tutorial to match refactored code | Re-Render Tutorial PDF |
 | -------- | ----------------- | ------------------------- | ---------------------------------------- | ---------------------- |
 |Content|Done|Done|Not Started|Not Started|
-|Actions|Done|Not Started|Not Started|Not Started|
-|Behaviors|Not Started|Not Started|Not Started|Not Started|
+|Actions|Done|Done|Not Started|Not Started|
+|Behaviors|WIP|Not Started|Not Started|Not Started|
 |Webscripts|Not Started|Not Started|Not Started|Not Started|
 |Workflows|Not Started|Not Started|Not Started|Not Started|
