@@ -18,6 +18,6 @@ Progress
 | -------- | ----------------- | ------------------------- | ---------------------------------------- | ---------------------- |
 |Content|Done|Done|Not Started|Not Started|
 |Actions|Done|Done|Not Started|Not Started|
-|Behaviors|WIP|Not Started|Not Started|Not Started|
+|Behaviors|Done|WIP|Not Started|Not Started|
 |Webscripts|Not Started|Not Started|Not Started|Not Started|
 |Workflows|Not Started|Not Started|Not Started|Not Started|

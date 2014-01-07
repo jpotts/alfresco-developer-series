@@ -14,7 +14,7 @@ import org.alfresco.service.namespace.NamespaceService;
 import org.alfresco.service.namespace.QName;
 import org.apache.log4j.Logger;
 
-import com.someco.model.SomeCoModel;
+import com.someco.model.SomeCoRatingsModel;
 
 public class Rating
 	implements NodeServicePolicies.OnDeleteNodePolicy,
@@ -38,8 +38,8 @@ public class Rating
         this.onDeleteNode = new JavaBehaviour(this, "onDeleteNode", NotificationFrequency.TRANSACTION_COMMIT);
 
         // Bind behaviours to node policies
-        this.policyComponent.bindClassBehaviour(QName.createQName(NamespaceService.ALFRESCO_URI, "onCreateNode"), QName.createQName(SomeCoModel.NAMESPACE_SOMECO_CONTENT_MODEL, SomeCoModel.TYPE_SC_RATING), this.onCreateNode);
-        this.policyComponent.bindClassBehaviour(QName.createQName(NamespaceService.ALFRESCO_URI, "onDeleteNode"), QName.createQName(SomeCoModel.NAMESPACE_SOMECO_CONTENT_MODEL, SomeCoModel.TYPE_SC_RATING), this.onDeleteNode);
+        this.policyComponent.bindClassBehaviour(QName.createQName(NamespaceService.ALFRESCO_URI, "onCreateNode"), QName.createQName(SomeCoRatingsModel.NAMESPACE_SOMECO_RATINGS_CONTENT_MODEL, SomeCoRatingsModel.TYPE_SCR_RATING), this.onCreateNode);
+        this.policyComponent.bindClassBehaviour(QName.createQName(NamespaceService.ALFRESCO_URI, "onDeleteNode"), QName.createQName(SomeCoRatingsModel.NAMESPACE_SOMECO_RATINGS_CONTENT_MODEL, SomeCoRatingsModel.TYPE_SCR_RATING), this.onDeleteNode);
     }
     
 	public void onCreateNode(ChildAssociationRef childAssocRef) {
@@ -59,7 +59,7 @@ public class Rating
 		NodeRef parentRef = childAssocRef.getParentRef();
 		
 		// check the parent to make sure it has the right aspect
-		if (nodeService.hasAspect(parentRef, QName.createQName(SomeCoModel.NAMESPACE_SOMECO_CONTENT_MODEL, SomeCoModel.ASPECT_SC_RATEABLE))) {
+		if (nodeService.hasAspect(parentRef, QName.createQName(SomeCoRatingsModel.NAMESPACE_SOMECO_RATINGS_CONTENT_MODEL, SomeCoRatingsModel.ASPECT_SCR_RATEABLE))) {
 			// continue, this is what we want
 		} else {
 			if (logger.isDebugEnabled()) logger.debug("Rating's parent ref did not have rateable aspect.");
@@ -80,11 +80,11 @@ public class Rating
 			// iterate through the children to compute the total
 			
 			for (ChildAssociationRef child : children) { 				
-				if (!child.getTypeQName().isMatch(QName.createQName(SomeCoModel.NAMESPACE_SOMECO_CONTENT_MODEL, SomeCoModel.ASSN_SC_RATINGS))) {
+				if (!child.getTypeQName().isMatch(QName.createQName(SomeCoRatingsModel.NAMESPACE_SOMECO_RATINGS_CONTENT_MODEL, SomeCoRatingsModel.ASSN_SCR_RATINGS))) {
 					continue;
 				}
 				int rating = 0;
-				rating = (Integer)nodeService.getProperty(child.getChildRef(), QName.createQName(SomeCoModel.NAMESPACE_SOMECO_CONTENT_MODEL, SomeCoModel.PROP_RATING));
+				rating = (Integer)nodeService.getProperty(child.getChildRef(), QName.createQName(SomeCoRatingsModel.NAMESPACE_SOMECO_RATINGS_CONTENT_MODEL, SomeCoRatingsModel.PROP_RATING));
 				count += 1;
 				total += rating;
 			}
@@ -98,7 +98,7 @@ public class Rating
 		}
 		
 		// store the average on the parent node
-		nodeService.setProperty(parentRef, QName.createQName(SomeCoModel.NAMESPACE_SOMECO_CONTENT_MODEL, SomeCoModel.PROP_AVERAGE_RATING), average);
+		nodeService.setProperty(parentRef, QName.createQName(SomeCoRatingsModel.NAMESPACE_SOMECO_RATINGS_CONTENT_MODEL, SomeCoRatingsModel.PROP_AVERAGE_RATING), average);
 		
 		if (logger.isDebugEnabled()) logger.debug("Property set");
 		

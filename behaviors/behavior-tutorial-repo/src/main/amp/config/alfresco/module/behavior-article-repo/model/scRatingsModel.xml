@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Definition of new Model -->
+<model name="scr:somecoratingsmodel" xmlns="http://www.alfresco.org/model/dictionary/1.0">
+
+	<!-- Optional meta-data about the model -->
+	<description>Someco Ratings Model</description>
+	<author>Jeff Potts</author>
+	<version>1.0</version>
+
+	<!-- Imports are required to allow references to definitions in other models -->
+	<imports>
+		<!-- Import Alfresco Dictionary Definitions -->
+		<import uri="http://www.alfresco.org/model/dictionary/1.0" prefix="d" />
+		<!-- Import Alfresco Content Domain Model Definitions -->
+		<import uri="http://www.alfresco.org/model/content/1.0" prefix="cm" />
+		<import uri="http://www.alfresco.org/model/system/1.0" prefix="sys" />
+	</imports>
+
+	<!-- Introduction of new namespaces defined by this model -->
+	<namespaces>
+		<namespace uri="http://www.someco.com/model/ratings/1.0" prefix="scr" />
+	</namespaces>
+
+	<types>
+		<type name="scr:rating">
+			<title>Someco Rating</title>
+			<parent>sys:base</parent>
+			<properties>
+				<property name="scr:rating">					
+					<type>d:int</type>
+					<mandatory>true</mandatory>
+				</property>
+				<property name="scr:rater">
+					<type>d:text</type>
+					<mandatory>true</mandatory>
+				</property>
+			</properties>
+		</type>
+	</types>
+
+	<aspects>
+		<aspect name="scr:rateable">
+			<title>Someco Rateable</title>
+			<properties>
+				<property name="scr:averageRating">
+					<type>d:double</type>
+					<mandatory>false</mandatory>
+				</property>
+			</properties>
+			<associations>
+				<child-association name="scr:ratings">
+					<title>Rating</title>
+					<source>
+						<mandatory>false</mandatory>
+						<many>true</many>
+					</source>
+					<target>
+						<class>scr:rating</class>
+						<mandatory>false</mandatory>
+						<many>true</many>
+					</target>
+				</child-association>
+			</associations>
+		</aspect>
+	</aspects>
+</model>
