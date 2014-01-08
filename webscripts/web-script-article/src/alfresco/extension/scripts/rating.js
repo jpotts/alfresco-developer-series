@@ -3,7 +3,7 @@ function computeAverage(childAssocRef) {
 		var parentRef = childAssocRef.parent;
 		
 		// check the parent to make sure it has the right aspect
-		if (parentRef.hasAspect("{http://www.someco.com/model/content/1.0}rateable")) {
+		if (parentRef.hasAspect("{http://www.someco.com/model/ratings/1.0}rateable")) {
 			// continue, this is what we want
 		} else {
 			logger.log("Rating's parent ref did not have rateable aspect.");
@@ -20,7 +20,7 @@ function computeAverage(childAssocRef) {
 		if (children != null && children.length > 0) {
 			for (i in children) {
 				var child = children[i];
-				var rating = child.properties["{http://www.someco.com/model/content/1.0}rating"];
+				var rating = child.properties["{http://www.someco.com/model/ratings/1.0}rating"];
 				total += rating;
 			}
 		
@@ -31,9 +31,9 @@ function computeAverage(childAssocRef) {
 		logger.log("Computed average:" + average);
 		
 		// store the average on the parent node
-		parentRef.properties["{http://www.someco.com/model/content/1.0}averageRating"] = average;
-		parentRef.properties["{http://www.someco.com/model/content/1.0}totalRating"] = total;
-		parentRef.properties["{http://www.someco.com/model/content/1.0}ratingCount"] = children.length;
+		parentRef.properties["{http://www.someco.com/model/ratings/1.0}averageRating"] = average;
+		parentRef.properties["{http://www.someco.com/model/ratings/1.0}totalRating"] = total;
+		parentRef.properties["{http://www.someco.com/model/ratings/1.0}ratingCount"] = children.length;
 		parentRef.save();
 		
 		logger.log("Property set");
@@ -53,7 +53,7 @@ function getUserRating(curNode, curUser) {
 		logger.log("No ratings found for this node for user: " + curUser);
 		return 0;
 	} else {
-		var rating = results[results.length-1].properties["{http://www.someco.com/model/content/1.0}rating"];
+		var rating = results[results.length-1].properties["{http://www.someco.com/model/ratings/1.0}rating"];
 		if (rating == undefined) {
 			return 0;
 		} else {
@@ -64,8 +64,8 @@ function getUserRating(curNode, curUser) {
 
 function getRating(curNode, curUser) {
 	var rating = {};
-	rating.average = curNode.properties["{http://www.someco.com/model/content/1.0}averageRating"];
-	rating.count = curNode.properties["{http://www.someco.com/model/content/1.0}ratingCount"];
+	rating.average = curNode.properties["{http://www.someco.com/model/ratings/1.0}averageRating"];
+	rating.count = curNode.properties["{http://www.someco.com/model/ratings/1.0}ratingCount"];
 	rating.user = getUserRating(curNode, curUser);
 	return rating;
 }
@@ -73,7 +73,7 @@ function getRating(curNode, curUser) {
 function deleteRatings(curNode) {
 		
 		// check the parent to make sure it has the right aspect
-		if (curNode.hasAspect("{http://www.someco.com/model/content/1.0}rateable")) {
+		if (curNode.hasAspect("{http://www.someco.com/model/ratings/1.0}rateable")) {
 			// continue, this is what we want
 		} else {
 			logger.log("Node did not have rateable aspect.");
