@@ -71,6 +71,12 @@
             <version>4.8.1</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+        	<groupId>com.someco</groupId>
+        	<artifactId>content-tutorial-common</artifactId>
+        	<version>1.0-SNAPSHOT</version>
+        	<scope>provided</scope>
+        </dependency>
     </dependencies>
 
     <!-- This repository is only needed to retrieve Alfresco parent POM. 

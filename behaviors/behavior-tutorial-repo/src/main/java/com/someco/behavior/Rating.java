@@ -99,6 +99,8 @@ public class Rating
 		
 		// store the average on the parent node
 		nodeService.setProperty(parentRef, QName.createQName(SomeCoRatingsModel.NAMESPACE_SOMECO_RATINGS_CONTENT_MODEL, SomeCoRatingsModel.PROP_AVERAGE_RATING), average);
+		nodeService.setProperty(parentRef, QName.createQName(SomeCoRatingsModel.NAMESPACE_SOMECO_RATINGS_CONTENT_MODEL, SomeCoRatingsModel.PROP_TOTAL_RATING), total);
+		nodeService.setProperty(parentRef, QName.createQName(SomeCoRatingsModel.NAMESPACE_SOMECO_RATINGS_CONTENT_MODEL, SomeCoRatingsModel.PROP_RATING_COUNT), count);		
 		
 		if (logger.isDebugEnabled()) logger.debug("Property set");
 		

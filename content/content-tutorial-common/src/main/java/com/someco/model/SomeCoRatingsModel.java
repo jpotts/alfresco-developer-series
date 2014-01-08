@@ -14,6 +14,8 @@ public interface SomeCoRatingsModel {
     // Properties
     public static final String PROP_RATING = "rating";
     public static final String PROP_AVERAGE_RATING= "averageRating";
+    public static final String PROP_TOTAL_RATING= "totalRating";
+    public static final String PROP_RATING_COUNT= "ratingCount";
     
     // Associations
     public static final String ASSN_SCR_RATINGS = "ratings";

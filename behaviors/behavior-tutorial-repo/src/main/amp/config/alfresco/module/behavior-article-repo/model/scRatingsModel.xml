@@ -46,6 +46,14 @@
 					<type>d:double</type>
 					<mandatory>false</mandatory>
 				</property>
+				<property name="scr:totalRating">
+					<type>d:int</type>
+					<mandatory>false</mandatory>
+				</property>
+				<property name="scr:ratingCount">
+					<type>d:int</type>
+					<mandatory>false</mandatory>
+				</property>				
 			</properties>
 			<associations>
 				<child-association name="scr:ratings">
