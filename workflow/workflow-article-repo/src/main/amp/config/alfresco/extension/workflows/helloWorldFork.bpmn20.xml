@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:activiti="http://activiti.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.activiti.org/test">
+  <process id="helloWorldFork" name="activitiHelloWorldFork" isExecutable="true">
+    <startEvent id="startevent3" name="Start"></startEvent>
+    <endEvent id="endevent2" name="End"></endEvent>
+    <parallelGateway id="parallelgateway5" name="Parallel Gateway"></parallelGateway>
+    <parallelGateway id="parallelgateway6" name="Parallel Gateway"></parallelGateway>
+    <userTask id="usertask8" name="User Task A" activiti:assignee="${initiator.properties.userName}" activiti:formKey="bpm:task"></userTask>
+    <userTask id="usertask9" name="User Task B" activiti:assignee="${initiator.properties.userName}" activiti:formKey="bpm:task"></userTask>
+    <sequenceFlow id="flow35" sourceRef="startevent3" targetRef="parallelgateway5"></sequenceFlow>
+    <sequenceFlow id="flow36" sourceRef="parallelgateway5" targetRef="usertask8">
+      <extensionElements>
+        <activiti:executionListener event="start" class="org.alfresco.repo.workflow.activiti.listener.ScriptExecutionListener">
+          <activiti:field name="script">
+            <activiti:string>logger.log("Hello, World, from transition to User Task A!");</activiti:string>
+          </activiti:field>
+        </activiti:executionListener>
+      </extensionElements>
+    </sequenceFlow>
+    <sequenceFlow id="flow37" sourceRef="usertask8" targetRef="parallelgateway6"></sequenceFlow>
+    <sequenceFlow id="flow38" sourceRef="parallelgateway6" targetRef="endevent2"></sequenceFlow>
+    <sequenceFlow id="flow39" sourceRef="parallelgateway5" targetRef="usertask9">
+      <extensionElements>
+        <activiti:executionListener event="start" class="org.alfresco.repo.workflow.activiti.listener.ScriptExecutionListener">
+          <activiti:field name="script">
+            <activiti:string>logger.log("Hello, World, from transition to User Task B!");</activiti:string>
+          </activiti:field>
+        </activiti:executionListener>
+      </extensionElements>
+    </sequenceFlow>
+    <sequenceFlow id="flow40" sourceRef="usertask9" targetRef="parallelgateway6"></sequenceFlow>
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_helloWorldFork">
+    <bpmndi:BPMNPlane bpmnElement="helloWorldFork" id="BPMNPlane_helloWorldFork">
+      <bpmndi:BPMNShape bpmnElement="startevent3" id="BPMNShape_startevent3">
+        <omgdc:Bounds height="35.0" width="35.0" x="10.0" y="70.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="endevent2" id="BPMNShape_endevent2">
+        <omgdc:Bounds height="35.0" width="35.0" x="460.0" y="70.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="parallelgateway5" id="BPMNShape_parallelgateway5">
+        <omgdc:Bounds height="40.0" width="40.0" x="80.0" y="67.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="parallelgateway6" id="BPMNShape_parallelgateway6">
+        <omgdc:Bounds height="40.0" width="40.0" x="347.0" y="67.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="usertask8" id="BPMNShape_usertask8">
+        <omgdc:Bounds height="55.0" width="105.0" x="180.0" y="18.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="usertask9" id="BPMNShape_usertask9">
+        <omgdc:Bounds height="55.0" width="105.0" x="180.0" y="104.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="flow35" id="BPMNEdge_flow35">
+        <omgdi:waypoint x="45.0" y="87.0"></omgdi:waypoint>
+        <omgdi:waypoint x="80.0" y="87.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow36" id="BPMNEdge_flow36">
+        <omgdi:waypoint x="120.0" y="87.0"></omgdi:waypoint>
+        <omgdi:waypoint x="232.0" y="73.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow37" id="BPMNEdge_flow37">
+        <omgdi:waypoint x="285.0" y="45.0"></omgdi:waypoint>
+        <omgdi:waypoint x="367.0" y="67.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow38" id="BPMNEdge_flow38">
+        <omgdi:waypoint x="387.0" y="87.0"></omgdi:waypoint>
+        <omgdi:waypoint x="460.0" y="87.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow39" id="BPMNEdge_flow39">
+        <omgdi:waypoint x="120.0" y="87.0"></omgdi:waypoint>
+        <omgdi:waypoint x="232.0" y="104.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow40" id="BPMNEdge_flow40">
+        <omgdi:waypoint x="285.0" y="131.0"></omgdi:waypoint>
+        <omgdi:waypoint x="367.0" y="107.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

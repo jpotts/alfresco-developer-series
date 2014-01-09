@@ -1,0 +1,91 @@
+<alfresco-config>
+
+    <!--  workflow property sheets -->
+
+    <config evaluator="node-type" condition="scwf:submitHelloWorldTask" replace="true">
+        <property-sheet>
+            <show-property name="scwf:helloName" />
+        </property-sheet>
+    </config>
+    
+    <config evaluator="node-type" condition="scwf:submitReviewTask" replace="true">
+        <property-sheet>
+            <separator name="sep1" display-label-id="general" component-generator="HeaderSeparatorGenerator" />
+            <show-property name="bpm:workflowDescription" component-generator="TextAreaGenerator" />
+        </property-sheet>
+    </config>
+
+    <config evaluator="node-type" condition="scwf:marketingReview" replace="true">
+        <property-sheet>
+            <separator name="sep1" display-label-id="general" component-generator="HeaderSeparatorGenerator" />
+            <show-property name="bpm:description" component-generator="TextAreaGenerator" read-only="true"/>
+            <show-property name="bpm:comment" component-generator="TextAreaGenerator" />        
+        </property-sheet>
+    </config>
+
+    <config evaluator="node-type" condition="scwf:activitiMarketingReview" replace="true">
+        <property-sheet>
+            <separator name="sep1" display-label-id="general" component-generator="HeaderSeparatorGenerator" />
+            <show-property name="bpm:description" component-generator="TextAreaGenerator" read-only="true"/>
+            <show-property name="bpm:comment" component-generator="TextAreaGenerator" />        
+            <show-property name="scwf:approveRejectOutcome" />
+        </property-sheet>
+    </config>
+
+    <config evaluator="node-type" condition="scwf:operationsReview" replace="true">
+        <property-sheet>
+            <separator name="sep1" display-label-id="general" component-generator="HeaderSeparatorGenerator" />
+            <show-property name="bpm:description" component-generator="TextAreaGenerator" read-only="true"/>
+            <show-property name="bpm:comment" component-generator="TextAreaGenerator" />        
+        </property-sheet>
+    </config>
+
+    <config evaluator="node-type" condition="scwf:activitiOperationsReview" replace="true">
+        <property-sheet>
+            <separator name="sep1" display-label-id="general" component-generator="HeaderSeparatorGenerator" />
+            <show-property name="bpm:description" component-generator="TextAreaGenerator" read-only="true"/>
+            <show-property name="bpm:comment" component-generator="TextAreaGenerator" />
+            <show-property name="scwf:approveRejectOutcome" />
+        </property-sheet>
+    </config>
+
+    <config evaluator="node-type" condition="scwf:revise" replace="true">
+        <property-sheet>
+            <separator name="sep1" display-label-id="general" component-generator="HeaderSeparatorGenerator" />
+            <show-property name="bpm:description" component-generator="TextAreaGenerator" read-only="true"/>
+            <show-property name="bpm:comment" component-generator="TextAreaGenerator" />        
+        </property-sheet>
+    </config>
+
+    <config evaluator="node-type" condition="scwf:activitiRevise" replace="true">
+        <property-sheet>
+            <separator name="sep1" display-label-id="general" component-generator="HeaderSeparatorGenerator" />
+            <show-property name="bpm:description" component-generator="TextAreaGenerator" read-only="true"/>
+            <show-property name="bpm:comment" component-generator="TextAreaGenerator" />        
+            <show-property name="scwf:reviseOutcome" />
+        </property-sheet>
+    </config>
+
+    <config evaluator="node-type" condition="scwf:activitiReviewTask" replace="true">
+        <property-sheet>
+            <show-property name="scwf:approveRejectOutcome" />
+            <show-property name="bpm:workflowDescription" component-generator="TextAreaGenerator" read-only="true"/>            
+        </property-sheet>
+    </config>
+
+    <config evaluator="node-type" condition="scwf:activitiThirdPartyReview" replace="true">
+        <property-sheet>
+            <separator name="sep1" display-label-id="general" component-generator="HeaderSeparatorGenerator" />
+            <show-property name="bpm:description" component-generator="TextAreaGenerator" read-only="true"/>
+            <show-property name="bpm:comment" component-generator="TextAreaGenerator" />
+            <show-property name="scwf:approveRejectOutcome" />
+        </property-sheet>
+    </config>
+   
+    <!--  add third-party reviewable related aspect properties to property sheet -->
+    <config evaluator="aspect-name" condition="scwf:thirdPartyReviewable">
+        <property-sheet>
+            <show-property name="scwf:reviewerEmail" display-label-id="email" />
+        </property-sheet>
+    </config>
+</alfresco-config>
