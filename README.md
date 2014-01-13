@@ -20,7 +20,7 @@ Progress
 |Actions|Done|Done|Not Started|Not Started|
 |Behaviors|Done|Done|Not Started|Not Started|
 |Webscripts|Done|Done|Not Started|Not Started|
-|Workflows|Done|WIP|Not Started|Not Started|
+|Workflows|Done|Done|Not Started|Not Started|
 
 Known Issues
 ------------
