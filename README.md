@@ -20,4 +20,9 @@ Progress
 |Actions|Done|Done|Not Started|Not Started|
 |Behaviors|Done|Done|Not Started|Not Started|
 |Webscripts|Done|Done|Not Started|Not Started|
-|Workflows|WIP|Not Started|Not Started|Not Started|
+|Workflows|Done|WIP|Not Started|Not Started|
+
+Known Issues
+------------
+
+The publish to web advanced workflow in the workflows tutorial is not currently working properly under 4.2.e. The workflow is not firing the set-web-flag action.
