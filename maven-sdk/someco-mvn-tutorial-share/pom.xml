@@ -60,16 +60,18 @@
          <scope>provided</scope> is inherited for each of the following; 
          for more info, please refer to alfresco-platform-distribution POM -->
     <dependencies>
-        <dependency>
-            <groupId>${alfresco.groupId}</groupId>
-            <artifactId>alfresco-repository</artifactId>
-        </dependency>
         <!-- Test dependencies -->
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>4.8.1</version>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+        	<groupId>org.springframework.extensions.surf</groupId>
+        	<artifactId>spring-webscripts</artifactId>
+        	<version>1.2.0-M14</version>
+        	<scope>provided</scope>
         </dependency>
     </dependencies>
 

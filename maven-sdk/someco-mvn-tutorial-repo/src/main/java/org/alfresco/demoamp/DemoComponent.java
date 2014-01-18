@@ -69,6 +69,7 @@ public class DemoComponent extends AbstractModuleComponent
      */
     public int childNodesCount(NodeRef nodeRef)
     {
+    	log.debug("Inside childNodesCount");
         return nodeService.countChildAssocs(nodeRef, true);
     }
     
