@@ -316,13 +316,15 @@ You now know how to use the Alfresco Maven SDK to create projects for both your 
 
 There are many topics that weren't covered in this tutorial. I'll leave you to explore those on your own. Here are a few:
 
- * The Alfresco Maven SDK supports dynamic class reloading when used in conjunction with a tool called JRebel (TBD LINK). See Gab's Alfresco Summit 2013 presentation linked to in the More Information section.
- * TBD the artifacts repository
- * TBD
+ * The Alfresco Maven SDK supports dynamic class reloading when used in conjunction with a tool called [http://zeroturnaround.com/software/jrebel/](JRebel). See Gab's Alfresco Summit 2013 presentation linked to in the More Information section.
+ * This tutorial covered the AMP archetype. But the Alfresco Maven SDK includes another archetype called All-in-One. That archetype gives you a complete Alfresco installation including SOLR.
+ * The Alfresco Maven SDK supports both Community Edition and Enterprise Edition. If you need help accessing the Enterprise Edition artifacts, contact Alfresco Support.
 
 Where to Find More Information
 ------------------------------
- - Gab's Alfresco Summit presentation (TBD LINK)
- - Mao's Maven starter book (TBD LINK) http://www.amazon.com/Instant-Apache-Starter-Maurizio-Turatti/dp/1782167609
- - Gethin's getting started with Alfresco development presentation (TBD LINK)
- - ECM Architect tutorials on custom content models, actions, behaviors, workflows, and web scripts (TBD LINK)
+ - The [http://docs.alfresco.com/community/topic/com.alfresco.community.doc/concepts/dev-extensions-maven-sdk.html](official documentation) on the Alfresco Maven SDK is on [http://docs.alfresco.com](docs.alfresco.com).
+ - More detailed documentation on the Alfresco Maven SDK can be found at [https://artifacts.alfresco.com/nexus/content/groups/public/alfresco-lifecycle-aggregator/latest/archetypes/alfresco-amp-archetype/index.html](artifacts.alfresco.com).
+ - Gab's Alfresco Summit presentation on [http://summit.alfresco.com/boston/sessions/enabling-test-driven-rapid-dev-continuous-delivery-alfresco-apps](Test-Driven, Rapid Development, and Continuous Delivery of Alfresco Solutions)
+ - [http://www.amazon.com/Instant-Apache-Starter-Maurizio-Turatti/dp/1782167609](Instant Apache Maven Starter) by Maurizio Turatti and Maurizio Pillitu
+ - Gethin James' [http://summit.alfresco.com/barcelona/sessions/getting-started-alfresco-development](Getting Started with Alfresco Development] presentation from Alfresco Summit
+ - The [http://ecmarchitect.com/alfresco-deveoper-series](Alfresco Developer Series) on [http://ecmarchitect.com](ECM Architect) has free tutorials on custom content models, actions, behaviors, workflows, and web scripts.
