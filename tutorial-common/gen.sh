@@ -1,0 +1,2 @@
+#!/bin/bash
+pandoc -s --toc -c ../../tutorial-common/style.css -A ../../tutorial-common/footer.html -B ../../tutorial-common/header.html --template ../../tutorial-common/template.html tutorial.md -o tutorial.html
