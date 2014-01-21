@@ -12,6 +12,14 @@
     <build>
     	<pluginManagement>
     		<plugins>
+		      <plugin>
+		        <artifactId>maven-compiler-plugin</artifactId>
+		        <version>2.3.2</version>
+		        <configuration>
+		          <source>1.7</source>
+		          <target>1.7</target>
+		        </configuration>
+		      </plugin>
     			<!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
     			<plugin>
     				<groupId>org.eclipse.m2e</groupId>

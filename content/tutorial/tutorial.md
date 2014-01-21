@@ -1,5 +1,9 @@
-# About the Second Edition
+% Working With Custom Content Types in Alfresco
+% Jeff Potts
+% January, 2014
 
+About the Second Edition
+========================
 This tutorial was originally published in June of 2007. At the time it was written, Alfresco 2.0 was the latest release, although the tutorial continued to be used successfully by many people around the world over the next several years and releases and was eventually used in the Alfresco Developer Guide (Packt, 2008).
 
 Alfresco has changed a lot since 2007. The two biggest changes affecting this tutorial are (1) the addition of Alfresco Share and its subsequent adoption as the preferred web user interface and (2) the Content Management Interoperability Services (CMIS) standard implementation, which can be used to manage content programmatically across the network using a vendor-neutral, language-independent API.
@@ -17,69 +21,14 @@ Alfresco--as a platform and as a company--continues to grow and evolve. We are r
 Feel free to join the conversation on ecmarchitect.com and in the Alfresco Forums if you have questions.
 Thanks for reading -- Jeff
 
-# License
-
+License
+=======
 ![](./images/cc-by-sa-88x31.png)
 
 This work is licensed under the Creative Commons Attribution-ShareAlike 3.0 Unported License. To view a copy of this license, visit http://creativecommons.org/licenses/by-sa/3.0/ or send a letter to Creative Commons, 444 Castro Street, Suite 900, Mountain View, California, 94041, USA.
 
-# Table of Contents
-
-* [Introduction][introduction]
-
-* [Part 1: Implementing a Custom Content Model][part1]
-
-    * [Modeling Basics][modelingBasics]
-        * [Types][types]
-        * [Properties][properties]
-        * [Property Types][propertyTypes]
-        * [Constraints][constraints]
-        * [Associations][associations]
-        * [Aspects][aspects]
-        * [Custom Behavior][customBehavior]
-        * [Content Modeling Best Practices][contentModelingBestPractices]
-        * [Out-of-the-Box Models][outOfTheBoxModels]
-    * [Creating a Custom Content Model][creatingACustomContentModel]
-        * [Implementing and Deploying the Model][implementingAndDeployingTheModel]
-
-* [Part 2: Configuring Alfresco Share][part2]
-    * [Configuring the Custom Model in Alfresco Share][configuringTheCustomModel]
-        * [Adding Custom Types and Aspects to Lists][addingCustomTypesToLists]
-        * [Configuring Forms for Custom Properties][configuringForms]
-        * [Configuring Advanced Search in Alfresco Share][configuringAdvancedSearch]
-        * [Localizing Strings for Custom Content Models][localizingStrings]
-        * [Share Configuration Summary][shareConfigSummary]
-
-* [Part 3: Working with Content Programmatically][part3]
-    * [Setup][setup]
-    * [Creating Content with OpenCMIS][creatingContentWithOpenCMIS]
-    * [Creating Associations with OpenCMIS][creatingAssociationsWithOpenCMIS]
-    * [Searching for Content with OpenCMIS][searchingForContentWithOpenCMIS]
-        * [Queries on Aspect-based Properties][queriesOnAspects]
-        * [Queries Across Multiple Aspects][queriesOnMultipleAspects]
-        * [Queries Using Dates][queriesUsingDates]
-    * [Deleting Content with OpenCMIS][deletingContentWithOpenCMIS]
-
-* [Conclusion][conclusion]
-    * [Where to Find More Information][findingMoreInformation]
-    * [About the Author][aboutTheAuthor]
-
-* [Appendix][appendix]
-    * [Configuring the Custom Content Model in Alfresco Explorer][configuringExplorer]
-        * [Property Sheet][propertySheetExplorer]
-        * [Create Content/Add Content][createContentExplorer]
-        * [“Is sub-type” Criteria, Specialize Type Action, Add Aspect Action][configTypeExplorer]
-        * [Advanced Search][advancedSearchExplorer]
-        * [String Externalization][stringExternalExplorer]
-        * [Test the Web Client User Interface Customizations][testExplorer]
-    * [Using the Web Services API][usingWebServices]
-        * [Creating Content with Java Web Services][creatingContentWebServices]
-        * [Creating Associations with Java Web Services][creatingAssociationsWebServices]
-        * [Searching for Content with Java Web Services][searchingContentWebServices]
-        * [Deleting Content with Java Web Services][deletingContentWebServices]
-
-## Introduction [introduction]
-
+Introduction
+============
 Alfresco is a flexible platform for developing content management applications. The first step in the process of designing a custom content management application is creating the content model.
 
 The content model Alfresco provides out-of-the-box is fairly comprehensive. In fact, for basic document management needs, you could probably get by with the out-of-the-box model. Of course, you'd be missing out on a lot of the power and functionality that having a model customized for your business needs provides.
@@ -88,12 +37,12 @@ Part 1 of this document discusses how to create your own custom content model, b
 
 You should already be familiar with general document management and Alfresco web client concepts. If you want to follow along with Part 3, you should also know how to write basic Java code. See “Where to find more information” at the end of this document for a link to the code samples that accompany this article.
 
-# Part 1: Implementing a Custom Content Model [part1]
-
+Part 1: Implementing a Custom Content Model
+===========================================
 Out-of-the-box, Alfresco gives you folders and content and a few other content types. But you’ll probably want to create your own business-specific types. This section discusses how that works.
 
-## Modeling Basics [modelingBasics]
-
+Modeling Basics
+---------------
 A content model describes the data being stored in the repository. The content model is critical—without it, Alfresco would be little more than a file system. Here is a list of key information the content model provides Alfresco:
 
 * Fundamental data types and how those data types should be persisted to the database. For example, without a content model, Alfresco wouldn't know the difference between a String and a Date.
@@ -112,27 +61,27 @@ A content model describes the data being stored in the repository. The content m
 
 Alfresco content models are built using a small set of building blocks: Types, Properties, Property types, Constraints, Associations, and Aspects.
 
-### Types [types]
+### Types
 
 *Types* are like types or classes in the object-oriented world. They can be used to model business objects, they have properties, and they can inherit from a parent type. “Content”, “Person”, and “Folder” are three important types defined out-of-the-box. Custom types are limited only by your imagination and business requirements. Examples include things like “Expense Report”, “Medical Record”, “Movie”, “Song”, and “Comment”.
 
 Note that types, properties, constraints, associations, and aspects have names. Names are made unique across the repository by using a namespace specific to the model. The namespace has an abbreviation. Rather than use “Example” or “Foo”, in this tutorial this document assumes Alfresco is being implemented for a fictitious company called SomeCo. So, for example, SomeCo might define a custom model which declares a namespace with the URI of “http://www.someco.com/model/content/1.0” and a prefix of “sc”. Any type defined as part of that model would have a name prefixed with “sc:”. You'll see how models are actually defined using XML shortly, but I wanted to introduce the concept of namespaces and prefixes so you would know what they are when you see them. Using namespaces in this way helps prevent name collisions when content models are shared across repositories. In your project it is definitely important that you use your own namespace.
 
-### Properties [properties]
+### Properties
 
 *Properties* are pieces of metadata associated with a particular type. For example, the properties of an Expense Report might include things like “Employee Name”, “Date submitted”, “Project”, “Client”, “Expense Report Number”, “Total amount”, and “Currency”. The Expense Report might also include a “content” property to hold the actual expense report file (maybe it is a PDF or an Excel spreadsheet, for example).
 
-### Property Types [propertyTypes]
+### Property Types
 
 *Property types* (or data types) describe the fundamental types of data the repository will use to store properties. Examples include things like strings, dates, floats, and booleans. Because these data types literally are fundamental, they are pretty much the same for everyone so they are defined for us out-of-the-box. (If you wanted to change the fact that the Alfresco data-type “text” maps to your own custom class rather than java.lang.String, you could, but let's not get ahead of ourselves).
 
-### Constraints [constraints]
+### Constraints
 
 *Constraints* can optionally be used to restrict the value that Alfresco will store in a property. There are four types of constraints available: REGEX, LIST, MINMAX, and LENGTH. REGEX is used to make sure that a property value matches a regular expression pattern. LIST is used to define a list of possible values for a property. MINMAX provides a numeric range for a property value. LENGTH sets a restriction on the length of a string.
 
 Constraints can be defined once and reused across a model. For example, out-of-the-box, Alfresco makes available a constraint named “cm:filename” that defines a regular expression constraint for file names. If a property in a custom type needs to restrict values to those matching the filename pattern, the custom model doesn't have to define the constraint again, it simply refers to the “cm:filename” constraint.
 
-### Associations [associations]
+### Associations
 
 *Associations* define relationships between types. Without associations, models would be full of types with properties that store “pointers” to other pieces of content. Going back to the expense report example, each expense report might be stored as an individual object. In addition to an Expense Report type there could also be an Expense type. Associations tell Alfresco about the relationship between an Expense Report and one or more Expenses.
 
@@ -142,7 +91,7 @@ An out-of-the-box association that's easy to relate to is “cm:contains”. The
 
 Another example might be a “Whitepaper” and its “Related Documents”. Suppose that a company publishes whitepapers on their web site. The whitepaper might be related to other documents such as product marketing materials or other research. If the relationship between the whitepaper and its related documents is formalized it can be shown in the user interface. To implement this, as part of the Whitepaper content type, you'd define a Peer Association. You could use “sys:base” as the target type to allow any piece of content in the repository to be associated with a Whitepaper or you could restrict the association to a specific type like “cm:content” or “sc:whitepaper”. 
 
-### Aspects [aspects]
+### Aspects
 
 Before discussing *Aspects*, let's first consider how inheritance works and the implications on the content model. Suppose Alfresco will be used to manage content to be displayed in a portal (quite a common requirement, by the way). Suppose further that only a subset of the content in the repository is content that should be shown in the portal. And, when content is to be displayed in the portal, there are some additional pieces of metadata that need to be captured. A simple example might be a requirement to show the date and time a piece of content was approved.
 
@@ -154,11 +103,11 @@ As you have probably figured out by now, there is a third option that addresses 
 
 Going back to the portal example, a “Portal Displayable” aspect could be defined with a publish date property. The aspect would then be added to any piece of content, regardless of type, that needed to be displayed in the portal. 
 
-### Custom Behavior [customBehavior]
+### Custom Behavior
 
 You may find that your custom aspect or custom type needs to have behavior or business logic associated with it. For example, every time an Expense Report is checked in you want to recalculate the total by iterating through the associated Expenses. One option would be to incorporate this logic into rules or actions in the Alfresco web client or your custom web application. But some behavior is so fundamental to the aspect or type that it should really be “bound” to the aspect or type and invoked any time Alfresco works with those objects. If you are curious how this works, read the Custom Behaviors tutorial on ecmarchitect.com. For now, just know that associating business logic with your custom aspects and types (or overriding out-of-the-box behavior) is possible.
 
-### Content Modeling Best Practices [contentModelingBestPractices]
+### Content Modeling Best Practices
 
 Now that you know the building blocks of a content model, it makes sense to consider some best practices. Here are the top ten:
 
@@ -182,7 +131,7 @@ Now that you know the building blocks of a content model, it makes sense to cons
 
 10. *Use the source*! The out-of-the-box content model is a great example of what's possible. The forumModel and recordsModel have some particularly useful examples. In the next section I'll tell you where the model files live and what's in each so you'll know where to look later when you say to yourself, “Surely, the folks at Alfresco have done this before”.
 
-### Out-of-the-Box Models [outOfTheBoxModels]
+### Out-of-the-Box Models
 
 The Alfresco source code is an indispensable reference tool which you should always have at the ready, along with the documentation, wiki, forums, and Jira. With that said, if you are following along with this article but have not yet downloaded the source, you are in luck. The out-of-the-box content model files are written in XML and get deployed with the web client. They can be found in the alfresco.war file in /WEB-INF/classes/alfresco/model. The table below describes several of the model files that can be found in the directory.
 
@@ -203,8 +152,8 @@ The Alfresco source code is an indispensable reference tool which you should alw
 In the interest of brevity, I've left off about 25 other model files. Depending on what you are trying to do with your model, or just to see further examples, you might want to take a look at those at some point.
 In addition to the model files the modelSchema.xsd file can be a good reference. As the name suggests, it defines the XML vocabulary Alfresco content model XML files must adhere to.
 
-## Creating a Custom Content Model [creatingACustomContentModel]
-
+Creating a Custom Content Model
+-------------------------------
 Time for a detailed example. As mentioned earlier, suppose Alfresco is being implemented for a fictional company called “SomeCo”. Pretend that SomeCo is a commercial open source company behind the ever-popular open source project, “SomeSoftware”. SomeCo has decided to re-vamp its web presence by adding new types of content and community functionality to their web site. For this example, let’s focus on the white papers SomeCo wants to make available.
 
 SomeCo has selected Alfresco as their Enterprise Content Management solution. In addition to managing the content on the new site, SomeCo wants to use Alfresco to manage all of its rich content. So everything will live in the Alfresco repository and some subset of the company’s content will be served up to the external portal.
@@ -229,7 +178,7 @@ As new content types are identified they will be added under sc:doc.
 
 Using the aspect to determine whether or not to show the content on the portal is handy, particularly in light of the SomeCo decision to use Alfresco for all of its content management needs. The repository will contain content that may or may not be on the portal. Portal content will be easily-distinguishable from non-portal content by the presence of the “webable” aspect.
 
-### Implementing and Deploying the Model [implementingAndDeployingTheModel]
+### Implementing and Deploying the Model
 
 Before starting, here are a couple of notes about my setup:
 
@@ -379,12 +328,12 @@ Here's an important note about the content model schema that may save you some t
 
 The final step is to **restart Tomcat** so that Alfresco will load our custom model. Watch the log during the restart. You should see no errors related to loading the custom model. If there is a problem, the message usually looks something like, “Could not import bootstrap model”.
 
-# Part 2: Configuring Alfresco Share [part2]
-
+Part 2: Configuring Alfresco Share
+==================================
 Now that the model is defined, you could begin using it right away by writing code against one of Alfresco's API's that creates instances of your custom types, adds aspects, etc. In practice it is usually a good idea to do just that to make sure the model behaves like you expect. In fact, if you just can’t wait to see some code to create, query, and update content, skip to Part 3. For everyone else, let's talk about how to work with a custom model in the Alfresco web clients.
 
-## Configuring the Custom Model in Alfresco Share [configuringTheCustomModel]
-
+Configuring the Custom Model in Alfresco Share
+----------------------------------------------
 There are two Alfresco web clients to consider. One is called Alfresco Explorer. It has been around since the early days of the product and is based on JavaServer Faces (JSF). The other is called Alfresco Share. Share was introduced in Alfresco 3.0 and is based on Spring Surf and the Yahoo UI (YUI) library. Nowadays, most people starting out with Alfresco will use Alfresco Share. At this point, almost all functionality available in Explorer is available in Share, so unless you just love JSF or you have existing customizations in Explorer that you won’t be migrating to Share any time soon, you should start with Alfresco Share.
 
 Of course, it is possible to configure both Alfresco Explorer and Alfresco Share to leverage your custom content model. If you’d like to do that as a learning exercise, go for it. The instructions for customizing Alfresco Explorer are included in the Appendix.
@@ -415,7 +364,7 @@ If you are used to working with the Alfresco Explorer user interface configurati
 
 And, similar to the Alfresco repository WAR, Share has an extension directory that keeps your configuration separate from the rest of the web application. In Share, the extension directory is called “web-extension”.
 
-### Adding Custom Types and Aspects to Lists [addingCustomTypesToLists]
+### Adding Custom Types and Aspects to Lists
 
 The first four items in our list have to do with telling the Share user interface about custom types and aspects. A single set of configuration will take care of all four items.
 
@@ -483,7 +432,7 @@ And the “add aspect” list, in both the rule configuration and UI action, lis
 
 You’ll notice that in the rule configuration the types and aspects are shown with their localized names while in the dialogs the strings are shown as not yet localized (their ID is displayed instead of their localized string). That’s because the strings for Share haven’t yet been localized and some services, like the rule configuration, will pull those strings from the content model XML. If it is annoying you, jump to the localization section and come back.
 
-### Configuring Forms for Custom Properties [configuringForms]
+### Configuring Forms for Custom Properties
 
 You may have already noticed that if you look at the details page for an instance of a custom type, sc:whitepaper, for example, you’ll see that Alfresco Share has already figured out that there are some custom properties on the content object. But if you compare the properties for an instance of sc:whitepaper to that of an instance of cm:content there are other properties being shown for sc:whitepaper in addition to our custom properties.
 
@@ -558,7 +507,7 @@ Now do the same thing for the doclib-simple-metadata form.
 
 After restarting Alfresco Share Tomcat, you should see all four custom properties and the related documents association in the document details page. On the edit metadata pop-up dialog you should see the related documents association.
 
-### Configuring Advanced Search in Alfresco Share [configuringAdvancedSearch]
+### Configuring Advanced Search in Alfresco Share
 
 The advanced search form in Alfresco Share allows end-users to first select what they are looking for and then specify both full-text and specific property values to search for depending on the content type selected. Out-of-the-box, the search form includes two types: cm:content and cm:folder.
 
@@ -639,7 +588,7 @@ After deploying this configuration and restarting, the SomeCo Whitepaper type is
 
 ![Search custom properties](./images/adv-search-props.png)
 
-### Localizing Strings for Custom Content Models [localizingStrings]
+### Localizing Strings for Custom Content Models
 
 We’ve put off localizing the form labels until now. To fix this, create a file in web-extension called “custom-slingshot-application-context.xml” with the following content:
 
@@ -678,7 +627,7 @@ Now create a new directory in web-extension called “messages” and in that di
 
 After restarting Alfresco Share Tomcat you should see that the properties have the localized labels.
 
-### Share Configuration Summary [shareConfigSummary]
+### Share Configuration Summary
 
 You’ve seen that configuring Alfresco Share for your custom content model essentially involves adding XML to the share-config-custom.xml file and creating a properties file for your localized strings. All of this lives under the “web-extension” directory in the Share web application.
 
@@ -692,8 +641,8 @@ There are other things you might like to do to the Share user interface, but the
 
 Now let’s turn our attention from the front-end to the back-end to understand how to create, query, update, and delete content using code running remotely from the Alfresco server.
 
-# Part 3: Working with Content Programmatically [part3]
-
+Part 3: Working with Content Programmatically
+=============================================
 So far we've created a custom model and we've exposed the model in the Alfresco web clients. For simple document management solutions, this may be enough. Often, code will also required. It could be code in a web application that needs to work with the repository, code that implements custom behavior for custom content types, or code that implements Alfresco web client customizations.
 
 There are several API's available depending on what you want to do. The table below outlines the choices:
@@ -709,7 +658,8 @@ The first edition of this tutorial focused on the Alfresco Web Services API with
 
 If you’d rather not use CMIS for some reason, the Alfresco Web Services examples for Java still work and are included in the Appendix.
 
-## Setup [setup]
+Setup
+-----
 
 These examples are simple enough that I don’t expect you to be copying-and-pasting from this document into your own source code. But you may want to do that or you may be curious about my setup.
 
@@ -725,8 +675,8 @@ The source code that accompanies this document is in a single Eclipse project. I
 
 All of the Java code in this tutorial assumes you are executing against a local Alfresco repository running on localhost at port 8080. It also assumes you’ve deployed the SomeCo content model from Part 1.
 
-## Creating Content with OpenCMIS [creatingContentWithOpenCMIS]
-
+Creating Content with OpenCMIS
+------------------------------
 The code we're going to use for creating content is a port of the Alfresco Web Services based code from the first edition of this tutorial, which is, in turn, almost exactly the same code that comes with the Alfresco SDK Samples.
 
 The goal here is to create a runnable class that accepts arguments for the username, password, folder in which to create the content, type of content we're creating, and a name for the new content. I've left out the main method as well as the code that establishes the session, but you can see the full class in its entirety if you download the code that accompanies this document (See “Where to Find More Information”).
@@ -780,8 +730,8 @@ Running the Java snippet produces:
     Created: workspace://SpacesStore/4f1725a0-db29-4b0f-8fc8-ea625cf49356;1.0
     Content Length: 59
 
-## Creating Associations with OpenCMIS [creatingAssociationsWithOpenCMIS]
-
+Creating Associations with OpenCMIS
+-----------------------------------
 Now let's write a class to create the “related documents” association between two documents.
 
 The class accepts a source object ID and a target object ID as arguments. The code creates a map of properties containing the association type, source ID, and target ID. Note that the association type is preceded by “R:” when working with CMIS.
@@ -826,8 +776,8 @@ Running the Java snippet as above, assuming no other relationships exist on the 
 
 Now you can use the Alfresco Share Client to view the associations. Remember the share-config-custom.xml file? It says that any time the default form or edit metadata form is used for sc:whitepaper objects, the sc:relatedDocuments associations should be shown. Alternatively, the Node Browser, available in the Alfresco Share Administration Console, is a handy way to view associations.
 
-## Searching for Content with OpenCMIS [searchingForContentWithOpenCMIS]
-
+Searching for Content with OpenCMIS
+-----------------------------------
 Now that there are some instances of SomeCo’s custom types in the repository it is time to write code that will query for it. Alfresco 4.0 ships with two options for search. The first option is to use Lucene, which is the embedded search engine that has always shipped with Alfresco. The second option is to use Solr. If you upgraded an existing pre-4.0 installation and made no other changes, you are using Lucene. If you installed 4.0 using the installer, you are using Solr. You can switch from one to the other—refer to the documentation to find out how.
 
 Regardless of the search engine option you’ve chosen, content in the repository is automatically indexed by Alfresco. You can execute searches to find content based on full-text, property values, content types, and folder paths.
@@ -876,7 +826,7 @@ The doExamples() method then executes a series of example queries and dumps the 
 
 You might have noticed the getFolderId() call. The “in_folder” predicate expects an object ID. So the getFolderId() method does a query to find the object ID of the folder that was passed in as an argument to the class. It would be nice if you could do this in a single query, but you can’t.
 
-### Queries on Aspect-based Properties [queriesOnAspects]
+### Queries on Aspect-based Properties
 
 The next query looks for active content. This is when it starts to get interesting because the property that tracks whether or not a piece of content is active, “sc:isActive”, is defined on an aspect. The CMIS specification allows for joins in queries. But Alfresco does not support joins except in the special case of aspects. In Alfresco CMIS, joins are used to relate a base type to one of its aspects. That allows you to use an aspect-based property in a where clause.
     
@@ -886,7 +836,7 @@ The next query looks for active content. This is when it starts to get interesti
          d.cmis:objectId = w.cmis:objectId where w.sc:isActive = True";
     dumpQueryResults(getQueryResults(queryString));
 
-### Queries Across Multiple Aspects [queriesOnMultipleAspects]
+### Queries Across Multiple Aspects
 
 The next query shows another special case. In this example the goal is to find the active content that has a product property set to a specific value. That’s a challenge because the “sc:isActive” property is defined by the “sc:webable” aspect while the “sc:product” property is defined by a different aspect, “sc:productRelated”. Unfortunately, there is no good way to get these results in a single query. The solution used here is to write a method called getSubQueryResults() that accepts two queries as arguments. The method runs the first query and then builds an IN predicate using the object IDs that come back, which it appends to the second query before invoking it.
 
@@ -900,7 +850,7 @@ The next query shows another special case. In this example the goal is to find t
     	 "where w.sc:isActive = True";
     dumpQueryResults(getSubQueryResults(queryString1, queryString2));
 
-### Queries Using Dates [queriesUsingDates]
+### Queries Using Dates
 
 The last query uses the aspect join trick to do a date range search on instances of “sc:whitepaper” published between a specific range.
 
@@ -995,8 +945,8 @@ Your results will vary based on how much content you've created and the values y
     name:whitepaper (1325799336650)
     created:Jan 5, 2012 3:35:36 PM
 
-## Deleting Content with OpenCMIS [deletingContentWithOpenCMIS]
-
+Deleting Content with OpenCMIS
+------------------------------
 Now it is time to clean up after ourselves by deleting content from the repository. The delete logic is similar to the search logic except that instead of dumping the results, the CmisObject’s delete() method gets called on every hit that is returned. 
 
     Session session = getSession();
@@ -1032,14 +982,14 @@ Again, your results will vary based on the content you've created but in my repo
 
 You’ll notice that the System.out.println that displays the number of results is not shown in the output. That’s because I used the Atom Pub binding and the getTotalNumItems() call always returns -1 for that binding when run against Alfresco 4.0.c. You’ll find discrepencies like that between the two bindings.
 
-# Conclusion [conclusion]
-
+Conclusion
+==========
 This article has shown how to extend Alfresco's out-of-the-box content model with your own business-specific content types, how to expose those types, aspects, and properties in the Alfresco web clients, and how to work with content via OpenCMIS, the Java API for CMIS that is part of Apache Chemistry. I've thrown in a few recommendations that will hopefully save you some time or at least spark some discussion.
 
 There's plenty of additional data model-related customizations to cover in future articles including custom behaviors, custom metadata extractors, custom transformers, and custom data renderers.
 
-## Where to Find More Information [findingMoreInformation]
-
+Where to Find More Information
+------------------------------
 * The complete source code for these examples is available [here](http://ecmarchitect.com/images/articles/alfresco-content/alfresco-content-tutorial-project.zip) from [ecmarchitect.com](http://ecmarchitect.com).
 * The [Alfresco SDK](http://wiki.alfresco.com/wiki/Community_file_list_4.0.c) includes everything you need to compile Java that works with Alfresco.
 * Official documentation for both Enterprise and Community is available at [docs.alfresco.com](http://docs.alfresco.com/).
@@ -1052,18 +1002,11 @@ There's plenty of additional data model-related customizations to cover in futur
 * For help customizing the data dictionary, see the [Data Dictionary](http://wiki.alfresco.com/wiki/Data_Dictionary_Guide) wiki page.
 * If you are ready to cover new ground, try another [ecmarchitect.com](http://ecmarchitect.com) tutorial in the [Alfresco Developer Series](http://ecmarchitect.com/alfresco-developer-series).
 
-## About the Author [aboutTheAuthor]
+Appendix
+========
 
-Jeff Potts is the Chief Community Officer for Alfresco Software. Jeff has been a recognized and award-winning leader in the Alfresco community for many years. He has over 18 years of content management and collaboration experience, most of that having come from senior leadership positions in consulting organizations.
-
-Jeff has made many contributions to the Alfresco community since he started working with Alfresco in 2005. Examples range from code, to tutorials and informative blog posts, to code camps, meetups, and conference sessions. In 2008, Jeff wrote the Alfresco Developer Guide, the first developer-focused book on Alfresco. He has also been active in the Apache Chemistry project where he leads the development of cmislib, the Python API for CMIS.
-
-Read more at Jeff’s blog, [ecmarchitect.com](http://ecmarchitect.com).
-
-# Appendix [appendix]
-
-## Configuring the Custom Content Model in Alfresco Explorer [configuringExplorer]
-
+Configuring the Custom Content Model in Alfresco Explorer
+---------------------------------------------------------
 Alfresco Explorer is the original web client Alfresco shipped with the product. As such, it hasn’t seen much attention in recent releases. Still, for one reason or another, you might need to configure the Alfresco Explorer client for your custom content model, so let’s see how to do that.
 
 First, think about the web client and all of the places the content model customizations need to show up:
@@ -1086,7 +1029,7 @@ To customize the user interface, you’ll create a web-client-config-custom.xml 
 
 Let's look at each of the areas mentioned above in order to understand how the custom content model can be exposed in the user interface.
 
-### Property Sheet [propertySheetExplorer]
+### Property Sheet
 
 When a user looks at a property sheet for a piece of content stored as one of the custom types or with one of the custom aspects attached, the property sheet should show the custom properties as shown below:
 
@@ -1110,7 +1053,7 @@ To add properties to property sheets use the “aspect-name” evaluator for asp
 
 Note the display-label-id attribute. You could specify the label in this file by using the label attribute, but a better practice is to externalize the string so the interface could be localized if needed. At the end of this section you'll see where the localized strings reside.
 
-### Create Content/Add Content [createContentExplorer]
+### Create Content/Add Content
 
 When a user clicks Create or Add Content, the custom types should be a choice in the list of content types as shown below:
 
@@ -1126,7 +1069,7 @@ To add content types to the list of available types in the create content and ad
         </content-types>
     </config>
 
-### “Is sub-type” Criteria, Specialize Type Action, Add Aspect Action [configTypeExplorer]
+### “Is sub-type” Criteria, Specialize Type Action, Add Aspect Action
 
 When a user configures a rule on a space and uses content types or aspects as a criteria, or runs an action related to types or aspects, the appropriate list of types and aspects should be displayed as shown below:
 
@@ -1157,7 +1100,7 @@ These customizations are all part of the same config element. The “Action Wiza
         </specialise-types>		
     </config>	
 
-### Advanced Search [advancedSearchExplorer]
+### Advanced Search
 
 When a user runs an advanced search, they should be able to restrict search results to instances of our custom types and/or content with specific values for the properties of our custom types as shown below:
 
@@ -1180,7 +1123,7 @@ The “Advanced Search” config specifies which content types and properties ca
         </advanced-search>
     </config>
 
-### String Externalization [stringExternalExplorer]
+### String Externalization
 
 The last step in exposing our custom content model to the user interface is externalizing the strings used for labels in the interface. This is accomplished by creating a webclient.properties file in the extension directory. The properties file is a standard resource bundle. It holds key-value pairs. The keys match the “display-label-id” attribute values in the web-client-config-custom.xml file.
 
@@ -1194,15 +1137,15 @@ In our example, there are four properties that need labels. The entire contents 
     product=Product
     version=Version
 
-### Test the Web Client User Interface Customizations [testExplorer]
+### Test the Web Client User Interface Customizations
 
 Now that your web-client-custom-config.xml and webclient.properties files have been modified and placed in your extension directory, you should be able to restart Tomcat and see your changes. If you don't, check the Tomcat log for error messages, then re-check your model and web client files.
 
-## Using the Web Services API [usingWebServices]
+## Using the Web Services API
 
 If you can use CMIS, you should. Your code will be portable across other CMIS-compliant repositories and you’ll be able to leverage client libraries that are widely used and actively developed. If you can’t use CMIS and you have your heart set on using SOAP-based Web Services, you can use Alfresco’s Web Services API. This section includes examples of that API. Some of the examples in this section will look similar to the samples shipped with the SDK, but hopefully these provide a more complete end-to-end example.
 
-### Creating Content with Java Web Services [creatingContentWebServices]
+### Creating Content with Java Web Services
 
 First, let's create some content and add some aspects. The general gist is that we're going to:
 
@@ -1304,7 +1247,7 @@ The sample code that accompanies this tutorial includes a very basic Ant build f
 
     ant data-creator
 
-### Creating Associations with Java Web Services [creatingAssociationsWebServices]
+### Creating Associations with Java Web Services
 
 Now let's write a class to create the “related documents” association between two documents.
 The mechanics are essentially the same. We're going to set up and execute some CML. Our class will accept a source UUID and a target UUID as arguments which are passed in to the CMLCreateAssociation constructor, execute the CML, and then dump the results.
@@ -1344,7 +1287,7 @@ If you want to run this on your own using the Ant task, it would look something 
 
 Now you can use the Alfresco Explorer web client to view the associations. Remember the web-client-config-custom.xml file? It says that any time the property sheet for sc:doc or sc:whitepaper objects is viewed, the sc:relatedDocuments associations should be shown. Alternatively, the Node Browser, available in the Administration Console, is a handy way to view associations.
 
-### Searching for Content with Java Web Services [searchingContentWebServices]
+### Searching for Content with Java Web Services
 
 Let's write some code that will show several different examples of Alfresco queries using Lucene. Our code will:
 
@@ -1500,7 +1443,7 @@ Your results will vary based on how much content you've created and the values y
 
 There are a couple of other useful tidbits in this class that I've left out of this document such as how to use the ContentService to get the URL for the content and how the UUID for the root folder is retrieved. I encourage you to explore the code that accompanies this guide to see the class in its entirety.
 
-### Deleting Content with Java Web Services [deletingContentWebServices]
+### Deleting Content with Java Web Services
 
 Now it is time to clean up after ourselves by deleting content from the repository. Deleting is like searching except that instead of dumping the results, the code creates CMLDelete objects for each result, and then executes the CML to perform the delete. 
 
