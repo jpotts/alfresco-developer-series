@@ -1,16 +1,15 @@
-% Alfresco Developer: Intro to the Web Script Framework
-% October 2007
+% Introduction to the Web Script Framework
 % Jeff Potts
+% October, 2007
 
-# License
-
+License
+=======
 ![](./images/cc-by-sa-88x31.png)
 
 This work is licensed under the Creative Commons Attribution-ShareAlike 3.0 Unported License. To view a copy of this license, visit http://creativecommons.org/licenses/by-sa/3.0/ or send a letter to Creative Commons, 444 Castro Street, Suite 900, Mountain View, California, 94041, USA.
 
 Introduction 
-------------
-
+============
 This article is an introduction to the Alfresco Web Script Framework
 that became available with release 2.1 of the product.
 
@@ -48,7 +47,7 @@ don't have to dig around for the code we build upon in this article.
 Sound decent? Okay, let's get started.
 
 What is the Web Script Framework? 
----------------------------------
+=================================
 
 Content-centric applications, whether they are inside or outside the
 firewall, are becoming more and more componentized. I think of this as
@@ -177,17 +176,12 @@ RESTful API to:
 -   Enable a front-end web application written in any language that can
     talk HTTP to retrieve repository data in XML, JSON, or any other
     format or to persist data to the repository;
-
 -   Populate JSR-168 portlets;
-
 -   Capture user-contributed content/data;
-
 -   Interact with a business process (e.g., a JBPM workflow) through
     non-web client interfaces such as email;
-
 -   Create ATOM or RSS feeds for repository content or business process
     data; and
-
 -   Decompose the existing web client into smaller components which
     could potentially lend itself to being re-born in new and exciting
     ways!
@@ -222,8 +216,7 @@ Click through the links to see what is available out of the box. You'll
 notice that the tool itself is built using web scripts.
 
 Examples 
---------
-
+========
 Let's walk through some examples. We're going to start with a very
 simple Hello World web script. After that, we'll get progressively more
 complex until, at the end, we have a REST-based interface for creating,
@@ -231,15 +224,12 @@ reading, and deleting SomeCo whitepaper ratings.
 
 Hello World Example 
 -------------------
-
 Let's implement the most basic web script possible: A Hello World script
 that echoes back an argument. We'll need one descriptor and one
 FreeMarker template. Do the following:
 
 1.  Log in to Alfresco.
-
 2.  Navigate to /Company Home/Data Dictionary/Web Scripts Extensions.
-
 3.  Create a file called helloworld.get.desc.xml with the following
     content:
 
@@ -265,7 +255,6 @@ FreeMarker template. Do the following:
 5.  Go to <http://localhost:8080/alfresco/service/index> and press the
     Refresh button. If you then click the “List Web Scripts” link you
     should be able to find the web script you just defined.
-
 6.  Now go to <http://localhost:8080/alfresco/service/helloworld?name=Jeff>. You
     should see:
 
@@ -310,7 +299,6 @@ and add one.
 3.  Go to <http://localhost:8080/alfresco/service/index> and press the
     Refresh button. This is required because you added a controller that
     the web script run-time didn't know about.
-
 4.  Now go to your web browser and enter the same URL from the first
     example which was <http://localhost:8080/alfresco/service/helloworld?name=Jeff>. You
     should see:
@@ -330,7 +318,7 @@ the controller will have more work to do and in one case, we'll use Java
 instead of JavaScript for the controller.
 
 SomeCo Whitepaper User-contributed Ratings Examples 
----------------------------------------------------
+===================================================
 
 We want to create a REST API that front-end developers can use to find
 whitepapers and ratings as well as post new ratings. Before we dive in,
@@ -343,12 +331,9 @@ it probably makes sense to rough out the API.
 | /someco/rating?id={id}&rating={rating}&user={user} | POST | Creates a new rating for the specified whitepaper by passing in a rating value and the user who posted the rating. | HTML, JSON |
 | /someco/rating?id={id} | DELETE | Deletes all ratings for a specified whitepaper. | HTML |
 
-*Table 1: Planned ratings API*
+Table: Planned ratings API
 
-![](images/whitepaper-index.png)
-
-*Illustration 1: The index of whitepapers uses an AJAX call to retrieve
-whitepaper metadata and ratings.*
+![The index of whitepapers uses an AJAX call to retrieve whitepaper metadata and ratings](images/whitepaper-index.png)
 
 When this API is in place, front-end developers can incorporate
 whitepapers and user-contributed ratings into the SomeCo web site. The
@@ -357,10 +342,7 @@ to query for whitepaper and ratings data. It looks like the folks at
 SomeCo have shamelessly ripped off the Optaros publications section.
 They didn't even bother to change the logo.
 
-![](images/whitepaper-detail.png)
-
-*Illustration 2: The detail page also uses an AJAX call and includes the
-same ratings widget as well as a download link*
+![The detail page also uses an AJAX call and includes the same ratings widget as well as a download link](images/whitepaper-detail.png)
 
 You can't tell from the screenshots, but the ratings widget is
 clickable. When clicked it sends an asynchronous post to the
@@ -390,7 +372,7 @@ service and JSON will make it easy for code on the front-end to process
 the list. This will require four files: one descriptor, one JavaScript
 controller, and two FreeMarker templates—one for each format.
 
-**Sidebar: Enabling a subset of whitepapers for web display**
+### Sidebar: Enabling a subset of whitepapers for web display
 
 The real-world solution this example is based on uses UI actions to
 enable and disable the “sc:isActive” flag. An Evaluator class hides or
@@ -404,6 +386,8 @@ whitepaper service to filter the list based on the isActive flag, the
 Lucene query in the whitepaper.get.js file needs to be appended with
 “@sc\\\\:isActive:true” to show only active whitepapers. I left this
 functionality out of the example because it isn't core to the topic.
+
+### Organizing your code
 
 Before we start coding, let's talk a bit about organization. First,
 packages. The Web Script Framework allows us to organize script assets
@@ -452,7 +436,7 @@ The Alfresco wiki documents the search order for web scripts (See “Where
 to find more information” at the end of this article for a list of
 references).
 
-**Step 1: The descriptor**
+### Step 1: The descriptor
 
 With that, we should be good to go. The first step is to create the
 descriptor file. It should be named whitepapers.get.desc.xml and should
@@ -503,6 +487,8 @@ The transaction element specifies the level of transaction required by
 the script. Listing whitepapers doesn't need a transaction so we've got
 it set to “none”. Other possible values are “required” and
 “requiresnew”.
+
+### Step 2: The Controller
 
 Next, we need a controller. Create a file called whitepapers.get.js with
 the following content:
@@ -586,6 +572,8 @@ below:
 The function simply retrieves the averageRating and ratingCount
 properties from the specified node and returns them in a rating object.
 The full source for rating.js is in the accompanying source code.
+
+### Step 3: The view
 
 Assuming there are items in the search results, we'll need FreeMarker
 templates to process them. Let's create the HTML response template
@@ -706,10 +694,11 @@ append “&guest=true” to the URL like this:
 If you forget the “.html” you'll get a JSON response because we set that
 to the default.
 
-![](images/whitepapers.png)
 If all goes well you should see something similar to the figure below:
 
-**Debugging**
+![The whitepapers list output by the web script](images/whitepapers.png)
+
+### Debugging
 
 Did it work? If not, it's time to debug. The first thing you're going to
 want to do is to go into log4j.properties and set
@@ -808,7 +797,7 @@ write the Java bean that functions as our controller. The third step is
 to configure the controller bean via Spring so that Alfresco knows to
 invoke it when the web script is called.
 
-**Step One: Business logic**
+### Step 1: Business logic
 
 Add the following method to the com.someco.behavior.Rating class we
 created in the previous article.
@@ -869,19 +858,14 @@ created in the previous article.
 This is a bit painful to look at but basically what's going on is:
 
 -   If the current user is not admin, the current user is set to admin
-
 -   A new transaction is started
-
 -   If the node doesn't yet have the rateable aspect, it is added
-
 -   The rating and rater properties are set
-
 -   The transaction is committed
-
 -   If the current user was switched to admin, the current user is
     switched back to whomever it was before the switch to admin
 
-**Step Two: Web script controller bean**
+### Step 2: Web script controller bean
 
 With the create() method in place, all we have to do is write a Java
 class that grabs the id, rating, and rater arguments and calls the
@@ -952,7 +936,7 @@ The controller gets the Rating class through Spring dependency
 injection. We'll configure that in our Spring config, which is the next
 step.
 
-**Step Three: Spring config for the Web script controller bean**
+### Step 3: Spring config for the Web script controller bean
 
 The following shows the contents of someco-scripts-context.xml. The name
 of the file isn't important, but it must end with \*context.xml.
@@ -998,7 +982,7 @@ First, let's see what it looks like when we call
 /someco/rating.html/id=someid. The figure below shows a call when the
 whitepaper node has 13 ratings and an average of 1.923.
 
-![](images/rating-html.png)
+![Displaying the ratings data for a specific node](images/rating-html.png)
 
 The purpose of the rating widget is two-fold. First, it graphically
 displays the average rating for a whitepaper. Second, each star in the
@@ -1143,20 +1127,17 @@ can handle this depending on your situation.
     but what it is really doing is calling your web script which returns
     JSON. The script tags can be output dynamically through
     document.write.
-
 -   **Use a proxy**. Servers aren't subject to the browser's security
     constraints. You can easily write your own Java servlet that acts as
     a reverse proxy. AJAX calls go against the proxy and pass in the
     “real” URL as an argument. The servlet then invokes the URL and
     returns the results.
-
 -   **Use a callback mechanism**. Alfresco claims to have a callback
     mechanism built in to the web script run-time. The way it is
     supposed to work is that you pass in a function name as an argument
     to the web script like “&alf\_callback=someFunction”. The function
     is supposed to get called when the page is loaded. I couldn't get it
     working and ended up filing a Jira ticket.
-
 -   **Deploy everything to the same server**. This is the least likely
     scenario to work in a production implementation but it's the one I
     chose for this article so we wouldn't have to spend a lot of time on
@@ -1173,9 +1154,7 @@ Deploying and Testing
 To run the sample as-is, all you have to do is:
 
 1.  Import the web-script-article-project.zip file into Eclipse.
-
 2.  Change build.properties to match your environment.
-
 3.  Run the default Ant task.
 
 The default Ant task will compile all necessary code, JAR it up, zip up
@@ -1196,13 +1175,9 @@ article without any problems.
 In case you are curious, my environment is:
 
 -   Ubuntu Dapper Drake
-
 -   MySQL 4.1 (with version 5.0.3 of the JDBC driver)
-
 -   Java 1.5.0\_12
-
 -   Tomcat 5.5.x
-
 -   Alfresco 2.1.0 Enterprise, WAR-only distribution
 
 Obviously, other operating systems, databases, and application servers
@@ -1210,8 +1185,7 @@ will work as well. Web Scripts, however, only work starting with
 Alfresco 2.1.
 
 Conclusion 
-----------
-
+==========
 This article has given you an introduction to the Alfresco Web Script
 Framework. We began with a very simple Hello World script and then
 gradually moved to more complex examples which culminated in a REST API
@@ -1231,92 +1205,61 @@ those topics on your own. Maybe you'll even blog about your experience.
 If so, or if you have any other feedback, please let me know. I'd love
 to hear from you.
 
-### Where to find more information 
-
+Where to find more information 
+==============================
 -   The complete source code that accompanies this article is available
     [here](http://ecmarchitect.com/images/articles/alfresco-webscripts/web-script-article-project.zip)
     from [ecmarchitect.com](http://ecmarchitect.com/).
-
 -   You may also enjoy previous articles in the Alfresco Developer
     series at ecmarchitect.com:
-
     -   [“Implementing custom
         behaviors”](http://ecmarchitect.com/archives/2007/09/26/770),
         September, 2007.
-
     -   “[Working with Custom Content
         Types](http://ecmarchitect.com/images/articles/alfresco-content/content-article.pdf)”,
         June, 2007.
-
     -   [“Developing custom
         actions”](http://ecmarchitect.com/archives/2007/01/10/732),
         January, 2007.
-
 -   [Alfresco wiki pages related to this
     topic:](http://wiki.alfresco.com/wiki/Web_Scripts)
-
     -   [Alfresco Web
         Scripts](http://wiki.alfresco.com/wiki/Web_Scripts) wiki page
-
     -   [Alfresco Web Script
         Runtimes](http://wiki.alfresco.com/wiki/Web_Script_Runtimes)
         wiki page
-
     -   [Alfresco JavaScript
         API](http://wiki.alfresco.com/wiki/JavaScript_API) wiki page
-
     -   [Alfresco Template
         Guide](http://wiki.alfresco.com/wiki/Template_Guide) (FreeMarker
         info) wiki page
-
     -   For deployment help, see the [Client Configuration
         Guide](http://wiki.alfresco.com/wiki/Web_Client_Configuration_Guide)
         and [Packaging and Deploying
         Extensions](http://wiki.alfresco.com/wiki/Packaging_And_Deploying_Extensions)
         in the Alfresco wiki.
-
     -   For general development help, see the [Developer
         Guide](http://wiki.alfresco.com/wiki/Developer_Guide).
-
     -   For help customizing the data dictionary, see the [Data
         Dictionary](http://wiki.alfresco.com/wiki/Data_Dictionary_Guide)
         wiki page.
-
 -   Luis Sala's presentation on Web Scripts at the West Coast
     Alfresco+Liferay Meetup along with a podcast of the audio portion of
     the presentation is available at [Luis' Fresh Talk
     blog](http://blogs.alfresco.com/luissala/2007/09/12/alfresco-and-liferay-meetup-podcast-1-web-scripts/).
-
 -   Learn more about JSON at [json.org](http://www.json.org/) and
     FreeMarker at
     [freemarker.sourceforge.net](http://freemarker.sourceforge.net/).
-
 -   The [jMaki Project](https://ajax.dev.java.net/download.html) is a
     framework for building Ajax-enabled, Java web applications. Included
     as part of it is a proxy you can use to work around the cross-domain
     scripting limitation if you don't want to write your own.
-
 -   The JSR-168 Portlet Specification is available on the [Java
     Community Process
     site](http://jcp.org/aboutJava/communityprocess/final/jsr168/index.html).
 
-### About the Author 
-
-Jeff Potts is the Chief Community Officer for Alfresco Software. Jeff
-has been a recognized and award-winning leader in the Alfresco community
-for many years. He has over 18 years of content management and
-collaboration experience, most of that having come from senior
-leadership positions in consulting organizations.
-
-Jeff has made many contributions to the Alfresco community since he
-started working with Alfresco in 2005. Examples range from code, to
-tutorials and informative blog posts, to code camps, meetups, and
-conference sessions. In 2008, Jeff wrote the Alfresco Developer Guide,
-the first developer-focused book on Alfresco. He has also been active in
-the Apache Chemistry project where he leads the development of cmislib,
-the Python API for CMIS.
-
-Read more at Jeff's blog, [ecmarchitect.com](http://ecmarchitect.com/).
+Footnotes
+=========
 
 [1](#sdfootnote1anc)It isn't required that you use the “Web Scripts
 Extensions” folder in the repository. I did it because it seemed
@@ -1328,7 +1271,7 @@ this reason, if you want others to be able to override your scripts, use
 the “Web Scripts” folder rather than “Web Scripts Extensions”. See the
 Alfresco wiki for more on web script folder search order.
 
-[0](#sdfootnote2anc)I used the code at
+[2](#sdfootnote2anc)I used the code at
 [http://www.progressive-coding.com/tutorial.php?id=6](http://www.progressive-coding.com/tutorial.php?id=6)
 as the starting point for the rating widget. Most of it is unchanged
 with the exception of changing the ratings from being 0-indexed to being
