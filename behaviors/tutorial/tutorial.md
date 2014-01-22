@@ -1,15 +1,15 @@
 % Implementing Custom Behaviors in Alfresco
 % Jeff Potts
+% September, 2007
 
-# License
-
+License
+=======
 ![](./images/cc-by-sa-88x31.png)
 
 This work is licensed under the Creative Commons Attribution-ShareAlike 3.0 Unported License. To view a copy of this license, visit http://creativecommons.org/licenses/by-sa/3.0/ or send a letter to Creative Commons, 444 Castro Street, Suite 900, Mountain View, California, 94041, USA.
 
 Introduction 
-------------
-
+============
 This article discusses how to write your own custom behavior code in
 Java or JavaScript and then bind that code to node events or “policies”.
 
@@ -55,8 +55,7 @@ on [ecmarchitect.com](http://ecmarchitect.com/) if you aren't already
 familiar with how to extend Alfresco's content model.
 
 Example: User ratings 
----------------------
-
+=====================
 Recall from the Custom Content Types article that we created a custom
 type called a Whitepaper for a fictitious company called SomeCo. We used
 an aspect called “webable” that was attached to content objects we
@@ -79,11 +78,10 @@ association. We could create a “rateable” aspect that would define the
 association as well as a property to store the average rating for that
 whitepaper.
 
-![](./images/behavior-article_html_m6f77ecf9.png)
-*Drawing 1: SomeCo's content model modified to support ratings*
-
-Drawing 1 shows the original custom content model with these
+The image below shows the original custom content model with these
 enhancements.
+
+![SomeCo's content model modified to support ratings](./images/behavior-article_html_m6f77ecf9.png)
 
 That takes care of the data model, but where should we put the code that
 computes the average? One way to handle it would be to write an action
@@ -102,8 +100,8 @@ bind it to the appropriate policies on the rating content type. Any time
 a rating gets created (or deleted), it will know how to find its parent
 (the whitepaper) and recalculate the average.
 
-### What can trigger a behavior? 
-
+What can trigger a behavior?
+----------------------------
 So the rating content type will be bound to business logic that knows
 how to compute the overall average rating for a whitepaper. But what
 will trigger that logic? The answer is that there are a bunch of
@@ -154,7 +152,7 @@ OnContentUpdatePolicy.
 | | onCreateVersion |
 | | calculateVersionLabel |
 
-*Table 1: Policies available for behavior binding*
+Table: Policies available for behavior binding
 
 Which policy shall we use? We need to recalculate a whitepaper's rating
 either when a new rating is created or when a rating is deleted. One
@@ -165,24 +163,21 @@ association type to see if it we wanted to take any action because there
 could be other child associations besides ratings. Instead, we'll bind
 to the rating node's onCreateNode and onDeleteNode policies.
 
-### Java or JavaScript? 
-
+Java or JavaScript?
+-------------------
 There are two options for writing the code for the behavior: Java or
 JavaScript. The decision as to which one to use depends on the standards
 you've settled on for the solution you are building. In this article,
 we'll implement the ratings example using Java but I'll also show you
 how to use JavaScript as an alternative.
 
-### Implementing and deploying the custom behavior 
-
+Implementing and deploying the custom behavior 
+----------------------------------------------
 Before we start, a couple of notes about my setup:
 
 -   Ubuntu Dapper Drake (I know, I know. Past due for an upgrade).
-
 -   MySQL 4.1
-
 -   Tomcat 5.5.x
-
 -   Alfresco 2.1.0 Enterprise, WAR-only distribution
 
 Obviously, other operating systems, databases, and application servers
@@ -196,28 +191,24 @@ run fine on Alfresco 2.1.0 with no changes needed. You don't need to
 download the code from that article for the code in this article to
 work. The code supplied with this article is a superset.
 
-### Java Example 
-
+Java Example
+------------
 Let's do the Java example first. Here are the steps we are going to
 follow:
 
 1.  Extend the SomeCo model defined in the previous article with our new
     rateable aspect and rating type (and all the UI config steps that go
     with it).
-
 2.  Write server-side JavaScript that creates test ratings.
-
 3.  Write the custom behavior bean and bind it to the appropriate
     policies.
-
 4.  Configure a Spring bean to initialize our behavior class and pass in
     any dependencies.
-
 5.  Build, deploy, restart and test.
 
 Let's get started.
 
-**Extend the model**
+### Extend the model
 
 Open the scModel.xml file we created in the previous article. We need to
 add a new type and a new aspect. Insert the “scr:rating” type definition
@@ -237,8 +228,6 @@ after the existing “sc:whitepaper” definiton:
             </property>
         </properties>
     </type>
-
-*Listing 1: The rating type in the scModel.xml file.*
 
 Note that scr:rating inherits from sys:base. That's because we don't
 intend to store any content in a rating object, only properties.
@@ -275,8 +264,6 @@ to use the ratings functionality. That's the beauty of aspects).
         </associations>
     </aspect>
 
-*Listing 2: The rateable aspect in the scModel.xml file.*
-
 The rateable properties and associations need to show up on property
 sheets for objects with the aspect so add the following to
 web-client-config-custom.xml:
@@ -290,9 +277,6 @@ web-client-config-custom.xml:
             read-only="false" />
         </property-sheet>
     </config>
-
-*Listing 3: Updated web-client-config-custom.xml file to show rateable
-aspect properties.*
 
 The rateable aspect needs to show up on the “add aspect” list so add the
 rateable aspect to the existing list of SomeCo custom aspects in
@@ -311,16 +295,11 @@ unchanged from the previous article:
         <!-- Remaining config is unchanged -->
     </config>
 
-*Listing 4: Updated web-client-config-custom.xml file to add rateable to
-aspect list.*
-
 The label IDs need values in the webclient.properties file:
 
     #scr:rateable
     average=Avg Rating
     ratings=Ratings
-
-*Listing 5: Updated webclient.properties file for externalized strings.*
 
 Recall that in the previous article we decided it was a good idea to use
 a class for our model to store constants such as the names of types,
@@ -333,12 +312,10 @@ to the model.
     public static final String PROP_RATING = "rating";
     public static final String PROP_AVERAGE_RATING = "averageRating";
 
-*Listing 6: Updated SomeCoModel with new constants*
-
 That's all we need to do for the model. After restarting Alfresco you
 should see the aspect in the “Add Aspect” action configuration wizard.
 
-**Write a server-side JavaScript file that creates test data**
+### Write a server-side JavaScript file that creates test data
 
 In the last article we used Java to test out the model by writing code
 against the Alfresco Web Services API. This time, let's use JavaScript
@@ -372,9 +349,6 @@ following content:
     
     logger.log("Ratings node saved.");
 
-*Listing 7: The addTestRating.js script can be executed to create test
-rating nodes.*
-
 Now create a piece of content in your repository and then use “Run
 Action” on that piece of content to execute the addTestRating.js script.
 Every time you run it, a new rating (with a random value) will be
@@ -387,7 +361,7 @@ behavior code is in place.
 Note, if you want the log messages to show up you have to set
 log4j.logger.org.alfresco.repo.jscript to DEBUG in log4j.properties.
 
-**Write the custom behavior**
+### Write the custom behavior
 
 The custom behavior is implemented as a Java class that implements the
 interfaces that correspond to the policies to which we want to bind. In
@@ -398,8 +372,6 @@ NodeServicePolicies.OnCreateNodePolicy so the class declaration is:
     public class Rating
     implements NodeServicePolicies.OnDeleteNodePolicy,
     NodeServicePolicies.OnCreateNodePolicy {
-    
-*Listing 8: The class declaration for the Rating bean.*
     
 The class has two dependencies that Spring will handle for us. One is
 the NodeService which will be used in the average calculation logic and
@@ -413,8 +385,6 @@ the policies.
     // Behaviours
     private Behaviour onCreateNode;
     private Behaviour onDeleteNode;
-
-*Listing 9: Dependency and behavior declaration in the Rating bean.*
 
 At some point Alfresco has to know that the behavior needs to be bound
 to a policy. In the JavaScript example we'll see how to do that in a
@@ -443,9 +413,6 @@ Spring loads the bean.
         );
 
     }
-
-*Listing 10: The Rating bean's init method binds the bean's methods to
-specific policies.*
 
 The first thing to notice here is that you can decide when the behavior
 should be invoked by specifying the appropriate NotificationFrequency.
@@ -478,9 +445,6 @@ simply call computeAverage and pass in the rating node reference.
         computeAverage(childAssocRef);
     
     }
-
-*Listing 11: The onCreateNode and onDeleteNode methods implement the
-behavior.*
 
 The computeAverage method asks the child (the rating) for its parent
 node reference (the whitepaper, for example) and asks the parent for a
@@ -527,13 +491,10 @@ average, and sets the average property on the content.
     
     }
 
-*Listing 12: The computeAverage method calculates the average rating for
-a piece of content.*
-
 The only items remaining, then, are the getters and setters for the
 NodeService and PolicyComponents, but I'll leave those out here.
 
-**Configure a Spring bean**
+### Configure a Spring bean
 
 The last step before we test is to configure the behavior class as a
 Spring bean. The bean config can go in any context file. If you had
@@ -551,10 +512,7 @@ before the closing “\</beans\>” tag:
         </property>
     </bean>
 
-*Listing 13: The updated someco-model-context.xml file includes the
-Spring bean config for the Rating behavior bean.*
-
-**Build, deploy, restart and test**
+### Build, deploy, restart and test
 
 Modify the build.properties file to match your environment, then use Ant
 to run the Deploy target. The code will be compiled, JAR'd, and unzipped
@@ -574,8 +532,8 @@ it by following along, set com.someco to DEBUG in log4j.properties to
 display the logger messages. I've omitted them in the code samples for
 brevity.
 
-### JavaScript Example 
-
+JavaScript Example
+------------------
 We've seen how to implement the average rating calculation behavior in
 Java, but what if you wanted to implement the behavior using JavaScript
 instead? Behaviors can be implemented in JavaScript and bound to
@@ -585,13 +543,10 @@ JavaScript.
 The high-level steps we're going to follow are:
 
 1.  Write the custom behavior as one or more server-side scripts.
-
-2.  Configure a Spring bean to bind the scripts to the appropriate
-    policies.
-
+2.  Configure a Spring bean to bind the scripts to the appropriate policies.
 3.  Deploy, restart and test.
 
-**Write the custom behavior as a server-side JavaScript**
+### Write the custom behavior as a server-side JavaScript
 
 For this example I'm going to shamelessly steal a JavaScript file that
 is part of the Alfresco source and then tweak it. The original script is
@@ -651,9 +606,6 @@ with the following content:
         }    
     }
 
-*Listing 14: The onCreateRating.js is invoked when a new rating node is
-created.*
-
 The code for onDeleteRating.js is identical with the exception of the
 behavior name and the number of arguments expected (2 instead of 1) so I
 won't duplicate the listing here.
@@ -701,14 +653,10 @@ follows:
     
     }
 
-*Listing 15: The rating.js file contains the shared computeAverage
-function.*
-
 As you can see, this is the same logic we used in the Java example
 modified to follow the Alfresco JavaScript API syntax.
 
-**Configure a Spring bean to bind the script to the appropriate
-policies**
+### Configure a Spring bean to bind the script to the appropriate policies
 
 In the Java example, we used an init method on the Rating bean to make
 calls to the binding method of the PolicyComponent. The JavaScript
@@ -741,11 +689,7 @@ JavaScript behavior code—one for the create and one for the delete:
         </property>
     </bean>
 
-*Listing 16: The Spring bean config used to bind the onCreateNode policy
-to the onCreateRating.js script. The config for the onDeleteNode policy
-is not shown.*
-
-**Deploy, restart and test**
+### Deploy, restart and test
 
 If you haven't already, make sure you've set
 log4j.logger.org.alfresco.repo.jscript to DEBUG in log4j.properties or
@@ -760,8 +704,7 @@ onDeleteRating JavaScript. In either case, the average rating should get
 calculated as it did with the Java example.
 
 Conclusion 
-----------
-
+==========
 This article has shown how to bind custom behavior to Alfresco policies.
 Specifically, we implemented a custom “rateable” aspect and a custom
 “rating” type that can be used to persist user ratings of content stored
@@ -770,49 +713,26 @@ the average rating for a piece of content any time a rating is created
 or deleted. The article showed how to implement the average rating
 calculation behavior in Java as well as JavaScript.
 
-### Where to find more information 
-
+Where to find more information 
+==============================
 -   The complete source code that accompanies this article is available
     [here](http://ecmarchitect.com/images/articles/alfresco-behavior/behavior-article-project.zip)
     from [ecmarchitect.com](http://ecmarchitect.com/).
-
 -   The previous article that discusses custom content models is called
     “[Working with Custom Content
     Types](http://ecmarchitect.com/images/articles/alfresco-content/content-article.pdf)”
     and is available at [ecmarchitect.com.](http://ecmarchitect.com/)
-
 -   The [Alfresco SDK](http://dev.alfresco.com/) comes with a custom
     behavior example that's a little more complex than the one presented
     here. The “SDK Custom Aspect” project implements a “hit counter”
     that increments every time a piece of content is read.
-
 -   For deployment help, see the [Client Configuration
     Guide](http://wiki.alfresco.com/wiki/Web_Client_Configuration_Guide)
     and [Packaging and Deploying
     Extensions](http://wiki.alfresco.com/wiki/Packaging_And_Deploying_Extensions)
     in the Alfresco wiki.
-
 -   For general development help, see the [Developer
     Guide](http://wiki.alfresco.com/wiki/Developer_Guide).
-
 -   For help customizing the data dictionary, see the [Data
     Dictionary](http://wiki.alfresco.com/wiki/Data_Dictionary_Guide)
     wiki page.
-
-### About the Author 
-
-Jeff Potts is the Chief Community Officer for Alfresco Software. Jeff
-has been a recognized and award-winning leader in the Alfresco community
-for many years. He has over 18 years of content management and
-collaboration experience, most of that having come from senior
-leadership positions in consulting organizations.
-
-Jeff has made many contributions to the Alfresco community since he
-started working with Alfresco in 2005. Examples range from code, to
-tutorials and informative blog posts, to code camps, meetups, and
-conference sessions. In 2008, Jeff wrote the Alfresco Developer Guide,
-the first developer-focused book on Alfresco. He has also been active in
-the Apache Chemistry project where he leads the development of cmislib,
-the Python API for CMIS.
-
-Read more at Jeff's blog, [ecmarchitect.com](http://ecmarchitect.com/).
