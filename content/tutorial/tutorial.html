@@ -30,7 +30,7 @@ Architect | Alfresco Developer Tutorials</title>
 <div id="header">
 <h1 class="entry-title">Working With Custom Content Types in Alfresco</h1>
 <h2 class="author">Jeff Potts</h2>
-<h3 class="date">January, 2014</h3>
+<h3 class="date">January, 2012</h3>
 </div>
 <div id="TOC">
 <ul>
@@ -1121,10 +1121,9 @@ ContentServiceSoapBindingStub contentService = WebServiceFactory.getContentServi
 ContentFormat contentFormat = new ContentFormat(&quot;text/plain&quot;, &quot;UTF-8&quot;);
 String docText = &quot;This is a sample &quot; + getContentType() + &quot; document called &quot; + getContentName();
 Content docContentRef = contentService.write(docRef, Constants.PROP_CONTENT, docText.getBytes(), contentFormat);
-System.out.println(&quot;Content Length: &quot; + docContentRef.getLength());
-Listing 44: Snippet from SomeCoDataCreator.java
-Running the Java snippet produces:
-Command = create; Source = none; Destination = b901941e-12d3-11dc-9bf3-e998e07a8da1
+System.out.println(&quot;Content Length: &quot; + docContentRef.getLength());</code></pre>
+<p>Running the Java snippet produces:</p>
+<pre><code>Command = create; Source = none; Destination = b901941e-12d3-11dc-9bf3-e998e07a8da1
 Command = addAspect; Source = b901941e-12d3-11dc-9bf3-e998e07a8da1; Destination = b901941e-12d3-11dc-9bf3-e998e07a8da1
 Command = addAspect; Source = b901941e-12d3-11dc-9bf3-e998e07a8da1; Destination = b901941e-12d3-11dc-9bf3-e998e07a8da1
 Content Length: 26</code></pre>

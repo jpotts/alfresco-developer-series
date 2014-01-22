@@ -1,6 +1,6 @@
 % Working With Custom Content Types in Alfresco
 % Jeff Potts
-% January, 2014
+% January, 2012
 
 About the Second Edition
 ========================
@@ -1236,8 +1236,9 @@ The last step writes some text content to the newly-created content node. This e
     String docText = "This is a sample " + getContentType() + " document called " + getContentName();
     Content docContentRef = contentService.write(docRef, Constants.PROP_CONTENT, docText.getBytes(), contentFormat);
     System.out.println("Content Length: " + docContentRef.getLength());
-    Listing 44: Snippet from SomeCoDataCreator.java
-    Running the Java snippet produces:
+
+Running the Java snippet produces:
+
     Command = create; Source = none; Destination = b901941e-12d3-11dc-9bf3-e998e07a8da1
     Command = addAspect; Source = b901941e-12d3-11dc-9bf3-e998e07a8da1; Destination = b901941e-12d3-11dc-9bf3-e998e07a8da1
     Command = addAspect; Source = b901941e-12d3-11dc-9bf3-e998e07a8da1; Destination = b901941e-12d3-11dc-9bf3-e998e07a8da1

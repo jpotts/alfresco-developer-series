@@ -1,8 +1,9 @@
-Title: Creating Custom Actions in Alfresco
-Author: Jeff Potts
+% Creating Custom Actions in Alfresco
+% Jeff Potts
+% January, 2012
 
-# About the Second Edition 
-
+About the Second Edition
+========================
 This tutorial was originally written in January of 2007. I think it was
 actually the first Alfresco tutorial I wrote even though I think of
 “Custom Content Types” as the logical place to start from the
@@ -42,64 +43,14 @@ Have fun!
 
 Jeff
 
-# License
-
+License
+=======
 ![](./images/cc-by-sa-88x31.png)
 
 This work is licensed under the Creative Commons Attribution-ShareAlike 3.0 Unported License. To view a copy of this license, visit http://creativecommons.org/licenses/by-sa/3.0/ or send a letter to Creative Commons, 444 Castro Street, Suite 900, Mountain View, California, 94041, USA.
 
-# Table of Contents
-
-* [Introduction][introduction]
-
-* [Setup][setup]
-
-* [Part 1: Implementing an Action][part1]
-    * [What is an Action?][whatIsAnAction]
-        * [Example 1: Move Replaced][example1]
-        * [Example 2: Set Web Flag][example2]
-    * [Implementing the Move Replaced Action][implementingTheMoveReplacedAction]
-        * [Step 1: Write the action executer class][writeTheActionExecuterClass]
-        * [Step 2: Configure the action in Spring][configureTheActionInSpring]
-    * [Implementing the Set Web Flag action][implementingTheSetWebFlagAction]
-        * [Step 1: Write the SetWebFlag action executer class][writeTheSetWebFlagActionExecuterClass]
-        * [Step 2: Configure the action in Spring][configureTheSetWebFlagActionInSpring]
-    * [Java versus Server-side JavaScript][JavaVersusServerSideJavaScript]
-
-* [Part 2: Configuring the Action's Front-End in Share][configuringTheActionsFrontEndInShare]
-    * [Configuring the Replaceable Aspect in Share][configuringTheReplaceableAspectInShare]
-    * [Configuring the Move Replaced Rule Action in Share][configuringTheMoveReplacedRuleActionInShare]
-        * [Step 1: Specify the custom client-side component and set the action order][specifyTheCustomClientSideComponent]
-        * [Step 2: Add a reference to the custom client-side JavaScript file to the head][addReferenceToTheCustomClientSideJavaScript]
-        * [Step 3: Implement the custom client-side JavaScript component][implementTheCustomClientSideJavaScript]
-    * [Configuring the Set Web Flag UI Action in Share][configuringTheSetWebFlagUIActionInShare]
-        * [Step 1: Create two new repository tier actions][createTwoNewRepositoryTierActions]
-        * [Step 2: Update share-config-custom.xml with the action configuration][updateShareConfigWithActionConfig]
-        * [Step 3: Create icons and localize the strings][createIconsAndLocalizeTheStrings]
-    * [Finishing Touches: Evaluators & Indicators][finishingTouches]
-        * [Step 1: Declare a new evaluator in Spring config][declareANewEvaluator]
-        * [Step 2: Update the action config in share-config-custom.xml][updateTheActionConfigInShareConfig]
-        * [Step 3: Update the share-config-custom.xml file to show a document library indicator][showADocumentLibraryIndicator]
-    * [Deploy & Test][deployAndTestShare]
-
-* [Conclusion][conclusion]
-    * [Where to find more information][whereToFindMoreInfo]
-    * [About the Author][aboutTheAuthor]
-
-* [Appendix][appendix]
-    * [Configuring the Replaceable Aspect in Explorer][configuringTheReplaceableAspectInExplorer]
-    * [Configuring the Move Replaced Rule Action in Explorer][configuringTheMoveReplacedRuleActionInExplorer]
-        * [Step 1: Create an action handler class][createAnActionHandlerClass]
-        * [Step 2: Create a corresponding JSP page][createACorrespondingJSPPage]
-        * [Step 3: Localize the Move Replaced Action][localizeTheMoveReplacedActionForExplorer]
-    * [Configuring the Set Web Flag UI Action in Explorer][configuringTheSetWebFlagActionInExplorer]
-        * [Step 1: Create a JSF-managed Bean][createJSFManagedBean]
-        * [Step 2: Update web-client-config-custom.xml with the new UI action][updateWebClientConfigCustomWithNewAction]
-        * [Step 3: Localize the Set Web Flag action][localizeTheSetWebFlagActionForExplorer]
-    * [Configuring the Evaluator to Show/Hide the Set Web Flag UI Action in Explorer][configuringShowHideInExplorer]
-
-## Introduction [introduction]
-
+Introduction
+------------
 Alfresco is a flexible platform for developing content management
 applications. Clients have several options to consider when selecting a
 user interface approach. Alfresco comes with two web clients that can be
@@ -135,11 +86,9 @@ Actions are useful when:
 
 -   You want to define one or more operations that can be executed
     repeatedly
-
 -   You want to make it easy for end-users to invoke common operations,
     either by clicking a menu item or by configuring a rule on a folder
     that will execute the operations automatically
-
 -   You want to perform one or more operations on a schedule (which
     isn't covered in this document)
 
@@ -155,19 +104,15 @@ Alfresco Explorer web client. This edition focuses on the Alfresco Share
 web client. The Alfresco Explorer sections have been moved to the
 Appendix if you need them.
 
-## Setup [setup]
-
+Setup
+-----
 Before getting too far down the road, here are a couple of notes about
 my setup:
 
 -   Mac OS X Lion 10.7.2
-
 -   MySQL 5.1.60 (Macports)
-
 -   Tomcat 6.0.32
-
 -   Java 1.6.0\_29
-
 -   Alfresco 4.0.c Community, WAR-only distribution
 
 Other operating systems, databases, application servers, and Alfresco
@@ -190,14 +135,14 @@ tutorial. If you don't understand how to extend Alfresco's content model
 with your own or how to configure custom models in the Share and
 Explorer user interfaces, read that tutorial first.
 
-# Part 1: Implementing an Action [part1]
-
+Part 1: Implementing an Action
+==============================
 Actions are very commonly used when implementing Alfresco. This part of
 the tutorial explains what actions are, sets up a couple of examples,
 then shows how actions are implemented in Java.
 
-## What is an Action? [whatIsAnAction]
-
+What is an Action?
+------------------
 The term, “action” is overloaded quite heavily across the Alfresco
 platform (and application development, in general). For the purposes of
 this document, an action is a discrete, reusable unit of work that can
@@ -215,16 +160,13 @@ GIFs and then runs the “Transform and Copy Image” action when it finds
 an object that meets the criteria.
 
 The screenshots below show the out-of-the-box actions available when
-configuring a rule in Alfresco. Drawing 1 is Alfresco Explorer and
-Drawing 2 is Alfresco Share.
+configuring a rule in Alfresco. This one is Alfresco Explorer:
 
-![](./images/rule-actions-explorer.png)
+![Actions in Explorer rule config](./images/rule-actions-explorer.png)
 
-*Drawing 1: Actions in Explorer rule config*
+And this one is Alfresco Share:
 
-![](./images/rule-actions-share.png)
-
-*Drawing 2: Actions in Share rule config*
+![Actions in Share rule config](./images/rule-actions-share.png)
 
 But actions aren't limited to running as part of a rule. Actions can be
 called from menu items in the user interface (both Explorer and Share).
@@ -235,24 +177,16 @@ action” or simply, the “action”.
 These screenshots show the “browse” UI actions and the “details” UI
 actions in Alfresco Explorer:
 
-![](./images/ui-actions-browse-explorer.png)
+![Browse UI actions in Explorer](./images/ui-actions-browse-explorer.png)
 
-*Drawing 3: Browse UI actions in Explorer*
-
-![](./images/ui-actions-details-explorer.png)
-
-*Drawing 4: Details UI actions in Explorer*
+![Details UI actions in Explorer](./images/ui-actions-details-explorer.png)
 
 Similarly, Alfresco Share has UI actions available in the document
 library's document list as well as the document details page:
 
-![](./images/ui-actions-browse-share.png)
+![Browse UI actions in Share](./images/ui-actions-browse-share.png)
 
-*Drawing 5: Browse UI actions in Share*
-
-![](./images/ui-actions-details-share.png)
-
-*Drawing 6: Details UI actions in Share*
+![Details UI actions in Share](./images/ui-actions-details-share.png)
 
 So actions can be invoked from a rule and can be triggered from a menu
 item. Actions can also be called from code which means they can be
@@ -263,7 +197,7 @@ Because the same action can be invoked from all of these places, actions
 are a powerful way to write content operations once and then leverage
 them in many places.
 
-### Example 1: Move Replaced [example1]
+### Example 1: Move Replaced
 
 Using actions and workflow together can be an effective way to customize
 the web client for the needs of the business. Consider SomeCo, the
@@ -281,7 +215,7 @@ policy needs to be automatically moved to the Archived folder. Alfresco
 has a “Move” action, but doesn't have a “Move Replaced” action. A new
 “Move Replaced” action can easily be created to accomplish this.
 
-### Example 2: Set Web Flag [example2]
+### Example 2: Set Web Flag
 
 Recall from the first tutorial that SomeCo publishes a subset of the
 documents in their repository to a company portal. SomeCo uses a flag on
@@ -295,8 +229,8 @@ The rest of this document explains how to implement both of these
 actions including the configuration necessary to make them available
 from the user interface.
 
-## Implementing the Move Replaced Action [implementingTheMoveReplacedAction]
-
+Implementing the Move Replaced Action
+-------------------------------------
 Actions run against specific nodes. In this example, the action needs to
 find the documents that the “actioned upon node” replaces so they can be
 moved. In order to do this, the action needs to know where to move the
@@ -319,14 +253,13 @@ folder, without further involvement from the development team.
 Implementing the action's business logic involves two steps:
 
 1.  Writing the action executer class
-
 2.  Configuring the action in Spring
 
 Once that's done, the action can be called from code using the Action
 Service, or it can be wired in to the user interface (including rule
 configuration), which is covered in Part 2.
 
-### Step 1: Write the action executer class [writeTheActionExecuterClass]
+### Step 1: Write the action executer class
 
 At its most basic, an action consists of an Action Executer class and
 its associated Spring bean configuration. Implementing an action
@@ -365,8 +298,6 @@ this:
         }
     } 
 
-*Listing 1: Alfresco's out-of-the-box action executer for Move*
-
 The code simply grabs the parameter value for the destination folder and
 then calls the FileFolderService to do the move. This is a good start
 for Move Replaced. All I need to do is modify the executeImpl method to
@@ -398,14 +329,12 @@ and then for each result, set up and perform a move.
         } // end if isEmpty
     } 
 
-*Listing 2: The custom action executer for Move Replaced*
-
 The only other change needed is to change the value of the constant NAME
 from "move" to "move-replaced". (Throughout this document I'll only
 include relevant pieces of these classes—check the source that
 accompanies this article for code that actually compiles).
 
-### Step 2: Configure the action in Spring [configureTheActionInSpring]
+### Step 2: Configure the action in Spring
 
 In the content types tutorial, you learned that Spring bean
 configurations go in files that end with “context.xml”. Those files
@@ -428,8 +357,6 @@ called “someco-action-context.xml” and placed it in
         </bean>
     </beans>
 
-*Listing 3: Spring configuration for Move Replaced*
-
 That's all there is to it. You could compile the
 MoveReplacedActionExecuter class, JAR it up, and deploy it to Alfresco's
 WEB-INF/lib. The Spring context file goes in
@@ -439,8 +366,8 @@ invoked from code. That's obviously not going to be useful for end
 users, though. Before wiring the action into the user interface, let's
 look at another Action Executer example.
 
-## Implementing the Set Web Flag action [implementingTheSetWebFlagAction]
-
+Implementing the Set Web Flag action
+------------------------------------
 This action will be used to set the flag on content which should be
 shown in the SomeCo portal. Recall from the content types tutorial that
 the property is a boolean named “sc:isActive” which is defined as part
@@ -461,12 +388,11 @@ single click.
 Just like in the Move Replaced example, the steps are:
 
 1.  Write the action executer class
-
 2.  Configure the action in Spring
 
 Then, the action will be ready to use.
 
-### Step 1: Write the SetWebFlag action executer class [writeTheSetWebFlagActionExecuterClass]
+### Step 1: Write the SetWebFlag action executer class
 
 Like the MoveReplacedAction, this action extends
 ActionExecuterAbstractBase. The action takes a parameter that specifies
@@ -482,8 +408,6 @@ overriding the addParameterDefinitions method:
                     false,
                     getParamDisplayLabel(PARAM_ACTIVE)));
     }
-
-*Listing 4: Declaring a parameter for an action*
 
 The constructor for the ParameterDefinitionImpl takes the name of the
 parameter, the parameter's data type, whether or not the parameter is
@@ -524,8 +448,6 @@ The next step is to create the action's logic in the executeImpl method:
         }                  
     }
 
-*Listing 5: Action executer for Set Web Flag*
-
 The logic should be pretty easy to follow. The code grabs the value of
 the active parameter. Then, it sets up a map to hold properties. If the
 active flag is being set to true, the date property is added to the map.
@@ -533,7 +455,7 @@ The last part of the method just checks to see whether the aspect needs
 to be added or not. If so, the aspect can be added and the properties
 set in a single call.
 
-### Step 2: Configure the action in Spring [configureTheSetWebFlagActionInSpring]
+### Step 2: Configure the action in Spring
 
 The Spring configuration for this action goes in the same context file
 as the pervious action:
@@ -544,13 +466,11 @@ as the pervious action:
         </property>
     </bean>
 
-*Listing 6: Spring configuration for Set Web Flag*
-
 This action is now ready to be wired in to the user interface. That's
 covered in Part 2.
 
-## Java versus Server-side JavaScript [JavaVersusServerSideJavaScript]
-
+Java versus Server-side JavaScript
+----------------------------------
 A quick side-note before moving on to the front-end: The action executer
 examples shown in Part 1 were both implemented in Java. However, action
 executers can also be implemented using server-side JavaScript. The
@@ -561,8 +481,8 @@ set of the Alfresco Java API. You may also see a performance difference
 with the JavaScript API, which essentially wraps the lower-level Java
 API.
 
-# Part 2: Configuring the Action's Front-End in Share [configuringTheActionsFrontEndInShare]
-
+Part 2: Configuring the Action's Front-End in Share
+===================================================
 In Part 1 of this document you learned how to create an Action Executer
 class. The result was an action that could be called from code. But both
 actions need to be invoked by end-users. In the case of the Move
@@ -584,8 +504,8 @@ easier to configure actions in Share than it used to be. So I'll use
 Share and if you need to see how to do the exact same thing in Explorer,
 check the Appendix.
 
-## Configuring the Replaceable Aspect in Share [configuringTheReplaceableAspectInShare]
-
+Configuring the Replaceable Aspect in Share
+-------------------------------------------
 Alfresco's out-of-the-box content model already defines an association
 called “cm:replaces” as part of the “cm:replaceable” aspect. But neither
 the aspect nor the association are configured to be displayed in the
@@ -601,9 +521,6 @@ see, like this:
                 <aspect name="sc:productRelated" />
                 <aspect name="cm:replaceable" />
             </visible>
-
-*Listing 7: Adding the replaceable aspect to the list of visible
-aspects*
 
 Next, the “cm:replaces” association needs to show up when editing
 properties. In this example, SomeCo will use instances of “cm:content”
@@ -623,16 +540,12 @@ types tutorial, the association is configured by adding children to the
 
             </field-visibility>
 
-*Listing 8: Configuring the cm:replaces association*
-
 and this:
 
                <field id="cm:sentdate" read-only="true" />
                <field id="cm:subjectline" read-only="true" />
                <field id="cm:replaces" label-id="assoc.cm_replaces"/>
             </appearance>
-
-*Listing 9: Configuring the cm:replaces association*
 
 The last step in exposing the “cm:replaceable” aspect and “cm:replaces”
 association is localizing the labels. The
@@ -643,12 +556,10 @@ the following:
     aspect.cm_replaceable=Replaceable
     assoc.cm_replaces=Replaces
 
-*Listing 10: Localizing the replaceable aspect*
-
 The next step is to configure the Move Replaced Rule Action in Share.
 
-## Configuring the Move Replaced Rule Action in Share [configuringTheMoveReplacedRuleActionInShare]
-
+Configuring the Move Replaced Rule Action in Share
+--------------------------------------------------
 Share is pretty smart. If you deploy the Move Replaced action as-is it
 will automatically get added to the list of actions users can select
 when configuring a rule. So for simple actions, you won't have to do
@@ -669,19 +580,17 @@ Until then, here is what is involved:
 1.  Override the rule config action web script to point to a custom
     client-side component and to set the order the action appears in the
     action list.
-
 2.  Override the rule details and rule edit web script to include a
     “script” reference in the “head” section of the page that points to
     the client-side JavaScript where the custom client-side component
     lives.
-
 3.  Write the custom client-side component.
 
 It looks like a pain, but once you figure it out it isn't too bad. And
 it is a lot easier than it used to be if that makes you feel any better.
 Let's go through the steps.
 
-### Step 1: Specify the custom client-side component and set the action order [specifyTheCustomClientSideComponent]
+### Step 1: Specify the custom client-side component and set the action order
 
 In Alfresco 4, a lot of the action configuration has been pulled into
 share-form-config-custom.xml. But rule config still lives in the rule
@@ -699,9 +608,6 @@ component:
     <rule-config type="action">
        <component>SomeCo.RuleConfigActionCustom</component>
        <config-definitions webscript="/api/actiondefinitions">
-
-*Listing 11: Configuring Share to use a custom client-side component for
-rule config*
 
 This will be a new client-side JavaScript component that will get
 created shortly.
@@ -722,8 +628,6 @@ makes sense to see it in the list right after “Move”:
             <action name="move-replaced"/>
         </group>
 
-*Listing 12: Placing the Move Replaced action in the rule action list*
-
 Finally, the action gets bound with a client-side JavaScript function:
 
       <action name="copy">Copy</action>
@@ -731,10 +635,7 @@ Finally, the action gets bound with a client-side JavaScript function:
       <action name="move-replaced">MoveReplaced</action>      
       <action name="simple-workflow">SimpleWorkflow</action>
 
-*Listing 13: Specifying which client-side handler to use for Move
-Replaced*
-
-### Step 2: Add a reference to the custom client-side JavaScript file to the head [addReferenceToTheCustomClientSideJavaScript]
+### Step 2: Add a reference to the custom client-side JavaScript file to the head
 
 The client-side JavaScript file where the custom client-side component
 resides needs to be pulled in to the “\<head\>” section of the page so
@@ -751,8 +652,6 @@ The modifications to both are identical and are as follows:
     <!--Custom javascript file include for detail mode -->
     <@script type="text/javascript" src="${page.url.context}/someco/components/rules/config/rule-config-action-custom.js"></@script> 
 
-*Listing 14: Adding the client-side JavaScript reference to head*
-
 Okay, at this point, the rule form will be looking for a custom
 client-side JavaScript component called SomeCo.RuleConfigActionCustom,
 the action will show up in the right place, and the page's “\<head\>”
@@ -760,7 +659,7 @@ element will include a reference to the custom client-side JavaScript
 file where the component will reside. It's time to implement the
 client-side JavaScript.
 
-### Step 3: Implement the custom client-side JavaScript component [implementTheCustomClientSideJavaScript]
+### Step 3: Implement the custom client-side JavaScript component
 
 The FreeMarker files have been modified to include a reference to a file
 called rule-config-action-custom.js. By convention, I include
@@ -778,28 +677,24 @@ might install.
        var SomeCo = {};
     }
 
-*Listing 15: Declaring a SomeCo namespace in client-side JavaScript*
-
 Next, comes the constructor for the component (I've left out some boring
 stuff, check the source for the full listing):
 
-   SomeCo.RuleConfigActionCustom = function(htmlId)
-   {
-      SomeCo.RuleConfigActionCustom.superclass.constructor.call(this, htmlId);
 
-      // Re-register with our own name
-      this.name = "SomeCo.RuleConfigActionCustom";
-      Alfresco.util.ComponentManager.reregister(this);
-
-      // Instance variables
-      this.customisations = YAHOO.lang.merge(this.customisations, SomeCo.RuleConfigActionCustom.superclass.customisations);
-      this.renderers = YAHOO.lang.merge(this.renderers, SomeCo.RuleConfigActionCustom.superclass.renderers);
-      
-      return this;
-   };
-
-*Listing 16: Snippet of client-side JavaScript showing the
-RuleConfigActionCustom constructor*
+    SomeCo.RuleConfigActionCustom = function(htmlId)
+    {
+       SomeCo.RuleConfigActionCustom.superclass.constructor.call(this, htmlId);
+ 
+       // Re-register with our own name
+       this.name = "SomeCo.RuleConfigActionCustom";
+       Alfresco.util.ComponentManager.reregister(this);
+ 
+       // Instance variables
+       this.customisations = YAHOO.lang.merge(this.customisations, SomeCo.RuleConfigActionCustom.superclass.customisations);
+       this.renderers = YAHOO.lang.merge(this.renderers, SomeCo.RuleConfigActionCustom.superclass.renderers);
+       
+       return this;
+    };
 
 If this is your first foray into the world of object-oriented
 client-side JavaScript, relax. What, you thought just because “Java” and
@@ -813,43 +708,41 @@ the parent class.
 The final bit is where the extend actually happens, and the MoveReplaced
 handler is defined:
 
-   YAHOO.extend(SomeCo.RuleConfigActionCustom, Alfresco.RuleConfigAction,
-   {
-
-      /**
-       * CUSTOMISATIONS
-       */
-
-      customisations:
-      {         
-         MoveReplaced:
-         {
-            text: function(configDef, ruleConfig, configEl)
-            {
-                 // Display as path
-                 this._getParamDef(configDef, "destination-folder")._type = "path";
+    YAHOO.extend(SomeCo.RuleConfigActionCustom, Alfresco.RuleConfigAction,
+    {
+ 
+       /**
+        * CUSTOMISATIONS
+        */
+ 
+       customisations:
+       {         
+          MoveReplaced:
+          {
+             text: function(configDef, ruleConfig, configEl)
+             {
+                  // Display as path
+                  this._getParamDef(configDef, "destination-folder")._type = "path";
+                  return configDef;
+             },
+             edit: function(configDef, ruleConfig, configEl)
+             {
+                 // Hide all parameters since we are using a cusotm ui but set default values
+                 this._hideParameters(configDef.parameterDefinitions);
+ 
+                 // Make parameter renderer create a "Destination" button that displays an destination folder browser
+                 configDef.parameterDefinitions.push({
+                    type: "arca:destination-dialog-button",
+                    displayLabel: this.msg("label.to"),
+                    _buttonLabel: this.msg("button.select-folder"),
+                    _destinationParam: "destination-folder"
+                 });
                  return configDef;
-            },
-            edit: function(configDef, ruleConfig, configEl)
-            {
-                // Hide all parameters since we are using a cusotm ui but set default values
-                this._hideParameters(configDef.parameterDefinitions);
-
-                // Make parameter renderer create a "Destination" button that displays an destination folder browser
-                configDef.parameterDefinitions.push({
-                   type: "arca:destination-dialog-button",
-                   displayLabel: this.msg("label.to"),
-                   _buttonLabel: this.msg("button.select-folder"),
-                   _destinationParam: "destination-folder"
-                });
-                return configDef;
-            }
-         },
-      },
-
-   });
-
-*Listing 17: Defining the MoveReplaced client-side handler*
+             }
+          },
+       },
+ 
+    });
 
 This part is a copy of the out-of-the-box handler for Move with the
 object renamed to MoveReplaced. The MoveReplaced object has two methods:
@@ -871,26 +764,21 @@ dialog that gets launched when the Select button is clicked as well as
 the little folder icon and folder path that are rendered once a
 selection is made.
 
-![](./images/move-replaced-config-share.png)
+![Configuring the Move Replaced action in Share](./images/move-replaced-config-share.png)
 
-*Drawing 7: Configuring the Move Replaced action in Share*
-
-## Configuring the Set Web Flag UI Action in Share [configuringTheSetWebFlagUIActionInShare]
-
+Configuring the Set Web Flag UI Action in Share
+-----------------------------------------------
 Now it is time to shift focus from rule actions to UI actions. SomeCo
 wants end-users to be able to click an item in the menu that either
 enables or disables the web flag. Alfresco 4 has a framework that allows
 you to easily add new UI actions to the menu. You can configure:
 
 -   UI actions that call a web page (external or within Share),
-
 -   UI actions that invoke rule actions on the repository tier that take
     no parameters,
-
 -   UI actions that invoke rule actions on the repository tier that
     launch a dialog to gather parameters before passing those parameters
     to an action on the repository tier,
-
 -   UI actions that call arbitrary client-side JavaScript action
     handlers.
 
@@ -914,12 +802,10 @@ parameters to be passed in.
 So, the steps to follow for this example are:
 
 1.  Create two new repository tier actions that take no parameters
-
 2.  Update share-config-custom.xml with the action configuration
-
 3.  Create icons and localize the strings
 
-### Step 1: Create two new repository tier actions [createTwoNewRepositoryTierActions]
+### Step 1: Create two new repository tier actions
 
 You created action executer classes in Part 1 of this tutorial so this
 is nothing new. There needs to be one action for enabling the active
@@ -935,9 +821,6 @@ minimum. Here's the EnableWebFlag action executer in its entirety:
         }
     }
 
-*Listing 18: Sub-classing SetWebFlag to provide a new action that
-doesn't require parameters*
-
 The DisableWebFlag action looks just like this but sets the active flag
 to false. I won't repeat it here.
 
@@ -949,14 +832,12 @@ The Spring configuration for the action is similarly short:
         </property>
     </bean>
 
-*Listing 19: Spring configuration for Enable Web Flag*
-
 Again, I'm leaving out the disable-web-flag bean but it looks just like
 this one with a different class. Setting the “publicAction” property to
 false hides these actions from the action dropdowns. There's no real
 reason to do that, in this case—it's just an example.
 
-### Step 2: Update share-config-custom.xml with the action configuration [updateShareConfigWithActionConfig]
+### Step 2: Update share-config-custom.xml with the action configuration
 
 The next step is to configure the Share user interface to show the UI
 actions in the document library and document details menus. While we're
@@ -990,8 +871,6 @@ site action and web enable:
                 <param name="successMessage">message.web-flag.enabled</param>
                 <param name="failureMessage">message.web-flag.failure</param>
             </action>
-
-*Listing 20: UI action declaration for Web Site and Web Enable*
 
 The “someco-web-site” action is really simple. It is a “link” type of an
 action, which means it is invoking a URL that is provided in a
@@ -1029,15 +908,13 @@ actions into the appropriate groups:
         </actionGroups>
     </config>
 
-*Listing 21: UI action groups extended to include custom actions*
-
 There are a couple of things to note about the action configuration.
 First, you don't have to copy in the out-of-the-box actions and action
 groups. They will get merged in. Second, the order of the action items
 in the list can be controlled by setting the index attribute. The higher
 the index, the lower in the list the menu items appear.
 
-### Step 3: Create icons and localize the strings [createIconsAndLocalizeTheStrings]
+### Step 3: Create icons and localize the strings
 
 The last step is to provide some icons for the actions and localize the
 action labels. In step 2 the action element had an “icon” attribute.
@@ -1060,8 +937,6 @@ Here they are:
     message.web-flag.disabled=Successfully disabled the SomeCo active flag
     message.web-flag.failure=Error setting the SomeCo active flag
 
-*Listing 22: Localized strings for the new actions*
-
 With icons and localized strings in place, you could deploy and run and
 everything should work. (If you are following along, don't forget to
 deploy both the repository tier project and the share tier project
@@ -1073,8 +948,8 @@ when the active flag is not set to true. The disable should only show up
 when the active flag is set to true. That's easy to fix with an
 evaluator and that's covered in the next section.
 
-## Finishing Touches: Evaluators & Indicators [finishingTouches]
-
+Finishing Touches: Evaluators & Indicators
+------------------------------------------
 If you are writing a UI action that should show up all of the time, you
 don't need to do anything else. But hiding a UI action based on certain
 conditions is a pretty common requirement. In this example, the UI
@@ -1083,13 +958,9 @@ action needs to hide based on a metadata value. Alfresco has several
 hide UI actions based on things like:
 
 -   The presence of an aspect
-
 -   The type of a node
-
 -   Mimetype
-
 -   The type of site the document library is sitting in
-
 -   The name of the site
 
 Evaluators can also be chained together if multiple conditions need to
@@ -1104,7 +975,6 @@ nicely. The steps, then, will be as follows:
 
 1.  Declare a new evaluator in Spring config that extends the “value”
     evaluator
-
 2.  Update the action config in share-config-custom.xml to point to the
     evaluator
 
@@ -1121,7 +991,7 @@ After these steps are complete, the UI actions will show or hide
 themselves appropriately and end-users will be able to see documents
 with the active flag set to true from the document list.
 
-### Step 1: Declare a new evaluator in Spring config [declareANewEvaluator]
+### Step 1: Declare a new evaluator in Spring config
 
 Only one evaluator is needed for this example. The evaluator just needs
 to know the value of the active flag—the UI actions can show or hide
@@ -1140,9 +1010,6 @@ to that file:
         </property>
     </bean>
 
-*Listing 23: Declaring a new evaluator that checks the value of
-sc:isActive*
-
 This bean extends the out-of-the-box “value” evaluator and provides
 properties specific to our needs. In this case, the “accessor” is the
 name of the property the evaluator needs to inspect. The comparator does
@@ -1154,7 +1021,7 @@ All evaluators work similarly. If you wanted to check for a specific
 aspect, for example, you would extend the aspect evaluator and then
 specify the aspect you are looking for in one of the properties.
 
-### Step 2: Update the action config in share-config-custom.xml [updateTheActionConfigInShareConfig]
+### Step 2: Update the action config in share-config-custom.xml
 
 With an evaluator declared the next step is to tell the action
 configuration which evaluator to use to decide whether or not to show
@@ -1182,14 +1049,12 @@ following modifications, highlighted in bold:
                 <evaluator>someco.evaluator.doclib.action.isActive</evaluator>
             </action>
 
-*Listing 24: Specifying the evaluator in the action configuration*
-
 Both actions use the same evaluator. For the someco-web-enable action,
 the evaluator is negated. So if the evaluator returns true (i.e., the
 sc:isActive property is set to true) the web enable action will be
 hidden. If the evaluator returns false, the action will show itself.
 
-### Step 3: Update the share-config-custom.xml file to show a document library indicator [showADocumentLibraryIndicator] 
+### Step 3: Update the share-config-custom.xml file to show a document library indicator
 
 The last step is really not needed at all if all you are doing is adding
 an action to the menu. But because it is easy to do and leverages the
@@ -1213,13 +1078,11 @@ this case, the one created earlier can be reused:
         </indicators>
     </config>
 
-*Listing 25: Adding an indicator to the document library configuration*
-
 Alfresco will use the indicator's id attribute appended with “-16.png”
 for the icon. I copied the same icon used for the “enable” action into
 “src/web/components/documentlibrary/indicators” for this purpose.
 
-### Deploy & Test [deployAndTestShare]
+### Deploy & Test
 
 If you've been following along and you've waited to deploy until now,
 it's time to try it out. The code that accompanies this article includes
@@ -1236,24 +1099,18 @@ If everything is working correctly, you should see the SomeCo web site
 link and either the SC Web Enable or the SC Web Disable menu items from
 both the browse menu and the details page as shown below.
 
-![](./images/indicators-browse-share.png)
+![Indicators show which content has the active flag set in Share](./images/indicators-browse-share.png)
 
-*Drawing 8: Indicators show which content has the active flag set in Share*
-
-![](./images/ui-actions-disable-details-share.png)
-
-*Drawing 9: Custom UI actions in the document details page*
+![Custom UI actions in the document details page](./images/ui-actions-disable-details-share.png)
                                                                                 
-![](./images/ui-actions-disable-browse-share.png)
-
-*Drawing 10: Custom UI actions in the document list*                           
+![Custom UI actions in the document list](./images/ui-actions-disable-browse-share.png)
 
 Clicking the “SomeCo” menu item will open a browser window to the URL
 specified in the configuration. Clicking the “SC Disable Web” should
 invoke the action on the repository tier and then refresh the metadata
 and the action list.
 
-# Conclusion [conclusion]
+# Conclusion
 
 This article has shown how actions can be used to implement reusable
 operations that can be run against content in the repository. Those
@@ -1264,70 +1121,26 @@ document list and the details page. Hopefully it has sparked some ideas
 about how you could use custom actions in your next Alfresco
 implementation.
 
-## Where to find more information [whereToFindMoreInfo]
+## Where to find more information
 
--   All source code used in this example is available
-    [here](http://ecmarchitect.com/images/articles/alfresco-actions/alfresco-actions-tutorial.zip).
+-   All source code used in this example is available [here](http://ecmarchitect.com/images/articles/alfresco-actions/alfresco-actions-tutorial.zip).
+-   The [Alfresco SDK](http://wiki.alfresco.com/wiki/Community_file_list_4.0.c) comes with a Custom Action example.
+-   Official documentation for both Enterprise and Community is available at [docs.alfresco.com](http://docs.alfresco.com/).
+-   [Share Extras](http://code.google.com/p/share-extras/) has many examples of deeper Share customization as well as [documentation](http://sharextras.org/jsdoc/share/) of Alfresco's client-side JavaScript components.
+-  [Mike Hatfield](http://blogs.alfresco.com/wp/mikeh/) and [David Draper](http://blogs.alfresco.com/wp/ddraper/) are two examples of Alfresco engineer blogs that are extremely useful if you are customizing Share.
+-   For deployment help, see [Packaging and Deploying Extensions](http://wiki.alfresco.com/wiki/Packaging_And_Deploying_Extensions) in the Alfresco wiki.
+-   For general development help, see the [Developer Guide](http://wiki.alfresco.com/wiki/Developer_Guide).
+-   For help customizing the data dictionary, see the [Data Dictionary](http://wiki.alfresco.com/wiki/Data_Dictionary_Guide) wiki page.
+-   If you are ready to cover new ground, try another [ecmarchitect.com](http://ecmarchitect.com/) tutorial in the [Alfresco](http://ecmarchitect.com/alfresco-developer-series)[Developer Series](http://ecmarchitect.com/alfresco-developer-series).
 
--   The [Alfresco
-    SDK](http://wiki.alfresco.com/wiki/Community_file_list_4.0.c) comes
-    with a Custom Action example.
-
--   Official documentation for both Enterprise and Community is
-    available at [docs.alfresco.com](http://docs.alfresco.com/).
-
--   [Share Extras](http://code.google.com/p/share-extras/) has many
-    examples of deeper Share customization as well as
-    [documentation](http://sharextras.org/jsdoc/share/) of Alfresco's
-    client-side JavaScript components.
-
--   [Mike Hatfield](http://blogs.alfresco.com/wp/mikeh/) and [David
-    Draper](http://blogs.alfresco.com/wp/ddraper/) are two examples of
-    Alfresco engineer blogs that are extremely useful if you are
-    customizing Share.
-
--   For deployment help, see [Packaging and Deploying
-    Extensions](http://wiki.alfresco.com/wiki/Packaging_And_Deploying_Extensions)
-    in the Alfresco wiki.
-
--   For general development help, see the [Developer
-    Guide](http://wiki.alfresco.com/wiki/Developer_Guide).
-
--   For help customizing the data dictionary, see the [Data
-    Dictionary](http://wiki.alfresco.com/wiki/Data_Dictionary_Guide)
-    wiki page.
-
--   If you are ready to cover new ground, try another
-    [ecmarchitect.com](http://ecmarchitect.com/) tutorial in the
-    [Alfresco](http://ecmarchitect.com/alfresco-developer-series)[Developer
-    Series](http://ecmarchitect.com/alfresco-developer-series).
-
-## About the Author [aboutTheAuthor]
-
-Jeff Potts is the Chief Community Officer for Alfresco Software. Jeff
-has been a recognized and award-winning leader in the Alfresco community
-for many years. He has over 18 years of content management and
-collaboration experience, most of that having come from senior
-leadership positions in consulting organizations.
-
-Jeff has made many contributions to the Alfresco community since he
-started working with Alfresco in 2005. Examples range from code, to
-tutorials and informative blog posts, to code camps, meetups, and
-conference sessions. In 2008, Jeff wrote the Alfresco Developer Guide,
-the first developer-focused book on Alfresco. He has also been active in
-the Apache Chemistry project where he leads the development of cmislib,
-the Python API for CMIS.
-
-Read more at Jeff’s blog, [ecmarchitect.com](http://ecmarchitect.com/).
-
-# Appendix [appendix]
-
+Appendix
+========
 Not everyone is able to use Alfresco Share as their user interface. The
 sections within this Appendix show you how to do the same thing Part 2
 covers, but uses Alfresco Explorer instead of Alfresco Share.
 
-## Configuring the Replaceable Aspect in Explorer [configuringTheReplaceableAspectInExplorer]
-
+Configuring the Replaceable Aspect in Explorer
+----------------------------------------------
 Alfresco's out-of-the-box content model contains an aspect called
 “cm:replaceable” but it is not exposed in the UI. End-users need to be
 able to declare which documents a new document should replace, so the
@@ -1342,8 +1155,6 @@ The “aspects” element should now look like this:
             <aspect name="cm:replaceable"/>
     </aspects>
 
-*Listing 26: Adding the replaceable aspect to the Explorer UI config*
-
 And a new “config” element tells the user interface to show the
 “cm:replaces” relationship:
 
@@ -1353,25 +1164,21 @@ And a new “config” element tells the user interface to show the
         </property-sheet>
     </config>
 
-*Listing 27: Configuring the replaceable aspect for the Explorer UI*
-
 With this configuration in place, end-users can edit a document's
 metadata to maintain the “replaces” relationship.
 
-## Configuring the Move Replaced Rule Action in Explorer [configuringTheMoveReplacedRuleActionInExplorer]
-
+Configuring the Move Replaced Rule Action in Explorer
+-----------------------------------------------------
 The back-end logic for the Move Replaced Action was implemented in Part
 1. If users are going to specify parameters for an action when
 configuring it as part of a rule or when invoking it via “Run Action”, a
 user interface has to be provided. This is done by:
 
 1.  Create an action handler class
-
 2.  Create a corresponding JSP page
-
 3.  Localize the strings.
 
-### Step 1: Create an action handler class [createAnActionHandlerClass]
+### Step 1: Create an action handler class
 
 Alfresco's bean handler class for the Move action is called
 org.alfresco.web.bean.actions.handlers.MoveHandler and it resides in the
@@ -1388,8 +1195,6 @@ the getJSPPath() method needs to change from this:
         return getJSPPath(MoveActionExecuter.NAME);
     }
 
-*Listing 28: The out-of-the-box getJSPPath method in MoveHandler.java*
-
 to this:
 
     public final static String CUSTOM_ACTION_JSP = "/someco/jsp/actions/" + MoveReplacedActionExecuter.NAME + ".jsp";
@@ -1397,8 +1202,6 @@ to this:
     public String getJSPPath() {
         return CUSTOM_ACTION_JSP;
     }
-
-*Listing 29: The new getJSPPath method in MoveReplacedHandler.java*
 
 All I'm doing here is telling the bean where to find our customized JSP.
 
@@ -1408,7 +1211,7 @@ The generateSummary() method is responsible for that message. The actual
 text will be in a resource bundle, so I changed the property name from
 "action\_move" to "action\_move\_replaced".
 
-### Step 2: Create a corresponding JSP page [createACorrespondingJSPPage]
+### Step 2: Create a corresponding JSP page
 
 The JSP page that handles the move configuration for Move Replaced is
 identical to the out-of-the-box move. But the title needs to be
@@ -1430,8 +1233,6 @@ follows:
             <%@ include file="/jsp/parts/shelf.jsp" %>
             <%@ include file="/jsp/parts/breadcrumb.jsp" %>
 
-*Listing 30: Modified include statements in move-replaced.jsp*
-
 To point to the custom title property in the resource bundle, I changed
 the titleId attribute of the r:page tag from "title\_action\_move" to
 "title\_action\_move\_replaced".
@@ -1439,7 +1240,7 @@ the titleId attribute of the r:page tag from "title\_action\_move" to
 That's it for the Java and JSP code. Now it is time to localize the
 action.
 
-### Step 3: Localize the Move Replaced Action [localizeTheMoveReplacedActionForExplorer]
+### Step 3: Localize the Move Replaced Action
 
 The someco-action-context.xml file needs to be updated to point to a
 resource bundle. I added the following to that file:
@@ -1451,9 +1252,6 @@ resource bundle. I added the following to that file:
             </list>
         </property>
     </bean>
-
-*Listing 31: Spring configuration needed to specify the action resource
-bundle*
 
 Next, I need to create a resource bundle so I created a file in
 alfresco/extension/messages called somecoactions.properties. Note that
@@ -1468,8 +1266,6 @@ previous step.
     move-replaced.title=Move replaced document to space
     move-replaced.description=This will move the target node of a replaces association to a specified space.
 
-*Listing 32: Localized strings for the Move Replaced action*
-
 The summary text and the JSP title get pulled from
 alfresco/extension/webclient.properties. The “cm:replaces” aspect also
 needs to be localized. So, I added the following entries to the file:
@@ -1480,9 +1276,6 @@ needs to be localized. So, I added the following entries to the file:
     #Move Replaced Action
     action_move_replaced=Move replaced to ''{0}''
     title_action_move_replaced=Move Replaced Action
-
-*Listing 33: Localized strings for the replaceable aspect and Move
-Replaced in webclient.properties*
 
 The last step is to hook in to the Alfresco action wizard UI so that
 when someone configures a rule or simple workflow, the new action is
@@ -1497,9 +1290,6 @@ following:
             <handler name="move-replaced" class="com.someco.action.handler.MoveReplacedHandler" />
         </action-handlers>
     </config>
-
-*Listing 34: Action wizard configuration to declare the custom action
-handler*
 
 The code that accompanies this document includes a sample Ant build.xml
 file that can be used to deploy the files to the right spot within the
@@ -1517,18 +1307,18 @@ document to replace. This establishes the "replaces" association.
 Now add a rule to the space in which "Published" documents reside. The
 rule should run the new "Move Replaced" action.
 
-![](./images/move-replaced-config-explorer.png)
+![Select the custom move replaced action](./images/move-replaced-config-explorer.png)
 
 Configure the action to move documents to the "Archived" space.
 
-![](./images/move-replaced-config-explorer3.png)
+![Configure the target folder for the action](./images/move-replaced-config-explorer3.png)
 
 To test the logic, paste the document with the "replaces" association
 into the "Published" space. The document it is replacing should get
 automatically moved to the "Archived" folder.
 
-## Configuring the Set Web Flag UI Action in Explorer [configuringTheSetWebFlagActionInExplorer]
-
+Configuring the Set Web Flag UI Action in Explorer
+--------------------------------------------------
 The Set Web Flag action isn't meant to be called from a rule so it does
 not have a Handler class or a JSP. It will be called from a menu item in
 the Explorer user interface. These menu items are often called “UI
@@ -1538,12 +1328,10 @@ Assuming the back-end action already exists, the steps to integrate it
 into the Explorer user interface are:
 
 1.  Create a JSF-managed bean
-
 2.  Update web-client-config-custom.xml
-
 3.  Localize the action
 
-### Step 1: Create a JSF-managed Bean [createJSFManagedBean]
+### Step 1: Create a JSF-managed Bean
 
 The WebSettingsBean class gets called when the UI action is clicked.
 Here is a snippet from the bean's setActive method:
@@ -1567,8 +1355,6 @@ Here is a snippet from the bean's setActive method:
     };
     txnHelper.doInTransaction(callback);
     this.browseBean.getDocument().reset();
-
-*Listing 35: Custom WebSettingsBean.java*
 
 This snippet shows a transaction being set up before instantiating and
 executing the SetWebFlag action executer class. The rest of the code
@@ -1598,12 +1384,10 @@ WEB-INF with the following content:
         
     </faces-config>
 
-*Listing 36: Faces configuration for the Web Settings Bean*
-
 Now that JSF knows about the new bean it can be wired into the Explorer
 user interface.
 
-### Step 2: Update web-client-config-custom.xml with the new UI action [updateWebClientConfigCustomWithNewAction] 
+### Step 2: Update web-client-config-custom.xml with the new UI action
 
 There are several menus within the Alfresco Explorer user interface.
 These are called “action groups”. Actions (I'm talking about “UI
@@ -1633,8 +1417,6 @@ I added the following to web-client-config-custom.xml:
                 <action idref="web_site" />
             </action-group>
 
-*Listing 37: Action groups and action references for Explorer*
-
 This part of the configuration adds a “Web Site” menu item to the browse
 menu, the “more” menu, and the document details screen. It also adds the
 “Web Enable” and “Web Disable” to the document details screen.
@@ -1649,8 +1431,6 @@ is a simple action that invokes a URL.
                 <image>/someco/images/icons/website.gif</image>
                 <target>new</target>
             </action>
-
-*Listing 38: Action declaration for the Web Site UI action in Explorer*
 
 The next one enables the “sc:isActive” flag.
 
@@ -1670,8 +1450,6 @@ The next one enables the “sc:isActive” flag.
                     <param name="active">true</param>   
                 </params>
             </action>
-
-*Listing 39: Action declaration for Enable Web in Explorer*
 
 The “permissions” element points to an out-of-the-box permission called
 “Write”. I'm assuming anyone with write access to the node is also
@@ -1709,9 +1487,7 @@ that it passes a different value for the active flag.
         </actions>
     </config>
 
-*Listing 40: Action declaration for Web Disable in Explorer*
-
-### Step 3: Localize the Set Web Flag action [localizeTheSetWebFlagActionForExplorer]
+### Step 3: Localize the Set Web Flag action
 
 I localized the action by adding the following to
 somecoactions.properties:
@@ -1719,8 +1495,6 @@ somecoactions.properties:
     # Set web flag action
     set-web-flag.title=Sets the SC Web Flag
     set-web-flag.description=This will add the sc:webable aspect and set the isActive flag.
-
-*Listing 41: Localizing the Set Web Flag action*
 
 If you deploy now you should see menu items in the right places. And if
 you click them they should work. You'll notice when looking at the
@@ -1731,8 +1505,8 @@ false and the disable item should only show when the flag has been set
 to true. Hiding and showing menu items is the job of an “evaluator” and
 that's the topic of the next section.
 
-## Configuring the Evaluator to Show/Hide the Set Web Flag UI Action in Explorer [configuringShowHideInExplorer]
-
+Configuring the Evaluator to Show/Hide the Set Web Flag UI Action in Explorer
+-----------------------------------------------------------------------------
 The final step in configuring the Set Web Flag action within the
 Alfresco Explorer user interface is to write an evaluator that
 hides/shows the menu items appropriately based on the value of the
@@ -1763,8 +1537,6 @@ method and is as follows:
         return !active;
     }
 
-*Listing 42: The Web Enable Evaluator*
-
 This code checks for the presence of the “sc:webable” aspect. It
 actually doesn't matter if the aspect is there or not—if it isn't, the
 Set Web Flag action will add it. Then, the evaluator checks the value of
@@ -1781,6 +1553,6 @@ using the menu items on the document details page. The menu items should
 only show up for users in the appropriate role, and they should hide
 themselves based on the value of the active flag.
 
-![](./images/ui-actions-someco-browse-explorer.png)
+![New UI actions in the browse menu](./images/ui-actions-someco-browse-explorer.png)
 
-![](./images/ui-actions-disable-details-explorer.png)
+![New UI actions in the details menu](./images/ui-actions-disable-details-explorer.png)
