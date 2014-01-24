@@ -3,7 +3,6 @@ package com.someco.cmis.examples;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
-import java.math.BigInteger;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
@@ -22,7 +21,6 @@ import org.apache.chemistry.opencmis.commons.SessionParameter;
 import org.apache.chemistry.opencmis.commons.data.ContentStream;
 import org.apache.chemistry.opencmis.commons.enums.BindingType;
 import org.apache.chemistry.opencmis.commons.enums.VersioningState;
-import org.apache.chemistry.opencmis.commons.impl.dataobjects.ContentStreamImpl;
 
 import com.someco.examples.ExampleBase;
 
@@ -118,7 +116,7 @@ public class CMISExampleBase extends ExampleBase {
 		String docText = "This is a sample " + contentType + " document called " + docName;
 		byte[] content = docText.getBytes();
 		InputStream stream = new ByteArrayInputStream(content);
-		ContentStream contentStream = new ContentStreamImpl(filename, BigInteger.valueOf(content.length), "text/plain", stream);
+		ContentStream contentStream = session.getObjectFactory().createContentStream(filename, Long.valueOf(content.length), "text/plain", stream);
 
 		Document doc = folder.createDocument(
 				   properties,

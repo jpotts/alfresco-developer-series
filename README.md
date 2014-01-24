@@ -14,10 +14,11 @@ If this is causing you confusion, use the tagged source code. Those match up wit
 Progress
 --------
 
-| Tutorial | Move to Maven/AMP | Move tutorial to markdown | Update tutorial to match refactored code | Re-Render Tutorial PDF |
+| Tutorial | Move to Maven/AMP | Move tutorial to markdown | Update tutorial to match refactored code | Re-Render Tutorial as HTML |
 | -------- | ----------------- | ------------------------- | ---------------------------------------- | ---------------------- |
-|Content|Done|Done|Not Started|Not Started|
-|Actions|Done|Done|Not Started|Not Started|
+|Maven SDK|Done|Done|Done|[Done](http://ecmarchitect.com/alfresco-developer-series-tutorials/maven-sdk/tutorial/tutorial.html)|
+|Content|Done|Done|Done|[Done](http://ecmarchitect.com/alfresco-developer-series-tutorials/content/tutorial/tutorial.html)|
+|Actions|Done|Done|WIP|Not Started|
 |Behaviors|Done|Done|Not Started|Not Started|
 |Webscripts|Done|Done|Not Started|Not Started|
 |Workflows|Done|Done|Not Started|Not Started|
@@ -26,3 +27,10 @@ Known Issues
 ------------
 
 The publish to web advanced workflow in the workflows tutorial is not currently working properly under 4.2.e. The workflow is not firing the set-web-flag action.
+
+Repository Structure
+--------------------
+
+The repository contains a folder for each tutorial. Within that, there is a tutorial directory that contains the actual tutorial text and images as well as one or more project folders that contain source code that goes along with the tutorial.
+
+The projects roughly build on each other. So, for example, if you want to work through the Actions tutorial, you'll need to understand the content tutorial and you will need to deploy the repo and share AMPs the content tutorial produces for subsequent tutorial source code to run in your own Alfresco repository.
