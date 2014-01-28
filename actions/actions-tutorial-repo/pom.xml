@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>com.someco</groupId>
+    <artifactId>actions-tutorial-repo</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <name>actions-tutorial-repo AMP project</name>
+    <packaging>amp</packaging>
+    <description>Manages the lifecycle of the actions-tutorial-repo AMP (Alfresco Module Package)</description>
+
+    <parent>
+        <groupId>org.alfresco.maven</groupId>
+        <artifactId>alfresco-sdk-parent</artifactId>
+        <version>1.1.1</version>
+    </parent>
+
+    <!-- 
+       | SDK properties have sensible defaults in the SDK parent,
+       | but you can override the properties below to use another version. 
+       | For more available properties see the alfresco-sdk-parent POM. 
+       -->
+    <properties>
+        <!-- Defines the alfresco edition to compile against. Allowed values are [org.alfresco|org.alfresco.enterprise]--> 
+        <alfresco.groupId>org.alfresco</alfresco.groupId>
+        <!-- Defines the alfresco version to compile against -->
+        <alfresco.version>4.2.e</alfresco.version>
+        <app.log.root.level>WARN</app.log.root.level>
+        <alfresco.data.location>alf_data_dev</alfresco.data.location>
+        <!-- Defines the target WAR artifactId to run this amp, only used with the -Pamp-to-war switch
+        .    | Allowed values: alfresco | share. Defaults to a repository AMP, but could point to your foundation WAR -->
+        <alfresco.client.war>alfresco</alfresco.client.war>
+        <!-- Defines the target WAR groupId to run this amp, only used with the -Pamp-to-war switch
+        .    | Could be org.alfresco | org.alfresco.enterprise or your corporate groupId -->
+        <alfresco.client.war.groupId>org.alfresco</alfresco.client.war.groupId>
+        <!-- Defines the target WAR version to run this amp, only used with the -Pamp-to-war switch -->
+        <alfresco.client.war.version>4.2.e</alfresco.client.war.version>
+        <!-- This controls which properties will be picked in src/test/properties for embedded run -->
+        <env>local</env>
+    </properties>
+
+    <!-- Here we realize the connection with the Alfresco selected platform 
+        (e.g.version and edition) -->
+    <dependencyManagement>
+        <dependencies>
+            <!-- This will import the dependencyManagement for all artifacts in the selected Alfresco version/edition
+                (see http://maven.apache.org/guides/introduction/introduction-to-dependency-mechanism.html#Importing_Dependencies) 
+                NOTE: You still need to define dependencies in your POM, but you can omit version as it's enforced by this dependencyManagement. NOTE: It defaults 
+                to the latest version this SDK pom has been tested with, but alfresco version can/should be overridden in your project's pom -->
+            <dependency>
+                <groupId>${alfresco.groupId}</groupId>
+                <artifactId>alfresco-platform-distribution</artifactId>
+                <version>${alfresco.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+    <!-- Following dependencies are needed for compiling Java code in src/main/java; 
+         <scope>provided</scope> is inherited for each of the following; 
+         for more info, please refer to alfresco-platform-distribution POM -->
+    <dependencies>
+        <dependency>
+            <groupId>${alfresco.groupId}</groupId>
+            <artifactId>alfresco-repository</artifactId>
+        </dependency>
+        <!-- Test dependencies -->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.8.1</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+        	<groupId>com.someco</groupId>
+        	<artifactId>content-tutorial-common</artifactId>
+        	<version>1.0-SNAPSHOT</version>
+        </dependency>
+    </dependencies>
+
+    <!-- This repository is only needed to retrieve Alfresco parent POM. 
+        NOTE: This can be removed when/if Alfresco will be on Maven Central 
+        
+        NOTE: The repository to be used for Alfresco Enterprise artifacts is
+        https://artifacts.alfresco.com/nexus/content/groups/private/. Please check
+        with Alfresco Support to get credentials to add to your ~/.m2/settings.xml
+        if you are a Enterprise customer or Partner  
+        -->
+    <repositories>
+        <repository>
+            <id>alfresco-public</id>
+            <url>https://artifacts.alfresco.com/nexus/content/groups/public</url>
+        </repository>
+        <repository>
+            <id>alfresco-public-snapshots</id>
+            <url>https://artifacts.alfresco.com/nexus/content/groups/public-snapshots</url>
+            <snapshots>
+                <enabled>true</enabled>
+                <updatePolicy>daily</updatePolicy>
+            </snapshots>
+        </repository>
+    </repositories>
+    <build>
+    	<pluginManagement>
+    		<plugins>
+    			<!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
+    			<plugin>
+    				<groupId>org.eclipse.m2e</groupId>
+    				<artifactId>lifecycle-mapping</artifactId>
+    				<version>1.0.0</version>
+    				<configuration>
+    					<lifecycleMappingMetadata>
+    						<pluginExecutions>
+    							<pluginExecution>
+    								<pluginExecutionFilter>
+    									<groupId>
+    										org.alfresco.maven.plugin
+    									</groupId>
+    									<artifactId>
+    										alfresco-maven-plugin
+    									</artifactId>
+    									<versionRange>
+    										[1.1.1,)
+    									</versionRange>
+    									<goals>
+    										<goal>set-version</goal>
+    									</goals>
+    								</pluginExecutionFilter>
+    								<action>
+    									<ignore></ignore>
+    								</action>
+    							</pluginExecution>
+    						</pluginExecutions>
+    					</lifecycleMappingMetadata>
+    				</configuration>
+    			</plugin>
+    		</plugins>
+    	</pluginManagement>
+    </build>
+</project>

@@ -1,0 +1,55 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE beans PUBLIC '-//SPRING//DTD BEAN//EN' 'http://www.springframework.org/dtd/spring-beans.dtd'>
+<!--
+    Licensed to the Apache Software Foundation (ASF) under one or more
+    contributor license agreements.  See the NOTICE file distributed with
+    this work for additional information regarding copyright ownership.
+    The ASF licenses this file to You under the Apache License, Version 2.0
+    (the "License"); you may not use this file except in compliance with
+    the License.  You may obtain a copy of the License at
+    	
+    http://www.apache.org/licenses/LICENSE-2.0
+    	
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+-->
+<beans>
+
+    <bean id="move-replaced" class="com.someco.action.executer.MoveReplacedActionExecuter" parent="action-executer">
+		<property name="fileFolderService">
+			<ref bean="FileFolderService" />
+		</property>
+		<property name="nodeService">
+			<ref bean="NodeService" />
+		</property>
+	</bean>
+
+    <bean id="set-web-flag" class="com.someco.action.executer.SetWebFlag" parent="action-executer">
+        <property name="nodeService">
+            <ref bean="NodeService" />
+        </property>
+    </bean>
+
+    <bean id="${project.artifactId}_actionResourceBundles" parent="actionResourceBundles">
+        <property name="resourceBundles">
+            <list>
+                <value>alfresco.module.${project.artifactId}.messages.somecoactions</value>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="enable-web-flag" class="com.someco.action.executer.EnableWebFlag" parent="set-web-flag">
+        <property name="publicAction">
+            <value>false</value>
+        </property>
+    </bean>
+
+	<bean id="disable-web-flag" class="com.someco.action.executer.DisableWebFlag" parent="set-web-flag">
+        <property name="publicAction">
+            <value>false</value>
+        </property>
+    </bean>
+</beans>

@@ -1,0 +1,295 @@
+<alfresco-config>
+    
+    <!-- Document Library config section -->
+    <config evaluator="string-compare" condition="DocumentLibrary">
+        <!--
+         Used by the "Manage Aspects" action
+
+         For custom aspects, remember to also add the relevant i18n string(s)
+            cm_myaspect=My Aspect
+        -->
+        <aspects>
+            <!-- Aspects that a user can see -->
+            <visible>
+                <aspect name="cm:replaceable" />
+            </visible>
+
+            <!-- Aspects that a user can add. Same as "visible" if left empty -->
+            <addable>
+            </addable>
+
+            <!-- Aspects that a user can remove. Same as "visible" if left empty -->
+            <removeable>
+            </removeable>
+        </aspects>
+        
+        <!-- Custom Indicators -->
+        <indicators>
+            <indicator id="someco-website" index="10">
+                <evaluator>someco.evaluator.doclib.action.isActive</evaluator>
+            </indicator>
+        </indicators>
+    </config>
+
+   <!-- cm:content type (existing nodes) -->
+   <config evaluator="node-type" condition="cm:content">
+      <forms>
+         <!-- Default form configuration for the cm:content type -->
+         <form>
+            <field-visibility>
+               <show id="cm:name" />
+               <show id="cm:title" force="true" />
+               <show id="cm:description" force="true" />
+               <show id="mimetype" />
+               <show id="cm:author" force="true" />
+               <show id="size" for-mode="view" />
+               <show id="cm:creator" for-mode="view" />
+               <show id="cm:created" for-mode="view" />
+               <show id="cm:modifier" for-mode="view" />
+               <show id="cm:modified" for-mode="view" />
+               
+               <!-- tags and categories -->
+               <show id="cm:taggable" for-mode="edit" force="true" />
+               <show id="cm:categories" />
+               
+               <!-- cm:dublincore aspect -->
+               <show id="cm:publisher"/>
+               <show id="cm:contributor"/>
+               <show id="cm:type"/>
+               <show id="cm:identifier"/>
+               <show id="cm:dcsource"/>
+               <show id="cm:coverage"/>
+               <show id="cm:rights"/>
+               <show id="cm:subject"/>
+               
+               <!-- cm:complianceable aspect -->
+               <show id="cm:removeAfter" />
+               
+               <!-- cm:effectivity aspect -->
+               <show id="cm:from"/>
+               <show id="cm:to"/>
+               
+               <!--  cm:summarizable aspect -->
+               <show id="cm:summary" />
+               
+               <!-- cm:translatable aspect -->
+               <show id="cm:translations" />
+               
+               <!-- cm:localizable aspect -->
+               <show id="cm:locale" />
+               
+               <!-- cm:ownable aspect -->
+               <show id="cm:owner" />
+               
+               <!-- cm:attachable aspect -->
+               <show id="cm:attachments" />
+               
+               <!-- cm:emailed aspect -->
+               <show id="cm:originator" />
+               <show id="cm:addressee" />
+               <show id="cm:addressees" />
+               <show id="cm:sentdate" />
+               <show id="cm:subjectline" />
+               
+               <!-- exif:exif aspect -->
+               <show id="exif:dateTimeOriginal" />
+               <show id="exif:pixelXDimension" />
+               <show id="exif:pixelYDimension" />
+               <show id="exif:exposureTime" />
+               <show id="exif:fNumber" />
+               <show id="exif:flash" />
+               <show id="exif:focalLength" />
+               <show id="exif:isoSpeedRatings" />
+               <show id="exif:manufacturer" />
+               <show id="exif:model" />
+               <show id="exif:software" />
+               <show id="exif:orientation" />
+               <show id="exif:xResolution" />
+               <show id="exif:yResolution" />
+               <show id="exif:resolutionUnit" />
+
+               <!-- audio:audio aspect -->
+               <show id="audio:album" />
+               <show id="audio:artist" />
+               <show id="audio:composer" />
+               <show id="audio:engineer" />
+               <show id="audio:genre" />
+               <show id="audio:trackNumber" />
+               <show id="audio:releaseDate" />
+               <show id="audio:sampleRate" />
+               <show id="audio:sampleType" />
+               <show id="audio:channelType" />
+               <show id="audio:compressor" />
+               
+               <!-- cm:indexControl aspect -->
+               <show id="cm:isIndexed" />
+               <show id="cm:isContentIndexed" />
+               
+               <!-- cm:geographic aspect -->
+               <show id="cm:latitude" />
+               <show id="cm:longitude" />
+
+               <!-- surf:widget aspect -->
+               <show id="surf:widgetType"/>
+               <show id="surf:mid"/>
+               <show id="surf:label"/>
+               
+               <!-- cm:replaceable -->
+               <show id="cm:replaces" />
+
+            </field-visibility>
+            <appearance>
+               <field id="cm:name">
+                 <control>
+                    <control-param name="maxLength">255</control-param>
+                 </control>
+               </field>
+               <field id="cm:title">
+                  <control template="/org/alfresco/components/form/controls/textfield.ftl" />
+               </field>
+               <field id="cm:description">
+                  <control>
+                     <control-param name="activateLinks">true</control-param>
+                  </control>
+               </field>
+               <field id="mimetype">
+                  <control template="/org/alfresco/components/form/controls/mimetype.ftl" />
+               </field>
+               <field id="size">
+                  <control template="/org/alfresco/components/form/controls/size.ftl" />
+               </field>
+               <field id="cm:taggable">
+                  <control>
+                     <control-param name="compactMode">true</control-param>
+                     <control-param name="params">aspect=cm:taggable</control-param>
+                     <control-param name="createNewItemUri">/api/tag/workspace/SpacesStore</control-param>
+                     <control-param name="createNewItemIcon">tag</control-param>
+                  </control>
+               </field>
+               <field id="cm:categories">
+                  <control>
+                     <control-param name="compactMode">true</control-param>
+                  </control>
+               </field>
+               <field id="cm:originator" read-only="true" />
+               <field id="cm:addressee" read-only="true" />
+               <field id="cm:addressees" read-only="true" />
+               <field id="cm:sentdate" read-only="true" />
+               <field id="cm:subjectline" read-only="true" />
+               <field id="cm:replaces" label-id="assoc.cm_replaces"/>
+            </appearance>
+         </form>
+
+         <!-- Document Library pop-up Edit Metadata form -->
+         <form id="doclib-simple-metadata">
+            <field-visibility>
+               <show id="cm:name" />
+               <show id="cm:title" force="true" />
+               <show id="cm:description" force="true" />
+               <!-- tags and categories -->
+               <show id="cm:taggable" for-mode="edit" force="true" />
+               <show id="cm:categories" />
+               <!-- sc:doc -->
+               <show id="sc:relatedDocuments" />               
+            </field-visibility>
+            <edit-form template="../documentlibrary/forms/doclib-simple-metadata.ftl" />
+            <appearance>
+               <field id="cm:name">
+                 <control>
+                    <control-param name="maxLength">255</control-param>
+                 </control>
+               </field>
+               <field id="cm:title">
+                  <control template="/org/alfresco/components/form/controls/textfield.ftl" />
+               </field>
+               <field id="cm:description">
+                  <control>
+                     <control-param name="activateLinks">true</control-param>
+                  </control>
+               </field>
+               <field id="cm:taggable">
+                  <control>
+                     <control-param name="compactMode">true</control-param>
+                     <control-param name="params">aspect=cm:taggable</control-param>
+                     <control-param name="createNewItemUri">/api/tag/workspace/SpacesStore</control-param>
+                     <control-param name="createNewItemIcon">tag</control-param>
+                  </control>
+               </field>
+               <field id="cm:categories">
+                  <control>
+                     <control-param name="compactMode">true</control-param>
+                  </control>
+               </field>
+            </appearance>
+         </form>
+
+         <!-- Document Library Inline Edit form -->
+         <form id="doclib-inline-edit">
+            <field-visibility>
+               <show id="cm:name" />
+               <show id="cm:title" force="true" />
+               <show id="cm:description" force="true" />
+               <show id="cm:content" force="true" />
+            </field-visibility>
+            <appearance>
+               <field id="cm:name">
+                 <control>
+                    <control-param name="maxLength">255</control-param>
+                 </control>
+               </field>
+               <field id="cm:title">
+                  <control template="/org/alfresco/components/form/controls/textfield.ftl" />
+               </field>
+               <field id="cm:content">
+                  <control>
+                     <control-param name="editorAppearance">explorer</control-param>
+                     <control-param name="forceEditor">true</control-param>
+                  </control>
+               </field>
+            </appearance>
+         </form>
+      </forms>
+    </config>
+   
+    <!-- Actions -->
+    <config evaluator="string-compare" condition="DocLibActions">
+        <actions>
+            <action id="someco-web-site" type="link" label="actions.someco.web-site" icon="someco-website">
+                <param name="href">http://ecmarchitect.com</param>
+                <param name="target">_blank</param>
+            </action>
+            <action id="someco-web-enable" type="javascript" label="actions.someco.web-enable" icon="someco-create-website">
+                <param name="function">onActionSimpleRepoAction</param>
+                <permissions>
+                    <permission allow="true">Write</permission>
+                </permissions>
+                <param name="action">enable-web-flag</param>
+                <param name="successMessage">message.web-flag.enabled</param>
+                <param name="failureMessage">message.web-flag.failure</param>
+                <evaluator negate="true">someco.evaluator.doclib.action.isActive</evaluator>
+            </action>
+            <action id="someco-web-disable" type="javascript" label="actions.someco.web-disable" icon="someco-delete-website">
+                <param name="function">onActionSimpleRepoAction</param>
+                <permissions>
+                    <permission allow="true">Write</permission>
+                </permissions>
+                <param name="action">disable-web-flag</param>
+                <param name="successMessage">message.web-flag.disabled</param>
+                <param name="failureMessage">message.web-flag.failure</param>
+                <evaluator>someco.evaluator.doclib.action.isActive</evaluator>
+            </action>
+        </actions>
+        <actionGroups>
+            <actionGroup id="document-browse">
+                <action index="500" id="someco-web-site" />
+                <action index="510" id="someco-web-enable" />
+                <action index="520" id="someco-web-disable" />                
+            </actionGroup>
+            <actionGroup id="document-details">
+                <action index="500" id="someco-web-site" />
+                <action index="510" id="someco-web-enable" />
+                <action index="520" id="someco-web-disable" />                
+            </actionGroup>
+        </actionGroups>        
+    </config>
+</alfresco-config>

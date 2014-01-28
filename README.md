@@ -18,8 +18,8 @@ Progress
 | -------- | ----------------- | ------------------------- | ---------------------------------------- | ---------------------- |
 |Maven SDK|Done|Done|Done|[Done](http://ecmarchitect.com/alfresco-developer-series-tutorials/maven-sdk/tutorial/tutorial.html)|
 |Content|Done|Done|Done|[Done](http://ecmarchitect.com/alfresco-developer-series-tutorials/content/tutorial/tutorial.html)|
-|Actions|Done|Done|WIP|Not Started|
-|Behaviors|Done|Done|Not Started|Not Started|
+|Actions|Done|Done|WIP|[Done](http://ecmarchitect.com/alfresco-developer-series-tutorials/actions/tutorial/tutorial.html)|
+|Behaviors|Done|Done|WIP|Not Started|
 |Webscripts|Done|Done|Not Started|Not Started|
 |Workflows|Done|Done|Not Started|Not Started|
 
