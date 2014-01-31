@@ -3,16 +3,16 @@
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.someco</groupId>
-    <artifactId>behavior-article-repo</artifactId>
+    <artifactId>behavior-tutorial-repo</artifactId>
     <version>1.0-SNAPSHOT</version>
-    <name>behavior-article-repo AMP project</name>
+    <name>behavior-tutorial-repo AMP project</name>
     <packaging>amp</packaging>
-    <description>Manages the lifecycle of the behavior-article-repo AMP (Alfresco Module Package)</description>
+    <description>Manages the lifecycle of the behavior-tutorial-repo AMP (Alfresco Module Package)</description>
 
     <parent>
         <groupId>org.alfresco.maven</groupId>
         <artifactId>alfresco-sdk-parent</artifactId>
-        <version>1.0.2</version>
+        <version>1.1.1</version>
     </parent>
 
     <!-- 
@@ -73,9 +73,8 @@
         </dependency>
         <dependency>
         	<groupId>com.someco</groupId>
-        	<artifactId>content-tutorial-common</artifactId>
+        	<artifactId>behavior-tutorial-common</artifactId>
         	<version>1.0-SNAPSHOT</version>
-        	<scope>provided</scope>
         </dependency>
     </dependencies>
 
@@ -142,7 +141,7 @@
     										alfresco-maven-plugin
     									</artifactId>
     									<versionRange>
-    										[1.0.2,)
+    										[1.1.1,)
     									</versionRange>
     									<goals>
     										<goal>set-version</goal>

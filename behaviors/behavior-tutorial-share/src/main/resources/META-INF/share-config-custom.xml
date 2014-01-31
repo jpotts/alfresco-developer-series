@@ -1,0 +1,41 @@
+<alfresco-config>
+    <!-- Document Library config section -->
+    <config evaluator="string-compare" condition="DocumentLibrary">
+        <!--
+           Used by the "Manage Aspects" action
+
+           For custom aspects, remember to also add the relevant i18n string(s)
+              cm_myaspect=My Aspect
+        -->
+        <aspects>
+            <!-- Aspects that a user can see -->
+            <visible>
+                <aspect name="scr:rateable" />
+            </visible>
+
+            <!-- Aspects that a user can add. Same as "visible" if left empty -->
+            <addable>
+            </addable>
+
+            <!-- Aspects that a user can remove. Same as "visible" if left empty -->
+            <removeable>
+            </removeable>
+        </aspects>
+    </config>
+   
+    <config evaluator="aspect" condition="scr:rateable">
+        <forms>
+            <form>
+                <field-visibility>
+                    <show id="scr:averageRating" />
+                    <show id="scr:ratingCount" />
+                </field-visibility>
+                <appearance> 				    
+                    <field id="scr:averageRating" label-id="prop.scr_averageRating" read-only="true" />
+                    <field id="scr:ratingCount" label-id="prop.scr_ratingCount" read-only="true" />
+                </appearance>
+            </form>
+        </forms>
+    </config>
+   
+</alfresco-config>

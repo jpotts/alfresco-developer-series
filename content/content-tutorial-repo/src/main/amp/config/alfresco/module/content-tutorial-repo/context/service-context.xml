@@ -31,21 +31,5 @@
             </list>        
         </property>
     </bean>
-    <bean id="${project.artifactId}_configBootstrap" class="org.alfresco.web.config.WebClientConfigBootstrap" init-method="register">
-        <property name="configService">
-        	<ref bean="webClientConfigService" />
-        </property>
-        <property name="configs">
-            <list>
-                <value>classpath:alfresco/module/${project.artifactId}/ui/web-client-config-custom.xml</value>
-            </list>
-        </property>
-    </bean>
-    <bean id="${project.artifactId}_bundleBootstrap" class="org.alfresco.web.app.ResourceBundleBootstrap">
-	    <property name="resourceBundles">
-		    <list>
-			    <value>alfresco.module.${project.artifactId}.messages.webclient</value>
-		    </list>
-		</property>
-	</bean>
+
 </beans>

@@ -1,0 +1,8 @@
+<webscript>
+  <shortname>SomeCo Rating Test</shortname>
+  <description>Test the rating behavior</description>
+  <url>/someco/rating-test?nodeRef={nodeRef}</url>
+  <format default="html">argument</format>
+  <authentication>user</authentication>
+  <transaction>required</transaction>
+</webscript>
