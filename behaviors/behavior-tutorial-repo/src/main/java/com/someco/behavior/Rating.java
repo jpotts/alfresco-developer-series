@@ -59,7 +59,7 @@ public class Rating
 		NodeRef parentRef = childAssocRef.getParentRef();
 		
 		// check the parent to make sure it has the right aspect
-		if (nodeService.hasAspect(parentRef, QName.createQName(SomeCoRatingsModel.NAMESPACE_SOMECO_RATINGS_CONTENT_MODEL, SomeCoRatingsModel.ASPECT_SCR_RATEABLE))) {
+		if (nodeService.exists(parentRef) && nodeService.hasAspect(parentRef, QName.createQName(SomeCoRatingsModel.NAMESPACE_SOMECO_RATINGS_CONTENT_MODEL, SomeCoRatingsModel.ASPECT_SCR_RATEABLE))) {
 			// continue, this is what we want
 		} else {
 			if (logger.isDebugEnabled()) logger.debug("Rating's parent ref did not have rateable aspect.");
