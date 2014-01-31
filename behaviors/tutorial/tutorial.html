@@ -30,31 +30,41 @@ Architect | Alfresco Developer Tutorials</title>
 <div id="header">
 <h1 class="entry-title">Implementing Custom Behaviors in Alfresco</h1>
 <h2 class="author">Jeff Potts</h2>
-<h3 class="date">September, 2007</h3>
+<h3 class="date">January, 2014</h3>
 </div>
 <div id="TOC">
 <ul>
 <li><a href="#license">License</a></li>
 <li><a href="#introduction">Introduction</a></li>
-<li><a href="#example-user-ratings">Example: User ratings</a><ul>
+<li><a href="#introducing-the-user-ratings-example">Introducing the user ratings example</a><ul>
 <li><a href="#what-can-trigger-a-behavior">What can trigger a behavior?</a></li>
 <li><a href="#java-or-javascript">Java or JavaScript?</a></li>
-<li><a href="#implementing-and-deploying-the-custom-behavior">Implementing and deploying the custom behavior</a></li>
-<li><a href="#java-example">Java Example</a><ul>
-<li><a href="#extend-the-model">Extend the model</a></li>
-<li><a href="#write-a-server-side-javascript-file-that-creates-test-data">Write a server-side JavaScript file that creates test data</a></li>
-<li><a href="#write-the-custom-behavior">Write the custom behavior</a></li>
+</ul></li>
+<li><a href="#setup">Setup</a><ul>
+<li><a href="#tools">Tools</a></li>
+<li><a href="#project-organization">Project Organization</a></li>
+</ul></li>
+<li><a href="#implementing-and-deploying-the-custom-behavior-in-java">Implementing and deploying the custom behavior in Java</a><ul>
+<li><a href="#step-1-create-a-ratings-model">Step 1: Create a ratings model</a><ul>
+<li><a href="#implement-the-rating-type-and-rateable-aspect">Implement the rating type and rateable aspect</a></li>
+<li><a href="#optionally-configure-the-user-interface">Optionally configure the user interface</a></li>
+<li><a href="#define-a-java-class-to-hold-constants">Define a Java class to hold constants</a></li>
+<li><a href="#write-unit-tests">Write unit tests</a></li>
+</ul></li>
+<li><a href="#step-2-implement-the-custom-behavior">Step 2: Implement the custom behavior</a><ul>
+<li><a href="#write-the-behavior-class">Write the behavior class</a></li>
 <li><a href="#configure-a-spring-bean">Configure a Spring bean</a></li>
-<li><a href="#build-deploy-restart-and-test">Build, deploy, restart and test</a></li>
 </ul></li>
-<li><a href="#javascript-example">JavaScript Example</a><ul>
-<li><a href="#write-the-custom-behavior-as-a-server-side-javascript">Write the custom behavior as a server-side JavaScript</a></li>
-<li><a href="#configure-a-spring-bean-to-bind-the-script-to-the-appropriate-policies">Configure a Spring bean to bind the script to the appropriate policies</a></li>
-<li><a href="#deploy-restart-and-test">Deploy, restart and test</a></li>
+<li><a href="#step-3-create-a-unit-test-for-the-behavior">Step 3: Create a unit test for the behavior</a></li>
 </ul></li>
+<li><a href="#re-implementing-the-behavior-in-javascript">Re-implementing the behavior in JavaScript</a><ul>
+<li><a href="#step-1-write-the-custom-behavior-as-server-side-javascript">Step 1: Write the custom behavior as server-side JavaScript</a></li>
+<li><a href="#step-2-configure-a-spring-bean-to-bind-the-script-to-the-appropriate-policies">Step 2: Configure a Spring bean to bind the script to the appropriate policies</a></li>
+<li><a href="#step-3-test-the-javascript-based-behavior">Step 3: Test the JavaScript-based behavior</a></li>
 </ul></li>
+<li><a href="#deploying-the-amps-to-your-alfresco-server">Deploying the AMPs to your Alfresco server</a></li>
 <li><a href="#conclusion">Conclusion</a></li>
-<li><a href="#where-to-find-more-information">Where to find more information</a></li>
+<li><a href="#where-to-find-more-information">Where to Find More Information</a></li>
 </ul>
 </div>
 <h1 id="license"><a href="#license">License</a></h1>
@@ -63,26 +73,46 @@ Architect | Alfresco Developer Tutorials</title>
 </div>
 <p>This work is licensed under the Creative Commons Attribution-ShareAlike 3.0 Unported License. To view a copy of this license, visit http://creativecommons.org/licenses/by-sa/3.0/ or send a letter to Creative Commons, 444 Castro Street, Suite 900, Mountain View, California, 94041, USA.</p>
 <h1 id="introduction"><a href="#introduction">Introduction</a></h1>
-<p>This article discusses how to write your own custom behavior code in Java or JavaScript and then bind that code to node events or “policies”.</p>
-<p>In previous articles I've discussed how to create custom content models and how to write custom actions. In both cases, we've seen how to write code that works with custom content types, properties, aspects, and associations, but the code wasn't tightly coupled to the objects on which it operated. With an action, the business logic is triggered by something—an item in the user interface, a schedule, or a workflow—rather than being <em>bound</em> to the content type or aspect.</p>
-<p>Actions are very useful when the business logic the action carries out is generic enough to be applied to many types of objects. The out-of-the-box “move” or “add aspect” actions are obvious examples.</p>
-<p>There are times, though, when you want code to be tightly-coupled to a content type because you need to be sure it gets executed rather than leaving it up to a rule on a space that triggers an action or a workflow that does the same. Fortunately, Alfresco provides just such a mechanism—it's called “behaviors”.</p>
-<p>Behaviors are used throughout Alfresco. Auditing and versioning are examples where behaviors are involved. In our work with custom Alfresco implementations behaviors have come in handy several times. In one case we needed to default some metadata values using logic that couldn't be expressed using the Alfresco content model so we wrote a custom behavior that set the metadata appropriately. In another, we needed a way to synchronize metadata between folders and the items in those folders so we wrote a custom behavior to handle the sync.</p>
-<p>In this article we'll see a simple example also based on a real-world implementation: using a custom behavior to compute the average user rating for a piece of content.</p>
-<p>You should already be familiar with general document management and Alfresco web client concepts. If you want to follow along, you should also know how to write basic Java code. See “Where to find more information” at the end of this document for a link to the code samples that accompany this article. Specifically, you may want to read “<a href="http://ecmarchitect.com/images/articles/alfresco-content/content-article.pdf">Working with Custom Content Types</a>” on <a href="http://ecmarchitect.com/">ecmarchitect.com</a> if you aren't already familiar with how to extend Alfresco's content model.</p>
-<h1 id="example-user-ratings"><a href="#example-user-ratings">Example: User ratings</a></h1>
-<p>Recall from the Custom Content Types article that we created a custom type called a Whitepaper for a fictitious company called SomeCo. We used an aspect called “webable” that was attached to content objects we wanted to show on the web. So, for example, SomeCo might use Alfresco to manage all of its whitepapers, but show only a subset on the web. Whitepapers to be shown on the web get the webable aspect attached and the isActive flag set to true. The front-end can then query for whitepapers based on that flag.</p>
-<p>Now let's extend that example further. Suppose that the Marketing folks at SomeCo have caught the Web 2.0 bug and they've decided to add user ratings to their web site. They would like users to be able to assign a rating to a whitepaper and to display the average of all ratings received for a specific whitepaper.</p>
-<p>Assuming we want to store the ratings in Alfresco instead of directly in a relational database, one way to do this would be to create a custom “rating” type that would be related to a whitepaper through a child association. We could create a “rateable” aspect that would define the association as well as a property to store the average rating for that whitepaper.</p>
+<p>This tutorial discusses how to write your own custom behavior code in Java or JavaScript and then bind that code to node events or “policies”.</p>
+<p>In previous tutorials I've discussed how to create <a href="http://ecmarchitect.com/alfresco-developer-series-tutorials/content/tutorial/tutorial.html">custom content models</a> and how to write <a href="http://ecmarchitect.com/alfresco-developer-series-tutorials/actions/tutorial/tutorial.html">custom actions</a>. In both cases, you've seen how to write code that works with custom content types, properties, aspects, and associations, but the code wasn't tightly coupled to the objects on which it operated. For example, with an action, the business logic is triggered by something—a rule, a clicked link in the user interface, a schedule, or a workflow—rather than being <em>bound</em> to the content type or aspect.</p>
+<p>Actions are very useful when the business logic the action carries out is generic enough to be applied to many types of objects. The out-of-the-box &quot;copy&quot;, &quot;move&quot;, or &quot;add aspect&quot; actions are obvious examples.</p>
+<p>There are times, though, when you want code to be tightly-coupled to a content type because you need to be sure it gets executed every time something happens to that object rather than leaving it up to a rule on a folder or some other trigger. Fortunately, Alfresco provides just such a mechanism—it's called <em>behavior</em>.</p>
+<p>Behaviors are used throughout Alfresco. Auditing and versioning are examples where behaviors are involved. Here are a couple of other real world examples where behaviors might be useful:</p>
+<ul>
+<li>You might need to default some metadata values using logic that can't be expressed using Alfresco content model XML. An example might be that you want to generate a unique identifier for an object when it is added to the repository. You can write a custom behavior that will set the property with the value of the identifier regardless of how the object is created.</li>
+<li>Suppose you have some metadata stored on a folder and you want some of that metadata to be copied to items that get placed in those folders. You could write a custom behavior to handle this kind of synchronization.</li>
+</ul>
+<p>In this tutorial you'll see a simple example also based on a real-world implementation: Using a custom behavior to compute the average user rating (based on a five star scale) for a piece of content.</p>
+<p>As a side-note, Alfresco has rating functionality built-in. Out-of-the-box it uses a simple &quot;like&quot; model but the underlying model supports other schemes. This tutorial completely ignores what's available out-of-the-box.</p>
+<p>You should already be familiar with general Alfresco concepts. If you want to follow along, you should also know how to write basic Java code. You may want to work through the <a href="http://ecmarchitect.com/alfresco-developer-series-tutorials/content/tutorial/tutorial.html">custom content models tutorial</a> if you aren't already familiar with how to extend Alfresco's content model.</p>
+<p>All of the source code that accompanies this tutorial is available on <a href="https://github.com/jpotts/alfresco-developer-series">GitHub</a>.</p>
+<h1 id="introducing-the-user-ratings-example"><a href="#introducing-the-user-ratings-example">Introducing the user ratings example</a></h1>
+<p>Recall that the custom content types tutorial created a custom type called &quot;whitepaper&quot; for a fictitious company called SomeCo. The custom model also included an aspect called “webable” that gets attached to content objects SomeCo wants to show on the web. So, for example, SomeCo might use Alfresco to manage all of its whitepapers, but show only a subset on the web. Whitepapers that need to be shown on the web get the webable aspect attached and the <code>sc:isActive</code> flag set to <code>true</code>. The front-end can then query for whitepapers based on that flag.</p>
+<p>Now let's extend that example further. Suppose that the Marketing folks at SomeCo have decided to add user ratings to their web site. They would like users to be able to assign a rating to a whitepaper and to display the average of all ratings received for a specific whitepaper.</p>
+<p>Assuming SomeCo wants to store the ratings in Alfresco instead of some other repository, like a relational or NoSQL database, one way to do this is to create a custom “rating” type that is related to a whitepaper through a child association. A custom “rateable” aspect can be used to define the association as well as a property to store the average rating for that whitepaper. Any object in the repository will get all of the metadata it needs to become &quot;rateable&quot; simply by adding the aspect to the object.</p>
 <p>The image below shows the original custom content model with these enhancements.</p>
 <div class="figure">
-<img src="./images/behavior-article_html_m6f77ecf9.png" alt="SomeCo&#39;s content model modified to support ratings" /><p class="caption">SomeCo's content model modified to support ratings</p>
+<img src="./images/someco-model-with-ratings.png" alt="SomeCo&#39;s content model modified to support ratings" /><p class="caption">SomeCo's content model modified to support ratings</p>
 </div>
-<p>That takes care of the data model, but where should we put the code that computes the average? One way to handle it would be to write an action that gets called by a rule. Any time a rating is added to a folder, the rule would trigger the action to update the average. But this isn't the best option because every time you wanted to use user ratings you'd have to make sure to set up a rule on the folder. A scheduled action might not be bad—it could be written to find all objects with the rateable aspect and then compute the average. But if you want the average rating computed in real-time (and let's assume we do) a scheduled action isn't a a great option.</p>
-<p>As you've already guessed, the best option in our example is to use a behavior. We'll write the logic we need to compute the average and then bind it to the appropriate policies on the rating content type. Any time a rating gets created (or deleted), it will know how to find its parent (the whitepaper) and recalculate the average.</p>
+<p>That takes care of the data model, but what about the code that computes the average? There are a few options to consider:</p>
+<ol style="list-style-type: decimal">
+<li><strong>Rule Action</strong>. One way to handle it would be to write an action that gets called by a rule. Any time a rating is added to a folder, the rule would trigger the action to update the average. But this isn't the best option because every time SomeCo wants to use user ratings functionality, they'd have to make sure to set up a rule on the folder.</li>
+<li><strong>Scheduled Action</strong>. A scheduled action might not be bad—it could be written to find all objects with the rateable aspect and then compute the average. But if SomeCo wants the average rating computed in real-time (and let's assume they do) a scheduled action isn't a great option.</li>
+<li><strong>Behavior</strong>. The third (and best) option is to use a behavior. The behavior will contain the logic needed to compute the average. It will be bound to the appropriate policies on the rating content type so that any time a rating gets created (or deleted), the behavior will find the rating's parent (the whitepaper) and recalculate the average rating.</li>
+</ol>
 <h2 id="what-can-trigger-a-behavior"><a href="#what-can-trigger-a-behavior">What can trigger a behavior?</a></h2>
-<p>So the rating content type will be bound to business logic that knows how to compute the overall average rating for a whitepaper. But what will trigger that logic? The answer is that there are a bunch of <em>policies</em> to which your behavior can be bound. To find out what's available, you need only look as far as the source code (or Javadocs). If you grep the “repository” project in the Alfresco source code for classes that end in “*Policies.java” you'll find four interfaces. Each of those interfaces contains inner interfaces that represent the policies you can hook into. Check the Javadocs or source code for specifics—I'm listing the methods in Table 1 so you can see the breadth of what's available.</p>
-<p>Note: To make it easier to read, I'm omitting the inner interface which follows the pattern of &lt;method-name&gt;Policy. For example, the onContentUpdate method is a method of the inner interface OnContentUpdatePolicy.</p>
+<p>So the rating content type will contain business logic that knows how to compute the overall average rating for a whitepaper. But what will trigger that logic? The answer is that there are a bunch of <em>policies</em> to which your behavior can be bound. To find out what's available, you need only look as far as the source code (or the <a href="http://dev.alfresco.com/resource/docs/java/repository/index.html?index-all.html">Javadocs</a>). If you search for classes that end in &quot;*Policies&quot; you'll find several interfaces, including:</p>
+<ul>
+<li>CheckOutCheckInServicePolicies</li>
+<li>ContentServicePolicies</li>
+<li>CopyServicePolicies</li>
+<li>LockServicePolicies</li>
+<li>NodeServicePolicies</li>
+<li>TransferServicePolicies</li>
+<li>VersionServicePolicies</li>
+</ul>
+<p>Each of those interfaces contains inner interfaces that represent the policies you can hook into. Check the Javadocs or source code for specifics—I'm listing the methods in the table below so you can see an example of what's available.</p>
+<p>Note: To make it easier to read, I'm omitting the inner interface which follows the pattern of <code>&lt;method-name&gt;Policy</code>. For example, the <code>onContentUpdate</code> method is a method of the inner interface <code>OnContentUpdatePolicy</code>.</p>
 <table>
 <caption>Policies available for behavior binding</caption>
 <thead>
@@ -94,254 +124,280 @@ Architect | Alfresco Developer Tutorials</title>
 <tbody>
 <tr class="odd">
 <td align="left">org.alfresco.repo.content.ContentServicePolicies</td>
-<td align="left">onContentUpdate</td>
+<td align="left">onContentPropertyUpdate<br />onContentRead<br />onContentUpdate</td>
 </tr>
 <tr class="even">
-<td align="left"></td>
-<td align="left">onContentRead</td>
-</tr>
-<tr class="odd">
 <td align="left">org.alfresco.repo.copy.CopyServicePolicies</td>
-<td align="left">onCopyNode</td>
-</tr>
-<tr class="even">
-<td align="left"></td>
-<td align="left">onCopyComplete</td>
+<td align="left">beforeCopy<br />onCopyComplete<br />onCopyNode</td>
 </tr>
 <tr class="odd">
 <td align="left">org.alfresco.repo.node.NodeServicePolicies</td>
-<td align="left">beforeCreateStore</td>
+<td align="left">beforeAddAspect<br />beforeArchiveNode<br />beforeCreateNode<br />beforeCreateStore<br />beforeDeleteAssociation<br />beforeDeleteChildAssociation<br />beforeDeleteNode<br />beforeMoveNode<br />beforeRemoveAspect<br />beforeSetNodeType<br />beforeUpdateNode<br />onAddAspect<br />onCreateAssociation<br />onCreateChildAssociation<br />onCreateNode<br />onCreateStore<br />onDeleteAssociation<br />onDeleteChildAssociation<br />onDeleteNode<br />onMoveNode<br />onRemoveAspect<br />onSetNodeType<br />onUpdateNode<br />onUpdateProperties</td>
 </tr>
 <tr class="even">
-<td align="left"></td>
-<td align="left">onCreateStore</td>
-</tr>
-<tr class="odd">
-<td align="left"></td>
-<td align="left">beforeCreateNode</td>
-</tr>
-<tr class="even">
-<td align="left"></td>
-<td align="left">onCreateNode</td>
-</tr>
-<tr class="odd">
-<td align="left"></td>
-<td align="left">onMoveNode</td>
-</tr>
-<tr class="even">
-<td align="left"></td>
-<td align="left">beforeUpdateNode</td>
-</tr>
-<tr class="odd">
-<td align="left"></td>
-<td align="left">onUpdateNode</td>
-</tr>
-<tr class="even">
-<td align="left"></td>
-<td align="left">onUpdateProperties</td>
-</tr>
-<tr class="odd">
-<td align="left"></td>
-<td align="left">beforeDeleteNode</td>
-</tr>
-<tr class="even">
-<td align="left"></td>
-<td align="left">onDeleteNode</td>
-</tr>
-<tr class="odd">
-<td align="left"></td>
-<td align="left">beforeAddAspect</td>
-</tr>
-<tr class="even">
-<td align="left"></td>
-<td align="left">onAddAspect</td>
-</tr>
-<tr class="odd">
-<td align="left"></td>
-<td align="left">beforeRemoveAspect</td>
-</tr>
-<tr class="even">
-<td align="left"></td>
-<td align="left">onRemoveAspect</td>
-</tr>
-<tr class="odd">
-<td align="left"></td>
-<td align="left">beforeCreateNodeAssociation</td>
-</tr>
-<tr class="even">
-<td align="left"></td>
-<td align="left">onCreateNodeAssociation</td>
-</tr>
-<tr class="odd">
-<td align="left"></td>
-<td align="left">beforeCreateChildAssociation</td>
-</tr>
-<tr class="even">
-<td align="left"></td>
-<td align="left">onCreateChildAssociation</td>
-</tr>
-<tr class="odd">
-<td align="left"></td>
-<td align="left">beforeDeleteChildAssociation</td>
-</tr>
-<tr class="even">
-<td align="left"></td>
-<td align="left">onDeleteChildAssociation</td>
-</tr>
-<tr class="odd">
-<td align="left"></td>
-<td align="left">onCreateAssociation</td>
-</tr>
-<tr class="even">
-<td align="left"></td>
-<td align="left">onDeleteAssociation</td>
-</tr>
-<tr class="odd">
 <td align="left">org.alfresco.repo.version.VersionServicePolicies</td>
-<td align="left">beforeCreateVersion</td>
-</tr>
-<tr class="even">
-<td align="left"></td>
-<td align="left">afterCreateVersion</td>
-</tr>
-<tr class="odd">
-<td align="left"></td>
-<td align="left">onCreateVersion</td>
-</tr>
-<tr class="even">
-<td align="left"></td>
-<td align="left">calculateVersionLabel</td>
+<td align="left">beforeCreateVersion<br />afterCreateVersion<br />onCreateVersion<br />calculateVersionLabel</td>
 </tr>
 </tbody>
 </table>
-<p>Which policy shall we use? We need to recalculate a whitepaper's rating either when a new rating is created or when a rating is deleted. One possibility would be to bind our behavior to the NodeService policy's onCreateChildAssociation and onDeleteChildAssociation policy for the whitepaper node. But that would mean we'd constantly be inspecting the association type to see if it we wanted to take any action because there could be other child associations besides ratings. Instead, we'll bind to the rating node's onCreateNode and onDeleteNode policies.</p>
+<p>The rating behavior needs to recalculate a whitepaper's rating either when a new rating is created or when a rating is deleted. One possibility would be to bind the behavior to the <code>NodeService</code> policy's <code>onCreateChildAssociation</code> and <code>onDeleteChildAssociation</code> policy for the whitepaper node. But that would mean constantly inspecting the association type to see if the rating needed to be recalculated because there could be other child associations added to the node besides ratings. Instead, the rating behavior will bind to the rating node's <code>onCreateNode</code> and <code>onDeleteNode</code> policies.</p>
 <h2 id="java-or-javascript"><a href="#java-or-javascript">Java or JavaScript?</a></h2>
-<p>There are two options for writing the code for the behavior: Java or JavaScript. The decision as to which one to use depends on the standards you've settled on for the solution you are building. In this article, we'll implement the ratings example using Java but I'll also show you how to use JavaScript as an alternative.</p>
-<h2 id="implementing-and-deploying-the-custom-behavior"><a href="#implementing-and-deploying-the-custom-behavior">Implementing and deploying the custom behavior</a></h2>
-<p>Before we start, a couple of notes about my setup:</p>
+<p>There are two options for writing the code for the behavior: Java or JavaScript. Which one to use depends on the standards you've settled on for the solution you are building. This tutorial will implement the ratings example using Java first and then again in JavaScript so you can see how it is done.</p>
+<h1 id="setup"><a href="#setup">Setup</a></h1>
+<p>Before getting too far down the road, let me tell you about the tools you'll need and then give you a description of the project organization.</p>
+<h2 id="tools"><a href="#tools">Tools</a></h2>
+<p>Here is what I am using on my machine:</p>
 <ul>
-<li>Ubuntu Dapper Drake (I know, I know. Past due for an upgrade).</li>
-<li>MySQL 4.1</li>
-<li>Tomcat 5.5.x</li>
-<li>Alfresco 2.1.0 Enterprise, WAR-only distribution</li>
+<li>Mac OS X 10.9.1</li>
+<li>Java 1.7.0_51</li>
+<li>Apache Maven 3.0.5 (installed using Macports)</li>
+<li>Alfresco Maven SDK, AMP Archetype 1.1.1 (No download necessary)</li>
+<li>Eclipse Java EE IDE for Web Developers, Kepler</li>
+<li>Alfresco Community Edition 4.2.e (<a href="http://www.alfresco.com/products/community">Download</a>)</li>
 </ul>
-<p>Obviously, other operating systems, databases, and application servers will work as well. Some of the functionality used in this example is available only with 2.1 so your mileage my vary if you use an older release.</p>
-<p>I'll also be building on the custom model defined in the Custom Types article. That code was originally written for Alfresco 2.0.1 but will run fine on Alfresco 2.1.0 with no changes needed. You don't need to download the code from that article for the code in this article to work. The code supplied with this article is a superset.</p>
-<h2 id="java-example"><a href="#java-example">Java Example</a></h2>
-<p>Let's do the Java example first. Here are the steps we are going to follow:</p>
+<p>By default, when you create an Alfresco project using version 1.1.1 of the Alfresco Maven SDK the project will be configured to depend on Alfresco Community Edition 4.2.e.</p>
+<p>The Eclipse IDE is optional. Most people working with Alfresco use Eclipse or something similar, so this tutorial will assume that's what you are using.</p>
+<h2 id="project-organization"><a href="#project-organization">Project Organization</a></h2>
+<p>I am going to use the Alfresco Maven SDK to create two projects that will package up my customizations as AMPs (Alfresco Module Packages). One project will create an AMP for the &quot;repo&quot; tier and one project will create an AMP for the &quot;share&quot; tier. I will also create a third &quot;common&quot; project for a Java class that will be used by this and other tutorials.</p>
+<p>I am not going to spend much time talking about how the Alfresco Maven SDK works. If you aren't already familiar with it, you may want to read the <a href="http://ecmarchitect.com/alfresco-developer-series">Getting Started with the Alfresco Maven SDK</a> tutorial on ecmarchitect.com first and then come back to this one.</p>
+<p>If you are planning on following along, go ahead and use the Alfresco Maven SDK to create the repo tier and share tier projects. Use an <code>artifactId</code> of &quot;com.someco&quot; for everything. For the repo project, use a <code>groupId</code> of &quot;behavior-tutorial-repo&quot;. For the share tier project use a <code>groupId</code> of &quot;behavior-tutorial-share&quot;.</p>
+<h1 id="implementing-and-deploying-the-custom-behavior-in-java"><a href="#implementing-and-deploying-the-custom-behavior-in-java">Implementing and deploying the custom behavior in Java</a></h1>
+<p>Let's do the Java example first. Here are the steps:</p>
 <ol style="list-style-type: decimal">
-<li>Extend the SomeCo model defined in the previous article with our new rateable aspect and rating type (and all the UI config steps that go with it).</li>
-<li>Write server-side JavaScript that creates test ratings.</li>
-<li>Write the custom behavior bean and bind it to the appropriate policies.</li>
-<li>Configure a Spring bean to initialize our behavior class and pass in any dependencies.</li>
-<li>Build, deploy, restart and test.</li>
+<li>Create a new custom model specifically for ratings. The model will define the new rateable aspect and rating type.</li>
+<li>Write the custom behavior class and bind it to the appropriate policies. Configure a Spring bean to initialize the behavior class and pass in any dependencies.</li>
+<li>Write and execute a unit test for the behavior.</li>
 </ol>
 <p>Let's get started.</p>
-<h3 id="extend-the-model"><a href="#extend-the-model">Extend the model</a></h3>
-<p>Open the scModel.xml file we created in the previous article. We need to add a new type and a new aspect. Insert the “scr:rating” type definition after the existing “sc:whitepaper” definiton:</p>
-<pre><code>&lt;type name=&quot;scr:rating&quot;&gt;
-    &lt;title&gt;Someco Rating&lt;/title&gt;
-    &lt;parent&gt;sys:base&lt;/parent&gt;
-    &lt;properties&gt;
-        &lt;property name=&quot;scr:rating&quot;&gt;
-            &lt;type&gt;d:int&lt;/type&gt;
-            &lt;mandatory&gt;true&lt;/mandatory&gt;
-        &lt;/property&gt;
-        &lt;property name=&quot;scr:rater&quot;&gt;
-            &lt;type&gt;d:text&lt;/type&gt;
-            &lt;mandatory&gt;true&lt;/mandatory&gt;
-        &lt;/property&gt;
-    &lt;/properties&gt;
-&lt;/type&gt;</code></pre>
-<p>Note that scr:rating inherits from sys:base. That's because we don't intend to store any content in a rating object, only properties.</p>
-<p>Now add the “scr:rateable” aspect after the existing “scr:productRelated” aspect. The rateable aspect will have one property to store the average rating and will also define the child association for a piece of content's related ratings. Using an aspect gives us the ability to add ratings functionality to any piece of content in the repository. (In fact, you don't need any of the SomeCo model from the previous article to use the ratings functionality. That's the beauty of aspects).</p>
-<pre><code>&lt;aspect name=&quot;scr:rateable&quot;&gt;
-    &lt;title&gt;Someco Rateable&lt;/title&gt;
-    &lt;properties&gt;
-        &lt;property name=&quot;scr:averageRating&quot;&gt;
-            &lt;type&gt;d:double&lt;/type&gt;
-            &lt;mandatory&gt;false&lt;/mandatory&gt;
-        &lt;/property&gt;
-    &lt;/properties&gt;
-    &lt;associations&gt;
-        &lt;child-association name=&quot;scr:ratings&quot;&gt;
-            &lt;title&gt;Rating&lt;/title&gt;
-            &lt;source&gt;
+<h2 id="step-1-create-a-ratings-model"><a href="#step-1-create-a-ratings-model">Step 1: Create a ratings model</a></h2>
+<p>In this step you will implement a content model used to persist ratings, optionally configure the user interface so you can see the average rating and rating count in Alfresco Share, define a Java class to hold constants for the model, and write a unit test to test the new aspect.</p>
+<h3 id="implement-the-rating-type-and-rateable-aspect"><a href="#implement-the-rating-type-and-rateable-aspect">Implement the rating type and rateable aspect</a></h3>
+<p>As you learned in the content types tutorial, models are defined using XML and the XML file resides in:</p>
+<pre><code>$TUTORIAL_HOME/behavior-tutorial-repo/src/main/amp/config/alfresco/module/behavior-tutorial-repo/model</code></pre>
+<p>The Alfresco Maven SDK should have created everything for you except the model directory. Go ahead and create that now.</p>
+<p>Now, create a new model XML file called &quot;<a href="https://github.com/jpotts/alfresco-developer-series/blob/master/behaviors/behavior-tutorial-repo/src/main/amp/config/alfresco/module/behavior-tutorial-repo/model/scRatingsModel.xml">scRatingsModel.xml</a>&quot; with the following content:</p>
+<pre><code>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;!-- Definition of new Model --&gt;
+&lt;model name=&quot;scr:somecoratingsmodel&quot; xmlns=&quot;http://www.alfresco.org/model/dictionary/1.0&quot;&gt;
+
+    &lt;!-- Optional meta-data about the model --&gt;
+    &lt;description&gt;Someco Ratings Model&lt;/description&gt;
+    &lt;author&gt;Jeff Potts&lt;/author&gt;
+    &lt;version&gt;1.0&lt;/version&gt;
+
+    &lt;!-- Imports are required to allow references to definitions in other models --&gt;
+    &lt;imports&gt;
+        &lt;!-- Import Alfresco Dictionary Definitions --&gt;
+        &lt;import uri=&quot;http://www.alfresco.org/model/dictionary/1.0&quot; prefix=&quot;d&quot; /&gt;
+        &lt;!-- Import Alfresco Content Domain Model Definitions --&gt;
+        &lt;import uri=&quot;http://www.alfresco.org/model/content/1.0&quot; prefix=&quot;cm&quot; /&gt;
+        &lt;import uri=&quot;http://www.alfresco.org/model/system/1.0&quot; prefix=&quot;sys&quot; /&gt;
+    &lt;/imports&gt;
+
+    &lt;!-- Introduction of new namespaces defined by this model --&gt;
+    &lt;namespaces&gt;
+        &lt;namespace uri=&quot;http://www.someco.com/model/ratings/1.0&quot; prefix=&quot;scr&quot; /&gt;
+    &lt;/namespaces&gt;
+&lt;/model&gt;</code></pre>
+<p>The model needs a type and an aspect. The chunk of XML below does that. Insert it after the closing <code>namespaces</code> element:</p>
+<pre><code>&lt;types&gt;
+    &lt;type name=&quot;scr:rating&quot;&gt;
+        &lt;title&gt;Someco Rating&lt;/title&gt;
+        &lt;parent&gt;sys:base&lt;/parent&gt;
+        &lt;properties&gt;
+            &lt;property name=&quot;scr:rating&quot;&gt;
+                &lt;type&gt;d:int&lt;/type&gt;
+                &lt;mandatory&gt;true&lt;/mandatory&gt;
+            &lt;/property&gt;
+            &lt;property name=&quot;scr:rater&quot;&gt;
+                &lt;type&gt;d:text&lt;/type&gt;
+                &lt;mandatory&gt;true&lt;/mandatory&gt;
+            &lt;/property&gt;
+        &lt;/properties&gt;
+    &lt;/type&gt;
+&lt;/types&gt;</code></pre>
+<p>Note that <code>scr:rating</code> inherits from <code>sys:base</code>. That's because rating objects aren't going to store any content, they will only store properties.</p>
+<p>Now add the <code>scr:rateable</code> aspect. The <code>aspects</code> element goes after the closing <code>types</code> element:</p>
+<pre><code>&lt;aspects&gt;
+    &lt;aspect name=&quot;scr:rateable&quot;&gt;
+        &lt;title&gt;Someco Rateable&lt;/title&gt;
+        &lt;properties&gt;
+            &lt;property name=&quot;scr:averageRating&quot;&gt;
+                &lt;type&gt;d:double&lt;/type&gt;
                 &lt;mandatory&gt;false&lt;/mandatory&gt;
-                &lt;many&gt;true&lt;/many&gt;
-            &lt;/source&gt;
-            &lt;target&gt;
-                &lt;class&gt;scr:rating&lt;/class&gt;
+            &lt;/property&gt;
+            &lt;property name=&quot;scr:totalRating&quot;&gt;
+                &lt;type&gt;d:int&lt;/type&gt;
                 &lt;mandatory&gt;false&lt;/mandatory&gt;
-                &lt;many&gt;true&lt;/many&gt;
-            &lt;/target&gt;
-        &lt;/child-association&gt;
-    &lt;/associations&gt;
-&lt;/aspect&gt;</code></pre>
-<p>The rateable properties and associations need to show up on property sheets for objects with the aspect so add the following to web-client-config-custom.xml:</p>
-<pre><code>&lt;!-- add rateable aspect properties to property sheet --&gt;
-&lt;config evaluator=&quot;aspect-name&quot; condition=&quot;scr:rateable&quot;&gt;
-    &lt;property-sheet&gt;
-        &lt;show-property name=&quot;scr:averageRating&quot; display-label-id=&quot;average&quot;
-        read-only=&quot;true&quot; /&gt;
-        &lt;show-child-association name=&quot;scr:ratings&quot; display-label-id=&quot;ratings&quot;
-        read-only=&quot;false&quot; /&gt;
-    &lt;/property-sheet&gt;
-&lt;/config&gt;</code></pre>
-<p>The rateable aspect needs to show up on the “add aspect” list so add the rateable aspect to the existing list of SomeCo custom aspects in web-client-config-custom.xml. Note that this snippet only shows the “&lt;aspects&gt;” element of the “Action Wizards” config. The rest is unchanged from the previous article:</p>
-<pre><code>&lt;config evaluator=&quot;string-compare&quot; condition=&quot;Action Wizards&quot;&gt;
-    &lt;!-- The list of aspects to show in the add/remove features action --&gt;
-    &lt;!-- and the has-aspect condition --&gt;
-    &lt;aspects&gt;
-        &lt;aspect name=&quot;scr:webable&quot;/&gt;
-        &lt;aspect name=&quot;scr:productRelated&quot;/&gt;
-        &lt;aspect name=&quot;scr:rateable&quot;/&gt;
-    &lt;/aspects&gt;
-    &lt;!-- Remaining config is unchanged --&gt;
-&lt;/config&gt;</code></pre>
-<p>The label IDs need values in the webclient.properties file:</p>
-<pre><code>#scr:rateable
-average=Avg Rating
-ratings=Ratings</code></pre>
-<p>Recall that in the previous article we decided it was a good idea to use a class for our model to store constants such as the names of types, properties, and aspects. Modify com.someco.model.SomeCoModel.java to include new constants for the type, aspect, and properties we just added to the model.</p>
-<pre><code>public static final String TYPE_SC_RATING = &quot;rating&quot;;
-public static final String ASPECT_SC_RATEABLE = &quot;rateable&quot;;
-public static final String PROP_RATING = &quot;rating&quot;;
-public static final String PROP_AVERAGE_RATING = &quot;averageRating&quot;;</code></pre>
-<p>That's all we need to do for the model. After restarting Alfresco you should see the aspect in the “Add Aspect” action configuration wizard.</p>
-<h3 id="write-a-server-side-javascript-file-that-creates-test-data"><a href="#write-a-server-side-javascript-file-that-creates-test-data">Write a server-side JavaScript file that creates test data</a></h3>
-<p>In the last article we used Java to test out the model by writing code against the Alfresco Web Services API. This time, let's use JavaScript to create a server-side script that we can run any time we need to create some test rating nodes for a piece of content.</p>
-<p>First, log in to the Alfresco web client and navigate to Company Home/Data Dictionary/Scripts.</p>
-<p>Next, create a new piece of content named addTestRating.js with the following content:</p>
-<pre><code>// add the aspect to this document if it needs it
-if (document.hasAspect(&quot;scr:rateable&quot;)) {
-    logger.log(&quot;Document already as aspect&quot;);
-} else {
-    logger.log(&quot;Adding rateable aspect&quot;);
-    document.addAspect(&quot;scr:rateable&quot;);
-}
+            &lt;/property&gt;
+            &lt;property name=&quot;scr:ratingCount&quot;&gt;
+                &lt;type&gt;d:int&lt;/type&gt;
+                &lt;mandatory&gt;false&lt;/mandatory&gt;
+            &lt;/property&gt;             
+        &lt;/properties&gt;
+        &lt;associations&gt;
+            &lt;child-association name=&quot;scr:ratings&quot;&gt;
+                &lt;title&gt;Rating&lt;/title&gt;
+                &lt;source&gt;
+                    &lt;mandatory&gt;false&lt;/mandatory&gt;
+                    &lt;many&gt;true&lt;/many&gt;
+                &lt;/source&gt;
+                &lt;target&gt;
+                    &lt;class&gt;scr:rating&lt;/class&gt;
+                    &lt;mandatory&gt;false&lt;/mandatory&gt;
+                    &lt;many&gt;true&lt;/many&gt;
+                &lt;/target&gt;
+            &lt;/child-association&gt;
+        &lt;/associations&gt;
+    &lt;/aspect&gt;
+&lt;/aspects&gt;</code></pre>
+<p>The <code>scr:rateable</code> aspect has three properties used to store the average rating, total rating, and rating count. It also defines the child association between a piece of content and its ratings.</p>
+<p>Using an aspect means any piece of content in the repository can become &quot;rateable&quot; simply by adding the aspect to the object. SomeCo may start out using ratings only for whitepapers and then decide later to use them for other types of content. If so, it won't require any code changes. That's the beauty of aspects.</p>
+<p>Alfresco needs to know about the new model. Models are registered through Spring. The Spring context file is called <a href="https://github.com/jpotts/alfresco-developer-series/blob/master/behaviors/behavior-tutorial-repo/src/main/amp/config/alfresco/module/behavior-tutorial-repo/context/service-context.xml">service-context.xml</a> and it lives in:</p>
+<pre><code>$TUTORIAL_HOME/behavior-tutorial-repo/src/main/amp/config/alfresco/module/behavior-tutorial-repo/context</code></pre>
+<p>The bean refers to the model XML file created earlier as well as a properties file that doesn't exist yet:</p>
+<pre><code>&lt;bean id=&quot;${project.artifactId}_dictionaryBootstrap&quot; parent=&quot;dictionaryModelBootstrap&quot; depends-on=&quot;dictionaryBootstrap&quot;&gt;
+    &lt;property name=&quot;models&quot;&gt;
+        &lt;list&gt;                
+            &lt;value&gt;alfresco/module/${project.artifactId}/model/scRatingsModel.xml&lt;/value&gt;                
+        &lt;/list&gt;
+    &lt;/property&gt;
+    &lt;property name=&quot;labels&quot;&gt;
+        &lt;list&gt;
+            &lt;value&gt;alfresco/module/${project.artifactId}/messages/scRatingsModel&lt;/value&gt;
+        &lt;/list&gt;        
+    &lt;/property&gt;        
+&lt;/bean&gt;</code></pre>
+<p>With that, the model is set up and ready to go.</p>
+<h3 id="optionally-configure-the-user-interface"><a href="#optionally-configure-the-user-interface">Optionally configure the user interface</a></h3>
+<p>Behaviors operate behind the scenes. So, really, there is no reason to configure the user interface at all. But I like to do it because it makes it easier to debug. And, SomeCo might want to use Alfresco Share to see the average rating and rating count for a piece of content that has the rateable aspect.</p>
+<p>In the previous step you added a Spring bean that referred to a properties bundle used for the labels associated with the model. The labels go in a file called <a href="https://github.com/jpotts/alfresco-developer-series/blob/master/behaviors/behavior-tutorial-repo/src/main/amp/config/alfresco/module/behavior-tutorial-repo/messages/scRatingsModel.properties">scRatingsModel.properties</a>. That file lives in:</p>
+<pre><code>$TUTORIAL_HOME/behavior-tutorial-repo/src/main/amp/config/alfresco/module/behavior-tutorial-repo/messages</code></pre>
+<p>The content of that file looks like this:</p>
+<pre><code>#scr:rating
+scr_somecoratingsmodel.type.scr_rating.title=Rating
+scr_somecoratingsmodel.property.scr_rating.title=Rating
+scr_somecoratingsmodel.property.scr_rater.title=Rater
 
-// randomly pick a num b/w 1 and 5 inclusive
-var ratingValue = Math.floor(Math.random()*5) + 1;
-var props = new Array(2);
-props[&quot;scr:rating&quot;] = ratingValue;
-props[&quot;scr:rater&quot;] = person.properties.userName;
+#scr:rateable
+scr_somecoratingsmodel.aspect.scr_rateable.title=SomeCo Rateable
+scr_somecoratingsmodel.property.scr_averageRating=Average Rating
+scr_somecoratingsmodel.association.scr_ratings.title=Ratings</code></pre>
+<p>That's all that's needed in the behavior-tutorial-repo project. The rest of the user interface configuration takes place in the behavior-tutorial-share project.</p>
+<p>Because these steps have already been covered in the custom content types tutorial, I'll just list the files here and you can either copy them into your project or do without them:</p>
+<ul>
+<li>$TUTORIAL_HOME/behavior-tutorial-share/src/main/resources/META-INF/<a href="https://github.com/jpotts/alfresco-developer-series/blob/master/behaviors/behavior-tutorial-share/src/main/resources/META-INF/share-config-custom.xml">share-config-custom.xml</a>. The configuration in this file adds the rateable aspect to the list of aspects users can manage. It also defines which properties should be displayed when showing the property list for a piece of content with the rateable aspect applied.</li>
+<li>$TUTORIAL_HOME/behavior-tutorial-share/src/main/amp/config/alfresco/web-extension/<a href="https://github.com/jpotts/alfresco-developer-series/blob/master/behaviors/behavior-tutorial-share/src/main/amp/config/alfresco/web-extension/behavior-tutorial-share-context.xml">behavior-tutorial-share-context.xml</a>. This is the Spring context file that tells Alfresco Share where to find the properties bundle.</li>
+<li>$TUTORIAL_HOME/behavior-tutorial-share/src/main/amp/config/alfresco/module/behavior-tutorial-share/messages/<a href="https://github.com/jpotts/alfresco-developer-series/blob/master/behaviors/behavior-tutorial-share/src/main/amp/config/alfresco/module/behavior-tutorial-share/messages/scRatingsModel.properties">scRatingsModel.properties</a>. This is the properties bundle for the module that Alfresco Share will use to localize the labels.</li>
+</ul>
+<p>Now the Alfresco Share user interface will know how to show values for the average rating and rating count when a piece of content with the rateable aspect is displayed.</p>
+<h3 id="define-a-java-class-to-hold-constants"><a href="#define-a-java-class-to-hold-constants">Define a Java class to hold constants</a></h3>
+<p>I've created a project called behavior-tutorial-common. It will contain a Java class called <a href="https://github.com/jpotts/alfresco-developer-series/blob/master/behaviors/behavior-tutorial-common/src/main/java/com/someco/model/SomeCoRatingsModel.java">SomeCoRatingsModel</a>. The only reason I am breaking it out into its own project is that it makes it easier for other projects to use it as a dependency.</p>
+<p>The class looks like this:</p>
+<pre><code>public interface SomeCoRatingsModel {
 
-// create a new ratings node and set its properties
-var ratingsNode = document.createNode(&quot;rating&quot; + new Date().getTime(), &quot;scr:rating&quot;, props, &quot;scr:ratings&quot;);
+    // Namespaces
+    public static final String NAMESPACE_SOMECO_RATINGS_CONTENT_MODEL  = &quot;http://www.someco.com/model/ratings/1.0&quot;;
+    
+    // Types
+    public static final String TYPE_SCR_RATING = &quot;rating&quot;;
+        
+    // Aspects
+    public static final String ASPECT_SCR_RATEABLE = &quot;rateable&quot;;
+    
+    // Properties
+    public static final String PROP_RATING = &quot;rating&quot;;
+    public static final String PROP_RATER = &quot;rater&quot;;
+    public static final String PROP_AVERAGE_RATING= &quot;averageRating&quot;;
+    public static final String PROP_TOTAL_RATING= &quot;totalRating&quot;;
+    public static final String PROP_RATING_COUNT= &quot;ratingCount&quot;;
+    
+    // Associations
+    public static final String ASSN_SCR_RATINGS = &quot;ratings&quot;;
+}</code></pre>
+<p>These are just constants that will be used by the behavior class and other classes in other tutorials when they need to refer to the rating type, rateable aspect, or any of the properties by name.</p>
+<h3 id="write-unit-tests"><a href="#write-unit-tests">Write unit tests</a></h3>
+<p>The Alfresco Maven SDK will automatically run unit tests when <code>mvn install</code> runs. If you're a TDD (Test-Driven Development) kind of person you could add a test for the to-be-developed behavior. For now, I'll just create a test to make sure I can successfully add the <code>scr:rateable</code> aspect to a piece of content. The rating type will get tested shortly.</p>
+<p>The test class goes in:</p>
+<pre><code>$TUTORIAL_HOME/behavior-tutorial-repo/src/test/java/com/someco/behavior/test</code></pre>
+<p>Here is the <a href="https://github.com/jpotts/alfresco-developer-series/blob/master/behaviors/behavior-tutorial-repo/src/test/java/com/someco/behavior/test/RateableAspectTest.java">RateableAspectTest</a> test class:</p>
+<pre><code>@RunWith(RemoteTestRunner.class)
+@Remote(runnerClass=SpringJUnit4ClassRunner.class)
+@ContextConfiguration(&quot;classpath:alfresco/application-context.xml&quot;)
+public class RateableAspectTest {
+    
+    private static final String ADMIN_USER_NAME = &quot;admin&quot;;
 
-ratingsNode.save();
+    static Logger log = Logger.getLogger(RateableAspectTest.class);
 
-logger.log(&quot;Ratings node saved.&quot;);</code></pre>
-<p>Now create a piece of content in your repository and then use “Run Action” on that piece of content to execute the addTestRating.js script. Every time you run it, a new rating (with a random value) will be created as a child node of that content.</p>
-<p>At this point, you should see the ratings on the content's property sheet as child associations but the average won't be set until the behavior code is in place.</p>
-<p>Note, if you want the log messages to show up you have to set log4j.logger.org.alfresco.repo.jscript to DEBUG in log4j.properties.</p>
-<h3 id="write-the-custom-behavior"><a href="#write-the-custom-behavior">Write the custom behavior</a></h3>
-<p>The custom behavior is implemented as a Java class that implements the interfaces that correspond to the policies to which we want to bind. In this example, the two policy interfaces are: NodeServicePolicies.OnDeleteNodePolicy and NodeServicePolicies.OnCreateNodePolicy so the class declaration is:</p>
+    private final QName RATING = QName.createQName(
+            SomeCoRatingsModel.NAMESPACE_SOMECO_RATINGS_CONTENT_MODEL,
+            SomeCoRatingsModel.PROP_AVERAGE_RATING);
+    private final QName TOTAL = QName.createQName(
+            SomeCoRatingsModel.NAMESPACE_SOMECO_RATINGS_CONTENT_MODEL,
+            SomeCoRatingsModel.PROP_TOTAL_RATING);
+    private final QName COUNT = QName.createQName(
+            SomeCoRatingsModel.NAMESPACE_SOMECO_RATINGS_CONTENT_MODEL,
+            SomeCoRatingsModel.PROP_RATING_COUNT);
+
+    @Autowired
+    @Qualifier(&quot;NodeService&quot;)
+    protected NodeService nodeService;
+
+    @Autowired
+    @Qualifier(&quot;nodeLocatorService&quot;)
+    protected NodeLocatorService nodeLocatorService;
+    
+    @Test
+    public void testAddRateableAspect() {
+        AuthenticationUtil.setFullyAuthenticatedUser(ADMIN_USER_NAME);
+
+        NodeRef companyHome = nodeLocatorService.getNode(CompanyHomeNodeLocator.NAME, null, null);
+        
+        // assign name
+        String name = &quot;Add Rateable Aspect Test (&quot; + System.currentTimeMillis() + &quot;)&quot;;
+        Map&lt;QName, Serializable&gt; contentProps = new HashMap&lt;QName, Serializable&gt;();
+        contentProps.put(ContentModel.PROP_NAME, name);
+
+        // create content node
+        ChildAssociationRef association = nodeService.createNode(
+                        companyHome,
+                        ContentModel.ASSOC_CONTAINS,
+                        QName.createQName(NamespaceService.CONTENT_MODEL_PREFIX, name),
+                        ContentModel.TYPE_CONTENT,
+                        contentProps
+                        );
+
+        NodeRef content = association.getChildRef();
+
+        // set up some aspect-based properties
+        Map&lt;QName, Serializable&gt; aspectProps = new HashMap&lt;QName, Serializable&gt;();
+        aspectProps.put(RATING, 1.0);
+        aspectProps.put(TOTAL, 1);
+        aspectProps.put(COUNT, 1);
+        
+        // add the aspect and set the properties
+        nodeService.addAspect(content, QName.createQName(SomeCoRatingsModel.NAMESPACE_SOMECO_RATINGS_CONTENT_MODEL, SomeCoRatingsModel.ASPECT_SCR_RATEABLE), aspectProps);
+                
+        assertEquals(1.0, nodeService.getProperty(content, RATING));
+        assertEquals(1, nodeService.getProperty(content, TOTAL));
+        assertEquals(1, nodeService.getProperty(content, COUNT));
+        
+        nodeService.deleteNode(content);
+    }
+
+}</code></pre>
+<p>The test creates a new content node in Company Home and then adds the <code>scr:rateable</code> aspect to it, simultaneously setting the aspect-based properties to test values. It then makes sure it can get those same test values back.</p>
+<p>To run the test, just switch to the behavior-tutorial-repo project directory and run <code>mvn install</code>.</p>
+<p>Assuming everything went okay, you now have your model in place and tested and you are ready to write the behavior.</p>
+<h2 id="step-2-implement-the-custom-behavior"><a href="#step-2-implement-the-custom-behavior">Step 2: Implement the custom behavior</a></h2>
+<p>Implementing the behavior involves writing some Java, configuring a Spring Bean, and adding a unit test for the behavior.</p>
+<h3 id="write-the-behavior-class"><a href="#write-the-behavior-class">Write the behavior class</a></h3>
+<p>The custom behavior is implemented as a Java class called <a href="https://github.com/jpotts/alfresco-developer-series/blob/master/behaviors/behavior-tutorial-repo/src/main/java/com/someco/behavior/Rating.java">Rating</a>. The class implements the interfaces that correspond to the policies the behavior needs to bind to. In this example, the two policy interfaces are: <code>NodeServicePolicies.OnDeleteNodePolicy</code> and <code>NodeServicePolicies.OnCreateNodePolicy</code> so the class declaration is:</p>
 <pre><code>public class Rating
 implements NodeServicePolicies.OnDeleteNodePolicy,
 NodeServicePolicies.OnCreateNodePolicy {</code></pre>
-<p>The class has two dependencies that Spring will handle for us. One is the NodeService which will be used in the average calculation logic and the other is the PolicyComponent which is used to bind the behavior to the policies.</p>
+<p>The class has two dependencies that Spring will handle for us. One is the <code>NodeService</code> which will be used in the average calculation logic and the other is the <code>PolicyComponent</code> which is used to bind the behavior to the policies.</p>
 <pre><code>// Dependencies
 private NodeService nodeService;
 private PolicyComponent policyComponent;
@@ -349,7 +405,7 @@ private PolicyComponent policyComponent;
 // Behaviours
 private Behaviour onCreateNode;
 private Behaviour onDeleteNode;</code></pre>
-<p>At some point Alfresco has to know that the behavior needs to be bound to a policy. In the JavaScript example we'll see how to do that in a Spring bean config file. In this example, we'll create a method called “init” to handle the binding. The init method will get called when Spring loads the bean.</p>
+<p>At some point Alfresco has to know that the behavior needs to be bound to a policy. A method called <code>init()</code> will handle the binding. It will get called when Spring loads the bean.</p>
 <pre><code>public void init() {
 
     // Create behaviours
@@ -371,10 +427,10 @@ private Behaviour onDeleteNode;</code></pre>
     );
 
 }</code></pre>
-<p>The first thing to notice here is that you can decide when the behavior should be invoked by specifying the appropriate NotificationFrequency. Besides TRANSACTION_COMMIT, other choices include FIRST_EVENT and EVERY_EVENT.</p>
-<p>Also note that there are a few different overloaded methods for bindClassBehaviour (note the UK spelling). In this case we're binding the Qname of a behavior to the Qname of our type (“Rating”) and telling Alfresco to call the onCreateNode and onDeleteNode behaviors of our bean.</p>
-<p>There are also additional bind methods for associations (bindAssociationBehaviour) and properties (bindPropertyBehaviour) that you should use depending on the type of policy you are binding to.</p>
-<p>Next we need to write the methods required by the two policy interfaces. Regardless of whether a ratings node is created or deleted, we need to recalculate the average. So our onCreateNode and onDeleteNode methods simply call computeAverage and pass in the rating node reference.</p>
+<p>The first thing to notice here is that you can decide when the behavior should be invoked by specifying the appropriate <code>NotificationFrequency</code>. Besides <code>TRANSACTION_COMMIT</code>, other choices include <code>FIRST_EVENT</code> and <code>EVERY_EVENT</code>.</p>
+<p>Also note that there are a few different overloaded methods for <code>bindClassBehaviour</code>. In this case the code binds the Qname of a behavior to the Qname of our type (“Rating”) and tells Alfresco to call the <code>onCreateNode</code> and <code>onDeleteNode</code> behaviors that will be defined in this class.</p>
+<p>There are also additional bind methods for associations (<code>bindAssociationBehaviour</code>) and properties (<code>bindPropertyBehaviour</code>) that you should use depending on the type of policy you are binding to.</p>
+<p>Next are the methods required by the two policy interfaces. Regardless of whether a ratings node is created or deleted, the average needs to be recalculated. So the <code>onCreateNode</code> and <code>onDeleteNode</code> methods call <code>computeAverage</code> and pass in the rating node reference.</p>
 <pre><code>public void onCreateNode(ChildAssociationRef childAssocRef) {
 
     computeAverage(childAssocRef);
@@ -386,7 +442,7 @@ public void onDeleteNode(ChildAssociationRef childAssocRef, boolean isNodeArchiv
     computeAverage(childAssocRef);
 
 }</code></pre>
-<p>The computeAverage method asks the child (the rating) for its parent node reference (the whitepaper, for example) and asks the parent for a list of its children. It iterates over the children, computes an average, and sets the average property on the content.</p>
+<p>The <code>computeAverage</code> method asks the child (the rating object) for its parent node reference (the rateable object) and asks the parent for a list of its children. It iterates over the children, computes an average, and sets the average property on the content.</p>
 <pre><code>public void computeAverage(ChildAssociationRef childAssocRef) {
 
     // get the parent node
@@ -419,43 +475,208 @@ public void onDeleteNode(ChildAssociationRef childAssocRef, boolean isNodeArchiv
     // compute the average
     average = total / (children.size() / 1.0d);
     
-    // store the average on the parent node
-    nodeService.setProperty(parentRef, QName.createQName(SomeCoModel.NAMESPACE_SOMECO_CONTENT_MODEL,
-    SomeCoModel.PROP_AVERAGE_RATING), average);
+    // store the average, total, count on the parent node
+    nodeService.setProperty(
+        parentRef,
+        QName.createQName(
+            SomeCoRatingsModel.NAMESPACE_SOMECO_RATINGS_CONTENT_MODEL,
+            SomeCoRatingsModel.PROP_AVERAGE_RATING),
+        average);
+
+    nodeService.setProperty(
+        parentRef,
+        QName.createQName(
+            SomeCoRatingsModel.NAMESPACE_SOMECO_RATINGS_CONTENT_MODEL,
+            SomeCoRatingsModel.PROP_TOTAL_RATING),
+        total);
+
+    nodeService.setProperty(
+        parentRef,
+        QName.createQName(
+            SomeCoRatingsModel.NAMESPACE_SOMECO_RATINGS_CONTENT_MODEL,
+            SomeCoRatingsModel.PROP_RATING_COUNT),
+        count);     
     
     return;
 
 }</code></pre>
-<p>The only items remaining, then, are the getters and setters for the NodeService and PolicyComponents, but I'll leave those out here.</p>
+<p>The class stores the total rating and rating count, so it could actually compute the average without iterating over the rating objects. All it really needs to know is the value of the new rating. For this example we'll only have a handful of associations anyway but in the real world, you need to think carefully about such performance considerations when you write your behaviors.</p>
 <h3 id="configure-a-spring-bean"><a href="#configure-a-spring-bean">Configure a Spring bean</a></h3>
-<p>The last step before we test is to configure the behavior class as a Spring bean. The bean config can go in any context file. If you had several behaviors it might make sense to put them in their own. For this example, we'll use the someco-model-context.xml file. Add the following before the closing “&lt;/beans&gt;” tag:</p>
+<p>The last step before testing is to configure the behavior class as a Spring bean. The bean config goes in <a href="https://github.com/jpotts/alfresco-developer-series/blob/master/behaviors/behavior-tutorial-repo/src/main/amp/config/alfresco/module/behavior-tutorial-repo/context/service-context.xml">service-context.xml</a>, which, as a reminder, lives in:</p>
+<pre><code>$TUTORIAL_HOME/behavior-tutorial-repo/src/main/amp/config/alfresco/module/behavior-tutorial-repo/context</code></pre>
+<p>Add the following before the closing <code>beans</code> element:</p>
 <pre><code>&lt;bean id=&quot;ratingBehavior&quot; class=&quot;com.someco.behavior.Rating&quot;
 init-method=&quot;init&quot;&gt;
     &lt;property name=&quot;nodeService&quot;&gt;
-        &lt;ref bean=&quot;nodeService&quot; /&gt;
+        &lt;ref bean=&quot;NodeService&quot; /&gt;
     &lt;/property&gt;
     &lt;property name=&quot;policyComponent&quot;&gt;
         &lt;ref bean=&quot;policyComponent&quot; /&gt;
     &lt;/property&gt;
 &lt;/bean&gt;</code></pre>
-<h3 id="build-deploy-restart-and-test"><a href="#build-deploy-restart-and-test">Build, deploy, restart and test</a></h3>
-<p>Modify the build.properties file to match your environment, then use Ant to run the Deploy target. The code will be compiled, JAR'd, and unzipped on top of the existing Alfresco installation.</p>
-<p>Hopefully, Alfresco will start up error free. If so, log in and execute the addTestRating.js script against a piece of content. The average should now get computed.</p>
-<p>Finally, delete one of the test ratings by editing the properties for a piece of rated content and clicking the trash can icon. When you click “ok” to save your changes, the average rating should get recalculated. If you delete all of the ratings, the average should get set to 0.</p>
-<p>Note: If you are running the downloaded sample code instead of creating it by following along, set com.someco to DEBUG in log4j.properties to display the logger messages. I've omitted them in the code samples for brevity.</p>
-<h2 id="javascript-example"><a href="#javascript-example">JavaScript Example</a></h2>
-<p>We've seen how to implement the average rating calculation behavior in Java, but what if you wanted to implement the behavior using JavaScript instead? Behaviors can be implemented in JavaScript and bound to policies through Spring. Let's re-implement the Rating bean using JavaScript.</p>
-<p>The high-level steps we're going to follow are:</p>
+<p>This bean declares the <code>init</code> method and injects the dependencies the behavior needs.</p>
+<h2 id="step-3-create-a-unit-test-for-the-behavior"><a href="#step-3-create-a-unit-test-for-the-behavior">Step 3: Create a unit test for the behavior</a></h2>
+<p>The behavior should be able to calculate the average rating when rating objects are created or deleted from any piece of content that has the <code>scr:rateable</code> aspect. It's easy to test that with a unit test.</p>
+<p>I'll add a class called <a href="https://github.com/jpotts/alfresco-developer-series/blob/master/behaviors/behavior-tutorial-repo/src/test/java/com/someco/behavior/test/RatingTest.java">RatingTest</a> to the same test package that <code>RateableAspectTest</code> is in. The test will:</p>
 <ol style="list-style-type: decimal">
-<li>Write the custom behavior as one or more server-side scripts.</li>
-<li>Configure a Spring bean to bind the scripts to the appropriate policies.</li>
-<li>Deploy, restart and test.</li>
+<li>Create a piece of content and add the <code>scr:rateable</code> aspect to it.</li>
+<li>Add three test ratings, checking the values for the average rating, total rating and rating count.</li>
+<li>Delete one of the test ratings, checking the values again to make sure the delete was handled appropriately.</li>
 </ol>
-<h3 id="write-the-custom-behavior-as-a-server-side-javascript"><a href="#write-the-custom-behavior-as-a-server-side-javascript">Write the custom behavior as a server-side JavaScript</a></h3>
-<p>For this example I'm going to shamelessly steal a JavaScript file that is part of the Alfresco source and then tweak it. The original script is used by Alfresco to test Policy functionality. (As a side note, the test code that is buried in the Alfresco source tree is a great resource for example code).</p>
-<p>We're actually going to write three scripts. The onCreateRating.js and onDeleteRating.js scripts will be bound to the onCreateNode and onDeleteNode policies respectively. The rating.js script will contain our average rating calculation logic and will be imported by the other two scripts using the new “&lt;import&gt;” tag that became available with the 2.1 release.</p>
-<p>In this example the scripts are going to reside as part of the web application rather than being uploaded to the repository. Nothing requires that this be the case—we've written one script already that resides in the repository so I thought we'd change it up a little. This approach does have the downside that modifications require a re-deploy. Of course, depending on whether or not you want end users monkeying around with your script, this could be a benefit in a production environment.</p>
-<p>In your Eclipse project, create a “scripts” directory under the src/alfresco/extension folder and add a file called onCreateRating.js with the following content:</p>
+<p>Here's the code:</p>
+<pre><code>@RunWith(RemoteTestRunner.class)
+@Remote(runnerClass=SpringJUnit4ClassRunner.class)
+@ContextConfiguration(&quot;classpath:alfresco/application-context.xml&quot;)
+public class RatingTest {
+    
+    private static final String ADMIN_USER_NAME = &quot;admin&quot;;
+
+    static Logger log = Logger.getLogger(RatingTest.class);
+
+    private final QName RATING = QName.createQName(
+            SomeCoRatingsModel.NAMESPACE_SOMECO_RATINGS_CONTENT_MODEL,
+            SomeCoRatingsModel.PROP_RATING);
+    private final QName RATER = QName.createQName(
+            SomeCoRatingsModel.NAMESPACE_SOMECO_RATINGS_CONTENT_MODEL,
+            SomeCoRatingsModel.PROP_RATER);
+    private final QName AVERAGE = QName.createQName(
+            SomeCoRatingsModel.NAMESPACE_SOMECO_RATINGS_CONTENT_MODEL,
+            SomeCoRatingsModel.PROP_AVERAGE_RATING);
+    private final QName TOTAL = QName.createQName(
+            SomeCoRatingsModel.NAMESPACE_SOMECO_RATINGS_CONTENT_MODEL,
+            SomeCoRatingsModel.PROP_TOTAL_RATING);
+    private final QName COUNT = QName.createQName(
+            SomeCoRatingsModel.NAMESPACE_SOMECO_RATINGS_CONTENT_MODEL,
+            SomeCoRatingsModel.PROP_RATING_COUNT);
+    
+    private final String RATER_STRING = &quot;jpotts&quot;;
+    
+    @Autowired
+    @Qualifier(&quot;NodeService&quot;)
+    protected NodeService nodeService;
+
+    @Autowired
+    @Qualifier(&quot;nodeLocatorService&quot;)
+    protected NodeLocatorService nodeLocatorService;
+
+    @Test
+    public void ratingTypeTest() {
+        
+        AuthenticationUtil.setFullyAuthenticatedUser(ADMIN_USER_NAME);
+        NodeRef companyHome = nodeLocatorService.getNode(CompanyHomeNodeLocator.NAME, null, null);
+        
+        // assign name
+        String name = &quot;Add Rateable Aspect Test (&quot; + System.currentTimeMillis() + &quot;)&quot;;
+        Map&lt;QName, Serializable&gt; contentProps = new HashMap&lt;QName, Serializable&gt;();
+        contentProps.put(ContentModel.PROP_NAME, name);
+
+        // create content node
+        ChildAssociationRef association = nodeService.createNode(
+                        companyHome,
+                        ContentModel.ASSOC_CONTAINS,
+                        QName.createQName(NamespaceService.CONTENT_MODEL_PREFIX, name),
+                        ContentModel.TYPE_CONTENT,
+                        contentProps
+                        );
+
+        NodeRef content = association.getChildRef();        
+
+        // add the aspect
+        nodeService.addAspect(
+            content,
+            QName.createQName(
+                SomeCoRatingsModel.NAMESPACE_SOMECO_RATINGS_CONTENT_MODEL,
+                SomeCoRatingsModel.ASPECT_SCR_RATEABLE
+            ),
+            null);
+        
+        createRating(content, 1, RATER_STRING);
+        
+        assertEquals(1.0, nodeService.getProperty(content, AVERAGE));
+        assertEquals(1, nodeService.getProperty(content, TOTAL));
+        assertEquals(1, nodeService.getProperty(content, COUNT));
+        
+        NodeRef rating2 = createRating(content, 2, RATER_STRING);
+
+        assertEquals(1.5, nodeService.getProperty(content, AVERAGE));
+        assertEquals(3, nodeService.getProperty(content, TOTAL));
+        assertEquals(2, nodeService.getProperty(content, COUNT));
+
+        createRating(content, 3, RATER_STRING);
+        
+        assertEquals(2.0, nodeService.getProperty(content, AVERAGE));
+        assertEquals(6, nodeService.getProperty(content, TOTAL));
+        assertEquals(3, nodeService.getProperty(content, COUNT));
+        
+        nodeService.deleteNode(rating2);
+        
+        assertEquals(nodeService.getProperty(content, AVERAGE), 2.0);
+        assertEquals(nodeService.getProperty(content, TOTAL), 4);
+        assertEquals(nodeService.getProperty(content, COUNT), 2);
+        
+        nodeService.deleteNode(content);
+        
+    }
+
+    public NodeRef createRating(NodeRef content, int rating, String rater) {
+        // assign name
+        String name = &quot;Rating (&quot; + System.currentTimeMillis() + &quot;)&quot;;
+        Map&lt;QName, Serializable&gt; contentProps = new HashMap&lt;QName, Serializable&gt;();
+        contentProps.put(ContentModel.PROP_NAME, name);
+        contentProps.put(RATING, rating);
+        contentProps.put(RATER, rater);
+
+        // create rating as a child of the content node using the scr:ratings child association
+        ChildAssociationRef association = nodeService.createNode(
+            content,
+            QName.createQName(
+                SomeCoRatingsModel.NAMESPACE_SOMECO_RATINGS_CONTENT_MODEL,
+                SomeCoRatingsModel.ASSN_SCR_RATINGS),
+            QName.createQName(NamespaceService.CONTENT_MODEL_PREFIX, name),
+            QName.createQName(
+                SomeCoRatingsModel.NAMESPACE_SOMECO_RATINGS_CONTENT_MODEL,
+                SomeCoRatingsModel.TYPE_SCR_RATING),
+            contentProps);
+
+        return association.getChildRef();
+    }
+}</code></pre>
+<p>To run the test, switch to the $TUTORIAL_HOME/behavior-tutorial-repo directory and run <code>mvn install</code>. Apache Maven will start up an embedded instance of Alfresco with your repo AMP deployed and will then run the unit tests. If you see something like this:</p>
+<pre><code>[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time: 48.090s
+[INFO] Finished at: Wed Jan 29 18:19:01 CST 2014
+[INFO] Final Memory: 13M/122M
+[INFO] ------------------------------------------------------------------------</code></pre>
+<p>...it means your behavior is working.</p>
+<p>If something is broken, try changing <a href="https://github.com/jpotts/alfresco-developer-series/blob/master/behaviors/behavior-tutorial-repo/src/main/amp/config/alfresco/module/behavior-tutorial-repo/log4j.properties">log4j.properties</a> in:</p>
+<pre><code>$TUTORIAL_HOME/behavior-tutorial-repo/src/main/amp/config/alfresco/module</code></pre>
+<p>To:</p>
+<pre><code>log4j.logger.com.someco=${module.log.level}</code></pre>
+<p>And then run:</p>
+<pre><code>mvn install -Dmodule.log.level=DEBUG</code></pre>
+<p>You can then look for the debug messages in the log.</p>
+<h1 id="re-implementing-the-behavior-in-javascript"><a href="#re-implementing-the-behavior-in-javascript">Re-implementing the behavior in JavaScript</a></h1>
+<p>You've seen how to implement the average rating calculation behavior in Java, but what if you wanted to implement the behavior using JavaScript instead? Behaviors can be implemented in server-side JavaScript and bound to policies through Spring. Let's re-implement the Rating bean using JavaScript.</p>
+<p>The high-level steps are:</p>
+<ol style="list-style-type: decimal">
+<li>Write the custom behavior as one or more server-side JavaScript files.</li>
+<li>Configure a Spring bean to bind the JavaScript to the appropriate policies.</li>
+<li>Test the behavior.</li>
+</ol>
+<h2 id="step-1-write-the-custom-behavior-as-server-side-javascript"><a href="#step-1-write-the-custom-behavior-as-server-side-javascript">Step 1: Write the custom behavior as server-side JavaScript</a></h2>
+<p>For this example I'm going to shamelessly steal a JavaScript file that is part of the Alfresco source and then tweak it. The original script is used by Alfresco to test <code>Policy</code> functionality. (As a side note, the test code that is buried in the Alfresco source tree is a great resource for example code).</p>
+<p>I am going to write three scripts for this:</p>
+<ol style="list-style-type: decimal">
+<li>onCreateRating.js will be bound to the <code>onCreateNode</code> policy.</li>
+<li>onDeleteRating.js will be bound to the <code>onDeleteNode</code> policy.</li>
+<li>rating.js will contain the average rating calculation logic and will be imported by the other two scripts using the <code>import</code> tag.</li>
+</ol>
+<p>In this example, the scripts are going to reside as part of the web application rather than being uploaded to the repository. I'll place them in:</p>
+<pre><code>$TUTORIAL_HOME/behavior-tutorial-repo/src/main/amp/config/alfresco/module/behavior-tutorial-repo/scripts</code></pre>
+<p>If you are following along, you'll need to create the scripts directory.</p>
+<p>The <a href="https://github.com/jpotts/alfresco-developer-series/blob/master/behaviors/behavior-tutorial-repo/src/main/amp/config/alfresco/module/behavior-tutorial-repo/scripts/onCreateRating.js">onCreateRating.js</a> and <a href="https://github.com/jpotts/alfresco-developer-series/blob/master/behaviors/behavior-tutorial-repo/src/main/amp/config/alfresco/module/behavior-tutorial-repo/scripts/onDeleteRating.js">onDeleteRating.js</a> files are virtually identical. They just need to do some basic error checking and then call the <code>computeAverage()</code> function. Here is what onCreateRating.js looks like:</p>
 <pre><code>&lt;import resource=&quot;classpath:alfresco/extension/scripts/rating.js&quot;&gt;
 var scriptFailed = false;
 
@@ -488,14 +709,14 @@ if (behaviour.args == null) {
     }    
 }</code></pre>
 <p>The code for onDeleteRating.js is identical with the exception of the behavior name and the number of arguments expected (2 instead of 1) so I won't duplicate the listing here.</p>
-<p>As in our Java example, both call the same computeAverage function. Create a third JavaScript file called rating.js and add the content as follows:</p>
+<p>The <code>computeAverage()</code> function lives in <a href="https://github.com/jpotts/alfresco-developer-series/blob/master/behaviors/behavior-tutorial-repo/src/main/amp/config/alfresco/module/behavior-tutorial-repo/scripts/rating.js">rating.js</a>. It does pretty much the same thing as the <code>computeAverage()</code> method in the Java example, but obviously in JavaScript:</p>
 <pre><code>//calculate rating
 function computeAverage(childAssocRef) {
     
     var parentRef = childAssocRef.parent;
     
     // check the parent to make sure it has the right aspect
-    if (parentRef.hasAspect(&quot;{http://www.someco.com/model/content/1.0}rateable&quot;)) {
+    if (parentRef.hasAspect(&quot;{http://www.someco.com/model/ratings/1.0}rateable&quot;)) {
         // continue, this is what we want
     } else {
         logger.log(&quot;Rating&#39;s parent ref did not have rateable aspect.&quot;);
@@ -520,17 +741,25 @@ function computeAverage(childAssocRef) {
         average = total / children.length;
     }
     
-    // store the average on the parent node
-    parentRef.properties[&quot;{http://www.someco.com/model/content/1.0}averageRating&quot;] = average;
-    parentRef.save();
+    logger.log(&quot;Computed average:&quot; + average);
     
+    // store the average, total, count on the parent node
+    parentRef.properties[&quot;{http://www.someco.com/model/ratings/1.0}averageRating&quot;] = average;
+    parentRef.properties[&quot;{http://www.someco.com/model/ratings/1.0}totalRating&quot;] = total;
+    parentRef.properties[&quot;{http://www.someco.com/model/ratings/1.0}ratingCount&quot;] = children.length;
+    parentRef.save();
+            
+    logger.log(&quot;Property set&quot;);
+            
     return;
 
 }</code></pre>
-<p>As you can see, this is the same logic we used in the Java example modified to follow the Alfresco JavaScript API syntax.</p>
-<h3 id="configure-a-spring-bean-to-bind-the-script-to-the-appropriate-policies"><a href="#configure-a-spring-bean-to-bind-the-script-to-the-appropriate-policies">Configure a Spring bean to bind the script to the appropriate policies</a></h3>
-<p>In the Java example, we used an init method on the Rating bean to make calls to the binding method of the PolicyComponent. The JavaScript example doesn't do that. Instead, it uses Spring to associate the JavaScript files with the onCreateNode and onDeleteNode policies.</p>
-<p>Edit the someco-model-context.xml file. Comment out the bean config we used for the Java example and add two new bean configs below it for the JavaScript behavior code—one for the create and one for the delete:</p>
+<p>As you can see, this is the same logic used in the Java example modified to follow the Alfresco JavaScript API syntax.</p>
+<h2 id="step-2-configure-a-spring-bean-to-bind-the-script-to-the-appropriate-policies"><a href="#step-2-configure-a-spring-bean-to-bind-the-script-to-the-appropriate-policies">Step 2: Configure a Spring bean to bind the script to the appropriate policies</a></h2>
+<p>The Java example used an <code>init()</code> method on the <code>Rating</code> bean to make calls to the <code>bindClassBehaviour()</code> method of <code>PolicyComponent</code>. The JavaScript example doesn't do that. Instead, it uses Spring to associate the JavaScript files with the <code>onCreateNode</code> and <code>onDeleteNode</code> policies.</p>
+<p>As you've seen, the Spring context, <a href="https://github.com/jpotts/alfresco-developer-series/blob/master/behaviors/behavior-tutorial-repo/src/main/amp/config/alfresco/module/behavior-tutorial-repo/context/service-context.xml">service-context.xml</a> file resides in:</p>
+<pre><code>$TUTORIAL_HOME/behavior-tutorial-repo/src/main/amp/config/alfresco/module/behavior-tutorial-repo/context</code></pre>
+<p>Edit the file. Comment out the <code>ratingBehavior</code> bean element used for the Java example and add two new bean configs below it for the JavaScript behavior code—one for the create and one for the delete:</p>
 <pre><code>&lt;bean id=&quot;onCreateRatingNode&quot;
 class=&quot;org.alfresco.repo.policy.registration.ClassPolicyRegistration&quot;
 parent=&quot;policyRegistration&quot;&gt;
@@ -538,34 +767,101 @@ parent=&quot;policyRegistration&quot;&gt;
         &lt;value&gt;{http://www.alfresco.org}onCreateNode&lt;/value&gt;
     &lt;/property&gt;
     &lt;property name=&quot;className&quot;&gt;
-        &lt;value&gt;{http://www.someco.com/model/content/1.0}rating&lt;/value&gt;
+        &lt;value&gt;{http://www.someco.com/model/ratings/1.0}rating&lt;/value&gt;
     &lt;/property&gt;
     &lt;property name=&quot;behaviour&quot;&gt;
         &lt;bean class=&quot;org.alfresco.repo.jscript.ScriptBehaviour&quot; parent=&quot;scriptBehaviour&quot;&gt;
             &lt;property name=&quot;location&quot;&gt;
                 &lt;bean class=&quot;org.alfresco.repo.jscript.ClasspathScriptLocation&quot;&gt;
                     &lt;constructor-arg&gt;
-                        &lt;value&gt;alfresco/extension/scripts/onCreateRating.js&lt;/value&gt;
+                        &lt;value&gt;alfresco/module/${project.artifactId}/scripts/onCreateRating.js&lt;/value&gt;
+                    &lt;/constructor-arg&gt;
+                &lt;/bean&gt;
+            &lt;/property&gt;
+        &lt;/bean&gt;
+    &lt;/property&gt;
+&lt;/bean&gt;
+&lt;bean id=&quot;onDeleteRatingNode&quot;
+class=&quot;org.alfresco.repo.policy.registration.ClassPolicyRegistration&quot;
+parent=&quot;policyRegistration&quot;&gt;
+    &lt;property name=&quot;policyName&quot;&gt;
+        &lt;value&gt;{http://www.alfresco.org}onDeleteNode&lt;/value&gt;
+    &lt;/property&gt;
+    &lt;property name=&quot;className&quot;&gt;
+        &lt;value&gt;{http://www.someco.com/model/ratings/1.0}rating&lt;/value&gt;
+    &lt;/property&gt;
+    &lt;property name=&quot;behaviour&quot;&gt;
+        &lt;bean class=&quot;org.alfresco.repo.jscript.ScriptBehaviour&quot; parent=&quot;scriptBehaviour&quot;&gt;
+            &lt;property name=&quot;location&quot;&gt;
+                &lt;bean class=&quot;org.alfresco.repo.jscript.ClasspathScriptLocation&quot;&gt;
+                    &lt;constructor-arg&gt;
+                        &lt;value&gt;alfresco/module/${project.artifactId}/scripts/onDeleteRating.js&lt;/value&gt;
                     &lt;/constructor-arg&gt;
                 &lt;/bean&gt;
             &lt;/property&gt;
         &lt;/bean&gt;
     &lt;/property&gt;
 &lt;/bean&gt;</code></pre>
-<h3 id="deploy-restart-and-test"><a href="#deploy-restart-and-test">Deploy, restart and test</a></h3>
-<p>If you haven't already, make sure you've set log4j.logger.org.alfresco.repo.jscript to DEBUG in log4j.properties or you won't see any of the logger output.</p>
-<p>Use Ant to run the Deploy target.</p>
-<p>Assuming Alfresco starts up error-free, you should be able to use addTestRating.js to create Rating nodes which should trigger the onCreateRating JavaScript. Deleting ratings will trigger the onDeleteRating JavaScript. In either case, the average rating should get calculated as it did with the Java example.</p>
+<p>Now Alfresco will use the two server-side JavaScript files as the behavior implementation instead of the Java-based behavior created earlier.</p>
+<h2 id="step-3-test-the-javascript-based-behavior"><a href="#step-3-test-the-javascript-based-behavior">Step 3: Test the JavaScript-based behavior</a></h2>
+<p>If you are following along and you already did the Java-based behavior, this step is easy. The unit test doesn't have to change at all because all that is different is that the underlying behavior logic is written in JavaScript instead of Java.</p>
+<p>So, switch to the $TUTORIAL_HOME/behavior-tutorial-repo directory and run <code>mvn install</code>. Just like the Java example, you should see something like this:</p>
+<pre><code>[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time: 55.326s
+[INFO] Finished at: Thu Jan 30 17:04:55 CST 2014
+[INFO] Final Memory: 14M/122M
+[INFO] ------------------------------------------------------------------------</code></pre>
+<p>Successful unit tests are certainly comforting, but they are not very satisfying. Wouldn't you like to actually see this behavior working in the user interface? In the web scripts tutorial I'll show you how to create a little web page that lets you click on stars and post ratings for whitepapers. For now, if you'd like to run a little web script that creates test rating objects on specified content, follow these steps:</p>
+<ol style="list-style-type: decimal">
+<li><p>If you are using the source code checked out from GitHub instead of creating your own project you can move on to step 2. Otherwise, if you are following along in your own project directories, copy the following directory and its descendents from the source code that accompanies this tutorial into your behavior-tutorial-repo project. Copy:</p>
+<pre><code>$TUTORIAL_SOURCE/behavior-tutorial-repo/src/main/amp/config/alfresco/extension</code></pre>
+<p>to:</p>
+<pre><code>$TUTORIAL_HOME/behavior-tutorial-repo/src/main/amp/config/alfresco/extension</code></pre>
+<p>The directory contains the files that make up a quick-and-dirty web script that will create random ratings on a specified piece of content.</p></li>
+<li><p>Switch to $TUTORIAL_HOME/behavior-tutorial-repo and run:</p>
+<pre><code>mvn integration-test -Pamp-to-war</code></pre></li>
+<li><p>In a new terminal window, switch to $TUTORIAL_HOME/behavior-tutorial-share and run:</p>
+<pre><code>mvn integration-test -Pamp-to-war -Dmaven.tomcat.port=8081</code></pre>
+<p>You now have an Alfresco repository running on port 8080 and a Share web application running on port 8081, both with your repo and share AMPs installed.</p></li>
+<li><p>Once both servers come up, log in to http://localhost:8081/share as admin, password admin.</p></li>
+<li><p>Create a piece of test content somewhere in the repository. It doesn't matter what it is or what it is named.</p></li>
+<li><p>Grab the test content's nodeRef. The easiest way to do this is to copy it from the URL that is displayed when you view the content's details page. For example, when you look at the details for your test content, the URL should look something like this:</p>
+<pre><code>http://localhost:8081/share/page/document-details?nodeRef=workspace://SpacesStore/00408a65-1e9e-42ad-b02c-aa3546624d07</code></pre>
+<p>Copy everything after &quot;nodeRef=&quot;.</p></li>
+<li><p>Now invoke the test web script, passing in the nodeRef you just copied, like this:</p>
+<pre><code>http://localhost:8080/alfresco/s/someco/rating-test?nodeRef=workspace://SpacesStore/00408a65-1e9e-42ad-b02c-aa3546624d07</code></pre>
+<p>Every time you invoke the web script, the script generates a random rating value and creates a new rating object for your piece of test content.</p></li>
+<li><p>Go back into Share and look at the test document's details. You should see its average rating and the total number of ratings displayed in the property list, like this:</p></li>
+</ol>
+<div class="figure">
+<img src="./images/content-with-test-ratings.png" alt="This piece of content has 20 ratings with an average of 3" /><p class="caption">This piece of content has 20 ratings with an average of 3</p>
+</div>
+<p>This shouldn't be too surprising--you are using a web script to exercise the same behavior as the unit test, but at least this way you can log in to Share and see for yourself that the behavior works.</p>
+<h1 id="deploying-the-amps-to-your-alfresco-server"><a href="#deploying-the-amps-to-your-alfresco-server">Deploying the AMPs to your Alfresco server</a></h1>
+<p>When you are ready, you can deploy these AMPs to any Alfresco server. Both the repo project and the share project directories should have a directory called target. Maven puts the AMP there when you run <code>mvn install</code>. You can install those AMPs as you normally would. For example, if you installed Alfresco with the binary installer, you would:</p>
+<ol style="list-style-type: decimal">
+<li>Copy the repo tier AMP to $ALFRESCO_HOME/amps</li>
+<li>Copy the share tier AMP to $ALFRESCO_HOME/amps_share</li>
+<li>Install the AMPs by running $ALFRESCO_HOME/bin/apply_amps.sh</li>
+</ol>
+<p>Alternatively, you can use the Alfresco Maven SDK to install the AMPs by changing into each of the two project directories and doing:</p>
+<pre><code>```
+mvn install
+mvn alfresco:install -Dmaven.alfresco.warLocation=$TOMCAT_HOME/webapps/[alfresco or share]
+```</code></pre>
+<p>In my case, I run the alfresco.war and share.war files exploded under $TOMCAT_HOME/webapps, so I would specify $TOMCAT_HOME/webapps/alfresco or $TOMCAT_HOME/webapps/share for my <code>warLocation</code> depending on which AMPs I am installing. If you are running the WAR files unexploded you can specify the file path of each WAR.</p>
 <h1 id="conclusion"><a href="#conclusion">Conclusion</a></h1>
-<p>This article has shown how to bind custom behavior to Alfresco policies. Specifically, we implemented a custom “rateable” aspect and a custom “rating” type that can be used to persist user ratings of content stored in the repository. The custom behavior is responsible for calculating the average rating for a piece of content any time a rating is created or deleted. The article showed how to implement the average rating calculation behavior in Java as well as JavaScript.</p>
-<h1 id="where-to-find-more-information"><a href="#where-to-find-more-information">Where to find more information</a></h1>
+<p>This tutorial has shown how to bind custom behavior to Alfresco policies. Specifically, the tutorial showed how to implement a custom &quot;rateable&quot; aspect and a custom &quot;rating&quot; type that can be used to persist user ratings of content stored in the repository. The custom behavior is responsible for calculating the average rating for a piece of content any time a rating is created or deleted. The tutorial showed how to implement the average rating calculation behavior in Java as well as JavaScript.</p>
+<h1 id="where-to-find-more-information"><a href="#where-to-find-more-information">Where to Find More Information</a></h1>
 <ul>
-<li>The complete source code that accompanies this article is available <a href="http://ecmarchitect.com/images/articles/alfresco-behavior/behavior-article-project.zip">here</a> from <a href="http://ecmarchitect.com/">ecmarchitect.com</a>.</li>
-<li>The previous article that discusses custom content models is called “<a href="http://ecmarchitect.com/images/articles/alfresco-content/content-article.pdf">Working with Custom Content Types</a>” and is available at <a href="http://ecmarchitect.com/">ecmarchitect.com.</a></li>
-<li>The <a href="http://dev.alfresco.com/">Alfresco SDK</a> comes with a custom behavior example that's a little more complex than the one presented here. The “SDK Custom Aspect” project implements a “hit counter” that increments every time a piece of content is read.</li>
-<li>For deployment help, see the <a href="http://wiki.alfresco.com/wiki/Web_Client_Configuration_Guide">Client Configuration Guide</a> and <a href="http://wiki.alfresco.com/wiki/Packaging_And_Deploying_Extensions">Packaging and Deploying Extensions</a> in the Alfresco wiki.</li>
+<li>The complete source code for these examples is available on <a href="https://github.com/jpotts/alfresco-developer-series">GitHub</a>.</li>
+<li>Official documentation for both Enterprise Edition and Community Edition is available at <a href="http://docs.alfresco.com/">docs.alfresco.com</a>.</li>
+<li>For deployment help, see <a href="http://wiki.alfresco.com/wiki/Packaging_And_Deploying_Extensions">Packaging and Deploying Extensions</a> in the Alfresco wiki.</li>
 <li>For general development help, see the <a href="http://wiki.alfresco.com/wiki/Developer_Guide">Developer Guide</a>.</li>
 <li>For help customizing the data dictionary, see the <a href="http://wiki.alfresco.com/wiki/Data_Dictionary_Guide">Data Dictionary</a> wiki page.</li>
+<li>If you are ready to cover new ground, try another <a href="http://ecmarchitect.com">ecmarchitect.com</a> tutorial in the <a href="http://ecmarchitect.com/alfresco-developer-series">Alfresco Developer Series</a>.</li>
 </ul>
 					</div><!-- .entry-content -->
 				</div><!-- #post-## -->
