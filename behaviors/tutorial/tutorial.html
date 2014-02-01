@@ -449,7 +449,7 @@ public void onDeleteNode(ChildAssociationRef childAssocRef, boolean isNodeArchiv
     NodeRef parentRef = childAssocRef.getParentRef();
     
     // check the parent to make sure it has the right aspect
-    if (nodeService.hasAspect(parentRef, Qname.createQName(SomeCoModel.NAMESPACE_SOMECO_CONTENT_MODEL, SomeCoModel.ASPECT_SC_RATEABLE))) {
+    if (nodeService.exists(parentRef) &amp;&amp; nodeService.hasAspect(parentRef, Qname.createQName(SomeCoModel.NAMESPACE_SOMECO_CONTENT_MODEL, SomeCoModel.ASPECT_SC_RATEABLE))) {
     
         // continue, this is what we want
     
