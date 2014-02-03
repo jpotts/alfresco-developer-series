@@ -198,7 +198,7 @@ I am going to use the Alfresco Maven SDK to create two projects that will packag
 
 I am not going to spend much time talking about how the Alfresco Maven SDK works. If you aren't already familiar with it, you may want to read the [Getting Started with the Alfresco Maven SDK](http://ecmarchitect.com/alfresco-developer-series) tutorial on ecmarchitect.com first and then come back to this one.
 
-If you are planning on following along, go ahead and use the Alfresco Maven SDK to create the repo tier and share tier projects. Use an `artifactId` of "com.someco" for everything. For the repo project, use a `groupId` of "behavior-tutorial-repo". For the share tier project use a `groupId` of "behavior-tutorial-share".
+If you are planning on following along, go ahead and use the Alfresco Maven SDK to create the repo tier and share tier projects. Use a `groupId` of "com.someco" for everything. For the repo project, use an `artifactId` of "behavior-tutorial-repo". For the share tier project use an `artifactId` of "behavior-tutorial-share".
 
 Implementing and deploying the custom behavior in Java
 ======================================================

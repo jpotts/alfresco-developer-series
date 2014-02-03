@@ -85,7 +85,7 @@ I am not going to spend much time talking about how the Alfresco Maven SDK works
 
 This tutorial relies on code from the [Custom Content Types](http://ecmarchitect.com/alfresco-developer-series-tutorials/content/tutorial/tutorial.html) tutorial. The tutorial assumes that the repo tier AMP and Share tier AMP created during that tutorial have been deployed to the Alfresco server you will be deploying your custom actions AMPs to.
 
-If you are planning on following along, go ahead and use the Alfresco Maven SDK to create two new projects. One should use an `artifactId` of "com.someco" and `groupId` of "actions-tutorial-repo" for the repo tier project and "actions-tutorial-share" for the share tier project.
+If you are planning on following along, go ahead and use the Alfresco Maven SDK to create two new projects. One should use a `groupId` of "com.someco" and an `artifactId` of "actions-tutorial-repo" for the repo tier project and "actions-tutorial-share" for the share tier project.
 
 Part 1: Implementing an Action
 ==============================
