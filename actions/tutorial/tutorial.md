@@ -223,7 +223,7 @@ association.
 Alfresco's executer class for the Move action is called
 `org.alfresco.repo.action.executer.MoveActionExecuter`. If you have the
 Alfresco source you can find it in the repository project. I'll copy it
-into my own repository project and call it "[MoveReplacedActionExecuter](https://github.com/jpotts/alfresco-developer-series/blob/master/actions/alfresco-actions-tutorial-repo/src/main/java/com/someco/action/executer/MoveReplacedActionExecuter.java)".
+into my own repository project and call it "[MoveReplacedActionExecuter](https://github.com/jpotts/alfresco-developer-series/blob/master/actions/actions-tutorial-repo/src/main/java/com/someco/action/executer/MoveReplacedActionExecuter.java)".
 
 The out-of-the-box `executeImpl()` method is where the move logic is handled. It looks like
 this:
@@ -726,7 +726,7 @@ might install.
     }
 
 Next, comes the constructor for the component (I've left out some boring
-stuff, check the [source](https://github.com/jpotts/alfresco-developer-series/blob/master/actions/alfresco-actions-tutorial-share/src/main/amp/web/components/someco/rules/config/rule-config-action-custom.js) for the full listing):
+stuff, check the [source](https://github.com/jpotts/alfresco-developer-series/blob/master/actions/actions-tutorial-share/src/main/amp/web/components/someco/rules/config/rule-config-action-custom.js) for the full listing):
 
 
     SomeCo.RuleConfigActionCustom = function(htmlId)

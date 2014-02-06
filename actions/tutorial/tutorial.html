@@ -166,7 +166,7 @@ Architect | Alfresco Developer Tutorials</title>
 <h3 id="step-1-write-the-action-executer-class"><a href="#step-1-write-the-action-executer-class">Step 1: Write the action executer class</a></h3>
 <p>At its most basic, an action consists of an Action Executer class and its associated Spring bean configuration. Implementing an action involves extending <code>ActionExecuterAbstractBase</code> and then implementing the <code>executeImpl()</code> method. Before starting, though, think about similar code that might already exist within Alfresco that might be a good starting point for the new action. Alfresco is open source--it would be a shame to ignore that valuable resource. Plus, following the same patterns to implement this customization will make it easier for someone to support and makes it easier to share our code with others or even to contribute the code back to the Alfresco community project.</p>
 <p>The new action is doing a move, so the existing Move action is a good place to start. In fact, the only difference between the Move action and the custom Move Replaced action is that the node being moved isn't the current node--it's the node on the target end of a &quot;replaces&quot; association.</p>
-<p>Alfresco's executer class for the Move action is called <code>org.alfresco.repo.action.executer.MoveActionExecuter</code>. If you have the Alfresco source you can find it in the repository project. I'll copy it into my own repository project and call it &quot;<a href="https://github.com/jpotts/alfresco-developer-series/blob/master/actions/alfresco-actions-tutorial-repo/src/main/java/com/someco/action/executer/MoveReplacedActionExecuter.java">MoveReplacedActionExecuter</a>&quot;.</p>
+<p>Alfresco's executer class for the Move action is called <code>org.alfresco.repo.action.executer.MoveActionExecuter</code>. If you have the Alfresco source you can find it in the repository project. I'll copy it into my own repository project and call it &quot;<a href="https://github.com/jpotts/alfresco-developer-series/blob/master/actions/actions-tutorial-repo/src/main/java/com/someco/action/executer/MoveReplacedActionExecuter.java">MoveReplacedActionExecuter</a>&quot;.</p>
 <p>The out-of-the-box <code>executeImpl()</code> method is where the move logic is handled. It looks like this:</p>
 <pre><code>public void executeImpl(Action ruleAction, NodeRef actionedUponNodeRef)
 {
@@ -459,7 +459,7 @@ assoc.cm_replaces=Replaces</code></pre>
 {
    var SomeCo = {};
 }</code></pre>
-<p>Next, comes the constructor for the component (I've left out some boring stuff, check the <a href="https://github.com/jpotts/alfresco-developer-series/blob/master/actions/alfresco-actions-tutorial-share/src/main/amp/web/components/someco/rules/config/rule-config-action-custom.js">source</a> for the full listing):</p>
+<p>Next, comes the constructor for the component (I've left out some boring stuff, check the <a href="https://github.com/jpotts/alfresco-developer-series/blob/master/actions/actions-tutorial-share/src/main/amp/web/components/someco/rules/config/rule-config-action-custom.js">source</a> for the full listing):</p>
 <pre><code>SomeCo.RuleConfigActionCustom = function(htmlId)
 {
    SomeCo.RuleConfigActionCustom.superclass.constructor.call(this, htmlId);
