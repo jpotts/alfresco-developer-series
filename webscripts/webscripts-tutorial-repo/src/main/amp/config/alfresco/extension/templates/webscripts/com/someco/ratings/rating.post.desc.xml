@@ -5,6 +5,6 @@
   <url>/someco/rating.json</url>
   <url>/someco/rating.html</url>
   <format default="json">extension</format>
-  <authentication>guest</authentication>
+  <authentication runas="admin">guest</authentication>
   <transaction>required</transaction>
 </webscript>

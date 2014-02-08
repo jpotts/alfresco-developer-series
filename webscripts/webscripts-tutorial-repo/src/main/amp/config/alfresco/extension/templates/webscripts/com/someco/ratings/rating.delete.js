@@ -1,4 +1,4 @@
-<import resource="classpath:alfresco/module/behavior-article-repo/scripts/rating.js">
+<import resource="classpath:alfresco/module/behavior-tutorial-repo/scripts/rating.js">
 
 if (args.id == null || args.id.length == 0) {
 	logger.log("ID arg not set");

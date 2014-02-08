@@ -1,0 +1,10 @@
+<webscript>
+    <shortname>Get all whitepapers</shortname>
+    <description>Returns a list of active whitepapers</description>
+    <url>/someco/whitepapers</url>
+    <url>/someco/whitepapers.json</url>
+    <url>/someco/whitepapers.html</url>
+    <format default="json">extension</format>
+    <authentication>guest</authentication>
+    <transaction>none</transaction>
+</webscript>

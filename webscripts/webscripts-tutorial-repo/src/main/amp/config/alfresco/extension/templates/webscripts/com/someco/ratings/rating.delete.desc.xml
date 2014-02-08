@@ -5,5 +5,5 @@
   <url>/someco/rating/delete.html?id={id}</url>
   <format default="html">extension</format>
   <authentication>admin</authentication>
-  <transaction>none</transaction>
+  <transaction>required</transaction>
 </webscript>
