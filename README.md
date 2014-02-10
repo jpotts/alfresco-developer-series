@@ -20,8 +20,8 @@ Progress
 |Content|Done|Done|Done|[Done](http://ecmarchitect.com/alfresco-developer-series-tutorials/content/tutorial/tutorial.html)|
 |Actions|Done|Done|Done|[Done](http://ecmarchitect.com/alfresco-developer-series-tutorials/actions/tutorial/tutorial.html)|
 |Behaviors|Done|Done|Done|[Done](http://ecmarchitect.com/alfresco-developer-series-tutorials/behaviors/tutorial/tutorial.html)|
-|Webscripts|Done|Done|WIP|Not Started|
-|Workflows|Done|Done|Not Started|Not Started|
+|Webscripts|Done|Done|Done|[Done](http://ecmarchitect.com/alfresco-developer-series-tutorials/webscripts/tutorial/tutorial.html)|
+|Workflows|Done|Done|WIP|Not Started|
 
 Known Issues
 ------------

@@ -1,0 +1,106 @@
+<mockup version="1.0" skin="sketch" fontFace="Balsamiq Sans" measuredW="1317" measuredH="530" mockupW="900" mockupH="442">
+  <controls>
+    <control controlID="0" controlTypeID="com.balsamiq.mockups::BrowserWindow" x="417" y="88" w="900" h="442" measuredW="450" measuredH="400" zOrder="0" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>SomeCo%20Whitepapers%20%26%20Reports%20%7C%20sample-a.pdf%0Ahttp%3A//www.someco.com/publications/sample-a.pdf</text>
+      </controlProperties>
+    </control>
+    <control controlID="1" controlTypeID="com.balsamiq.mockups::TabBar" x="424" y="252" w="886" h="246" measuredW="549" measuredH="100" zOrder="1" locked="false" isInGroup="-1">
+      <controlProperties>
+        <selectedIndex>5</selectedIndex>
+        <text>Services%20%26%20Solutions%2C%20Approach%2C%20Partners%2C%20Clients%2C%20Company%2C%20Publications%20%26%20Events</text>
+      </controlProperties>
+    </control>
+    <control controlID="4" controlTypeID="com.balsamiq.mockups::Image" x="432" y="168" w="236" h="79" measuredW="77" measuredH="79" zOrder="2" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text/>
+      </controlProperties>
+    </control>
+    <control controlID="5" controlTypeID="com.balsamiq.mockups::SearchBox" x="938" y="180" w="-1" h="-1" measuredW="120" measuredH="25" zOrder="3" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>search</text>
+      </controlProperties>
+    </control>
+    <control controlID="14" controlTypeID="com.balsamiq.mockups::Label" x="432" y="284" w="-1" h="-1" measuredW="275" measuredH="21" zOrder="7" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Home%20%3E%20Publications%20%3E%20Whitepapers%20%26%20Reports</text>
+      </controlProperties>
+    </control>
+    <control controlID="16" controlTypeID="com.balsamiq.mockups::SubTitle" x="432" y="305" w="-1" h="-1" measuredW="143" measuredH="27" zOrder="4" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>sample-a.pdf</text>
+      </controlProperties>
+    </control>
+    <control controlID="17" controlTypeID="com.balsamiq.mockups::Label" x="432" y="359" w="-1" h="-1" measuredW="190" measuredH="21" zOrder="5" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Mon%2C%2015%20Oct%202007%2013%3A00%3A57%20CDT</text>
+      </controlProperties>
+    </control>
+    <control controlID="19" controlTypeID="com.balsamiq.mockups::Image" x="432" y="332" w="-1" h="-1" measuredW="114" measuredH="18" zOrder="6" locked="false" isInGroup="-1">
+      <controlProperties>
+        <src>./Screen%2520Shot%25202014-02-10%2520at%252012.48.32%2520PM.png</src>
+        <text/>
+      </controlProperties>
+    </control>
+    <control controlID="22" controlTypeID="com.balsamiq.mockups::FieldSet" x="432" y="382" w="679" h="109" measuredW="200" measuredH="170" zOrder="8" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Executive%20Summary</text>
+      </controlProperties>
+    </control>
+    <control controlID="23" controlTypeID="com.balsamiq.mockups::Paragraph" x="439" y="409" w="664" h="37" measuredW="200" measuredH="80" zOrder="9" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>In%20this%20riveting%20whitepaper%2C%20author%20Fred%20Smith%20explains%20why%20it%20is%20that%20web%20scripts%20are%20as%20cool%20as%20they%20are.%20%27This%20new%20framework%20is%20going%20to%20open%20up%20all%20sorts%20of%20possibilities%2C%27%20Fred%20says.</text>
+      </controlProperties>
+    </control>
+    <control controlID="24" controlTypeID="com.balsamiq.mockups::Link" x="1145" y="321" w="-1" h="-1" measuredW="151" measuredH="19" zOrder="10" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Download%20this%20whitepaper</text>
+      </controlProperties>
+    </control>
+    <control controlID="25" controlTypeID="com.balsamiq.mockups::SubTitle" x="1145" y="289" w="-1" h="-1" measuredW="105" measuredH="27" zOrder="11" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Download</text>
+      </controlProperties>
+    </control>
+    <control controlID="26" controlTypeID="com.balsamiq.mockups::Label" x="1145" y="338" w="-1" h="-1" measuredW="60" measuredH="21" zOrder="12" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Type%3A%20PDF</text>
+      </controlProperties>
+    </control>
+    <control controlID="27" controlTypeID="com.balsamiq.mockups::Label" x="1145" y="360" w="-1" h="-1" measuredW="115" measuredH="21" zOrder="13" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Size%3A%20117%2C249%20bytes</text>
+      </controlProperties>
+    </control>
+    <control controlID="28" controlTypeID="com.balsamiq.mockups::SubTitle" x="1145" y="402" w="-1" h="-1" measuredW="88" measuredH="27" zOrder="14" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Contact</text>
+      </controlProperties>
+    </control>
+    <control controlID="29" controlTypeID="com.balsamiq.mockups::Label" x="1145" y="427" w="-1" h="-1" measuredW="84" measuredH="21" zOrder="15" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Barbara%20Smith</text>
+      </controlProperties>
+    </control>
+    <control controlID="30" controlTypeID="com.balsamiq.mockups::Label" x="1145" y="449" w="-1" h="-1" measuredW="130" measuredH="21" zOrder="16" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>%28972%29%20555-1212%20x1025</text>
+      </controlProperties>
+    </control>
+    <control controlID="31" controlTypeID="com.balsamiq.mockups::Link" x="1145" y="472" w="-1" h="-1" measuredW="123" measuredH="19" zOrder="17" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>bsmith@someco.com</text>
+      </controlProperties>
+    </control>
+    <control controlID="32" controlTypeID="com.balsamiq.mockups::LinkBar" x="1088" y="183" w="-1" h="-1" measuredW="192" measuredH="19" zOrder="18" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Contact%2C%20Careers%2C%20Language</text>
+      </controlProperties>
+    </control>
+    <control controlID="33" controlTypeID="com.balsamiq.mockups::Label" x="886" y="182" w="-1" h="-1" measuredW="44" measuredH="21" zOrder="19" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Search%3A</text>
+      </controlProperties>
+    </control>
+  </controls>
+</mockup>
