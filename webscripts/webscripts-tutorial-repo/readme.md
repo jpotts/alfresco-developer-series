@@ -1,11 +1,3 @@
-
-
-Some of the code is from two previous articles called "Alfresco Developer: Working with Custom Content Types" and "Alfresco Developer: Implementing Custom Behaviors" also available at http://ecmarchitect.com.
-
-To build the source, edit build.properties to point to your local installation of the Alfresco SDK, then run ant.
-
-To deploy the extension files, make sure build.properties is set to reflect the location of your Alfresco webapp root, then run "ant deploy" to copy the extension directory to the Alfresco webapp extension directory.
-
 Alfresco Custom Web Scripts Tutorial
 ====================================
 
@@ -21,6 +13,10 @@ To build the source, run:
 `mvn install`
 
 This will create an AMP file in the target directory.
+
+Dependencies
+------------
+The webscripts-tutorial-repo AMP must be deployed to a repository that also has in it the content-tutorial-repo AMP and the behavior-tutorial-repo AMP. These projects are also part of the [Alfresco Developer Series](https://github.com/jpotts/alfresco-developer-series) project on GitHub.
 
 Deploying the AMP
 -----------------
