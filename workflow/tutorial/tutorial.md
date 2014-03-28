@@ -614,7 +614,7 @@ In the META-INF directory, create a new file called "[share-config-custom.xml](h
                       </control>
                    </field>
                    <field id="packageItems" set="items" />
-                   <field id="helloName" set="other" />
+                   <field id="scwf:helloName" set="other" />
                    <field id="bpm:status" set="progress" />
                 </appearance>
              </form>
