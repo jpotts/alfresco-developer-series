@@ -32,8 +32,9 @@ import com.someco.examples.ExampleBase;
 public class CMISExampleBase extends ExampleBase {
     //private String serviceUrl = "http://localhost:8080/alfresco/cmisatom"; // Uncomment for Atom Pub binding
     //private String serviceUrl = "http://localhost:8080/alfresco/cmis"; // Uncomment for Web Services binding
-    private String serviceUrl = "http://localhost:8080/alfresco/api/-default-/public/cmis/versions/1.0/atom"; // Uncomment for Atom Pub binding
+    //private String serviceUrl = "http://localhost:8080/alfresco/api/-default-/public/cmis/versions/1.0/atom"; // Uncomment for Atom Pub binding
     //private String serviceUrl = "http://localhost:8080/alfresco/api/-default-/public/cmis/versions/cmisws"; // Uncomment for Web Services binding
+	private String serviceUrl = "http://jpotts.alfresco-laptop.com:8081/chemistry/browser";
     private Session session = null;
 
     private String contentType;
@@ -50,8 +51,11 @@ public class CMISExampleBase extends ExampleBase {
 			parameter.put(SessionParameter.PASSWORD, getPassword());
 	
 			// connection settings
-			parameter.put(SessionParameter.ATOMPUB_URL, getServiceUrl()); // Uncomment for Atom Pub binding
-			parameter.put(SessionParameter.BINDING_TYPE, BindingType.ATOMPUB.value()); // Uncomment for Atom Pub binding
+			//parameter.put(SessionParameter.ATOMPUB_URL, getServiceUrl()); // Uncomment for Atom Pub binding
+			//parameter.put(SessionParameter.BINDING_TYPE, BindingType.ATOMPUB.value()); // Uncomment for Atom Pub binding
+
+			parameter.put(SessionParameter.BROWSER_URL, getServiceUrl()); // Uncomment for Browser binding
+			parameter.put(SessionParameter.BINDING_TYPE, BindingType.BROWSER.value()); // Uncomment for Browser binding
 			
 			// Uncomment for Web Services binding
 			/*
@@ -70,7 +74,7 @@ public class CMISExampleBase extends ExampleBase {
 			
 			// Set the alfresco object factory
 			// Used when using the CMIS extension for Alfresco for working with aspects
-			parameter.put(SessionParameter.OBJECT_FACTORY_CLASS, "org.alfresco.cmis.client.impl.AlfrescoObjectFactoryImpl");
+			//parameter.put(SessionParameter.OBJECT_FACTORY_CLASS, "org.alfresco.cmis.client.impl.AlfrescoObjectFactoryImpl");
 			
 			List<Repository> repositories = factory.getRepositories(parameter);
 	
@@ -108,11 +112,14 @@ public class CMISExampleBase extends ExampleBase {
 		Map <String, Object> properties = new HashMap<String, Object>();
 		// Following sets the content type and adds the webable and productRelated aspects
 		// This works because we are using the OpenCMIS extension for Alfresco
-		properties.put(PropertyIds.OBJECT_TYPE_ID, "D:sc:whitepaper,P:sc:webable,P:sc:productRelated");
+		//properties.put(PropertyIds.OBJECT_TYPE_ID, "D:sc:whitepaper,P:sc:webable,P:sc:productRelated");
+		properties.put(PropertyIds.OBJECT_TYPE_ID, "VersionableType");
 		properties.put(PropertyIds.NAME, filename);
+		/*
 		properties.put("sc:isActive", true);
 		GregorianCalendar publishDate = new GregorianCalendar(2007,4,1,5,0);
 		properties.put("sc:published", publishDate);
+		*/
 		String docText = "This is a sample " + contentType + " document called " + docName;
 		byte[] content = docText.getBytes();
 		InputStream stream = new ByteArrayInputStream(content);
