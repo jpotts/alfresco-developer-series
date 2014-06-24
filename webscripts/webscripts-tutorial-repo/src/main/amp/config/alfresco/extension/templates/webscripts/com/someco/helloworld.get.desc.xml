@@ -2,4 +2,5 @@
   <shortname>Hello World</shortname>
   <description>Hello world web script</description>
   <url>/someco/helloworld?name={nameArgument}</url>
+  <authentication>guest</authentication>  
 </webscript>

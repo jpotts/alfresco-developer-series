@@ -193,10 +193,21 @@ Most web scripts are going to use a controller, though, so go ahead and add one.
     </html>
     ```
 
-3.  Go to <http://localhost:8080/alfresco/service/index> and press the
+3.  Web scripts with controllers that are being run out of the Data Dictionary require a security context. If you were to try to run this web script now you'd see an Error 500 to that effect. To fix this, modify your descriptor to add an authentication element, like this:
+
+    ```
+    <webscript>
+    <shortname>Hello World</shortname>
+    <description>Hello world web script</description>
+    <url>/helloworld?name={nameArgument}</url>
+    <authentication>guest</authentication>
+    </webscript>
+    ```
+
+4.  Go to <http://localhost:8080/alfresco/service/index> and press the
     "Refresh Web Scripts" button. This is required because you added a controller that
     the web script run-time didn't know about.
-4.  Now go to your web browser and enter the same URL from the first
+5.  Now go to your web browser and enter the same URL from the first
     example which was <http://localhost:8080/alfresco/service/helloworld?name=Jeff>. You
     should see:
 
@@ -205,6 +216,8 @@ Most web scripts are going to use a controller, though, so go ahead and add one.
     
     Foo: bar
     ```
+
+    If you enter this URL in the same browser as you used to refresh the web scripts, it will run successfully because you already have a session established as an administrator. If you open a new browser window and enter the URL you will get challenged with an authentication dialog. Because you modified the descriptor to run as guest or higher, you can avoid the dialog by appending `&guest=true` to the end of the web script URL.
 
 The web script framework executed the controller. The controller populated the model with a variable called "foo". The web script framework then passed the model on to the view, implemented by the FreeMarker template. The view can access any variables that are placed in the model. In this case, it output the value of `foo`. It also has access to the arguments passed to the web script.
 
