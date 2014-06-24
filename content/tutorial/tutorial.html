@@ -83,19 +83,19 @@ Architect | Alfresco Developer Tutorials</title>
 <li><a href="#where-to-find-more-information">Where to Find More Information</a></li>
 </ul>
 </div>
-<h1 id="license"><a href="#license">License</a></h1>
+<h1 id="license">License</h1>
 <div class="figure">
 <img src="./images/cc-by-sa-88x31.png" />
 </div>
 <p>This work is licensed under the Creative Commons Attribution-ShareAlike 3.0 Unported License. To view a copy of this license, visit http://creativecommons.org/licenses/by-sa/3.0/ or send a letter to Creative Commons, 444 Castro Street, Suite 900, Mountain View, California, 94041, USA.</p>
-<h1 id="introduction"><a href="#introduction">Introduction</a></h1>
+<h1 id="introduction">Introduction</h1>
 <p>Alfresco is a flexible platform for developing content management applications. The first step in the process of designing a custom content management application is creating the content model.</p>
 <p>The content model Alfresco provides out-of-the-box is fairly comprehensive. In fact, for basic document management needs, you could probably get by with the out-of-the-box model. Of course, you'd be missing out on a lot of the power and functionality that having a model customized for your business needs provides.</p>
 <p>Part 1 of this document discusses how to create your own custom content model, but you won’t want to stop there. What good would a custom content model be if you did nothing exciting with the content? After an example content model is in place, Part 2 shows how to configure Alfresco Share to expose the custom model in the user interface, then Part 3 shows how to use OpenCMIS, a standard Java API, to create, search for, and delete content. You can safely swap the order of Parts 2 and 3 according to your interest.</p>
 <p>You should already be familiar with general document management and Alfresco functionality from an end-user perspective. If you want to follow along with Part 3, you should also know how to write basic Java code. See “<a href="#where-to-find-more-information">Where to find more information</a>” at the end of this document for a link to the code samples that accompany this article.</p>
-<h1 id="part-1-implementing-a-custom-content-model"><a href="#part-1-implementing-a-custom-content-model">Part 1: Implementing a Custom Content Model</a></h1>
+<h1 id="part-1-implementing-a-custom-content-model">Part 1: Implementing a Custom Content Model</h1>
 <p>Out-of-the-box, Alfresco gives you folders and content and a few other content types. But you’ll probably want to create your own business-specific types. This section discusses how that works.</p>
-<h2 id="modeling-basics"><a href="#modeling-basics">Modeling Basics</a></h2>
+<h2 id="modeling-basics">Modeling Basics</h2>
 <p>A content model describes the data being stored in the repository. The content model is critical--without it, Alfresco would be little more than a file system. Here is a list of key information the content model provides Alfresco:</p>
 <ul>
 <li><p>Fundamental data types and how those data types should be persisted to the database. For example, without a content model, Alfresco wouldn't know the difference between a <code>String</code> and a <code>Date</code>.</p></li>
@@ -107,30 +107,30 @@ Architect | Alfresco Developer Tutorials</title>
 <li><p>Relationships between content types.</p></li>
 </ul>
 <p>Alfresco content models are built using a small set of building blocks: Types, Properties, Property types, Constraints, Associations, and Aspects.</p>
-<h3 id="types"><a href="#types">Types</a></h3>
+<h3 id="types">Types</h3>
 <p><em>Types</em> are like types or classes in the object-oriented world. They can be used to model business objects, they have properties, and they can inherit from a parent type. “Content”, “Person”, and “Folder” are three important types defined out-of-the-box. Custom types are limited only by your imagination and business requirements. Examples include things like “Expense Report”, “Medical Record”, “Movie”, “Song”, and “Comment”.</p>
 <p>Note that types, properties, constraints, associations, and aspects have names. Names are made unique across the repository by using a namespace specific to the model. The namespace has an abbreviation. Rather than use “Example” or “Foo”, this tutorial assumes Alfresco is being implemented for a fictitious company called SomeCo. So, for example, SomeCo might define a custom model which declares a namespace with the URI of “http://www.someco.com/model/content/1.0” and a prefix of “sc”. Any type defined as part of that model would have a name prefixed with “sc:”. You'll see how models are actually defined using XML shortly, but I wanted to introduce the concept of namespaces and prefixes so you would know what they are when you see them. Using namespaces in this way helps prevent name collisions when content models are shared across repositories. In your project it is definitely important that you use your own namespace.</p>
-<h3 id="properties"><a href="#properties">Properties</a></h3>
+<h3 id="properties">Properties</h3>
 <p><em>Properties</em> are pieces of metadata associated with a particular type. For example, the properties of an Expense Report might include things like “Employee Name”, “Date submitted”, “Project”, “Client”, “Expense Report Number”, “Total amount”, and “Currency”. The Expense Report might also include a “content” property to hold the actual expense report file (maybe it is a PDF or an Excel spreadsheet, for example).</p>
-<h3 id="property-types"><a href="#property-types">Property Types</a></h3>
+<h3 id="property-types">Property Types</h3>
 <p><em>Property types</em> (or data types) describe the fundamental types of data the repository will use to store properties. Examples include things like strings, dates, floats, and booleans. Because these data types literally are fundamental, they are pretty much the same for everyone so they are defined for us out-of-the-box. (If you wanted to change the fact that the Alfresco data-type “text” maps to your own custom class rather than <code>java.lang.String</code>, you could, but let's not get ahead of ourselves).</p>
-<h3 id="constraints"><a href="#constraints">Constraints</a></h3>
+<h3 id="constraints">Constraints</h3>
 <p><em>Constraints</em> can optionally be used to restrict the value that Alfresco will store in a property. There are four types of constraints available: <code>REGEX</code>, <code>LIST</code>, <code>MINMAX</code>, and <code>LENGTH</code>. <code>REGEX</code> is used to make sure that a property value matches a regular expression pattern. <code>LIST</code> is used to define a list of possible values for a property. <code>MINMAX</code> provides a numeric range for a property value. <code>LENGTH</code> sets a restriction on the length of a string.</p>
 <p>Constraints can be defined once and reused across a model. For example, out-of-the-box, Alfresco makes available a constraint named <code>cm:filename</code> that defines a regular expression constraint for file names. If a property in a custom type needs to restrict values to those matching the filename pattern, the custom model doesn't have to define the constraint again, it simply refers to the <code>cm:filename</code> constraint.</p>
-<h3 id="associations"><a href="#associations">Associations</a></h3>
+<h3 id="associations">Associations</h3>
 <p><em>Associations</em> define relationships between types. Without associations, models would be full of types with properties that store “pointers” to other pieces of content. Going back to the expense report example, each expense report might be stored as an individual object. In addition to an Expense Report type there could also be an Expense type. Associations tell Alfresco about the relationship between an Expense Report and one or more Expenses.</p>
 <p>Associations come in two flavors: Peer Associations and Child Associations. (Note that Alfresco refers to Peer Associations simply as “Associations” but I think that's confusing so I'll refer to them with the “Peer” distinction). Peer Associations are just that—-they define a relationship between two objects but neither is subordinate to the other. Child Associations, on the other hand, are used when the target of the association (or child) should not exist when the source (or parent) goes away. This works like a cascaded delete in a relational database: Delete the parent and the child goes away.</p>
 <p>An out-of-the-box association that's easy to relate to is <code>cm:contains</code>. The <code>cm:contains</code> association defines a Child Association between folders (<code>cm:folder</code>) and all other objects (instances of <code>sys:base</code> or its child types). So, for example, a folder named “Human Resources” (an instance of <code>cm:folder</code>) would have a <code>cm:contains</code> association between itself and all of its immediate children. The children could be instances of custom types like Resume, Policy, or Performance Review.</p>
 <p>Another example might be a “Whitepaper” and its “Related Documents”. Suppose that a company publishes whitepapers on their web site. The whitepaper might be related to other documents such as product marketing materials or other research. If the relationship between the whitepaper and its related documents is formalized it can be shown in the user interface. To implement this, as part of the Whitepaper content type, you'd define a Peer Association. You could use <code>sys:base</code> as the target type to allow any piece of content in the repository to be associated with a Whitepaper or you could restrict the association to a specific type like <code>cm:content</code> or <code>sc:whitepaper</code>.</p>
-<h3 id="aspects"><a href="#aspects">Aspects</a></h3>
+<h3 id="aspects">Aspects</h3>
 <p>Before discussing <em>Aspects</em>, let's first consider how inheritance works and the implications on the content model. Suppose Alfresco will be used to manage content to be displayed in a portal (quite a common requirement, by the way). Suppose further that only a subset of the content in the repository is content that should be shown in the portal. And, when content is to be displayed in the portal, there are some additional pieces of metadata that need to be captured. A simple example might be a requirement to show the date and time a piece of content was approved.</p>
 <p>Using the content modeling concepts discussed so far, there are only two options. The first option is to define a root content type with the “publish date” property. All subsequent content types would inherit from this root type thus making the publish date available everywhere. The second option is to individually define the publish date property only in the content types that are going to be published to the portal.</p>
 <p>Neither of these are great options. In the first option, there would be a property in each-and-every piece of content in the repository that may or may not ultimately be used which can lead to performance and maintenance problems. The second option isn't much better for a few reasons. First, it assumes the content types to be published in the portal are known ahead of time. Second, it opens up the possibility that the same type of metadata might get defined differently across content types. Last, it doesn't provide an easy way to encapsulate behavior or business logic that might be tied to the publish date.</p>
 <p>As you have probably figured out by now, there is a third option that addresses these issues: Aspects. Aspects “cross-cut” the content model with properties and associations by attaching them to content types (or even specific instances of content) when and where they are needed.</p>
 <p>Going back to the portal example, a “Portal Displayable” aspect could be defined with a publish date property. The aspect would then be added to any piece of content, regardless of type, that needed to be displayed in the portal.</p>
-<h3 id="custom-behavior"><a href="#custom-behavior">Custom Behavior</a></h3>
+<h3 id="custom-behavior">Custom Behavior</h3>
 <p>You may find that your custom aspect or custom type needs to have behavior or business logic associated with it. For example, every time an Expense Report is checked in you want to recalculate the total by iterating through the associated Expenses. One option would be to incorporate this logic into rules or actions in the Alfresco web client or your custom web application. But some behavior is so fundamental to the aspect or type that it should really be “bound” to the aspect or type and invoked any time Alfresco works with those objects. If you are curious how this works, read the <a href="http://ecmarchitect.com/alfresco-developer-series">Custom Behaviors tutorial</a> on ecmarchitect.com. For now, just know that associating business logic with your custom aspects and types (or overriding out-of-the-box behavior) is possible.</p>
-<h3 id="content-modeling-best-practices"><a href="#content-modeling-best-practices">Content Modeling Best Practices</a></h3>
+<h3 id="content-modeling-best-practices">Content Modeling Best Practices</h3>
 <p>Now that you know the building blocks of a content model, it makes sense to consider some best practices. Here are the top ten:</p>
 <ol style="list-style-type: decimal">
 <li><p><em>Don't change Alfresco's out-of-the-box content model</em>. If you can possibly avoid it, do not change Alfresco's out-of-the-box content model. Instead, extend it with your own custom content model. If requirements call for several different types of content to be stored in the repository, create a content type for each one that extends from <code>cm:content</code> or from an enterprise-wide root content type.</p></li>
@@ -144,7 +144,7 @@ Architect | Alfresco Developer Tutorials</title>
 <li><p><em>Implement a Java class that corresponds to each custom content model you define</em>. Within each content model Java class, define constants that correspond to model namespaces, type names, property names, aspect names, etc. You'll find yourself referring to the “Qname” of types, properties, and aspects quite often so it helps to have constants defined in an intuitive way.</p></li>
 <li><p><em>Use the source</em>! The out-of-the-box content model is a great example of what's possible. The forumModel and recordsModel have some particularly useful examples. In the next section I'll tell you where the model files live and what's in each so you'll know where to look later when you say to yourself, “Surely, the folks at Alfresco have done this before”.</p></li>
 </ol>
-<h3 id="out-of-the-box-models"><a href="#out-of-the-box-models">Out-of-the-Box Models</a></h3>
+<h3 id="out-of-the-box-models">Out-of-the-Box Models</h3>
 <p>The Alfresco source code is an indispensable reference tool which you should always have at the ready, along with the documentation, wiki, forums, and Jira. With that said, if you are following along with this article but have not yet downloaded the source, you are in luck. The out-of-the-box content model files are written in XML and get deployed with the web client. They can be found in the alfresco.war file in /WEB-INF/classes/alfresco/model. The table below describes several of the model files that can be found in the directory.</p>
 <table>
 <caption>Some Out-of-the-Box Content Models</caption>
@@ -227,7 +227,7 @@ Architect | Alfresco Developer Tutorials</title>
 </table>
 <p>In the interest of brevity, I've left off about 25 other model files. Depending on what you are trying to do with your model, or just to see further examples, you might want to take a look at those at some point.</p>
 <p>In addition to the model files the modelSchema.xsd file can be a good reference. As the name suggests, it defines the XML vocabulary Alfresco content model XML files must adhere to.</p>
-<h2 id="creating-a-custom-content-model"><a href="#creating-a-custom-content-model">Creating a Custom Content Model</a></h2>
+<h2 id="creating-a-custom-content-model">Creating a Custom Content Model</h2>
 <p>Time for a detailed example. As mentioned earlier, suppose Alfresco is being implemented for a fictional company called “SomeCo”. Pretend that SomeCo is a commercial open source company behind the ever-popular open source project, “SomeSoftware”. SomeCo has decided to re-vamp its web presence by adding new types of content and social functionality to their web site. For this example, let’s focus on the white papers SomeCo wants to make available.</p>
 <p>SomeCo has selected Alfresco as their Enterprise Content Management solution. In addition to managing the content on the new site, SomeCo wants to use Alfresco to manage all of its rich content. So everything will live in the Alfresco repository and some subset of the company’s content will be served up to the external portal.</p>
 <p>The first step is to consider the types and properties needed. There are some pieces of metadata SomeCo wants to track about all content, regardless of whether or not it will be shown on the web site. All documents will have an audience property that identifies who will be most interested in the content. Documents related to SomeCo's software will have properties identifying the Software Product and Software Version.</p>
@@ -243,9 +243,9 @@ Architect | Alfresco Developer Tutorials</title>
 <p>It should be easy to see how the model might be extended over time. The requirements mentioned social features being needed at some point. A rateable aspect could be added along with a rating type. Comments could work the same way. Or you could choose to use the rating and commenting features available out-of-the-box.</p>
 <p>As new content types are identified they will be added under <code>sc:doc</code>.</p>
 <p>Using the aspect to determine whether or not to show the content on the portal is handy, particularly in light of the SomeCo decision to use Alfresco for all of its content management needs. The repository will contain content that may or may not be on the portal. Portal content will be easily-distinguishable from non-portal content by the presence of the <code>sc:webable</code> aspect.</p>
-<h3 id="setting-up"><a href="#setting-up">Setting Up</a></h3>
+<h3 id="setting-up">Setting Up</h3>
 <p>Before starting, let's get a local development environment set up. First I'll give you a list of the tools you'll need, then I'll explain the project organization.</p>
-<h4 id="tools"><a href="#tools">Tools</a></h4>
+<h4 id="tools">Tools</h4>
 <p>Here is what I am using on my machine:</p>
 <ul>
 <li>Mac OS X 10.9.1</li>
@@ -257,7 +257,7 @@ Architect | Alfresco Developer Tutorials</title>
 <p>By default, when you create an Alfresco project using version 1.1.1 of the Alfresco Maven SDK the project will be configured to depend on Alfresco Community Edition 4.2.e.</p>
 <p>Projects created using the Alfresco Maven SDK have the ability to run Alfresco on an embedded Tomcat server. This makes <a href="http://www.alfresco.com/products/community">downloading</a> and installing Alfresco optional. But if you want to run a full Alfresco server locally, you are welcome to do that.</p>
 <p>The Eclipse IDE is also optional. Most people working with Alfresco use Eclipse or something similar, so this tutorial will assume that's what you are using.</p>
-<h4 id="project-organization"><a href="#project-organization">Project Organization</a></h4>
+<h4 id="project-organization">Project Organization</h4>
 <p>I am going to use the Alfresco Maven SDK to create projects that will package up my customizations as AMPs (Alfresco Module Packages). I will ultimately create two AMPs. One AMP is for the Alfresco web application (the &quot;repo&quot; tier) and the other is for the Alfresco Share web application (the &quot;Share&quot; tier). Unless you have a good reason to do otherwise, this should be your default approach to packaging and deploying your customizations.</p>
 <p>Normally, your custom content model would use two projects--one for the repo tier AMP and one for the Share tier AMP. But, because of how I am structuring this and other tutorials, I'm going to use some extra projects. If you follow the entire tutorial you will end up creating four:</p>
 <ul>
@@ -268,7 +268,7 @@ Architect | Alfresco Developer Tutorials</title>
 </ul>
 <p>From an Apache Maven perspective, each of the four projects will have their own pom.xml. Then I'll use a single pom.xml in the root that builds all four projects.</p>
 <p>Speaking of Apache Maven, I am not going to spend much time talking about how the Alfresco Maven SDK works. If you aren't already familiar with it, you may want to read the <a href="http://ecmarchitect.com/alfresco-developer-series">Getting Started with the Alfresco Maven SDK</a> tutorial on ecmarchitect.com first and then come back to this one.</p>
-<h3 id="implementing-and-deploying-the-model"><a href="#implementing-and-deploying-the-model">Implementing and Deploying the Model</a></h3>
+<h3 id="implementing-and-deploying-the-model">Implementing and Deploying the Model</h3>
 <p>Here are the steps to follow when configuring a custom content model:</p>
 <ol style="list-style-type: decimal">
 <li>Create a new AMP project using the Alfresco Maven SDK</li>
@@ -277,7 +277,7 @@ Architect | Alfresco Developer Tutorials</title>
 <li>Test your changes</li>
 </ol>
 <p>Let's go through each of these.</p>
-<h4 id="step-1-create-a-new-amp-project"><a href="#step-1-create-a-new-amp-project">Step 1: Create a new AMP Project</a></h4>
+<h4 id="step-1-create-a-new-amp-project">Step 1: Create a new AMP Project</h4>
 <p>The first step is to <strong>create a new AMP project</strong> using the Alfresco Maven SDK. Follow these steps:</p>
 <ol style="list-style-type: decimal">
 <li>If you have not already done so, create an empty directory that can hold the new projects associated with this tutorial. I'll refer to that as $TUTORIAL_HOME.</li>
@@ -293,7 +293,7 @@ Architect | Alfresco Developer Tutorials</title>
 </ol>
 <p>If you have problems after the import, go ahead and resolve those. Consult the Alfresco Maven SDK tutorial if you need help with that.</p>
 <p>Now you are ready to create your custom content model XML.</p>
-<h4 id="step-2-create-a-custom-content-model-xml-file"><a href="#step-2-create-a-custom-content-model-xml-file">Step 2: Create a custom content model XML file</a></h4>
+<h4 id="step-2-create-a-custom-content-model-xml-file">Step 2: Create a custom content model XML file</h4>
 <p>Now that you have a project that is ready to produce a repo tier AMP you can create your content model XML file. To do that, follow these steps:</p>
 <ol style="list-style-type: decimal">
 <li><p>Models belong in a directory called “model” in your project's module directory, which is:</p>
@@ -413,7 +413,7 @@ The &quot;model&quot; directory does not exist when the project is initially cre
 <p>Referring back to the earlier drawing of SomeCo's initial content model, you'll see that it matches up with the XML above with a small exception. As shown in the diagram, there are two aspects, each with two properties, the enterprise-wide ancestor type called <code>sc:doc</code>, a type for whitepapers called <code>sc:whitepaper</code>, and a third type, <code>sc:marketingDoc</code>, which I added so you could see an example of how constraints work.</p>
 <p>When building your own custom content models, you may want to use the out-of-the-box contentModel.xml, discussed earlier, as a reference.</p>
 <p>Here's an important note about the content model schema that may save you some time: Order matters. For example, if you move the <code>associations</code> element after <code>mandatory-aspects</code> Alfresco won't be able to parse your model. Refer to the modelSchema.xsd referenced earlier to determine the expected order.</p>
-<h4 id="step-3-register-the-new-model-with-a-spring-bean"><a href="#step-3-register-the-new-model-with-a-spring-bean">Step 3: Register the new model with a Spring bean</a></h4>
+<h4 id="step-3-register-the-new-model-with-a-spring-bean">Step 3: Register the new model with a Spring bean</h4>
 <p>The next step is to <strong>register the new model with a Spring bean</strong> in a Spring context file. You'll find that the Alfresco Maven SDK has already created a Spring context file for your module in:</p>
 <pre><code>$TUTORIAL_HOME/content-tutorial-repo/src/main/amp/config/alfresco/module/content-tutorial-repo/context</code></pre>
 <p>The file is named service-context.xml. If you open that file you'll see that two Spring beans are already there. They were created by the Alfresco Maven SDK and they are used to wire in some example classes.</p>
@@ -427,7 +427,7 @@ The &quot;model&quot; directory does not exist when the project is initially cre
     &lt;/property&gt;
 &lt;/bean&gt;</code></pre>
 <p>Notice the <code>${project.artifactId}</code> placeholder. That will be automatically replaced by the Alfresco Maven SDK using the <code>artifactId</code> specified in the pom.xml file when Maven generates the AMP.</p>
-<h4 id="step-4-test-your-changes"><a href="#step-4-test-your-changes">Step 4: Test Your Changes</a></h4>
+<h4 id="step-4-test-your-changes">Step 4: Test Your Changes</h4>
 <p>The last step is to test your changes. The Alfresco Maven SDK makes that easy. Do this:</p>
 <ol style="list-style-type: decimal">
 <li>From the command line, change directories to $TUTORIAL_HOME/content-tutorial-repo.</li>
@@ -449,14 +449,14 @@ The &quot;model&quot; directory does not exist when the project is initially cre
 <li>Your custom content model XML file is well-formed and valid.</li>
 </ul>
 <p>If you still have problems, post as much detail as you can in the <a href="http://forums.alfresco.com">Alfresco Forums</a>.</p>
-<h4 id="success"><a href="#success">Success</a></h4>
+<h4 id="success">Success</h4>
 <p>You have now created an AMP that contains a custom content model. If you go look in:</p>
 <pre><code>$TUTORIAL_HOME/content-tutorial-repo/target</code></pre>
 <p>you'll see a file named content-tutorial-repo.amp. That AMP can be installed in an Alfresco installation. For example, if you are running Alfresco using the binary installer, you can copy the AMP to <code>$ALFRESCO_HOME/amps</code> and then run <code>$ALFRESCO_HOME/bin/apply_amps.sh</code> to install the AMP into your Alfresco web application.</p>
 <p>For the purpose of this tutorial, though, let's keep moving. You've got your content model defined but the Alfresco Share user interface doesn't know anything about it yet. You'll learn how to do that next.</p>
-<h1 id="part-2-configuring-alfresco-share"><a href="#part-2-configuring-alfresco-share">Part 2: Configuring Alfresco Share</a></h1>
+<h1 id="part-2-configuring-alfresco-share">Part 2: Configuring Alfresco Share</h1>
 <p>Now that the model is defined, you could begin using it right away by writing code against one of Alfresco's API's that creates instances of your custom types, adds aspects, etc. In practice it is usually a good idea to do just that to make sure the model behaves like you expect. In fact, if you just can’t wait to see some code to create, query, and update content, skip to <a href="#part-3-working-with-content-programmatically">Part 3</a>. For everyone else, let's talk about how to configure Alfresco Share so that end-users can work with the custom content model you just created.</p>
-<h2 id="configuring-the-custom-model-in-alfresco-share"><a href="#configuring-the-custom-model-in-alfresco-share">Configuring the Custom Model in Alfresco Share</a></h2>
+<h2 id="configuring-the-custom-model-in-alfresco-share">Configuring the Custom Model in Alfresco Share</h2>
 <p>Let’s continue by configuring Alfresco Share to work with our custom content model.</p>
 <p>First, think about the Alfresco Share client and all of the places the content model customizations need to show up:</p>
 <ul>
@@ -475,13 +475,13 @@ The &quot;model&quot; directory does not exist when the project is initially cre
 <li>Test our changes.</li>
 </ol>
 <p>Let's do it.</p>
-<h3 id="step-1-create-a-project-for-the-share-tier-amp"><a href="#step-1-create-a-project-for-the-share-tier-amp">Step 1: Create a project for the Share tier AMP</a></h3>
+<h3 id="step-1-create-a-project-for-the-share-tier-amp">Step 1: Create a project for the Share tier AMP</h3>
 <p>The first step is to create a new project to hold the files that will make up the Share tier AMP. That works exactly as it did for the repo tier AMP. Do this:</p>
 <ol style="list-style-type: decimal">
 <li>In $TUTORIAL_HOME, create a new project using the AMP archetype.</li>
 <li>Specify &quot;com.someco&quot; as the <code>groupId</code>.</li>
 <li>Specify &quot;content-tutorial-share&quot; as the <code>artifactId</code>.</li>
-<li>Specify &quot;share&quot; as the <code>alfresco_target_amp_client_war</code>. This is a step you didn't have to do for the repo tier project because it defaulted to &quot;alfresco&quot;.</li>
+<li>Specify &quot;share&quot; as the <code>alfresco_target_amp_client_war</code>. This is a step you didn't have to do for the repo tier project because it defaulted to &quot;alfresco&quot;. One way to specify this is to type <code>N</code> after specifying the groupId and artifactId, then re-specify those values, making sure to specify &quot;share&quot; when prompted for the <code>alfresco_target_amp_client_war</code>. Alternatively, you can specify <code>Y</code> and then edit the pom.xml to change the <code>alfresco.client.war</code> setting to &quot;share&quot;.</li>
 </ol>
 <p>In this case, there are several things the archetype defaults that aren't necessary for our Share tier project. To clean that up:</p>
 <ol style="list-style-type: decimal">
@@ -491,13 +491,13 @@ The &quot;model&quot; directory does not exist when the project is initially cre
 <li>Remove the &quot;alfresco-repository&quot; dependency from pom.xml.</li>
 </ol>
 <p>Now you are ready to create a custom Share configuration file.</p>
-<h3 id="step-2-create-a-custom-share-configuration-file"><a href="#step-2-create-a-custom-share-configuration-file">Step 2: Create a custom Share configuration file</a></h3>
+<h3 id="step-2-create-a-custom-share-configuration-file">Step 2: Create a custom Share configuration file</h3>
 <p>Alfresco Share uses a configuration file called &quot;share-config-custom.xml&quot;. The share-config-custom.xml file is a proprietary file composed of numerous “config” elements. Each config element has an “evaluator” and a “condition”. Extending the out-of-the-box Share configuration is a matter of knowing which evaluator/condition to use.</p>
 <p>The location of the share-config-custom.xml file is a little counter-intuitive. Ultimately, we want that file to be placed under META-INF in a JAR file that will go into the Share web application's WEB-INF/lib. Putting the file in a JAR keeps it from overwriting other modules that may also be providing their own share-config-custom.xml.</p>
 <p>Create an empty XML file called &quot;share-config-custom.xml&quot; in:</p>
 <pre><code>$TUTORIAL_HOME/content-tutorial-share/src/main/resources/META-INF</code></pre>
 <p>We'll add to that file in the next sections.</p>
-<h4 id="add-custom-types-and-aspects-to-lists"><a href="#add-custom-types-and-aspects-to-lists">Add Custom Types and Aspects to Lists</a></h4>
+<h4 id="add-custom-types-and-aspects-to-lists">Add Custom Types and Aspects to Lists</h4>
 <p>The first four items in our configuration wish list have to do with telling the Share user interface about custom types and aspects. A single set of configuration will take care of all four items.</p>
 <ol style="list-style-type: decimal">
 <li><p>Edit the share-config-custom.xml file you just created and add the following:</p>
@@ -535,7 +535,7 @@ As the comments suggest, the <code>addable</code> and <code>removeable</code> el
 &lt;/types&gt;</code></pre></li>
 </ol>
 <p>Notice how <code>sc:whitepaper</code> appears in the list twice—once as a subtype of <code>cm:content</code> and once as a subtype of <code>sc:doc</code>. This allows a user to specialize directly to the <code>sc:whitepaper</code> type regardless of whether the original type is <code>cm:content</code> or <code>sc:doc</code>.</p>
-<h3 id="step-3-test-your-changes"><a href="#step-3-test-your-changes">Step 3: Test Your Changes</a></h3>
+<h3 id="step-3-test-your-changes">Step 3: Test Your Changes</h3>
 <p>You need two things to test this: An Alfresco repository that is running the repo tier AMP you created in Part 1 and an Alfresco Share web application running the Share tier AMP you just started working on. One way to do this is to leverage the embedded Tomcat server present in both projects. Do this:</p>
 <ol style="list-style-type: decimal">
 <li>Open two command line windows.</li>
@@ -571,7 +571,7 @@ This will start up an Alfresco server with your repo tier AMP and it will leave 
 <img src="./images/aspects-before-i18n-hi.png" alt="Manage aspects UI action with custom aspects" /><p class="caption">Manage aspects UI action with custom aspects</p>
 </div>
 <p>You’ll notice that in the rule configuration the types and aspects are shown with their localized names while in the dialogs the strings are shown as not yet localized (their ID is displayed instead of their localized string). That’s because the strings for Share haven’t yet been localized and some services, like the rule configuration, will pull those strings from the content model XML. If it is annoying you, jump to the <a href="#localizing-strings-for-custom-content-models">localization</a> section and come back.</p>
-<h2 id="configuring-forms-for-custom-properties"><a href="#configuring-forms-for-custom-properties">Configuring Forms for Custom Properties</a></h2>
+<h2 id="configuring-forms-for-custom-properties">Configuring Forms for Custom Properties</h2>
 <p>Try this: Create a piece of test content. Change its type to <code>sc:whitepaper</code> and add both of our custom aspects to it. Then, from the Document Library, click the &quot;Edit Properties&quot; link for that piece of test content. You'll see a form that looks something like this:</p>
 <div class="figure">
 <img src="./images/unconfigured-form.png" alt="Alfresco Share does not know how to display a form for the custom type" /><p class="caption">Alfresco Share does not know how to display a form for the custom type</p>
@@ -584,7 +584,7 @@ This will start up an Alfresco server with your repo tier AMP and it will leave 
 <li>Using the default form, which is what you get when you click “Edit Properties” from the document details page.</li>
 </ol>
 <p>Clearly something prettier is needed for both the default form and the edit metadata form, so let’s fix that.</p>
-<h3 id="configuring-the-form-service-for-a-custom-type"><a href="#configuring-the-form-service-for-a-custom-type">Configuring the form service for a custom type</a></h3>
+<h3 id="configuring-the-form-service-for-a-custom-type">Configuring the form service for a custom type</h3>
 <p>Alfresco Share uses the Form Service to decide which properties to show for a given form, how to lay out forms, and the control to use for each property. Let’s take a look at the out-of-the-box form configuration for <code>cm:content</code>. Because you've already launched Alfresco Share on your embedded Tomcat server, the exploded Share web application exists in your project's target directory. The out-of-the-box share-form-config.xml file resides in target/content-tutorial-share-war/WEB-INF/classes/alfresco/share-form-config.xml.</p>
 <p>If you open that file and search for ‘condition=”cm:content”’ you’ll find two config elements that contain a total of six form configurations. One config element, identified by the <code>node-type</code> evaluator, is for forms dealing with existing nodes. The config element with the <code>model-type</code> evaluator is for forms used to create new nodes.</p>
 <p>Let’s focus on existing nodes for now. The three forms in that config element are:</p>
@@ -611,7 +611,7 @@ This will start up an Alfresco server with your repo tier AMP and it will leave 
 <img src="./images/configured-form.png" alt="Alfresco Share displays a form configured for the custom type" /><p class="caption">Alfresco Share displays a form configured for the custom type</p>
 </div>
 <p>Let's build on the form definition for <code>sc:whitepaper</code> to include properties and associations from the custom content model.</p>
-<h3 id="configuring-the-form-service-for-custom-properties"><a href="#configuring-the-form-service-for-custom-properties">Configuring the form service for custom properties</a></h3>
+<h3 id="configuring-the-form-service-for-custom-properties">Configuring the form service for custom properties</h3>
 <p>The document details for a whitepaper looks better, but the form isn’t showing the custom metadata. In this particular example, our model defines an association called <code>sc:relatedDocuments</code> which <code>sc:whitepaper</code> inherits from <code>sc:doc</code> and four properties across two custom aspects.</p>
 <p>For the properties defined in aspects, you have a choice. You can either add the properties to every form definition you want them to appear in. Or, you can add an aspect configuration so that they’ll automatically be displayed for any object that includes that aspect. The advantage of the former is that you can have fine-grained control over where those fields appear whereas if you choose the latter route, the form service will decide where to include your fields.</p>
 <p>This example takes the latter route. Edit the share-config-custom.xml file and add the following aspect configuration for <code>sc:webable</code>:</p>
@@ -660,7 +660,7 @@ This will start up an Alfresco server with your repo tier AMP and it will leave 
 <img src="./images/configured-popup.png" alt="Custom properties now show up in document details" /><p class="caption">Custom properties now show up in document details</p>
 </div>
 <p>Now let's turn our attention to search.</p>
-<h3 id="configuring-advanced-search-in-alfresco-share"><a href="#configuring-advanced-search-in-alfresco-share">Configuring Advanced Search in Alfresco Share</a></h3>
+<h3 id="configuring-advanced-search-in-alfresco-share">Configuring Advanced Search in Alfresco Share</h3>
 <p>The advanced search form in Alfresco Share allows end-users to first select what they are looking for and then specify both full-text and specific property values to search for depending on the content type selected. Out-of-the-box, the search form includes two types: <code>cm:content</code> and <code>cm:folder</code>.</p>
 <p>Users need to be able to search specifically for SomeCo Whitepapers, so the first step is to add the <code>sc:whitepaper</code> type to the list. Like the other Share form configuration covered thus far, the configuration goes in share-config-custom.xml. In this case, the condition is <code>AdvancedSearch</code>.</p>
 <pre><code>&lt;config replace=&quot;true&quot; evaluator=&quot;string-compare&quot; condition=&quot;AdvancedSearch&quot;&gt;
@@ -733,7 +733,7 @@ This will start up an Alfresco server with your repo tier AMP and it will leave 
 <div class="figure">
 <img src="./images/adv-search-props.png" alt="Search custom properties" /><p class="caption">Search custom properties</p>
 </div>
-<h2 id="localizing-strings-for-custom-content-models"><a href="#localizing-strings-for-custom-content-models">Localizing Strings for Custom Content Models</a></h2>
+<h2 id="localizing-strings-for-custom-content-models">Localizing Strings for Custom Content Models</h2>
 <p>We’ve put off localizing the form labels until now. To fix this, first create a messages bundle, then register it with a Spring bean. Here are the steps:</p>
 <ol style="list-style-type: decimal">
 <li>Create a new folder called &quot;messages&quot; in $TUTORIAL_HOME/content-tutorial-share/src/main/amp/config/alfresco/module/content-tutorial-share.</li>
@@ -772,7 +772,7 @@ prop.sc_version=Version</code></pre></li>
 &lt;/beans&gt;</code></pre></li>
 </ol>
 <p>Now restart the embedded Tomcat for your Alfresco Share project and you should see that the types, aspects, and properties have the localized labels.</p>
-<h2 id="share-configuration-summary"><a href="#share-configuration-summary">Share Configuration Summary</a></h2>
+<h2 id="share-configuration-summary">Share Configuration Summary</h2>
 <p>You’ve seen that configuring Alfresco Share for your custom content model essentially involves adding XML to the share-config-custom.xml file and creating a properties file for your localized strings. All of this lives in a project created by the Alfresco Maven SDK and is packaged and deployed as an AMP.</p>
 <p>There are other things you might like to do to the Share user interface, but these are beyond the scope of this document:</p>
 <ul>
@@ -781,7 +781,7 @@ prop.sc_version=Version</code></pre></li>
 <li>Add custom properties to the document library data grid</li>
 </ul>
 <p>Now let’s turn our attention from the front-end to the back-end to understand how to create, query, update, and delete content using code running remotely from the Alfresco server.</p>
-<h1 id="part-3-working-with-content-programmatically"><a href="#part-3-working-with-content-programmatically">Part 3: Working with Content Programmatically</a></h1>
+<h1 id="part-3-working-with-content-programmatically">Part 3: Working with Content Programmatically</h1>
 <p>So far we've created a custom model and we've configured Alfresco Share to let end users work with the types, aspects, and properties defined in the custom model. For simple document management solutions, this may be enough. Often, code will also required. It could be code in a web application that needs to work with the repository, code that implements custom behavior for custom content types, or code that implements Alfresco web client customizations.</p>
 <p>There are several API's available depending on what you want to do. The table below outlines the choices:</p>
 <table>
@@ -813,7 +813,7 @@ prop.sc_version=Version</code></pre></li>
 </table>
 <p>The best way to make remote calls to the Alfresco repository is to leverage Alfresco’s support for the Content Management Interoperability Services (CMIS) <a href="https://www.oasis-open.org/committees/cmis">standard</a>. So let’s look at CMIS examples for creating, updating, querying, and deleting content. The client API’s available from the <a href="http://chemistry.apache.org">Apache Chemistry</a> project offer a variety of languages to choose from. This tutorial focuses on Java.</p>
 <p>If you need to learn how to make these other styles of customizations, consult <a href="http://ecmarchitect.com">ecmarchitect.com</a> and the <a href="http://docs.alfresco.com">Alfresco Documentation</a>.</p>
-<h2 id="setup"><a href="#setup">Setup</a></h2>
+<h2 id="setup">Setup</h2>
 <p>Let's run through some examples that leverage OpenCMIS to work with instances of the custom types defined in the model. To facilitate this, I'm going to create two new Maven projects, but because they don't produce AMPs there is no reason to use the Alfresco Maven SDK to create them.</p>
 <p>To create the projects we need for this part, do this:</p>
 <ol style="list-style-type: decimal">
@@ -850,7 +850,7 @@ prop.sc_version=Version</code></pre></li>
 </ol>
 <p>To run the examples in Part 3 you need to have an Alfresco repository running with the repo tier AMP you created in Part 1. Using the embedded Tomcat server as shown in that part of the tutorial works fine.</p>
 <p>Now you are ready to write some code.</p>
-<h2 id="creating-content-with-opencmis"><a href="#creating-content-with-opencmis">Creating Content with OpenCMIS</a></h2>
+<h2 id="creating-content-with-opencmis">Creating Content with OpenCMIS</h2>
 <p>The code we're going to use for creating content is almost exactly the same code that comes with the old non-CMIS Alfresco SDK Samples.</p>
 <p>The goal here is to create a runnable class called <code>SomeCoCMISDataCreator</code> that accepts arguments for the username, password, folder in which to create the content, type of content we're creating, and a name for the new content. I've left out the main method as well as the code that establishes the session, but you can see the full class <a href="https://github.com/jpotts/alfresco-developer-series/blob/master/content/content-tutorial-cmis/src/main/java/com/someco/cmis/examples/SomeCoCMISDataCreator.java">here</a>.</p>
 <p>The first thing the code does is grab a session. The <code>getSession()</code> method is inherited from a class called <a href="https://github.com/jpotts/alfresco-developer-series/blob/master/content/content-tutorial-cmis/src/main/java/com/someco/cmis/examples/CMISExampleBase.java">CMISExampleBase</a> which is used for all of the CMIS examples in this document. The important thing to know about that method is that it uses the value of <code>serviceUrl</code> to know how to connect to your Alfresco server. The URL currently specified is the one to use when connecting to a 4.2.x server running on localhost using the AtomPub binding. The URL is:</p>
@@ -898,7 +898,7 @@ System.out.println(&quot;Content Length: &quot; + doc.getContentStreamLength());
 <pre><code>Created: dbe2a709-5fd8-453e-9f9d-dff1e4c785d3;1.0
 Content Length: 59</code></pre>
 <p>If you are following along, you might want to run it a few times to have some test content to play with.</p>
-<h2 id="creating-associations-with-opencmis"><a href="#creating-associations-with-opencmis">Creating Associations with OpenCMIS</a></h2>
+<h2 id="creating-associations-with-opencmis">Creating Associations with OpenCMIS</h2>
 <p>Now let's look at a class that creates a “related documents” association between two documents.</p>
 <p>The <a href="https://github.com/jpotts/alfresco-developer-series/blob/master/content/content-tutorial-cmis/src/main/java/com/someco/cmis/examples/SomeCoCMISDataRelater.java">SomeCoCMISDataRelater</a> class accepts a source object ID and a target object ID as arguments. The code creates a map of properties containing the association type, source ID, and target ID. Note that the association type is preceded by “R:” when working with CMIS.</p>
 <pre><code>Session session = getSession();
@@ -938,7 +938,7 @@ for (Relationship rel : relList) {
 <img src="./images/cmis-assocs.png" alt="CMIS created the related documents association shown here" /><p class="caption">CMIS created the related documents association shown here</p>
 </div>
 <p>Remember the share-config-custom.xml file? It says that any time the default form or edit metadata form is used for <code>sc:whitepaper</code> objects, the <code>sc:relatedDocuments</code> associations should be shown. Alternatively, the Node Browser, available in the Alfresco Share Administration Console, is a handy way to view associations.</p>
-<h2 id="searching-for-content-with-opencmis"><a href="#searching-for-content-with-opencmis">Searching for Content with OpenCMIS</a></h2>
+<h2 id="searching-for-content-with-opencmis">Searching for Content with OpenCMIS</h2>
 <p>Now that there are some instances of SomeCo’s custom types in the repository it is time to write code that will query for those. Starting with Alfresco 4.0, there are two options for search. The first option is to use Lucene, which is the embedded search engine that has always shipped with Alfresco. The second option is to use Solr. If you upgraded an existing pre-4.0 installation and made no other changes, you are using Lucene. If you installed 4.0 using the installer, you are using Solr. You can switch from one to the other—refer to the documentation to find out how.</p>
 <p>Regardless of the search engine option you’ve chosen, content in the repository is automatically indexed by Alfresco. You can execute searches to find content based on full-text, property values, content types, and folder paths.</p>
 <p>There are a number of supported search dialects. Prior to 3.4, the most common dialect was Lucene. Starting with 3.4, Alfresco introduced a new dialect called Alfresco FTS which is an abstraction that means you don’t have to learn the specific Lucene search syntax. XPath is also an option, although it’s not used that often. CMIS has its own query language which looks a lot like SQL.</p>
@@ -976,14 +976,14 @@ queryString = &quot;select * from cmis:document where contains(&#39;sample&#39;)
      in_folder(&#39;&quot; + getFolderId() + &quot;&#39;)&quot;;
 dumpQueryResults(getQueryResults(queryString));</code></pre>
 <p>You might have noticed the <code>getFolderId()</code> call. The <code>in_folder</code> predicate expects an object ID. So the <code>getFolderId()</code> method does a query to find the object ID of the folder that was passed in as an argument to the class. It would be nice if you could do this in a single query, but you can’t.</p>
-<h3 id="queries-on-aspect-based-properties"><a href="#queries-on-aspect-based-properties">Queries on Aspect-based Properties</a></h3>
+<h3 id="queries-on-aspect-based-properties">Queries on Aspect-based Properties</h3>
 <p>The next query looks for active content. This is when it starts to get interesting because the property that tracks whether or not a piece of content is active, <code>sc:isActive</code>, is defined on an aspect. The CMIS specification allows for joins in queries. But Alfresco does not support joins except in the special case of aspects. In Alfresco CMIS, joins are used to relate a base type to one of its aspects. That allows you to use an aspect-based property in a where clause.</p>
 <pre><code>System.out.println(RESULT_SEP);
 System.out.println(&quot;Find active content&quot;);
 queryString = &quot;select d.*, w.* from cmis:document as d join sc:webable as w on
      d.cmis:objectId = w.cmis:objectId where w.sc:isActive = True&quot;;
 dumpQueryResults(getQueryResults(queryString));</code></pre>
-<h3 id="queries-across-multiple-aspects"><a href="#queries-across-multiple-aspects">Queries Across Multiple Aspects</a></h3>
+<h3 id="queries-across-multiple-aspects">Queries Across Multiple Aspects</h3>
 <p>The next query shows another special case. In this example the goal is to find the active content that has a product property set to a specific value. That’s a challenge because the <code>sc:isActive</code> property is defined by the <code>sc:webable</code> aspect while the <code>sc:product</code> property is defined by a different aspect, <code>sc:productRelated</code>. Unfortunately, there is no good way to get these results in a single query. The solution used here is to write a method called <code>getSubQueryResults()</code> that accepts two queries as arguments. The method runs the first query and then builds an <code>IN</code> predicate using the object IDs that come back, which it appends to the second query before invoking it.</p>
 <pre><code>System.out.println(RESULT_SEP);
 System.out.println(&quot;Find active content with a product equal to &#39;SomePortal&#39;&quot;);
@@ -994,7 +994,7 @@ String queryString2 = &quot;select d.cmis:objectId from cmis:document as d join
     sc:webable as w on d.cmis:objectId = w.cmis:objectId &quot; +
      &quot;where w.sc:isActive = True&quot;;
 dumpQueryResults(getSubQueryResults(queryString1, queryString2));</code></pre>
-<h3 id="queries-using-dates"><a href="#queries-using-dates">Queries Using Dates</a></h3>
+<h3 id="queries-using-dates">Queries Using Dates</h3>
 <p>The last query uses the aspect join trick to do a date range search on instances of <code>sc:whitepaper</code> published between a specific range.</p>
 <pre><code>System.out.println(RESULT_SEP);
 System.out.println(&quot;Find content of type sc:whitepaper published between 1/1/2006
@@ -1004,7 +1004,7 @@ queryString = &quot;select d.cmis:objectId, w.sc:published from sc:whitepaper as
     &quot;where w.sc:published &gt; TIMESTAMP &#39;2006-01-01T00:00:00.000-05:00&#39; &quot; +
     &quot;  and w.sc:published &lt; TIMESTAMP &#39;2007-06-02T00:00:00.000-05:00&#39;&quot;;
 dumpQueryResults(getQueryResults(queryString));</code></pre>
-<h3 id="running-the-queries"><a href="#running-the-queries">Running the Queries</a></h3>
+<h3 id="running-the-queries">Running the Queries</h3>
 <p>If you want to compile and run this on your own machine, you can use one of the Ant tasks in the build.xml file included in the code that accompanies this article. Just type:</p>
 <pre><code>ant cmis-data-queries</code></pre>
 <p>Your results will vary based on how much content you've created and the values you've set in the content properties, but when I ran my test, the results were as shown below.</p>
@@ -1123,7 +1123,7 @@ Result 5:
 id:6d7de742-8604-4e50-8770-931ff81f9aa2;1.0
 name:dbe2a709-5fd8-453e-9f9d-dff1e4c785d3;1.0 (1390508459588)
 created:Jan 23, 2014 2:20:59 PM</code></pre>
-<h2 id="deleting-content-with-opencmis"><a href="#deleting-content-with-opencmis">Deleting Content with OpenCMIS</a></h2>
+<h2 id="deleting-content-with-opencmis">Deleting Content with OpenCMIS</h2>
 <p>Now it is time to clean up after ourselves by deleting content from the repository. The delete logic in the <a href="https://github.com/jpotts/alfresco-developer-series/blob/master/content/content-tutorial-cmis/src/main/java/com/someco/cmis/examples/SomeCoCMISDataCleaner.java">SomeCoCMISDataCleaner</a> class is similar to the search logic except that instead of dumping the results, the CmisObject’s <code>delete()</code> method gets called on every hit that is returned.</p>
 <pre><code>Session session = getSession();
         
@@ -1160,7 +1160,7 @@ Deleted: 4c9b0bda-ca90-4ad8-bf01-28ca6f9072bc;1.0
 Deleted: 648660bb-2a0f-4ffc-9200-1aded09255c0;1.0
 Done!</code></pre>
 <p>Now you know how to use CMIS, an industry-standard API, to create, relate, query, and delete objects in Alfresco. In fact, the code you've worked with here in Part 3 should work with any CMIS-compliant server (except for the aspect bits).</p>
-<h1 id="other-topics-to-explore-on-your-own"><a href="#other-topics-to-explore-on-your-own">Other Topics to Explore on Your Own</a></h1>
+<h1 id="other-topics-to-explore-on-your-own">Other Topics to Explore on Your Own</h1>
 <p>This tutorial has shown how to extend Alfresco's out-of-the-box content model with your own business-specific content types, how to expose those types, aspects, and properties in Alfresco Share, and how to work with content via OpenCMIS, the Java API for CMIS that is part of Apache Chemistry. I've thrown in a few recommendations that will hopefully save you some time or at least spark some discussion.</p>
 <p>There are many content model-related topics we didn't talk about that you can explore on your own, like:</p>
 <ul>
@@ -1170,7 +1170,7 @@ Done!</code></pre>
 <li>Hot-deploying content models</li>
 <li>Using a content modeling tool to create content models and forms through a user interface rather than XML</li>
 </ul>
-<h1 id="where-to-find-more-information"><a href="#where-to-find-more-information">Where to Find More Information</a></h1>
+<h1 id="where-to-find-more-information">Where to Find More Information</h1>
 <ul>
 <li>The complete source code for these examples is available on <a href="https://github.com/jpotts/alfresco-developer-series">GitHub</a>.</li>
 <li>Official documentation for both Enterprise Edition and Community Edition is available at <a href="http://docs.alfresco.com/">docs.alfresco.com</a>.</li>

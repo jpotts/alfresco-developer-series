@@ -464,7 +464,7 @@ The first step is to create a new project to hold the files that will make up th
 1. In $TUTORIAL_HOME, create a new project using the AMP archetype.
 2. Specify "com.someco" as the `groupId`.
 3. Specify "content-tutorial-share" as the `artifactId`.
-4. Specify "share" as the `alfresco_target_amp_client_war`. This is a step you didn't have to do for the repo tier project because it defaulted to "alfresco".
+4. Specify "share" as the `alfresco_target_amp_client_war`. This is a step you didn't have to do for the repo tier project because it defaulted to "alfresco". One way to specify this is to type `N` after specifying the groupId and artifactId, then re-specify those values, making sure to specify "share" when prompted for the `alfresco_target_amp_client_war`. Alternatively, you can specify `Y` and then edit the pom.xml to change the `alfresco.client.war` setting to "share".
 
 In this case, there are several things the archetype defaults that aren't necessary for our Share tier project. To clean that up:
 
