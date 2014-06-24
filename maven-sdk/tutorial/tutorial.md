@@ -94,6 +94,7 @@ You haven't downloaded anything. You haven't edited anything. All you've done is
 
 Try this:
 
+    cd someco-mvn-tutorial-repo
     mvn integration-test -Pamp-to-war
 
 If you watch the output, you'll see that Maven is downloading everything it needs to compile the project, creating an AMP, deploying the AMP to the Alfresco WAR, deploying the Alfresco WAR to the embedded Tomcat server, and starting the server up. Eventually you'll see:
@@ -114,6 +115,12 @@ You should be able to go to:
 And log in using "admin" and "admin".
 
 When you are done poking around, go back to the window where you ran your Maven command and type ctrl-c to shutdown the server.
+
+If you get an out-of-memory error when you run the integration test, you may need to pass some JVM memory parameters to Maven. One way to do that is by setting the MAVEN_OPTS environment variable. For example, I have mine set to:
+
+    -Xmx1024M -XX:MaxPermSize=512m
+
+With MAVEN_OPTS set you should not see any out-of-memory errors.
 
 What Just Happened?
 -------------------
@@ -282,10 +289,12 @@ Running an Integration Test with Share
 --------------------------------------
 Often you will work on both repo tier customizations and share tier customizations at the same time. Your Share tier needs an Alfresco repository to talk to. One way to do that is to tell Maven to start your repo project using:
 
+    cd someco-mvn-tutorial-repo
     mvn integration-test -Pamp-to-war
 
 And then start your Share project using:
 
+    cd someco-mvn-tutorial-share
     mvn integration-test -Pamp-to-war -Dmaven.tomcat.port=8081
 
 Once both servers come up, you can go to http://localhost:8081/share and log in to test your module.
