@@ -579,9 +579,9 @@ The web script descriptor says that this web script requires Guest access or hig
 
 1. Log in to Alfresco (/alfresco) before running the web script.
 2. Run the web script and then authenticate with a valid user and password when the basic authentication dialog is presented.
-3. Run the web script with “&guest=true” appended to the URL, like this:
+3. Run the web script with “?guest=true” appended to the URL, like this:
 
-    http://localhost:8080/alfresco/service/someco/whitepapers.html&guest=true
+    http://localhost:8080/alfresco/service/someco/whitepapers.html?guest=true
 
 It doesn't matter which one you choose. The tutorial assumes you are going with option 3.
 
