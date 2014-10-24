@@ -1061,7 +1061,7 @@ hide UI actions based on things like:
 
 Evaluators can also be chained together if multiple conditions need to
 apply. The out-of-the-box evaluators live in
-slingshot-document-library-context.xml so refer to that file for the
+slingshot-documentlibrary-context.xml so refer to that file for the
 full list of evaluators and an example of how chaining works. You can
 also write completely new evaluators using Java deployed to the Share
 tier.
