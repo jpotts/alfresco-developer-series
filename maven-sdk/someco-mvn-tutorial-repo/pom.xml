@@ -12,7 +12,7 @@
     <parent>
         <groupId>org.alfresco.maven</groupId>
         <artifactId>alfresco-sdk-parent</artifactId>
-        <version>1.1.1</version>
+        <version>2.0.0</version>
     </parent>
 
     <!-- 
@@ -21,22 +21,31 @@
        | For more available properties see the alfresco-sdk-parent POM. 
        -->
     <properties>
-        <!-- Defines the alfresco edition to compile against. Allowed values are [org.alfresco|org.alfresco.enterprise]--> 
-        <alfresco.groupId>org.alfresco</alfresco.groupId>
-        <!-- Defines the alfresco version to compile against -->
-        <alfresco.version>4.2.f</alfresco.version>
+        <!--
+            | Defines the groupId for the Alfresco Artifacts to work against. As of 4.2 the only allowed value is: org.alfresco
+            | NOTE: See http://docs.alfresco.com/4.2/concepts/dev-extensions-maven-sdk-tutorials-alfresco-enterprise.html for details
+        -->
+        <!-- <alfresco.groupId>org.alfresco</alfresco.groupId> -->
+        <!-- Defines the Alfresco version to work against.
+             Community versions are typically identified by major.minor.character (4.2.a) while Enterprise versions are identified by major.minor.digit (4.2.0)  -->
+        <alfresco.version>5.0.d</alfresco.version>
         <app.log.root.level>WARN</app.log.root.level>
         <alfresco.data.location>alf_data_dev</alfresco.data.location>
-        <!-- Defines the target WAR artifactId to run this amp, only used with the -Pamp-to-war switch
-        .    | Allowed values: alfresco | share. Defaults to a repository AMP, but could point to your foundation WAR -->
-        <alfresco.client.war>alfresco</alfresco.client.war>
-        <!-- Defines the target WAR groupId to run this amp, only used with the -Pamp-to-war switch
-        .    | Could be org.alfresco | org.alfresco.enterprise or your corporate groupId -->
-        <alfresco.client.war.groupId>org.alfresco</alfresco.client.war.groupId>
-        <!-- Defines the target WAR version to run this amp, only used with the -Pamp-to-war switch -->
-        <alfresco.client.war.version>4.2.f</alfresco.client.war.version>
         <!-- This controls which properties will be picked in src/test/properties for embedded run -->
         <env>local</env>
+        <!-- Defines the target WAR artifactId to run this amp, only used with the -Pamp-to-war profile
+             | Defaults to a vanilla repository AMP, but could point to your foundation / aggregator WAR 
+        .    | Allowed values for Community: alfresco | share
+             | Allowed values for Enterprise: alfresco-enterprise | share-enterprise
+             <alfresco.client.war>${alfresco.repo.artifactId}</alfresco.client.war> -->
+        <!-- Context path to run alfresco on -->
+        <alfresco.client.contextPath>/alfresco</alfresco.client.contextPath>
+        <!-- Defines the target WAR groupId to run this amp, only used with the -Pamp-to-war switch
+        .    | Could be org.alfresco or your corporate groupId -->
+        <!-- <alfresco.client.war.groupId>${alfresco.groupId}</alfresco.client.war.groupId> -->
+        
+        <!-- Defines the target WAR version to run this amp, only used with the -Pamp-to-war switch -->
+        <!-- <alfresco.client.war.version>${alfresco.version}</alfresco.client.war.version>-->
     </properties>
 
     <!-- Here we realize the connection with the Alfresco selected platform 
@@ -64,72 +73,19 @@
             <groupId>${alfresco.groupId}</groupId>
             <artifactId>alfresco-repository</artifactId>
         </dependency>
-        <!-- Test dependencies -->
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.8.1</version>
-            <scope>test</scope>
-        </dependency>
     </dependencies>
-
-    <!-- This repository is only needed to retrieve Alfresco parent POM. 
-        NOTE: This can be removed when/if Alfresco will be on Maven Central 
-        
-        NOTE: The repository to be used for Alfresco Enterprise artifacts is
-        https://artifacts.alfresco.com/nexus/content/groups/private/. Please check
-        with Alfresco Support to get credentials to add to your ~/.m2/settings.xml
-        if you are a Enterprise customer or Partner  
-        -->
-    <repositories>
-        <repository>
-            <id>alfresco-public</id>
-            <url>https://artifacts.alfresco.com/nexus/content/groups/public</url>
-        </repository>
-        <repository>
-            <id>alfresco-public-snapshots</id>
-            <url>https://artifacts.alfresco.com/nexus/content/groups/public-snapshots</url>
-            <snapshots>
-                <enabled>true</enabled>
-                <updatePolicy>daily</updatePolicy>
-            </snapshots>
-        </repository>
-    </repositories>
-    <build>
-    	<pluginManagement>
-    		<plugins>
-    			<!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
-    			<plugin>
-    				<groupId>org.eclipse.m2e</groupId>
-    				<artifactId>lifecycle-mapping</artifactId>
-    				<version>1.0.0</version>
-    				<configuration>
-    					<lifecycleMappingMetadata>
-    						<pluginExecutions>
-    							<pluginExecution>
-    								<pluginExecutionFilter>
-    									<groupId>
-    										org.alfresco.maven.plugin
-    									</groupId>
-    									<artifactId>
-    										alfresco-maven-plugin
-    									</artifactId>
-    									<versionRange>
-    										[1.1.1,)
-    									</versionRange>
-    									<goals>
-    										<goal>set-version</goal>
-    									</goals>
-    								</pluginExecutionFilter>
-    								<action>
-    									<ignore></ignore>
-    								</action>
-    							</pluginExecution>
-    						</pluginExecutions>
-    					</lifecycleMappingMetadata>
-    				</configuration>
-    			</plugin>
-    		</plugins>
-    	</pluginManagement>
-    </build>
+    <profiles>
+    	<!-- Enterprise profile, manually activated, automatically adds support for Enterprise edition development (dependencies) -->
+        <profile>
+            <id>enterprise</id>
+            <dependencies>
+                <dependency>
+                    <groupId>${alfresco.groupId}</groupId>
+                    <artifactId>alfresco-enterprise-repository</artifactId>
+                    <version>${alfresco.version}</version>
+                    <scope>provided</scope>
+                </dependency>
+            </dependencies>
+        </profile>
+    </profiles>
 </project>
