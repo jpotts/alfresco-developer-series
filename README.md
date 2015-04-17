@@ -12,8 +12,8 @@ Source code from the [ecmarchitect.com Alfresco Developer Series](http://ecmarch
 |Content|Done|Not Started|[Not Started](http://ecmarchitect.com/alfresco-developer-series-tutorials/content/tutorial/tutorial.html)|
 |Actions|Done|Not Started|[Not Started](http://ecmarchitect.com/alfresco-developer-series-tutorials/actions/tutorial/tutorial.html)|
 |Behaviors|Done|Not Started|[Not Started](http://ecmarchitect.com/alfresco-developer-series-tutorials/behaviors/tutorial/tutorial.html)|
-|Webscripts|WIP|Not Started|[Not Started](http://ecmarchitect.com/alfresco-developer-series-tutorials/webscripts/tutorial/tutorial.html)|
-|Workflows|Not Started|Not Started|Not Started|
+|Webscripts|Done|Not Started|[Not Started](http://ecmarchitect.com/alfresco-developer-series-tutorials/webscripts/tutorial/tutorial.html)|
+|Workflows|WIP|Not Started|Not Started|
 
 Known Issues
 ------------
