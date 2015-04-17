@@ -1,6 +1,6 @@
 % Getting Started with the Alfresco Maven SDK
 % Jeff Potts, [Metaversant Group](http://www.metaversant.com)
-% January, 2014
+% April, 2015
 
 License
 =======

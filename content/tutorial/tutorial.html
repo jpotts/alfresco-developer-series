@@ -7,7 +7,7 @@
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
   <meta http-equiv="Content-Style-Type" content="text/css" />
   <meta name="generator" content="pandoc" />
-  <meta name="author" content="Jeff Potts" />
+  <meta name="author" content="Jeff Potts, Metaversant Group" />
   <title>Working With Custom Content Types in Alfresco | ECM
 Architect | Alfresco Developer Tutorials</title>
   <style type="text/css">code{white-space: pre;}</style>
@@ -29,8 +29,8 @@ Architect | Alfresco Developer Tutorials</title>
 					<div class="entry-content">
 <div id="header">
 <h1 class="entry-title">Working With Custom Content Types in Alfresco</h1>
-<h2 class="author">Jeff Potts</h2>
-<h3 class="date">January, 2014</h3>
+<h2 class="author">Jeff Potts, <a href="http://www.metaversant.com">Metaversant Group</a></h2>
+<h3 class="date">April, 2015</h3>
 </div>
 <div id="TOC">
 <ul>
@@ -145,11 +145,12 @@ Architect | Alfresco Developer Tutorials</title>
 <li><p><em>Use the source</em>! The out-of-the-box content model is a great example of what's possible. The forumModel and recordsModel have some particularly useful examples. In the next section I'll tell you where the model files live and what's in each so you'll know where to look later when you say to yourself, “Surely, the folks at Alfresco have done this before”.</p></li>
 </ol>
 <h3 id="out-of-the-box-models">Out-of-the-Box Models</h3>
-<p>The Alfresco source code is an indispensable reference tool which you should always have at the ready, along with the documentation, wiki, forums, and Jira. With that said, if you are following along with this article but have not yet downloaded the source, you are in luck. The out-of-the-box content model files are written in XML and get deployed with the web client. They can be found in the alfresco.war file in /WEB-INF/classes/alfresco/model. The table below describes several of the model files that can be found in the directory.</p>
+<p>The Alfresco source code is an indispensable reference tool which you should always have at the ready, along with the documentation, wiki, forums, and Jira. With that said, if you are following along with this article but have not yet downloaded the source, you are in luck. The out-of-the-box content model files are written in XML and get deployed with the web client. They can be found in the alfresco.war inside various JAR files stored in /WEB-INF/lib. The table below describes several of the out-of-the-box model files.</p>
 <table>
 <caption>Some Out-of-the-Box Content Models</caption>
 <thead>
 <tr class="header">
+<th align="left">JAR</th>
 <th align="left">File</th>
 <th align="left">Namespaces</th>
 <th align="left">Prefix</th>
@@ -158,12 +159,14 @@ Architect | Alfresco Developer Tutorials</title>
 </thead>
 <tbody>
 <tr class="odd">
+<td align="left">alfresco-data-model-[version].jar</td>
 <td align="left">dictionaryModel.xml</td>
 <td align="left">model/dictionary/1.0</td>
 <td align="left">d</td>
 <td align="left">None</td>
 </tr>
 <tr class="even">
+<td align="left">alfresco-repository-[version].jar</td>
 <td align="left">systemModel.xml</td>
 <td align="left">model/system/1.0</td>
 <td align="left">sys</td>
@@ -171,17 +174,20 @@ Architect | Alfresco Developer Tutorials</title>
 </tr>
 <tr class="odd">
 <td align="left"></td>
+<td align="left"></td>
 <td align="left">system/registry/1.0</td>
 <td align="left">reg</td>
 <td align="left"></td>
 </tr>
 <tr class="even">
 <td align="left"></td>
+<td align="left"></td>
 <td align="left">system/modules/1.0</td>
 <td align="left">module</td>
 <td align="left"></td>
 </tr>
 <tr class="odd">
+<td align="left">alfresco-repository-[version].jar</td>
 <td align="left">contentModel.xml</td>
 <td align="left">model/content/1.0</td>
 <td align="left">cm</td>
@@ -189,11 +195,13 @@ Architect | Alfresco Developer Tutorials</title>
 </tr>
 <tr class="even">
 <td align="left"></td>
+<td align="left"></td>
 <td align="left">model/rendition/1.0</td>
 <td align="left">rn</td>
 <td align="left"></td>
 </tr>
 <tr class="odd">
+<td align="left"></td>
 <td align="left"></td>
 <td align="left">model/exif/1.0</td>
 <td align="left">exif</td>
@@ -201,23 +209,27 @@ Architect | Alfresco Developer Tutorials</title>
 </tr>
 <tr class="even">
 <td align="left"></td>
+<td align="left"></td>
 <td align="left">model/audio/1.0</td>
 <td align="left">audio</td>
 <td align="left"></td>
 </tr>
 <tr class="odd">
 <td align="left"></td>
+<td align="left"></td>
 <td align="left">model/webdav/1.0</td>
 <td align="left">webdav</td>
 <td align="left"></td>
 </tr>
 <tr class="even">
+<td align="left">alfresco-repository-[version].jar</td>
 <td align="left">bpmModel.xml</td>
 <td align="left">model/bpm/1.0</td>
 <td align="left">bpm</td>
 <td align="left">d, sys, cm, usr</td>
 </tr>
 <tr class="odd">
+<td align="left">alfresco-repository-[version].jar</td>
 <td align="left">forumModel.xml</td>
 <td align="left">model/forum/1.0</td>
 <td align="left">fm</td>
@@ -248,13 +260,14 @@ Architect | Alfresco Developer Tutorials</title>
 <h4 id="tools">Tools</h4>
 <p>Here is what I am using on my machine:</p>
 <ul>
-<li>Mac OS X 10.9.1</li>
-<li>Java 1.7.0_51</li>
-<li>Apache Maven 3.0.5 (installed using Macports)</li>
-<li>Alfresco Maven SDK, AMP Archetype 1.1.1 (No download necessary)</li>
-<li>Eclipse Java EE IDE for Web Developers, Kepler</li>
+<li>Mac OS X 10.10.3</li>
+<li>Java 1.7.0_71</li>
+<li>Apache Maven 3.3.1 (installed using Macports)</li>
+<li>Alfresco Maven SDK 2.0 (No download necessary)</li>
+<li>Eclipse Java EE IDE for Web Developers, Luna</li>
 </ul>
-<p>By default, when you create an Alfresco project using version 1.1.1 of the Alfresco Maven SDK the project will be configured to depend on Alfresco Community Edition 4.2.e.</p>
+<p>By default, when you create an Alfresco project using version 2.0 of the Alfresco Maven SDK the project will be configured to depend on Alfresco Community Edition 5.0.c. The latest release of Alfresco Community Edition is 5.0.d.</p>
+<p>If you are using Alfresco 4.x you must use Alfresco Maven SDK 1.0. The 2.0 SDK will not work with Alfresco 4.x.</p>
 <p>Projects created using the Alfresco Maven SDK have the ability to run Alfresco on an embedded Tomcat server. This makes <a href="http://www.alfresco.com/products/community">downloading</a> and installing Alfresco optional. But if you want to run a full Alfresco server locally, you are welcome to do that.</p>
 <p>The Eclipse IDE is also optional. Most people working with Alfresco use Eclipse or something similar, so this tutorial will assume that's what you are using.</p>
 <h4 id="project-organization">Project Organization</h4>
@@ -282,11 +295,9 @@ Architect | Alfresco Developer Tutorials</title>
 <ol style="list-style-type: decimal">
 <li>If you have not already done so, create an empty directory that can hold the new projects associated with this tutorial. I'll refer to that as $TUTORIAL_HOME.</li>
 <li><p>Now use the Alfresco Maven SDK to create a project for the repo tier AMP. Using the command line, change directories to $TUTORIAL_HOME, then run:</p>
-<pre><code>mvn archetype:generate \
--DarchetypeCatalog=https://artifacts.alfresco.com/nexus/content/groups/public/archetype-catalog.xml \
--Dfilter=org.alfresco.maven.archetype:</code></pre></li>
-<li>Choose the AMP archetype (option 1).</li>
-<li>Choose version 1.1.1 of the archetype (option 5).</li>
+<pre><code>mvn archetype:generate -Dfilter=org.alfresco:</code></pre></li>
+<li>Choose the Alfresco AMP archetype (option 2).</li>
+<li>Choose version 2.0.0 of the archetype (option 5).</li>
 <li>Specify &quot;com.someco&quot; for the <code>groupId</code>.</li>
 <li>Specify &quot;content-tutorial-repo&quot; for the <code>artifactId</code>.</li>
 <li><p>If Eclipse isn't running, start it up. Use File, Import, Maven, Existing Maven Projects to import the content-tutorial-repo project you just created.</p></li>
@@ -298,7 +309,7 @@ Architect | Alfresco Developer Tutorials</title>
 <ol style="list-style-type: decimal">
 <li><p>Models belong in a directory called “model” in your project's module directory, which is:</p>
 <pre><code>$TUTORIAL_HOME/content-tutorial-repo/src/main/amp/config/alfresco/module/content-tutorial-repo</code></pre>
-The &quot;model&quot; directory does not exist when the project is initially created by the Alfresco Maven SDK, so go ahead and create it now.</li>
+The &quot;model&quot; directory does not exist when the project is initially created by the Alfresco Maven SDK, so go ahead and create it now in the directory above.</li>
 <li>Custom models live in the model directory as XML. Create a new XML file in the model directory called &quot;scModel.xml&quot;. The name of the file isn't important but you should choose a name that will help you and your team distinguish it from other model files you might add to this directory over time.</li>
 <li><p>Copy the following XML into the scModel.xml file and save.</p>
 <pre><code>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
@@ -478,17 +489,10 @@ The &quot;model&quot; directory does not exist when the project is initially cre
 <h3 id="step-1-create-a-project-for-the-share-tier-amp">Step 1: Create a project for the Share tier AMP</h3>
 <p>The first step is to create a new project to hold the files that will make up the Share tier AMP. That works exactly as it did for the repo tier AMP. Do this:</p>
 <ol style="list-style-type: decimal">
-<li>In $TUTORIAL_HOME, create a new project using the AMP archetype.</li>
+<li>Change directories to $TUTORIAL_HOME, then create a new project using Alfresco Maven SDK.</li>
+<li>This time, specify the Share AMP archetype (option 3).</li>
 <li>Specify &quot;com.someco&quot; as the <code>groupId</code>.</li>
 <li>Specify &quot;content-tutorial-share&quot; as the <code>artifactId</code>.</li>
-<li>Specify &quot;share&quot; as the <code>alfresco_target_amp_client_war</code>. This is a step you didn't have to do for the repo tier project because it defaulted to &quot;alfresco&quot;. One way to specify this is to type <code>N</code> after specifying the groupId and artifactId, then re-specify those values, making sure to specify &quot;share&quot; when prompted for the <code>alfresco_target_amp_client_war</code>. Alternatively, you can specify <code>Y</code> and then edit the pom.xml to change the <code>alfresco.client.war</code> setting to &quot;share&quot;.</li>
-</ol>
-<p>In this case, there are several things the archetype defaults that aren't necessary for our Share tier project. To clean that up:</p>
-<ol style="list-style-type: decimal">
-<li>Delete the org.alfresco.demoamp package.</li>
-<li>Delete the context directory that contains service-context.xml.</li>
-<li>Delete the org.alfresco.demoamp.test package from src/test/java.</li>
-<li>Remove the &quot;alfresco-repository&quot; dependency from pom.xml.</li>
 </ol>
 <p>Now you are ready to create a custom Share configuration file.</p>
 <h3 id="step-2-create-a-custom-share-configuration-file">Step 2: Create a custom Share configuration file</h3>
@@ -826,12 +830,12 @@ prop.sc_version=Version</code></pre></li>
 <pre><code>&lt;dependency&gt;
     &lt;groupId&gt;org.apache.chemistry.opencmis&lt;/groupId&gt;
     &lt;artifactId&gt;chemistry-opencmis-client-impl&lt;/artifactId&gt;
-    &lt;version&gt;0.10.0&lt;/version&gt;
+    &lt;version&gt;0.11.0&lt;/version&gt;
 &lt;/dependency&gt;
 &lt;dependency&gt;
     &lt;groupId&gt;org.alfresco.cmis.client&lt;/groupId&gt;
     &lt;artifactId&gt;alfresco-opencmis-extension&lt;/artifactId&gt;
-    &lt;version&gt;0.7&lt;/version&gt;
+    &lt;version&gt;1.0&lt;/version&gt;
 &lt;/dependency&gt;
 &lt;dependency&gt;
     &lt;groupId&gt;com.someco&lt;/groupId&gt;
@@ -853,7 +857,7 @@ prop.sc_version=Version</code></pre></li>
 <h2 id="creating-content-with-opencmis">Creating Content with OpenCMIS</h2>
 <p>The code we're going to use for creating content is almost exactly the same code that comes with the old non-CMIS Alfresco SDK Samples.</p>
 <p>The goal here is to create a runnable class called <code>SomeCoCMISDataCreator</code> that accepts arguments for the username, password, folder in which to create the content, type of content we're creating, and a name for the new content. I've left out the main method as well as the code that establishes the session, but you can see the full class <a href="https://github.com/jpotts/alfresco-developer-series/blob/master/content/content-tutorial-cmis/src/main/java/com/someco/cmis/examples/SomeCoCMISDataCreator.java">here</a>.</p>
-<p>The first thing the code does is grab a session. The <code>getSession()</code> method is inherited from a class called <a href="https://github.com/jpotts/alfresco-developer-series/blob/master/content/content-tutorial-cmis/src/main/java/com/someco/cmis/examples/CMISExampleBase.java">CMISExampleBase</a> which is used for all of the CMIS examples in this document. The important thing to know about that method is that it uses the value of <code>serviceUrl</code> to know how to connect to your Alfresco server. The URL currently specified is the one to use when connecting to a 4.2.x server running on localhost using the AtomPub binding. The URL is:</p>
+<p>The first thing the code does is grab a session. The <code>getSession()</code> method is inherited from a class called <a href="https://github.com/jpotts/alfresco-developer-series/blob/master/content/content-tutorial-cmis/src/main/java/com/someco/cmis/examples/CMISExampleBase.java">CMISExampleBase</a> which is used for all of the CMIS examples in this document. The important thing to know about that method is that it uses the value of <code>serviceUrl</code> to know how to connect to your Alfresco server. The URL currently specified is the one to use when connecting to a 5.x server running on localhost using the AtomPub binding. The URL is:</p>
 <pre><code>http://localhost:8080/alfresco/api/-default-/public/cmis/versions/1.0/atom</code></pre>
 <p>A common mistake is to use an old CMIS service URL, so make sure you are using the correct one according to the version of Alfresco you are using.</p>
 <p>Once the code has a session, it gets a reference to the folder where the content will be created. The timestamp is incorporated into the content name so that if the code is run multiple times, the object names will be unique.</p>
@@ -876,7 +880,7 @@ properties.put(&quot;sc:isActive&quot;, true);
 GregorianCalendar publishDate = new GregorianCalendar(2007,4,1,5,0);
 properties.put(&quot;sc:published&quot;, publishDate);</code></pre>
 <p>Notice that instead of listing a single value for the object type ID, a comma-separated list is being passed in. This is the content type followed by the aspects that need to be added. This is possible because the code leverages an Alfresco-specific extension that allows us to work with aspects. It is also important to point out that, in CMIS, document types begin with “D:” while policy types begin with “P:”. (CMIS 1.0 doesn’t have a native concept of aspects—what Alfresco calls an aspect, CMIS 1.0 calls a “Policy”-just go with it).</p>
-<p>Starting with version 4.2, Alfresco began to support CMIS 1.1. That version of the specification calls aspects &quot;secondary types&quot;. Using CMIS 1.1 you no longer need to use the Alfresco extension to work with aspects. If you want to see how to add aspects using CMIS 1.1, see <a href="https://gist.github.com/jpotts/7242070">this gist</a>.</p>
+<p>Starting with version 4.2, Alfresco began to support CMIS 1.1. That version of the specification calls aspects &quot;secondary types&quot;. Using CMIS 1.1 you no longer need to use the Alfresco OpenCMIS extension to work with aspects. If you want to see how to add aspects using CMIS 1.1, see <a href="https://gist.github.com/jpotts/7242070">this gist</a>.</p>
 <p>The next step is to prepare the content that will be set on the new object. This is a matter of calling the <code>createContentStream()</code> method on the <code>ObjectFactory</code> with the file name, length, mimetype, and an <code>InputStream</code> based on the content.</p>
 <pre><code>String docText = &quot;This is a sample &quot; + getContentType() + &quot; document called &quot; +
        getContentName();
@@ -1006,7 +1010,9 @@ queryString = &quot;select d.cmis:objectId, w.sc:published from sc:whitepaper as
 dumpQueryResults(getQueryResults(queryString));</code></pre>
 <h3 id="running-the-queries">Running the Queries</h3>
 <p>If you want to compile and run this on your own machine, you can use one of the Ant tasks in the build.xml file included in the code that accompanies this article. Just type:</p>
-<pre><code>ant cmis-data-queries</code></pre>
+<pre><code>mvn exec:java \
+-Dexec.mainClass=&quot;com.someco.cmis.examples.SomeCoCMISDataQueries&quot; \
+-Dexec.args=&quot;admin admin SomeCo&quot;</code></pre>
 <p>Your results will vary based on how much content you've created and the values you've set in the content properties, but when I ran my test, the results were as shown below.</p>
 <pre><code>======================
 Finding content of type:doc

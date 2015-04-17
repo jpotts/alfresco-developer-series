@@ -32,7 +32,7 @@
   	<dependency>
   		<groupId>org.alfresco.cmis.client</groupId>
   		<artifactId>alfresco-opencmis-extension</artifactId>
-  		<version>0.7</version>
+  		<version>1.0</version>
   	</dependency>
   	<dependency>
   		<groupId>com.someco</groupId>
