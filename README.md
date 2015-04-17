@@ -9,9 +9,9 @@ Source code from the [ecmarchitect.com Alfresco Developer Series](http://ecmarch
 | Tutorial | Upgrade to SDK 2.0/Alfresco 5.0.d | Update tutorial to match refactored code | Re-Render Tutorial as HTML |
 | -------- | ----------------- | ------------------------- | ---------------------------------------- | ---------------------- |
 |Maven SDK|Done|Not Started|[Not Started](http://ecmarchitect.com/alfresco-developer-series-tutorials/maven-sdk/tutorial/tutorial.html)|
-|Content|Not Started|Not Started|[Not Started](http://ecmarchitect.com/alfresco-developer-series-tutorials/content/tutorial/tutorial.html)|
-|Actions|Not Started|Not Started|[Not Started](http://ecmarchitect.com/alfresco-developer-series-tutorials/actions/tutorial/tutorial.html)|
-|Behaviors|Not Started|Not Started|[Not Started](http://ecmarchitect.com/alfresco-developer-series-tutorials/behaviors/tutorial/tutorial.html)|
+|Content|Done|Not Started|[Not Started](http://ecmarchitect.com/alfresco-developer-series-tutorials/content/tutorial/tutorial.html)|
+|Actions|Done|Not Started|[Not Started](http://ecmarchitect.com/alfresco-developer-series-tutorials/actions/tutorial/tutorial.html)|
+|Behaviors|WIP|Not Started|[Not Started](http://ecmarchitect.com/alfresco-developer-series-tutorials/behaviors/tutorial/tutorial.html)|
 |Webscripts|Not Started|Not Started|[Not Started](http://ecmarchitect.com/alfresco-developer-series-tutorials/webscripts/tutorial/tutorial.html)|
 |Workflows|Not Started|Not Started|Not Started|
 
