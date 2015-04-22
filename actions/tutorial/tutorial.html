@@ -7,7 +7,7 @@
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
   <meta http-equiv="Content-Style-Type" content="text/css" />
   <meta name="generator" content="pandoc" />
-  <meta name="author" content="Jeff Potts" />
+  <meta name="author" content="Jeff Potts, Metaversant Group" />
   <title>Creating Custom Actions in Alfresco | ECM
 Architect | Alfresco Developer Tutorials</title>
   <style type="text/css">code{white-space: pre;}</style>
@@ -29,8 +29,8 @@ Architect | Alfresco Developer Tutorials</title>
 					<div class="entry-content">
 <div id="header">
 <h1 class="entry-title">Creating Custom Actions in Alfresco</h1>
-<h2 class="author">Jeff Potts</h2>
-<h3 class="date">January, 2014</h3>
+<h2 class="author">Jeff Potts, <a href="http://www.metaversant.com">Metaversant Group</a></h2>
+<h3 class="date">April, 2015</h3>
 </div>
 <div id="TOC">
 <ul>
@@ -113,14 +113,14 @@ Architect | Alfresco Developer Tutorials</title>
 <h2 id="tools">Tools</h2>
 <p>Here is what I am using on my machine:</p>
 <ul>
-<li>Mac OS X 10.9.1</li>
-<li>Java 1.7.0_51</li>
-<li>Apache Maven 3.0.5 (installed using Macports)</li>
-<li>Alfresco Maven SDK, AMP Archetype 1.1.1 (No download necessary)</li>
-<li>Eclipse Java EE IDE for Web Developers, Kepler</li>
-<li>Alfresco Community Edition 4.2.e (<a href="http://www.alfresco.com/products/community">Download</a>)</li>
+<li>Mac OS X 10.10.3</li>
+<li>Java 1.7.0_71</li>
+<li>Apache Maven 3.3.1 (installed using Macports)</li>
+<li>Alfresco Maven SDK 2.0 (No download necessary)</li>
+<li>Eclipse Java EE IDE for Web Developers, Luna</li>
+<li>Alfresco Community Edition 5.0.d (<a href="http://www.alfresco.com/products/community">Download</a>)</li>
 </ul>
-<p>By default, when you create an Alfresco project using version 1.1.1 of the Alfresco Maven SDK the project will be configured to depend on Alfresco Community Edition 4.2.e.</p>
+<p>By default, when you create an Alfresco project using Alfresco Maven SDK 2.0 the project will be configured to depend on Alfresco Community Edition 5.0.c. Until it is updated to depend on the most recent version you should edit the generated pom.xml to change it to 5.0.d.</p>
 <p>The Eclipse IDE is optional. Most people working with Alfresco use Eclipse or something similar, so this tutorial will assume that's what you are using.</p>
 <h2 id="project-organization">Project Organization</h2>
 <p>I am going to use the Alfresco Maven SDK to create projects that will package up my customizations as AMPs (Alfresco Module Packages). I will ultimately create two AMPs. One AMP is for the Alfresco web application (the &quot;repo&quot; tier) and the other is for the Alfresco Share web application (the &quot;Share&quot; tier). Unless you have a good reason to do otherwise, this should be your default approach to packaging and deploying your customizations.</p>
@@ -420,25 +420,7 @@ assoc.cm_replaces=Replaces</code></pre>
   &lt;action name=&quot;simple-workflow&quot;&gt;SimpleWorkflow&lt;/action&gt;</code></pre>
 <p>With this configuration in place, the custom Move Replaced action will show up in the list of actions that can be performed as part of a rule.</p>
 <h3 id="step-2-add-a-reference-to-the-custom-client-side-javascript-file-to-the-head">Step 2: Add a reference to the custom client-side JavaScript file to the head</h3>
-<p>The <code>move-replaced</code> action is going to be invoking some client-side JavaScript. So a reference to the file that contains the JavaScript needs to be added to the page so it can be loaded by the browser. There are two ways to do this:</p>
-<ul>
-<li>Prior to Alfresco 4.2 you can do this by overriding the &quot;.get.head.ftl&quot; part of the web script and add your reference there in a <code>script</code> tag.</li>
-<li>Starting with Alfresco 4.2, that approach is deprecated. Instead, you add the script tag to the Freemarker view as a dependency.</li>
-</ul>
-<p>Let me show you each option and you can pick the right one depending on which version you are running.</p>
-<h4 id="adding-the-client-side-javascript-reference-to-the-head-web-script">Adding the Client-Side JavaScript Reference to the Head Web Script</h4>
-<p>The client-side JavaScript file where the custom client-side component resides needs to be pulled in to the “&lt;head&gt;” section of the page so the browser knows about it. Before Alfresco 4.2, web scripts that end with “head.ftl” were used for this purpose. For rules, there are two web scripts that will need to refer to the custom client-side JavaScript: “rule details” and “rule edit”. So the rule-details.get.head.ftl and rule-edit.get.head.ftl files are copied from:</p>
-<pre><code>$TOMCAT_HOME/webapps/share/WEB-INF/classes/alfresco/site-webscripts/org/alfresco/components/rules</code></pre>
-<p>Into the tutorial project under:</p>
-<pre><code>$TUTORIAL_HOME/actions-tutorial-share/src/main/amp/config/alfresco/web-extension/site-webscripts/org/alfresco/components/rules</code></pre>
-<p>The modifications to both are identical. All we need to do is add a new <code>script</code> element to the end of the list, like this:</p>
-<pre><code>&lt;@link rel=&quot;stylesheet&quot; type=&quot;text/css&quot; href=&quot;${page.url.context}/res/components/rules/rule-details.css&quot; /&gt;
-&lt;@script type=&quot;text/javascript&quot; src=&quot;${page.url.context}/res/components/rules/rule-details.js&quot;&gt;&lt;/@script&gt;
-&lt;!--Custom javascript file include for detail mode --&gt;
-&lt;@script type=&quot;text/javascript&quot; src=&quot;${page.url.context}/someco/components/rules/config/rule-config-action-custom.js&quot;&gt;&lt;/@script&gt; </code></pre>
-<p>Now when the page renders, the web script framework will insert the reference to the custom JavaScript into the <code>head</code> tag of the page.</p>
-<h4 id="adding-the-client-side-javascript-reference-to-the-freemarker-as-a-dependency">Adding the Client-Side JavaScript Reference to the Freemarker as a Dependency</h4>
-<p>Starting with Alfresco 4.2, the preferred way to point to a client-side resource is by adding it to the view itself. To do that, the rule-details.get.html.ftl and rule-edit.get.html.ftl files are copied from:</p>
+<p>The <code>move-replaced</code> action is going to be invoking some client-side JavaScript. So a reference to the file that contains the JavaScript needs to be added to the page so it can be loaded by the browser. The preferred way to point to a client-side resource is by adding it to the Freemarker view as a dependency. To do that, the rule-details.get.html.ftl and rule-edit.get.html.ftl files are copied from:</p>
 <pre><code>$TOMCAT_HOME/webapps/share/WEB-INF/classes/alfresco/site-webscripts/org/alfresco/components/rules</code></pre>
 <p>Into the tutorial project under:</p>
 <pre><code>$TUTORIAL_HOME/actions-tutorial-share/src/main/amp/config/alfresco/web-extension/site-webscripts/org/alfresco/components/rules</code></pre>
@@ -449,7 +431,7 @@ assoc.cm_replaces=Replaces</code></pre>
     &lt;!--Custom javascript file include for detail mode --&gt;
     &lt;@script type=&quot;text/javascript&quot; src=&quot;${url.context}/res/components/someco/rules/config/rule-config-action-custom.js&quot; group=&quot;rules_custom&quot;&gt;&lt;/@script&gt;
 &lt;/@&gt;</code></pre>
-<p>Okay, at this point, regardless of which of the two options you chose for adding the client-side JavaScript file to <code>head</code>, the rule form will be looking for a custom client-side JavaScript component called SomeCo.RuleConfigActionCustom, the action will show up in the right place, and the page's <code>head</code> element will include a reference to the custom client-side JavaScript file where the component will reside. It's time to implement the client-side JavaScript.</p>
+<p>Okay, at this point, the rule form will be looking for a custom client-side JavaScript component called SomeCo.RuleConfigActionCustom, the action will show up in the right place, and the page's <code>head</code> element will include a reference to the custom client-side JavaScript file where the component will reside. It's time to implement the client-side JavaScript.</p>
 <h3 id="step-3-implement-the-custom-client-side-javascript-component">Step 3: Implement the custom client-side JavaScript component</h3>
 <p>The FreeMarker files have been modified to include a reference to a file called rule-config-action-custom.js. This file will contain client-side JavaScript. It goes in:</p>
 <pre><code>$TUTORIAL_HOME/actions-tutorial-share/src/main/amp/web/components/someco/rules/config</code></pre>
