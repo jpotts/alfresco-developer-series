@@ -7,7 +7,7 @@
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
   <meta http-equiv="Content-Style-Type" content="text/css" />
   <meta name="generator" content="pandoc" />
-  <meta name="author" content="Jeff Potts" />
+  <meta name="author" content="Jeff Potts, Metaversant Group" />
   <title>Introduction to the Web Script Framework | ECM
 Architect | Alfresco Developer Tutorials</title>
   <style type="text/css">code{white-space: pre;}</style>
@@ -29,8 +29,8 @@ Architect | Alfresco Developer Tutorials</title>
 					<div class="entry-content">
 <div id="header">
 <h1 class="entry-title">Introduction to the Web Script Framework</h1>
-<h2 class="author">Jeff Potts</h2>
-<h3 class="date">February, 2014</h3>
+<h2 class="author">Jeff Potts, <a href="http://www.metaversant.com">Metaversant Group</a></h2>
+<h3 class="date">April, 2015</h3>
 </div>
 <div id="TOC">
 <ul>
@@ -207,14 +207,14 @@ Foo: bar</code></pre>
 <h2 id="tools">Tools</h2>
 <p>Here is what I am using on my machine:</p>
 <ul>
-<li>Mac OS X 10.9.1</li>
-<li>Java 1.7.0_51</li>
-<li>Apache Maven 3.0.5 (installed using Macports)</li>
-<li>Alfresco Maven SDK, AMP Archetype 1.1.1 (No download necessary)</li>
-<li>Eclipse Java EE IDE for Web Developers, Kepler</li>
-<li>Alfresco Community Edition 4.2.e (<a href="http://www.alfresco.com/products/community">Download</a>)</li>
+<li>Mac OS X 10.10.3</li>
+<li>Java 1.7.0_71</li>
+<li>Apache Maven 3.3.1 (installed using Macports)</li>
+<li>Alfresco Maven SDK 2.0 (No download necessary)</li>
+<li>Eclipse Java EE IDE for Web Developers, Luna</li>
+<li>Alfresco Community Edition 5.0.d (<a href="http://www.alfresco.com/products/community">Download</a>)</li>
 </ul>
-<p>By default, when you create an Alfresco project using version 1.1.1 of the Alfresco Maven SDK the project will be configured to depend on Alfresco Community Edition 4.2.e.</p>
+<p>By default, when you create an Alfresco project using Alfresco Maven SDK 2.0 the project will be configured to depend on Alfresco Community Edition 5.0.c. Until the SDK is updated to point to the most recent version of Alfresco, you should modify the generated pom.xml file to change it to 5.0.d.</p>
 <p>The Eclipse IDE is optional. Most people working with Alfresco use Eclipse or something similar, so this tutorial will assume that's what you are using.</p>
 <h2 id="project-organization">Project Organization</h2>
 <p>You just saw that web scripts can be created by creating or uploading files to the Alfresco repository. For the rest of these examples, though, you'll create a project that will package the web scripts as an AMP (Alfresco Module Package). This is the recommended way to distribute your Alfresco customizations. It's a lot less error-prone than handing a bunch of files to someone and asking them to upload them to the proper place in the repository.</p>

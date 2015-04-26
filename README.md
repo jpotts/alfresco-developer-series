@@ -14,8 +14,8 @@ The tutorials are in the process of being updated to use SDK 2.0 and Alfresco 5.
 |Content|Done|Done|[Not Started](http://ecmarchitect.com/alfresco-developer-series-tutorials/content/tutorial/tutorial.html)|
 |Actions|Done|Done|[Not Started](http://ecmarchitect.com/alfresco-developer-series-tutorials/actions/tutorial/tutorial.html)|
 |Behaviors|Done|Done|[Not Started](http://ecmarchitect.com/alfresco-developer-series-tutorials/behaviors/tutorial/tutorial.html)|
-|Webscripts|Done|WIP|[Not Started](http://ecmarchitect.com/alfresco-developer-series-tutorials/webscripts/tutorial/tutorial.html)|
-|Workflows|Done|Not Started|[Not Started](http://ecmarchitect.com/alfresco-developer-series-tutorials/workflow/tutorial/tutorial.html)||
+|Webscripts|Done|Done|[Not Started](http://ecmarchitect.com/alfresco-developer-series-tutorials/webscripts/tutorial/tutorial.html)|
+|Workflows|Done|WIP|[Not Started](http://ecmarchitect.com/alfresco-developer-series-tutorials/workflow/tutorial/tutorial.html)||
 
 Known Issues
 ------------
