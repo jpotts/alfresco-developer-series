@@ -1,6 +1,6 @@
 % Introduction to the Web Script Framework
-% Jeff Potts
-% February, 2014
+% Jeff Potts, [Metaversant Group](http://www.metaversant.com)
+% April, 2015
 
 License
 =======
@@ -256,14 +256,14 @@ Tools
 -----
 Here is what I am using on my machine:
 
-* Mac OS X 10.9.1
-* Java 1.7.0_51
-* Apache Maven 3.0.5 (installed using Macports)
-* Alfresco Maven SDK, AMP Archetype 1.1.1 (No download necessary)
-* Eclipse Java EE IDE for Web Developers, Kepler
-* Alfresco Community Edition 4.2.e ([Download](http://www.alfresco.com/products/community))
+* Mac OS X 10.10.3
+* Java 1.7.0_71
+* Apache Maven 3.3.1 (installed using Macports)
+* Alfresco Maven SDK 2.0 (No download necessary)
+* Eclipse Java EE IDE for Web Developers, Luna
+* Alfresco Community Edition 5.0.d ([Download](http://www.alfresco.com/products/community))
 
-By default, when you create an Alfresco project using version 1.1.1 of the Alfresco Maven SDK the project will be configured to depend on Alfresco Community Edition 4.2.e.
+By default, when you create an Alfresco project using Alfresco Maven SDK 2.0 the project will be configured to depend on Alfresco Community Edition 5.0.c. Until the SDK is updated to point to the most recent version of Alfresco, you should modify the generated pom.xml file to change it to 5.0.d.
 
 The Eclipse IDE is optional. Most people working with Alfresco use Eclipse or something similar, so this tutorial will assume that's what you are using.
 
