@@ -3,7 +3,7 @@ Alfresco Developer Series Tutorials
 
 Source code from the [ecmarchitect.com Alfresco Developer Series](http://ecmarchitect.com/alfresco-developer-series) tutorials.
 
-These tutorials are written for Alfresco Maven SDK 1.0 and Alfresco 4.x. If you are looking for the tutorials that work with Maven SDK 2.0 and Alfresco 5.x you need to checkout the source from head.
+These tutorials are written for Alfresco Community Edition 5.0.d and Alfresco Enterprise 5.0. They leverage the Alfresco SDK 2.0. That version of the SDK only works with Alfresco 5.x. Older versions of the tutorials use an older version of the SDK which works with Alfresco 4.x.
 
 The tutorials build upon each other. The recommended order of progression is:
 
@@ -13,11 +13,6 @@ The tutorials build upon each other. The recommended order of progression is:
 * [Behaviors](http://ecmarchitect.com/alfresco-developer-series-tutorials/behaviors/tutorial/tutorial.html)
 * [Webscripts](http://ecmarchitect.com/alfresco-developer-series-tutorials/webscripts/tutorial/tutorial.html)
 * [Workflows](http://ecmarchitect.com/alfresco-developer-series-tutorials/workflow/tutorial/tutorial.html)
-
-Known Issues
-------------
-
-The publish to web advanced workflow in the workflows tutorial is not currently working properly under 4.2.e. The workflow is not firing the set-web-flag action.
 
 Repository Structure
 --------------------

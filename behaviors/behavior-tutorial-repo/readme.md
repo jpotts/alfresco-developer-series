@@ -20,8 +20,8 @@ Deploying the AMP
 You can deploy the AMP to your Alfresco instance.
 
 For example, if you are running Alfresco installed with the binary installer in
-`/opt/alfresco/4.2e-installer`, you would copy the AMP from the target directory
-to `/opt/alfresco/4.2e-installer/amps`, then run `bin/apply_amps.sh`.
+`/opt/alfresco-5.0.d`, you would copy the AMP from the target directory
+to `/opt/alfresco-5.0.d/amps`, then run `bin/apply_amps.sh`.
 
 Alternatively, you can run:
 `mvn integration-test -Pamp-to-war`

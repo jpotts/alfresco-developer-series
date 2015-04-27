@@ -1,5 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Context docBase="${alfresco.client.war.folder}" path="${alfresco.client.contextPath}">
+
+
+  <Resources className="org.apache.naming.resources.VirtualDirContext"
+    extraResourcePaths="/=${project.build.directory}/${project.build.finalName}/web" />
+    
+     
+    <Loader searchVirtualFirst="true" className="org.apache.catalina.loader.VirtualWebappLoader"
+    virtualClasspath="${project.build.outputDirectory};${project.build.testOutputDirectory};${project.build.directory}/${project.build.finalName}/config" />
+  
   <!-- 
   <Environment override="false" type="java.lang.Boolean" name="properties/startup.enable" description="A flag that globally enables or disables startup of the major Alfresco subsystems." value="true"/>
   <Environment override="false" type="java.lang.String" name="properties/dir.root" description="The filesystem directory below which content and index data is stored. Should be on a shared disk if this is a clustered installation."/>
@@ -8,4 +17,6 @@
   <Environment override="false" type="java.lang.Boolean" name="properties/hibernate.jdbc.use_get_generated_keys" description="Enable use of JDBC3 PreparedStatement.getGeneratedKeys() to retrieve natively generated keys after insert. Requires JDBC3+ driver. Set to false if your driver has problems with the Hibernate identifier generators. By default, tries to determine the driver capabilities using connection metadata."/>
   <Environment override="false" type="java.lang.String" name="properties/hibernate.default_schema" description="Qualify unqualified table names with the given schema/tablespace in generated SQL. It may be necessary to set this when the target database has more than one schema."/>
    -->
+   
+  
 </Context>

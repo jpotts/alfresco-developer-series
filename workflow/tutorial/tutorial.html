@@ -7,7 +7,7 @@
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
   <meta http-equiv="Content-Style-Type" content="text/css" />
   <meta name="generator" content="pandoc" />
-  <meta name="author" content="Jeff Potts" />
+  <meta name="author" content="Jeff Potts, Metaversant Group" />
   <title>Creating Custom Advanced Workflows in Alfresco | ECM
 Architect | Alfresco Developer Tutorials</title>
   <style type="text/css">code{white-space: pre;}</style>
@@ -29,8 +29,8 @@ Architect | Alfresco Developer Tutorials</title>
 					<div class="entry-content">
 <div id="header">
 <h1 class="entry-title">Creating Custom Advanced Workflows in Alfresco</h1>
-<h2 class="author"><a href="http://www.ecmarchitect.com/">Jeff Potts</a></h2>
-<h3 class="date">February, 2014</h3>
+<h2 class="author">Jeff Potts, <a href="http://www.ecmarchitect.com/">Metaversant Group</a></h2>
+<h3 class="date">April, 2015</h3>
 </div>
 <div id="TOC">
 <ul>
@@ -104,10 +104,10 @@ Architect | Alfresco Developer Tutorials</title>
 <li><a href="#where-to-find-more-information">Where to find more information</a></li>
 </ul>
 </div>
-<h1 id="introduction"><a href="#introduction">Introduction</a></h1>
+<h1 id="introduction">Introduction</h1>
 <p>This tutorial is about the advanced workflow functionality available in Alfresco through its embedded Activiti workflow engine. First, because &quot;workflow&quot; can mean different things to different people, I'll talk about my definition of the term. Then, I'll introduce some Activiti concepts that will help you understand how processes are defined and how the workflow engine actually works. Once that foundation is in place, I'll walk through some examples that feature many of the different concepts.</p>
 <p>This tutorial builds upon the &quot;SomeCo&quot; examples covered in earlier tutorials. In it, I'll implement a business process that helps SomeCo route whitepapers for review and approval by internal as well as external parties.</p>
-<h1 id="what-is-a-workflow"><a href="#what-is-a-workflow">What is a workflow?</a></h1>
+<h1 id="what-is-a-workflow">What is a workflow?</h1>
 <p>When Alfresco released version 1.4 of the product, they made a huge leap forward in enterprise readiness. That was the release when Alfresco embedded the JBoss jBPM engine into the product which meant that enterprises could route Alfresco repository content through complex business processes. A content repository without the ability to facilitate business processes that produce, consume, or transform the content within it is little more than a glorified file server, so this was a welcome addition.</p>
 <p>But before I geek out on the wonders of graph based execution languages let's agree on what the term <em>workflow</em> means. Generically, a workflow is &quot;a reliably repeatable pattern of activity enabled by a systematic organization of resources...that can be documented and learned&quot;(<a href="[http://en.wikipedia.org/wiki/Workflow](http://en.wikipedia.org/wiki/Workflow)">source</a>). The term has been around since people started studying the nature of work in the early 20<sup>th</sup> century in an effort to streamline manufacturing processes.</p>
 <p>In fact, in the world of ECM, it is sometimes helpful to think of an assembly line or manufacturing process when thinking about how content flows through an organization. Content is born of raw material (data), shaped and molded by one or more people (collaboration) or machines (systems), reviewed for quality, and delivered to consumers. Content may go through a single process or many sub-processes. Content may take different routes through a process based on certain characteristics of that content. The output of an organization or department of knowledge workers is essentially the content that comes rolling off the assembly line (the collection of workflows that define that organization's business processes).</p>
@@ -126,25 +126,25 @@ Architect | Alfresco Developer Tutorials</title>
 </ol>
 <p>These are two very important characteristics that help clarify the kind of workflow I am talking about. There are standalone workflow engines (in fact, Activiti is one of them) that can be used to model and execute all sorts of &quot;repeatable patterns of activity&quot;, with or without content, but in the ECM space, the patterns focused on most often are those that involve humans working with content.</p>
 <p>Of course document-centric workflows may include fully automated steps and machine-to-machine interactions—the point is that document-centric workflows in which humans review, approve, or collaborate in some way are in the scope of the discussion while processes which run lights-out system-to-system orchestration or integration are not.</p>
-<h2 id="options-for-implementing-workflow-in-your-apps"><a href="#options-for-implementing-workflow-in-your-apps">Options for implementing workflow in your apps</a></h2>
+<h2 id="options-for-implementing-workflow-in-your-apps">Options for implementing workflow in your apps</h2>
 <p>Some of you are saying, &quot;You're right. Workflows are everywhere. I could really streamline my organization by moving processes currently implemented with email, phone calls, and cubical drive-bys into a more formalized workflow. What are my options?&quot; Let's talk about three: Roll your own, Standalone workflow engines, and Embedded workflow engines.</p>
-<h3 id="roll-your-own"><a href="#roll-your-own">Roll your own</a></h3>
+<h3 id="roll-your-own">Roll your own</h3>
 <p>People are often tempted to meet their workflow requirements with custom code. Very basic systems might be able to get by with a single flag on a record or an object that declares the status of the content like &quot;Draft&quot; or &quot;In Review&quot; or &quot;Approved&quot;. But flags only capture the &quot;state&quot; of a piece of content. If you want to automate <em>how</em> content moves from state to state, the coding and maintenance becomes more complex. Sure, you can write code as part of your application that knows that once Draft documents are submitted for review, they need to go to Purchasing first and then to Finance, if and only if the requested cash outlay is more than $10m but do you really want to?</p>
 <p>People intent on rolling their own workflow often realize the maintenance problem this creates, so they create an abstraction used to describe the flow from state-to-state that keeps them from embedding that logic in compiled code. Once they've done that, though, they've essentially created their own proprietary workflow engine that no one else in the world knows how to run or maintain. And with all of the open source workflow engines available, why would you want to do that? So the &quot;roll your own&quot; option is really not recommended for any but the most basic workflow requirements.</p>
-<h3 id="standalone-engines"><a href="#standalone-engines">Standalone engines</a></h3>
+<h3 id="standalone-engines">Standalone engines</h3>
 <p>There are a number of standalone workflow engines—sometimes more broadly referred to as BPM (Business Process Management)—both open source and proprietary. These are often extremely robust and scalable solutions that can be used to model, simulate, and execute any process you can think of from high-volume loan processing to call center queue management. Often, these workflow engines are implemented in conjunction with a rules engine which lets business users have control over complicated if-then-else decision trees.</p>
 <p>Standalone engines are most appropriate for extremely high volume or exceedingly complex solutions involving multiple systems. Another good use for standalone engines is when you are developing a custom application that has workflow requirements. Standalone engines can usually talk to any database or content management repository you might have implemented, but they won't be as tightly integrated into the content management system's user interface as the workflow engine built-in to the CMS. For this reason, for content-centric solutions that operate mostly within the scope of the CMS, it is usually less complicated (and less costly) to use the workflow engine embedded within the CMS, provided it has enough functionality to meet the business' workflow requirements.</p>
-<h3 id="embedded-workflow-engines"><a href="#embedded-workflow-engines">Embedded workflow engines</a></h3>
+<h3 id="embedded-workflow-engines">Embedded workflow engines</h3>
 <p>Almost every CMS available today, whether open source or proprietary, has a workflow engine of some sort embedded within it. However, the capability of each of these vary widely. If you are in the process of selecting a CMS and you already know the kind of workflow requirements you'll face, it is important to understand the capabilities of the workflow engine embedded within the systems you are considering before making a final selection.</p>
 <p>The major benefit of leveraging an embedded workflow engine is the tight level of integration for users as well as developers. Users can initiate and interact with workflows without leaving the CMS client. Typically, developers customizing or extending the CMS can work with workflows using the core CMS API.</p>
-<h2 id="out-of-the-box-workflow-options-in-alfresco"><a href="#out-of-the-box-workflow-options-in-alfresco">Out-of-the-box workflow options in Alfresco</a></h2>
+<h2 id="out-of-the-box-workflow-options-in-alfresco">Out-of-the-box workflow options in Alfresco</h2>
 <p>Alfresco has two options for implementing workflows within the product. For very simplistic workflows, non-technical end-users can leverage Alfresco's Basic Workflow functionality. For more complex needs, Alfresco has Advanced Workflow functionality.</p>
-<h3 id="basic-workflows"><a href="#basic-workflows">Basic workflows</a></h3>
+<h3 id="basic-workflows">Basic workflows</h3>
 <p>Basic workflows are a nice end-user tool. You should know how they work and what the features and limitations are so you can make good decisions about when to use them. Basic workflows use folders and a &quot;forward step/backward step&quot; model to implement serial processes. When a piece of content is dropped in a folder, a rule is triggered that associates a &quot;forward step&quot; and a &quot;backward step&quot; (one or the other or both) with the content. These steps are tied to Alfresco actions such as &quot;Set a property&quot; or &quot;Move the content to a specified folder&quot;. End users can then click on the appropriate step for a given piece of content.</p>
 <p>For example, suppose SomeCo has a simple submit-review-approve process in which content is submitted, then reviewed, then approved or rejected. One way to implement this with basic workflows is to use three folders—let's say they are called &quot;Draft&quot;, &quot;In Review&quot;, and &quot;Approved&quot;—each of which have a rule set that applies a basic workflow. The workflow for content in the Draft folder would have a single forward step labeled &quot;Submit&quot; and its action would move content to the &quot;In Review&quot; folder and send an email to the approver group. The &quot;In Review&quot; folder would have a workflow in which the forward step would be labeled &quot;Approve&quot; and it would copy the content to an &quot;Approved&quot; folder. The backward step would be labeled &quot;Reject&quot; and its action would move the content back to the &quot;Drafts&quot; folder.</p>
 <p>In the <a href="http://ecmarchitect.com/alfresco-developer-series-tutorials/actions/tutorial/tutorial.html">&quot;Creating Custom Actions&quot;</a> tutorial, you created a custom rule action called &quot;Move Replaced&quot; that could be used in conjunction with this basic workflow to move old content out of the Approved folder and into an Archived folder, for example.</p>
 <p>You can see that basic workflows are useful, and when combined with rules and actions, you can automate simple business processes. But basic workflows are limited with regard to the complexity of the business processes they can handle.</p>
-<h3 id="advanced-workflows"><a href="#advanced-workflows">Advanced workflows</a></h3>
+<h3 id="advanced-workflows">Advanced workflows</h3>
 <p>Advanced workflows are useful when you need much more control over the business process. Typical requirements that require the use of the advanced workflow engine are things like:</p>
 <ul>
 <li>Assignment of tasks to specific users or groups</li>
@@ -191,55 +191,55 @@ Architect | Alfresco Developer Tutorials</title>
 </tbody>
 </table>
 <p>Now that you understand the definition of workflow in the context of ECM, some of the options for implementing workflow requirements, and the options within Alfresco specifically, it's time to start exploring some Activiti concepts.</p>
-<h1 id="activiti-concepts"><a href="#activiti-concepts">Activiti Concepts</a></h1>
+<h1 id="activiti-concepts">Activiti Concepts</h1>
 <p>This section introduces you to some Activiti concepts before moving on to the developer setup.</p>
-<h2 id="what-is-activiti"><a href="#what-is-activiti">What is Activiti?</a></h2>
+<h2 id="what-is-activiti">What is Activiti?</h2>
 <p>Activiti is an open source, standalone workflow engine. All it needs is Java. It can run in a servlet container or it can be embedded in any Java application. The Activiti engine is responsible for managing deployed processes, instantiating and executing processes, persisting process state and metadata to a relational database, and tracking task assignment and task lists.</p>
 <p>Activiti is its own independent open source project. It just happens that the founders of the project and several other members of the development team are employed by Alfresco. Activiti is built to be embedded in any application that has workflow requirements. What's cool is that the work of integrating it with Alfresco has already been done for you.</p>
-<h2 id="why-two-advanced-workflow-engines"><a href="#why-two-advanced-workflow-engines">Why two advanced workflow engines?</a></h2>
+<h2 id="why-two-advanced-workflow-engines">Why two advanced workflow engines?</h2>
 <p>I mentioned earlier that Alfresco started embedding JBoss jBPM in Alfresco with release 1.4. Starting with Alfresco 4.0, Alfresco added Activiti.</p>
 <p>Alfresco added Activiti because they wanted an Apache-licensed workflow engine. JBoss was unwilling to change the jBPM license, so Alfresco hired jBPM creator, Tom Baeyens, and some of his team to start a new open source project aimed at building an Apache-licensed, BPMN 2.0 compliant workflow engine. The result is Activiti.</p>
 <p>Both jBPM and Activiti are open source and both can be used as standalone workflow engines in solutions completely unrelated to Alfresco and document management.</p>
 <p>Alfresco has obviously made a significant investment in Activiti and that is the workflow engine being actively maintained by Alfresco and the Activiti team, so, if possible, you should use Activiti for your Alfresco workflows going forward.</p>
 <p>If you are starting with a fresh Alfresco installation, Activiti is the default and all of the old jBPM example workflows are there but have been undeployed. If you upgrade an old Alfresco installation, you can continue to use jBPM for old workflows, but you should use Activiti for any new business process definitions you create.</p>
 <p>The rest of this tutorial focuses exclusively on Activiti.</p>
-<h2 id="bpmn-2.0"><a href="#bpmn-2.0">BPMN 2.0</a></h2>
+<h2 id="bpmn-2.0">BPMN 2.0</h2>
 <p>I mentioned earlier that Activiti is BPMN 2.0-compliant. BPMN stands for Business Process Modeling Notation. It's a specification managed by the Object Management Group (OMG) that defines exactly what the name suggests: A standard syntax for describing business processes. The specification is aimed at both humans (i.e., graphical notation of a business process) and machines (i.e., XML syntax describing the business process).</p>
 <p>The two main benefits of using a BPMN-compliant workflow engine are:</p>
 <ol style="list-style-type: decimal">
 <li>When business analysts collaborate on business process projects, they can use a common diagram and language to discuss the process, regardless of the tool that is ultimately used to implement it.</li>
 <li>Any tool that produces BPMN-compliant XML can be used to define a business process and the resulting XML should theoretically work with any compliant workflow engine.</li>
 </ol>
-<h2 id="process-definitions"><a href="#process-definitions">Process definitions</a></h2>
+<h2 id="process-definitions">Process definitions</h2>
 <p>A business process can be described as a graph of connected nodes. In Activiti (and really, in BPMN) these nodes are essentially events (start, stop, timer), tasks, and gateways. These nodes are connected by &quot;sequence flows&quot;. You can model just about any business process you can think of by organizing events, tasks, gateways, and sequence flows on a diagram.</p>
 <p>The OMG has a great document called, &quot;BPMN 2.0 by Example&quot; that shows several examples of business process diagrams and then walks you through each. There's a link to it at the end of this document. The diagrams include features that may not be included in the current release of Activiti, but they do illustrate the kinds of things you can do with BPMN 2.0. For example, here's a diagram from that document called &quot;The Pizza Collaboration&quot;:</p>
 <div class="figure">
 <img src="images/omg-pizza-example.png" alt="OMG&#39;s Pizza Collaboration Example" /><p class="caption">OMG's Pizza Collaboration Example</p>
 </div>
 <p>A process, then, is a collection of events, tasks (some automated, some performed by humans), and gateways, connected by sequence flows.</p>
-<h1 id="setup"><a href="#setup">Setup</a></h1>
+<h1 id="setup">Setup</h1>
 <p>It's almost time to roll up your sleeves. Let me tell you about the tools you'll need and then give you a description of the project organization.</p>
-<h2 id="tools"><a href="#tools">Tools</a></h2>
+<h2 id="tools">Tools</h2>
 <p>Here is what I am using on my machine:</p>
 <ul>
-<li>Mac OS X 10.9.1</li>
-<li>Java 1.7.0_51</li>
-<li>Apache Maven 3.0.5 (installed using Macports)</li>
-<li>Alfresco Maven SDK, AMP Archetype 1.1.1 (No download necessary)</li>
-<li>Eclipse Java EE IDE for Web Developers, Kepler</li>
-<li>Activiti Eclipse BPMN 2.0 Designer 5.14 (<a href="http://www.activiti.org/designer/update/">Eclipse Update Site</a>)</li>
-<li>Alfresco Community Edition 4.2.e (<a href="http://www.alfresco.com/products/community">Download</a>)</li>
+<li>Mac OS X 10.10.3</li>
+<li>Java 1.7.0_71</li>
+<li>Apache Maven 3.3.1 (installed using Macports)</li>
+<li>Alfresco Maven SDK 2.0 (No download necessary)</li>
+<li>Eclipse Java EE IDE for Web Developers, Luna</li>
+<li>Activiti Eclipse BPMN 2.0 Designer 5.15 (<a href="http://www.activiti.org/designer/update/">Eclipse Update Site</a>)</li>
+<li>Alfresco Community Edition 5.0.d (<a href="http://www.alfresco.com/products/community">Download</a>)</li>
 <li>Apache James 2.3.1 (for testing third-party notification via SMTP)</li>
 </ul>
-<p>By default, when you create an Alfresco project using version 1.1.1 of the Alfresco Maven SDK the project will be configured to depend on Alfresco Community Edition 4.2.e.</p>
-<h2 id="project-organization"><a href="#project-organization">Project Organization</a></h2>
+<p>By default, when you create an Alfresco project using version 2.0 of the Alfresco Maven SDK the project will be configured to depend on Alfresco Community Edition 5.0.c. Until the SDK is updated to depend on the latest version of Alfresco, you should edit the generated pom.xml file and change it to depend on 5.0.d.</p>
+<h2 id="project-organization">Project Organization</h2>
 <p>I am going to use the Alfresco Maven SDK to create projects that will package up my customizations as AMPs (Alfresco Module Packages). I will ultimately create two AMPs. One AMP is for the Alfresco web application (the &quot;repo&quot; tier) and the other is for the Alfresco Share web application (the &quot;Share&quot; tier). Unless you have a good reason to do otherwise, this should be your default approach to packaging and deploying your customizations.</p>
 <p>I am not going to spend much time talking about how the Alfresco Maven SDK works. If you aren't already familiar with it, you may want to read the <a href="http://ecmarchitect.com/alfresco-developer-series">Getting Started with the Alfresco Maven SDK</a> tutorial on ecmarchitect.com first and then come back to this one.</p>
 <p>This tutorial relies on code from the <a href="http://ecmarchitect.com/alfresco-developer-series-tutorials/content/tutorial/tutorial.html">Custom Content Types</a> tutorial. The tutorial assumes that the repo tier AMP and Share tier AMP created during that tutorial have been deployed to the Alfresco server you will be deploying your custom actions AMPs to. More details on that will be discussed later in the document.</p>
 <p>If you are planning on following along, go ahead and use the Alfresco Maven SDK to create two new projects. One should use a <code>groupId</code> of &quot;com.someco&quot; and an <code>artifactId</code> of &quot;workflow-tutorial-repo&quot; for the repo tier project and &quot;workflow-tutorial-share&quot; for the share tier project.</p>
-<h1 id="hello-world-examples"><a href="#hello-world-examples">Hello World Examples</a></h1>
+<h1 id="hello-world-examples">Hello World Examples</h1>
 <p>Let's create a couple of super simple Hello World processes using the Activiti Process Designer. These processes will not be wired into the Alfresco web client user interface. Instead, I'll use the workflow console to start them. Once I've run through the basic steps of diagramming and deploying workflows, I'll show you examples that are fully integrated into the user interface.</p>
-<h2 id="the-helloworld-process"><a href="#the-helloworld-process">The helloWorld process</a></h2>
+<h2 id="the-helloworld-process">The helloWorld process</h2>
 <p>The helloWorld process will consist of a start event, a user task, and an end event. The goal is to do nothing more than write &quot;Hello, World!&quot; to the Alfresco log.</p>
 <p>Workflows reside in:</p>
 <pre><code>$TUTORIAL_HOME/workflow-tutorial-repo/src/main/amp/config/alfresco/module/workflow-tutorial-repo/workflows</code></pre>
@@ -287,7 +287,7 @@ Architect | Alfresco Developer Tutorials</title>
 <p>Now save the diagram.</p>
 <p>Look at the <code>activiti:executionListener</code> element. You can see from the <code>event</code> attribute that this script will be fired when the &quot;start&quot; event for this sequence flow happens. The <code>class</code> attribute specifies the class to invoke which is an out-of-the-box class called <code>ScriptExecutionListener</code>. The <code>activiti:string</code> element could contain any server-side JavaScript. For right now it is a simple logger statement. In a later example, you'll see how to iterate over the documents in the workflow package.</p>
 <p>You're going to run this process shortly. Before that, let's create another simple process to see how forks work.</p>
-<h2 id="the-helloworldfork-process"><a href="#the-helloworldfork-process">The helloWorldFork process</a></h2>
+<h2 id="the-helloworldfork-process">The helloWorldFork process</h2>
 <p>Before I show you how to deploy the process definition to Alfresco, let's do another Hello World example that does a fork and a join.</p>
 <p>Do this:</p>
 <ol style="list-style-type: decimal">
@@ -329,7 +329,7 @@ Architect | Alfresco Developer Tutorials</title>
 &lt;/sequenceFlow&gt;</code></pre>
 <p>Remember to save the diagram.</p>
 <p>With a couple of, admittedly, ridiculously simple examples saved in the workflow-tutorial-repo project, it is time to deploy them to Activiti running within Alfresco and try them out.</p>
-<h2 id="deploying-processes"><a href="#deploying-processes">Deploying processes</a></h2>
+<h2 id="deploying-processes">Deploying processes</h2>
 <p>If you are using Alfresco 4.x Enterprise, you have several deployment options. The first option is to use the Activiti Workflow Console which is accessible to administrators through a link in the Share Administration console, or by navigating directly to <a href="http://localhost:8080/alfresco/activiti-admin">http://localhost:8080/alfresco/activiti-admin</a>. From there clicking Deployments, Upload New will display a file upload dialog which can be used to upload the bpmn file.</p>
 <div class="figure">
 <img src="images/upload-process.png" alt="Uploading a process using the Activiti Workflow Console" /><p class="caption">Uploading a process using the Activiti Workflow Console</p>
@@ -341,7 +341,7 @@ Architect | Alfresco Developer Tutorials</title>
 <li>Configure the workflows through Spring configuration</li>
 </ol>
 <p>Because these two options are available in both Enterprise Edition and Community Edition, this tutorial will focus on these. The approach will be to use Spring to deploy the workflows initially. Then, use the Alfresco Explorer Workflow Console to deploy subsequent versions if needed.</p>
-<h3 id="deploying-the-workflows-with-spring"><a href="#deploying-the-workflows-with-spring">Deploying the workflows with Spring</a></h3>
+<h3 id="deploying-the-workflows-with-spring">Deploying the workflows with Spring</h3>
 <p>As you learned in previous tutorials, the AMP project created by the Alfresco Maven SDK already has a Spring context file. It is named &quot;<a href="https://github.com/jpotts/alfresco-developer-series/blob/master/workflow/workflow-tutorial-repo/src/main/amp/config/alfresco/module/workflow-tutorial-repo/context/service-context.xml">service-context.xml</a>&quot; and resides in:</p>
 <pre><code>$TUTORIAL_HOME/workflow-tutorial-repo/src/main/amp/config/alfresco/module/workflow-tutorial-repo/context</code></pre>
 <p>Edit that file and add a workflow deployer bean, like this:</p>
@@ -372,7 +372,7 @@ Architect | Alfresco Developer Tutorials</title>
 <pre><code>mvn integration-test -Pamp-to-war -Dmodule.log.level=debug</code></pre>
 <p>Apache Maven will download some dependencies, build your AMP, merge it with the Alfresco WAR file, then start up an embedded Tomcat server.</p>
 <p>Next you'll see how to use the Alfresco Explorer Workflow Console to test the two hello world process definitions.</p>
-<h2 id="using-the-workflow-console"><a href="#using-the-workflow-console">Using the workflow console</a></h2>
+<h2 id="using-the-workflow-console">Using the workflow console</h2>
 <p>Your Alfresco server is running and the hello world process definitions should have been deployed when the server started up. The Alfresco Explorer Workflow Console can be used to verify that they were deployed successfully. And you can use it to start instances of those workflows to test them out. It can also be a handy workflow debugging tool.</p>
 <p>For reasons that cannot be fully explained, the Alfresco Explorer Workflow Console is not linked to anywhere in the user interface. Like Easter Island, the pyramids, and Stonehenge, it is one of the great mysteries of our time. You just have to know that the URL is <a href="http://localhost:8080/alfresco/faces/jsp/admin/workflow-console.jsp">http://localhost:8080/alfresco/faces/jsp/admin/workflow-console.jsp</a>. If you haven't already logged in to Alfresco Explorer as admin you will be asked to do so when you go to that URL.</p>
 <p>In the workflow console do this:</p>
@@ -445,7 +445,7 @@ Architect | Alfresco Developer Tutorials</title>
 </table>
 <p>These are a subset of the commands available. Type &quot;help&quot; and click Submit to see the full list of commands.</p>
 <p>You may be wondering what happens to running workflow instances when a new version of the process definition is checked in. The answer is that Activiti handles that—it makes sure that running workflows continue to run with their original process definition. By default, all new workflows will use the most current version of the process definition.</p>
-<h1 id="configuring-a-workflow-for-alfresco-share"><a href="#configuring-a-workflow-for-alfresco-share">Configuring a workflow for Alfresco Share</a></h1>
+<h1 id="configuring-a-workflow-for-alfresco-share">Configuring a workflow for Alfresco Share</h1>
 <p>So far you've learned what a workflow is and some Activiti concepts. You used the process designer to diagram two simple processes, deployed those to Alfresco, and ran them using the workflow console. This part of the tutorial explains how to configure a workflow in the Alfresco Share user interface.</p>
 <p>Workflows are configured for the Alfresco Share user interface through the form service. Recall from the custom content types stutorial that the form service uses the content model XML and the Share form configuration to generate a nice form for end users. Configuring a workflow works exactly the same way: you configure a content model that maps to a business process definition, then configure the form service to produce a form for that model.</p>
 <p>At a high level, then, the steps are:</p>
@@ -455,7 +455,7 @@ Architect | Alfresco Developer Tutorials</title>
 <li>Configure the Alfresco Share user interface. Recall from the custom content types tutorial that share-config-custom.xml is used to configure the Alfresco Share web client.</li>
 </ol>
 <p>With that in mind, let's do one more hello world example. This time, the example will use Alfresco Share form configuration. After that, you'll be ready to work through a more real world example that builds upon the SomeCo work started in previous tutorials.</p>
-<h2 id="step-1-define-the-helloworldui-process"><a href="#step-1-define-the-helloworldui-process">Step 1: Define the helloWorldUI process</a></h2>
+<h2 id="step-1-define-the-helloworldui-process">Step 1: Define the helloWorldUI process</h2>
 <p>The goal for this example is to create a workflow that will capture a piece of metadata (a name the logger should use for a greeting) when the workflow is submitted, and then write the greeting out to the log. The first step is to define the process.</p>
 <ol style="list-style-type: decimal">
 <li>In Eclipse, right-click on the &quot;workflows&quot; folder and create a new Activiti Diagram named &quot;<a href="https://github.com/jpotts/alfresco-developer-series/blob/master/workflow/workflow-tutorial-repo/src/main/amp/config/alfresco/module/workflow-tutorial-repo/workflows/helloWorldUI.bpmn">helloWorldUI.bpmn</a>&quot;.</li>
@@ -476,21 +476,21 @@ Architect | Alfresco Developer Tutorials</title>
 <li>Single-click the canvas to open the properties editor for the process. Set the ID to &quot;helloWorldUI&quot; and the name to &quot;Hello World UI&quot;.</li>
 <li><p>Save and close the diagram.</p></li>
 </ol>
-<h3 id="tasks"><a href="#tasks">Tasks</a></h3>
+<h3 id="tasks">Tasks</h3>
 <p>You saw in the steps above that tasks can be assigned to human performers. Activiti maintains a list of tasks assigned to each participant. How users interact with the task list is up to each application. In Alfresco, a dashlet displays a to-do list for the currently logged in user. As users complete their tasks the tasks are removed from the to-do list. An empty to do list is shown below.</p>
 <div class="figure">
 <img src="images/my-tasks-dashlet-empty.png" alt="An empty task list in Alfresco Share" /><p class="caption">An empty task list in Alfresco Share</p>
 </div>
-<h3 id="task-assignment"><a href="#task-assignment">Task Assignment</a></h3>
+<h3 id="task-assignment">Task Assignment</h3>
 <p>If tasks are steps a human performs, how do tasks get assigned to the people who need to perform them? Activiti has extended BPMN with their own attribute called &quot;activiti:assignee&quot;. The value of the attribute can be a literal username or group name, or it can be an expression. In this case you assigned the user task to ${initiator.properties.userName}. Initiator is a special object that will always contain the object representing the person who started the workflow.</p>
 <p>The diagram is now complete and ready for some server-side JavaScript to be added.</p>
-<h3 id="add-logic-to-the-process-definition"><a href="#add-logic-to-the-process-definition">Add logic to the process definition</a></h3>
+<h3 id="add-logic-to-the-process-definition">Add logic to the process definition</h3>
 <p>The diagram is done. Let's add some logic.</p>
 <p>Similar to earlier hello world examples, let's add a logger statement to print a greeting. The difference is that in this example, the greeting includes a person's name that was specified in a form when the initiator started the workflow.</p>
-<h4 id="process-variables"><a href="#process-variables">Process Variables</a></h4>
+<h4 id="process-variables">Process Variables</h4>
 <p>Often, there is metadata about a process that needs to be tracked. In this case, the metadata is the person's name. The person's name isn't really a property of the content being routed through the workflow—it's a property of the process itself. Activiti gives us the ability to store this kind of data as part of the running process through <em>process variables.</em></p>
 <p>Process variables are name-value pairs that will get persisted with the rest of the process state.</p>
-<h4 id="try-it"><a href="#try-it">Try It</a></h4>
+<h4 id="try-it">Try It</h4>
 <p>To add a logger statement with a process variable to the helloWorldUI example, do this:</p>
 <p>Open helloWorldUI.bpmn in the XML editor.</p>
 <p>Find the <code>sequenceFlow</code> element that goes from the start event to the user task and add the following <code>extensionElements</code> element:</p>
@@ -523,7 +523,7 @@ Architect | Alfresco Developer Tutorials</title>
     &lt;/extensionElements&gt;
 &lt;/serviceTask&gt;</code></pre>
 <p>Now the process is ready to go. The next step is to get the workflow content model squared away.</p>
-<h2 id="step-2-define-a-workflow-specific-content-model"><a href="#step-2-define-a-workflow-specific-content-model">Step 2: Define a workflow-specific content model</a></h2>
+<h2 id="step-2-define-a-workflow-specific-content-model">Step 2: Define a workflow-specific content model</h2>
 <p>The workflow-specific content model defines the data structure for the process. Workflow models use the same fundamental building blocks—types, properties, aspects, and associations—as &quot;normal&quot; Alfresco content model definitions. In fact, if you already have a custom model, you can define your workflow-specific model in the same content model XML file, although to reduce confusion, I recommend you keep your content types separate from your workflow types by using at least two different model files.</p>
 <p>What is the purpose of the workflow-specific model? Think of it like any other content model. Custom content models are used to define the metadata that needs to be captured about a piece of content. The metadata (properties) are grouped into types and aspects. By virtue of defining these properties as part of the content model, Alfresco takes care of persisting the data to the underlying database.</p>
 <p>Workflow models function in the same way. Suppose you have a process in which three different departments are involved in an approval process. Maybe you'd like the workflow initiator to be able to define which of those departments are required approvers and which are optional or &quot;FYI&quot; reviewers. A workflow model defines how that information is going to be stored.</p>
@@ -531,7 +531,7 @@ Architect | Alfresco Developer Tutorials</title>
 <p>The <strong>bpmModel</strong> file contains the lowest-level workflow classes such as the base definition for all tasks and the default start task. It also contains important aspects such as a set of &quot;assignee&quot; aspects that define associations between tasks and users or groups.</p>
 <p>The <strong>workflowModel</strong> file contains the content model for the out-of-the-box process definitions. This model file offers a lot of potential for reuse in your custom processes. For example, if your process starts by allowing the submitter to specify a list of several people to receive a task, you could use the <code>wf:submitParallelReviewTask</code> type. If you want to base an approval on the percentage of individuals who approve a task, you can use the <code>wf:submitConcurrentReviewTask</code> type. Of course just like any model you are free to use these as-is, extend them, or not use them at all.</p>
 <p>When users interact with the workflow via the web client, Alfresco will use the workflow content model and the Alfresco Share form service configuration to figure out what metadata to expose to the UI and how to present it just as it does when viewing content properties. In Activiti, Alfresco uses the value of the form key attribute to figure out the appropriate workflow content type. So, <strong>all tasks in which there are Alfresco web client user interactions must be given a form key that corresponds to the name of a workflow content type.</strong></p>
-<h3 id="create-the-workflow-content-model-xml"><a href="#create-the-workflow-content-model-xml">Create the workflow content model XML</a></h3>
+<h3 id="create-the-workflow-content-model-xml">Create the workflow content model XML</h3>
 <p>In the helloWorldUI example, you defined the following start event:</p>
 <pre><code>&lt;startEvent id=&quot;startevent1&quot; name=&quot;Start&quot; activiti:formKey=&quot;scwf:submitHelloWorldTask&quot;&gt;&lt;/startEvent&gt;</code></pre>
 <p>Now you need to create a content model with a custom type that corresponds to the form key value. From previous tutorials you know that models are defined in XML and reside in:</p>
@@ -572,15 +572,15 @@ Architect | Alfresco Developer Tutorials</title>
                     &lt;multiple&gt;false&lt;/multiple&gt;
                 &lt;/property&gt;
             &lt;/properties&gt;
-        &lt;/type&gt;        
+        &lt;/type&gt;
     &lt;/types&gt;
 
 &lt;/model&gt;</code></pre>
 <p>The <code>scwf:submitHelloWorldTask</code> type is a child of <code>bpm:startTask</code> and declares a property called <code>scwf:helloName</code>. That's a text property that will be displayed as a text field the workflow initiator can use to tell the workflow who to greet.</p>
 <p>Alfresco needs to know about this model. This is done through Spring configuration. There will be a few other additions to that context file so you'll do them all at once shortly.</p>
-<h2 id="step-3-configure-alfresco-share"><a href="#step-3-configure-alfresco-share">Step 3: Configure Alfresco Share</a></h2>
+<h2 id="step-3-configure-alfresco-share">Step 3: Configure Alfresco Share</h2>
 <p>The next step is to tell Alfresco Share how to display the process metadata. This works exactly like custom content types. As you saw in that tutorial, Share customizations go in their own project so that they can be packaged in an AMP specifically for the share tier.</p>
-<h3 id="edit-share-config-custom.xml"><a href="#edit-share-config-custom.xml">Edit share-config-custom.xml</a></h3>
+<h3 id="edit-share-config-custom.xml">Edit share-config-custom.xml</h3>
 <p>The user interface configuration for Alfresco Share resides in a directory called:</p>
 <pre><code>$TUTORIAL_HOME/workflow-tutorial-share/src/main/resources/META-INF</code></pre>
 <p>You may have to create the resources/META-INF directories in your workflow-tutorial-share project.</p>
@@ -600,7 +600,7 @@ Architect | Alfresco Developer Tutorials</title>
                &lt;set id=&quot;&quot; appearance=&quot;title&quot; label-id=&quot;workflow.set.general&quot; /&gt;
                &lt;set id=&quot;items&quot; appearance=&quot;title&quot; label-id=&quot;workflow.set.items&quot; /&gt;
                &lt;set id=&quot;progress&quot; appearance=&quot;title&quot; label-id=&quot;workflow.set.task.progress&quot; /&gt;
-               &lt;set id=&quot;other&quot; appearance=&quot;title&quot; label-id=&quot;workflow.set.other&quot; /&gt;                   
+               &lt;set id=&quot;other&quot; appearance=&quot;title&quot; label-id=&quot;workflow.set.other&quot; /&gt;
                &lt;field id=&quot;bpm:workflowDescription&quot; label-id=&quot;workflow.field.message&quot;&gt;
                   &lt;control template=&quot;/org/alfresco/components/form/controls/textarea.ftl&quot;&gt;
                      &lt;control-param name=&quot;style&quot;&gt;width: 95%&lt;/control-param&gt;
@@ -615,7 +615,7 @@ Architect | Alfresco Developer Tutorials</title>
     &lt;/config&gt;
 &lt;/alfresco-config&gt;</code></pre>
 <p>This form tells Alfresco Share that when someone starts a process named &quot;activiti$helloWorldUI&quot; it should show the user this form. The form definition includes the <code>scwf:helloName</code> property defined in the custom type.</p>
-<h3 id="externalize-the-strings"><a href="#externalize-the-strings">Externalize the strings</a></h3>
+<h3 id="externalize-the-strings">Externalize the strings</h3>
 <p>Alfresco Share needs to know which strings to use to display things like the workflow title and description that show up in the &quot;Start Advanced Workflow&quot; dialog, and titles and descriptions for individual tasks. The identifiers for these strings follow a specific format.</p>
 <p>There are two separate properties bundles to deal with. One is for the &quot;repo&quot; tier, so it goes in the workflow-tutorial-repo project. The other is for the &quot;share&quot; tier, so it goes in the workflow-tutorial-share project.</p>
 <p>Properties for the repo tier go in:</p>
@@ -642,7 +642,7 @@ prop.scwf_helloName=Name
 #workflow properties
 workflow.scwf_helloWorldUI=Hello World UI</code></pre>
 <p>Both of these properties files have to be registered through Spring. You'll see that next.</p>
-<h3 id="update-the-spring-configuration"><a href="#update-the-spring-configuration">Update the Spring configuration</a></h3>
+<h3 id="update-the-spring-configuration">Update the Spring configuration</h3>
 <p>In this section you've made several changes that require Spring configuration updates in each of the two projects:</p>
 <ul>
 <li>Custom workflow model</li>
@@ -651,7 +651,7 @@ workflow.scwf_helloWorldUI=Hello World UI</code></pre>
 <li>Localized properties for the share tier</li>
 </ul>
 <p>Let's update the repo tier Spring configuration, then the share tier.</p>
-<h4 id="repo-tier-spring-configuration"><a href="#repo-tier-spring-configuration">Repo tier Spring configuration</a></h4>
+<h4 id="repo-tier-spring-configuration">Repo tier Spring configuration</h4>
 <p>Edit the <a href="https://github.com/jpotts/alfresco-developer-series/blob/master/workflow/workflow-tutorial-repo/src/main/amp/config/alfresco/module/workflow-tutorial-repo/context/service-context.xml">service-context.xml</a> file that resides in:</p>
 <pre><code>$TUTORIAL_HOME/workflow-tutorial-repo/src/main/amp/config/alfresco/module/workflow-tutorial-repo/context</code></pre>
 <p>You can add the workflow model, the new workflow, and the labels all in the same bean. Edit the service-context.xml file and append the following to the existing <code>bean</code> element:</p>
@@ -659,13 +659,13 @@ workflow.scwf_helloWorldUI=Hello World UI</code></pre>
                 &lt;prop key=&quot;engineId&quot;&gt;activiti&lt;/prop&gt;
                 &lt;prop key=&quot;location&quot;&gt;alfresco/module/${project.artifactId}/workflows/helloWorldUI.bpmn&lt;/prop&gt;
                 &lt;prop key=&quot;mimetype&quot;&gt;text/xml&lt;/prop&gt;
-                &lt;prop key=&quot;redeploy&quot;&gt;false&lt;/prop&gt;            
+                &lt;prop key=&quot;redeploy&quot;&gt;false&lt;/prop&gt;
             &lt;/props&gt;
         &lt;/list&gt;
     &lt;/property&gt;
     &lt;property name=&quot;models&quot;&gt;
         &lt;list&gt;
-            &lt;value&gt;alfresco/module/${project.artifactId}/model/scWorkflowModel.xml&lt;/value&gt;                
+            &lt;value&gt;alfresco/module/${project.artifactId}/model/scWorkflowModel.xml&lt;/value&gt;
         &lt;/list&gt;
     &lt;/property&gt;
     &lt;property name=&quot;labels&quot;&gt;
@@ -675,7 +675,7 @@ workflow.scwf_helloWorldUI=Hello World UI</code></pre>
     &lt;/property&gt;
 &lt;/bean&gt;</code></pre>
 <p>Save and close the file.</p>
-<h4 id="share-tier-spring-configuration"><a href="#share-tier-spring-configuration">Share tier Spring configuration</a></h4>
+<h4 id="share-tier-spring-configuration">Share tier Spring configuration</h4>
 <p>The Spring configuration for the workflow-tutorial-share project resides in:</p>
 <pre><code>$TUTORIAL_HOME/workflow-tutorial-share/src/main/amp/config/alfresco/web-extension</code></pre>
 <p>You will have to create the &quot;web-extension&quot; directory.</p>
@@ -694,7 +694,7 @@ workflow.scwf_helloWorldUI=Hello World UI</code></pre>
 &lt;/beans&gt;</code></pre>
 <p>Save and close the file.</p>
 <p>The helloWorldUI example is now ready to deploy.</p>
-<h2 id="deploy-test"><a href="#deploy-test">Deploy &amp; Test</a></h2>
+<h2 id="deploy-test">Deploy &amp; Test</h2>
 <p>The hello world UI example can be tested using the embedded Tomcat servers that are part of the workflow-tutorial-repo and workflow-tutorial-share projects. The trick is to start each of them separately, passing in an alternative port for the Alfresco Share WAR.</p>
 <ol style="list-style-type: decimal">
 <li>Open a command-line window and switch to $TUTORIAL_HOME/workflow-tutorial-repo.</li>
@@ -726,7 +726,7 @@ workflow.scwf_helloWorldUI=Hello World UI</code></pre>
 <img src="images/approval-result-in-log.png" alt="Hello World UI approval result in the log" /><p class="caption">Hello World UI approval result in the log</p>
 </div>
 <p>If all goes well, congratulations, you've successfully deployed a custom workflow with custom metadata that can be started and managed in Alfresco Share.</p>
-<h2 id="implementation-summary"><a href="#implementation-summary">Implementation summary</a></h2>
+<h2 id="implementation-summary">Implementation summary</h2>
 <p>You've covered a lot of ground so far. The following summarizes the advanced workflow implementation steps:</p>
 <ol style="list-style-type: decimal">
 <li>Model the process using the Activiti Process Designer. Add logic using expressions, Alfresco JavaScript, or Java classes. Use the workflow deployer bean in Spring so that the process definition will get deployed when Alfresco starts.</li>
@@ -734,13 +734,13 @@ workflow.scwf_helloWorldUI=Hello World UI</code></pre>
 <li>Update share-config-custom.xml with form configuration that tells Alfresco Share how to handle workflow model you defined in the previous step. Configuring Alfresco Share also means externalizing the strings and referring to those in the Spring context file for both the repo tier and the share tier.</li>
 </ol>
 <p>At this point you know enough about advanced workflows to be dangerous. Let's work through an example for the fictitious company, SomeCo, to put some of this new knowledge to work.</p>
-<h1 id="someco-whitepaper-submission-example"><a href="#someco-whitepaper-submission-example">SomeCo Whitepaper submission example</a></h1>
+<h1 id="someco-whitepaper-submission-example">SomeCo Whitepaper submission example</h1>
 <p>This example continues the SomeCo example from the past several <a href="http://ecmarchitect.com/alfresco-developer-series">Alfresco Developer Series</a> tutorials. SomeCo is going to use Advanced Workflows to route Whitepapers for approval before being flagged for publication on the web site. The next section describes the process.</p>
-<h2 id="business-requirements"><a href="#business-requirements">Business requirements</a></h2>
+<h2 id="business-requirements">Business requirements</h2>
 <p>Anyone that can log in to Alfresco can submit a whitepaper for publication on the SomeCo web site. The only information the submitter needs to specify is the email address of an external third-party reviewer, if applicable. More on that shortly.</p>
 <p>The whitepaper needs to be reviewed by the Engineering team as well as the Marketing team. It doesn't matter who on the team does the review—SomeCo wants to notify each team and then let one representative from each team &quot;own&quot; the review task. Either team can reject the whitepaper. If rejected, the person who submitted the whitepaper can make revisions and resubmit. If both teams approve, the whitepaper moves on to the next step.</p>
 <p>Some whitepapers need to be reviewed by an external third-party. The third-party won't actually log in to Alfresco—they'll get an email and click a link to approve or reject the whitepaper. If the third-party doesn't do anything in a certain amount of time, the whitepaper should be automatically approved.</p>
-<h2 id="high-level-steps"><a href="#high-level-steps">High-level steps</a></h2>
+<h2 id="high-level-steps">High-level steps</h2>
 <p>Alright. You're going to implement this process in four major steps. Here's a look at the major steps and the respective sub-steps:</p>
 <ol style="list-style-type: decimal">
 <li>Implement the basic flow and workflow user interface
@@ -765,9 +765,9 @@ workflow.scwf_helloWorldUI=Hello World UI</code></pre>
 </ol></li>
 </ol>
 <p>Now that you know where you're headed at a high-level, let's get into the details.</p>
-<h2 id="step-1-implement-the-basic-flow-and-workflow-user-interface"><a href="#step-1-implement-the-basic-flow-and-workflow-user-interface">Step 1: Implement the basic flow and workflow user interface</a></h2>
+<h2 id="step-1-implement-the-basic-flow-and-workflow-user-interface">Step 1: Implement the basic flow and workflow user interface</h2>
 <p>Just like in the Hello World examples, the first thing to do is diagram the process. Then, assign tasks, add a bit of logic, and establish the workflow content model before a quick deploy and test.</p>
-<h3 id="diagram-the-process"><a href="#diagram-the-process">Diagram the process</a></h3>
+<h3 id="diagram-the-process">Diagram the process</h3>
 <p>The diagram step is just like you've seen before, it's just that the diagram is a little more complex.</p>
 <ol style="list-style-type: decimal">
 <li>Right-click on the workflows folder, New, Other, Activiti Process Diagram.</li>
@@ -780,7 +780,7 @@ workflow.scwf_helloWorldUI=Hello World UI</code></pre>
 </ol>
 <p>Submit is a Script Task. The rest are User Tasks. This example does not use the Alfresco-specific events or tasks, but feel free to do so in your own diagrams.</p>
 <p>Now that the diagram is in place, continue to the next section to see how to set the task properties.</p>
-<h3 id="configure-user-tasks-with-assignments"><a href="#configure-user-tasks-with-assignments">Configure user tasks with assignments</a></h3>
+<h3 id="configure-user-tasks-with-assignments">Configure user tasks with assignments</h3>
 <p>This table tells you how to set the performer type, expression, and form key on each task:</p>
 <table>
 <caption>Settings for performer, expression, &amp; form key</caption>
@@ -831,14 +831,14 @@ workflow.scwf_helloWorldUI=Hello World UI</code></pre>
 </tr>
 </tbody>
 </table>
-<h4 id="pooled-assignments"><a href="#pooled-assignments">Pooled Assignments</a></h4>
+<h4 id="pooled-assignments">Pooled Assignments</h4>
 <p>Notice that the Operations Review and Marketing Review are being assigned to groups instead of individuals. How will the group of people decide who should work on a task? This particular process uses a &quot;pooled assignment&quot;. Suppose, for example, the Operations group contains ten people. You could iterate through the group and assign a task to each and every member of the group and then not consider the task complete until some or all group members have taken action. An alternative to that is to use a pooled assignment. Using a pool, all members of a group are notified of the task, but as soon as one group member takes &quot;ownership&quot; of the task, it is removed from everyone else's to do list. The owner can then either complete the task or return it to the pool. If it is returned to the pool, all members of the group see the task in their to do list until another person takes ownership or completes the task. To use pooled assignment, use the <code>activiti:candidateGroups</code> attribute on the <code>userTask</code> element instead of the <code>activiti:assignee</code> element.</p>
 <p>The decision to use pooled actors or not depends entirely on the business process—there is no best practice approach.</p>
-<h3 id="add-decision-logic"><a href="#add-decision-logic">Add decision logic</a></h3>
+<h3 id="add-decision-logic">Add decision logic</h3>
 <p>At this point the process diagram should save without a problem. Now it is time to switch to re-open the file using the XML editor to add some decision logic to the process.</p>
 <p>The process definition has two decisions. One decision figures out if all required approvals have been obtained. If so, the process continues. If not, the initiator gets a chance to make revisions. The other decision is used to determine if a third-party review is required based on whether or not the initiator provided an email address. These are represented by the two exclusive gateways on the diagram.</p>
 <p>These are pretty easy decisions to make based on process variables.</p>
-<h4 id="implement-the-approval-check"><a href="#implement-the-approval-check">Implement the approval check</a></h4>
+<h4 id="implement-the-approval-check">Implement the approval check</h4>
 <p>In the business process XML, find the <code>scriptTask</code> element named &quot;Submit&quot; and add the following script:</p>
 <pre><code>&lt;scriptTask id=&quot;scripttask1&quot; name=&quot;Submit&quot; scriptFormat=&quot;javascript&quot; activiti:autoStoreVariables=&quot;true&quot;&gt;
     &lt;script&gt;&lt;![CDATA[var scwf_approveCount = 0; var scwf_tpApproved = false;]]&gt;&lt;/script&gt;
@@ -849,7 +849,7 @@ workflow.scwf_helloWorldUI=Hello World UI</code></pre>
     &lt;extensionElements&gt;
         &lt;activiti:taskListener event=&quot;complete&quot; class=&quot;org.alfresco.repo.workflow.activiti.tasklistener.ScriptTaskListener&quot;&gt;
             &lt;activiti:field name=&quot;script&quot;&gt;
-                &lt;activiti:string&gt;    
+                &lt;activiti:string&gt;
                     if(task.getVariableLocal(&#39;scwf_approveRejectOutcome&#39;) == &#39;Approve&#39;) {
                         var newApprovedCount = scwf_approveCount + 1;
                         execution.setVariable(&#39;scwf_approveCount&#39;, newApprovedCount);
@@ -858,7 +858,7 @@ workflow.scwf_helloWorldUI=Hello World UI</code></pre>
             &lt;/activiti:field&gt;
         &lt;/activiti:taskListener&gt;
     &lt;/extensionElements&gt;
-&lt;/userTask&gt; </code></pre>
+&lt;/userTask&gt;</code></pre>
 <p>The JavaScript inspects the value of <code>scwf_approveRejectOutcome</code> which will be set by the user when they manage the task in Alfresco Share. If it is equal to &quot;Approve&quot; it increments <code>scwf_approveCount</code>.</p>
 <p>Now add the same thing to the <code>userTask</code> element named Marketing Review.</p>
 <p>The first exclusive gateway after the &quot;Operations Review&quot; and &quot;Marketing Review&quot; user tasks represents a decision. If the approvals have been reached, the flow should continue on, otherwise it should go to the &quot;Revise&quot; user task.</p>
@@ -867,7 +867,7 @@ workflow.scwf_helloWorldUI=Hello World UI</code></pre>
     &lt;conditionExpression xsi:type=&quot;tFormalExpression&quot;&gt;&lt;![CDATA[${scwf_approveCount == 2}]]&gt;&lt;/conditionExpression&gt;
 &lt;/sequenceFlow&gt;
 &lt;sequenceFlow id=&quot;flow9&quot; sourceRef=&quot;exclusivegateway1&quot; targetRef=&quot;usertask3&quot;&gt;
-    &lt;conditionExpression xsi:type=&quot;tFormalExpression&quot;&gt;&lt;![CDATA[${scwf_approveCount &lt; 2}]]&gt;&lt;/conditionExpression&gt;    
+    &lt;conditionExpression xsi:type=&quot;tFormalExpression&quot;&gt;&lt;![CDATA[${scwf_approveCount &lt; 2}]]&gt;&lt;/conditionExpression&gt;
 &lt;/sequenceFlow&gt;</code></pre>
 <p>The &quot;Third Party&quot; decision is similar. In this case, if the person who started the workflow provided an email address for the third-party reviewer, the workflow should route to the &quot;Third Party Review&quot;, otherwise, it should continue on. Here is what those conditions look like:</p>
 <pre><code>&lt;sequenceFlow id=&quot;flow11&quot; sourceRef=&quot;exclusivegateway2&quot; targetRef=&quot;usertask2&quot;&gt;
@@ -917,9 +917,9 @@ workflow.scwf_helloWorldUI=Hello World UI</code></pre>
     &lt;/activiti:taskListener&gt;
 &lt;/extensionElements&gt;</code></pre>
 <p>You may be thinking that my sequence flow ID's aren't very helpful. I agree. Unfortunately, when I went back in to the process definition to refactor those, it caused some unanticipated problems. When you do your own business process definitions you should start with meaningful ID's from the beginning.</p>
-<h3 id="workflow-content-model-including-alfresco-share-configuration"><a href="#workflow-content-model-including-alfresco-share-configuration">Workflow content model including Alfresco Share configuration</a></h3>
+<h3 id="workflow-content-model-including-alfresco-share-configuration">Workflow content model including Alfresco Share configuration</h3>
 <p>At this point you've defined the process. It doesn't have all of the logic it will have eventually, but it has enough that you will be able to step through all of the paths in the process once the Alfresco Share user interface is configured. You'll do that in this section by defining the content model and updating the client configuration.</p>
-<h4 id="defining-the-workflow-content-model"><a href="#defining-the-workflow-content-model">Defining the workflow content model</a></h4>
+<h4 id="defining-the-workflow-content-model">Defining the workflow content model</h4>
 <p>You started a workflow content model in the earlier Hello World UI example. The first thing to do is update the content model XML (<a href="https://github.com/jpotts/alfresco-developer-series/blob/master/workflow/workflow-tutorial-repo/src/main/amp/config/alfresco/module/workflow-tutorial-repo/model/scWorkflowModel.xml">scWorkflowModel.xml</a>) with types and aspects specific to the publish whitepaper process.</p>
 <p>Edit the file and add:</p>
 <pre><code>&lt;type name=&quot;scwf:submitReviewTask&quot;&gt;
@@ -1018,7 +1018,7 @@ workflow.scwf_helloWorldUI=Hello World UI</code></pre>
 &lt;/aspects&gt;</code></pre>
 <p>This defines an aspect used to define a property that will store the third-party reviewer's email address.</p>
 <p>That's it for the workflow content model. Now configure it in the Alfresco Share user interface.</p>
-<h4 id="configure-the-alfresco-share-user-interface"><a href="#configure-the-alfresco-share-user-interface">Configure the Alfresco Share user interface</a></h4>
+<h4 id="configure-the-alfresco-share-user-interface">Configure the Alfresco Share user interface</h4>
 <p>In the Hello World UI example you saw that Alfresco Share is configured using <a href="https://github.com/jpotts/alfresco-developer-series/blob/master/workflow/workflow-tutorial-share/src/main/resources/META-INF/share-config-custom.xml">share-config-custom.xml</a>. Because it is mostly repetitive, I'll just show the configuration for <code>scwf:activitiReviewTask</code> here and if you want to see the rest of the Share configuration, you can look at the source that accompanies this tutorial.</p>
 <pre><code>&lt;config evaluator=&quot;task-type&quot; condition=&quot;scwf:activitiReviewTask&quot;&gt;
     &lt;forms&gt;
@@ -1071,7 +1071,7 @@ workflow.scwf_helloWorldUI=Hello World UI</code></pre>
 </tr>
 </tbody>
 </table>
-<h4 id="externalize-the-strings-1"><a href="#externalize-the-strings-1">Externalize the strings</a></h4>
+<h4 id="externalize-the-strings-1">Externalize the strings</h4>
 <p>The last step is to externalize the strings in the model and process. Remember that in the Hello World UI example the strings went into two files named &quot;scWorkflow.properties&quot;, one for the workflow-tutorial-repo project and one for the workflow-tutorial-share project.</p>
 <p>The one in the workflow-tutorial-repo project resides in:</p>
 <pre><code>$TUTORIAL_HOME/workflow-tutorial-repo/src/main/amp/config/alfresco/module/workflow-tutorial-repo/messages</code></pre>
@@ -1115,7 +1115,7 @@ scwf_workflowmodel.property.scwf_reviseOutcome.description=Reviewer outcome</cod
 #scwf:publishWhitepaper
 prop.scwf_reviewerEmail=Reviewer Email</code></pre>
 <p>Save the file and you are ready to deploy and test what you have so far.</p>
-<h3 id="deploy-and-test"><a href="#deploy-and-test">Deploy and test</a></h3>
+<h3 id="deploy-and-test">Deploy and test</h3>
 <p>You created a new workflow so it needs to be deployed via Spring. Edit the &quot;<a href="https://github.com/jpotts/alfresco-developer-series/blob/master/workflow/workflow-tutorial-repo/src/main/amp/config/alfresco/module/workflow-tutorial-repo/context/service-context.xml">service-context.xml</a>&quot; file that resides in:</p>
 <pre><code>$TUTORIAL_HOME/workflow-tutorial-repo/src/main/amp/config/alfresco/module/workflow-tutorial-repo/context</code></pre>
 <p>Add the new workflow to the list of workflows:</p>
@@ -1123,7 +1123,7 @@ prop.scwf_reviewerEmail=Reviewer Email</code></pre>
     &lt;prop key=&quot;engineId&quot;&gt;activiti&lt;/prop&gt;
     &lt;prop key=&quot;location&quot;&gt;alfresco/module/${project.artifactId}/workflows/publishWhitepaper.bpmn&lt;/prop&gt;
     &lt;prop key=&quot;mimetype&quot;&gt;text/xml&lt;/prop&gt;
-    &lt;prop key=&quot;redeploy&quot;&gt;false&lt;/prop&gt;            
+    &lt;prop key=&quot;redeploy&quot;&gt;false&lt;/prop&gt;
 &lt;/props&gt;</code></pre>
 <p>At this stage you can continue to test using Alfresco on the embedded Tomcat server configured by the Alfresco Maven SDK. Here are the steps necessary to start up that you used earlier:</p>
 <ol style="list-style-type: decimal">
@@ -1141,9 +1141,9 @@ prop.scwf_reviewerEmail=Reviewer Email</code></pre>
 <li>You should see the &quot;Submit Whitepaper&quot; workflow in the list of workflows. Start the workflow.</li>
 </ol>
 <p>You should see the workflow form you defined that includes the field for the third-party reviewer email. Even though you haven't yet added logic to make changes to the document in the workflow, you should at least be able to test every path.</p>
-<h2 id="step-2-implement-web-scripts-and-actions"><a href="#step-2-implement-web-scripts-and-actions">Step 2: Implement web scripts and actions</a></h2>
+<h2 id="step-2-implement-web-scripts-and-actions">Step 2: Implement web scripts and actions</h2>
 <p>Now that the base process is running and it's hooked in to the Alfresco UI, it's time to make the process smarter by adding some business logic.</p>
-<h3 id="call-the-set-web-action-on-approved-documents"><a href="#call-the-set-web-action-on-approved-documents">Call the set-web-action on approved documents</a></h3>
+<h3 id="call-the-set-web-action-on-approved-documents">Call the set-web-action on approved documents</h3>
 <p>When a whitepaper is approved it needs to show up on the web site. Recall from the &quot;<a href="http://ecmarchitect.com/alfresco-developer-series-tutorials/actions/tutorial/tutorial.html">Custom Actions</a>&quot; tutorial that there is already an action that will add the <code>sc:webable</code> aspect to a document and set the <code>sc:isActive</code> and <code>sc:publishedFlag</code> properties. So all you have to do is tell the process to execute it against the approved whitepaper.</p>
 <p>To do that, edit the business process and search for the <code>userTask</code> element named &quot;Approved Notification&quot;. Add the following extension element:</p>
 <pre><code>&lt;userTask id=&quot;usertask4&quot; name=&quot;Approved Notification&quot; activiti:assignee=&quot;${initiator.properties.userName}&quot; activiti:formKey=&quot;scwf:activitiApprovedNotification&quot;&gt;
@@ -1164,11 +1164,11 @@ prop.scwf_reviewerEmail=Reviewer Email</code></pre>
 &lt;/userTask&gt;</code></pre>
 <p>This is a straightforward piece of Alfresco JavaScript that executes the custom action called &quot;set-web-flag&quot; for every piece of content in the workflow package. The action adds the aspect and sets the properties appropriately.</p>
 <p>That's all that's needed to handle the approval. Now for the Third Party Review.</p>
-<h3 id="implement-the-external-third-party-review"><a href="#implement-the-external-third-party-review">Implement the external third-party review</a></h3>
+<h3 id="implement-the-external-third-party-review">Implement the external third-party review</h3>
 <p>The goal is to send an email to a third-party who may not have access to Alfresco. The email will include two links--one if they approve the whitepaper and one if they reject. When they click the link the workflow continues execution along the selected path.</p>
 <p>All of the business logic you've seen so far has been written in server-side JavaScript. Let's change it up a little bit. There are two pieces required to make this work. The first piece is some Java code that will send the email with the &quot;approve&quot; and &quot;reject&quot; links in the email body. The recipient will open their email and click on either the approve link or the reject link. This won't require logging in to Alfresco at all. The second part is a web script that gets called when the recipient clicks the links. The web script will get a handle to the workflow task and set the outcome appropriately.</p>
 <p>This may seem backwards, but let's build the web script that handles the links first, then you'll see how to build an Activiti task listener class that sends the email notification.</p>
-<h4 id="implement-the-web-script"><a href="#implement-the-web-script">Implement the Web Script</a></h4>
+<h4 id="implement-the-web-script">Implement the Web Script</h4>
 <p>The &quot;<a href="http://ecmarchitect.com/alfresco-developer-series-tutorials/webscripts/tutorial/tutorial.html">Introduction to Web Scripts</a>&quot; tutorial showed you how to create custom web scripts, so I am only going to show you the Java class that acts as the web script controller. See the source for the other files that make up the web script.</p>
 <p>This web script is going to leverage classes created in a previous tutorial. So the first thing to do is to edit <a href="https://github.com/jpotts/alfresco-developer-series/blob/master/workflow/workflow-tutorial-repo/pom.xml">pom.xml</a> to add this dependency:</p>
 <pre><code>&lt;dependency&gt;
@@ -1185,28 +1185,28 @@ prop.scwf_reviewerEmail=Reviewer Email</code></pre>
 <pre><code>public class GetReview extends DeclarativeWebScript {
 
     Log logger = LogFactory.getLog(GetReview.class);
-        
+
     // Dependencies
     private WorkflowService workflowService;
 
     @Override
     protected Map&lt;String, Object&gt; executeImpl(WebScriptRequest req, Status status) {
-    
+
         final String id = req.getParameter(&quot;id&quot;);
         final String action = req.getParameter(&quot;action&quot;);
 
         if (id == null || action == null) {
             logger.debug(&quot;Email, ID, action, or secret not set&quot;);
-            status.setCode(400);            
+            status.setCode(400);
             status.setMessage(&quot;Required data has not been provided&quot;);
             status.setRedirect(true);
         }
-    
+
         Map&lt;String, Object&gt; model = new HashMap&lt;String, Object&gt;();
-    
+
         Map&lt;QName, Serializable&gt; props = new HashMap&lt;QName, Serializable&gt;();
         props.put(QName.createQName(SomeCoWorkflowModel.NAMESPACE_SOMECO_WORKFLOW_CONTENT_MODEL, SomeCoWorkflowModel.PROP_APPROVE_REJECT_OUTCOME), action);
-        workflowService.updateTask(id, props, null, null);      
+        workflowService.updateTask(id, props, null, null);
         workflowService.endTask(id, action);
 
         return model;
@@ -1220,7 +1220,7 @@ prop.scwf_reviewerEmail=Reviewer Email</code></pre>
 <p>You will also need to copy the Spring bean that wires in the Java controller into the <a href="https://github.com/jpotts/alfresco-developer-series/blob/master/workflow/workflow-tutorial-repo/src/main/amp/config/alfresco/module/workflow-tutorial-repo/context/service-context.xml">service-context.xml</a> file located in:</p>
 <pre><code>$TUTORIAL_HOME/workflow-tutorial-repo/src/main/amp/config/alfresco/module/workflow-tutorial-repo/context</code></pre>
 <p>Once these are in place, the web script will be ready to receive clicks from the email that gets sent out. Writing code that sends the email is the next step.</p>
-<h4 id="create-a-custom-task-listener"><a href="#create-a-custom-task-listener">Create a custom task listener</a></h4>
+<h4 id="create-a-custom-task-listener">Create a custom task listener</h4>
 <p>The second piece to the Third Party Review is sending the email to the third-party. There is an out-of-the-box mail action, and you've already seen how to call an action from a workflow using Alfresco JavaScript, but there are a few things to take care of other than simply sending an email, so let's write a custom task listener class to handle it.</p>
 <p>First, create a new package called &quot;com.someco.bpm&quot;.</p>
 <p>Then, create a new class called &quot;<a href="https://github.com/jpotts/alfresco-developer-series/blob/master/workflow/workflow-tutorial-repo/src/main/java/com/someco/bpm/ExternalReviewNotification.java">ExternalReviewNotification</a>&quot;. The goal is to send an email that has two links—one for approve and one for reject—that represent the two possible outcomes of the Third Party Review user task. The links need to include the task ID and the desired outcome as arguments.</p>
@@ -1229,25 +1229,25 @@ prop.scwf_reviewerEmail=Reviewer Email</code></pre>
 
     String recipient = (String)
     task.getVariable(ExternalReviewNotification.RECIP_PROCESS_VARIABLE);
-    
-    StringBuffer sb = new StringBuffer();        
+
+    StringBuffer sb = new StringBuffer();
     sb.append(&quot;You have been assigned to a task named &quot;);
     sb.append(task.getName());
     sb.append(&quot;. Take the appropriate action by clicking one of the links below:rnrn&quot;);
     sb.append(getLink(task.getId(), &quot;Approve&quot;));
     sb.append(getLink(task.getId(), &quot;Reject&quot;));
-    
+
     ActionService actionService = getServiceRegistry().getActionService();
     Action mailAction = actionService.createAction(MailActionExecuter.NAME);
-    
+
     mailAction.setParameterValue(MailActionExecuter.PARAM_SUBJECT, ExternalReviewNotification.SUBJECT);
     mailAction.setParameterValue(MailActionExecuter.PARAM_TO, recipient);
     mailAction.setParameterValue(MailActionExecuter.PARAM_FROM, ExternalReviewNotification.FROM_ADDRESS);
     mailAction.setParameterValue(MailActionExecuter.PARAM_TEXT, sb.toString());
-    
+
     actionService.executeAction(mailAction, null);
-    
-    return;        
+
+    return;
 }</code></pre>
 <p>The first thing the method does is grab the recipient from a process variable. Next, it uses a string buffer to start building the message body. The <code>task.getName()</code> call grabs the node name (&quot;Third Party Review&quot;).</p>
 <p>The <code>getLink()</code> method is just a helper method that produces a link that looks like this:</p>
@@ -1262,7 +1262,7 @@ prop.scwf_reviewerEmail=Reviewer Email</code></pre>
         &lt;activiti:field name=&quot;script&quot;&gt;
         ...</code></pre>
 <p>Now the process will send an email to a third-party reviewer if an email address is specified, the third-party reviewer can click on the appropriate outcome link which will trigger a web script causing the workflow to continue along the right path, and if the whitepaper is ultimately approved, the workflow will invoke the &quot;set web flag&quot; action to set its properties so it can be searched for and displayed on a web site.</p>
-<h3 id="deploy-and-test-1"><a href="#deploy-and-test-1">Deploy and test</a></h3>
+<h3 id="deploy-and-test-1">Deploy and test</h3>
 <p>It's time to deploy and test. If you want to try out the notification piece, you'll need access to an SMTP server. For developing and testing locally, <a href="http://james.apache.org/">Apache James</a> works great. Remember to edit alfresco-global.properties to set your outgoing email settings to match your environment.</p>
 <p>Two critical dependencies to your test are the content-tutorial-repo and actions-tutorial-repo AMPs. These must be deployed to the same repository your workflow-tutorial-repo AMP is deployed to because your business process leverages an action and some Java code that exists in those AMPs.</p>
 <p>You can deploy these AMPs to your Alfresco installation using the &quot;apply_amps.sh&quot; script. Alternatively, you can use the &quot;alfresco:install&quot; plugin that is part of the Alfresco Maven SDK to install each one.</p>
@@ -1292,7 +1292,7 @@ prop.scwf_reviewerEmail=Reviewer Email</code></pre>
 <li>The email body should probably come from a Freemarker template. That way you could reuse the notification class in any number of processes and it simplifies email body maintenance.</li>
 </ul>
 <p>So, long story short, feel free to use this idea, but realize that I've cut corners for brevity's sake.</p>
-<h2 id="step-3-add-a-timer-to-the-third-party-task"><a href="#step-3-add-a-timer-to-the-third-party-task">Step 3: Add a timer to the third-party task</a></h2>
+<h2 id="step-3-add-a-timer-to-the-third-party-task">Step 3: Add a timer to the third-party task</h2>
 <p>What if you sent an email to the third party and they never took action? One way to handle that problem is with a timer.</p>
 <p>One way to do this is to add a boundary timer to the Third Party Review task. When the timer expires, the timer can cancel the Third Party Review task and then route to the Approved task.</p>
 <p>Here's how to do it:</p>
@@ -1308,14 +1308,14 @@ prop.scwf_reviewerEmail=Reviewer Email</code></pre>
 </ol>
 <p>This sets the timer for 5 minutes—that's what the &quot;PT5M&quot; expression means--but you could obviously set it for as long or as short as you wish. That expression is part of the <a href="http://en.wikipedia.org/wiki/ISO_8601">ISO 8601</a> standard for durations.</p>
 <p>Setting an absolute date works as well. The due date could also be the result of an expression. To use a specific date instead of a duration, use a <code>timeDate</code> element instead of a <code>timeDuration</code> element.</p>
-<h3 id="deploy-and-test-2"><a href="#deploy-and-test-2">Deploy and test</a></h3>
+<h3 id="deploy-and-test-2">Deploy and test</h3>
 <p>If you only make changes to the process definition, you can use <code>mvn install</code> to create the AMP, then <code>mvn alfresco:install</code> as you did earlier to deploy the AMP to your Alfresco installation. You don't have to restart. Just remember to use the Alfresco workflow console to redeploy the process definition.</p>
 <p>Now test the third-party reviewer path but instead of clicking the approve or reject link that is included in the email, ignore it for five minutes. You should see the workflow continue along the approved path when the timer expires.</p>
-<h1 id="conclusion"><a href="#conclusion">Conclusion</a></h1>
+<h1 id="conclusion">Conclusion</h1>
 <p>You now know the ins and outs of implementing advanced workflows using the Activiti engine embedded within Alfresco. You know when Alfresco's basic workflows will suffice and when advanced workflows are more appropriate. You learned that process definitions are collections of events, tasks, and gateways joined by sequence flows. The representation of a process definition, both as a diagram, and as XML, is standardized through BPMN. And, you now know how to add business logic to workflows using expressions, Alfresco JavaScript and Java.</p>
 <p>I also walked you through the overall process of implementing advanced workflows in Alfresco by walking through some simple Hello World examples and then a more complex example that used many different node types and business logic options. I even spiced things up a bit by exposing the business process to a third-party via SMTP and HTTP with the help of the web script framework.</p>
 <p>Hopefully, this has sparked some ideas about how you can leverage Alfresco and Activiti in your own projects and has given you some concrete examples you can leverage in your own projects going forward.</p>
-<h1 id="where-to-find-more-information"><a href="#where-to-find-more-information">Where to find more information</a></h1>
+<h1 id="where-to-find-more-information">Where to find more information</h1>
 <ul>
 <li>The complete source code for these examples is available on <a href="https://github.com/jpotts/alfresco-developer-series">GitHub</a>.</li>
 <li>Official documentation for both Enterprise Edition and Community Edition is available at <a href="http://docs.alfresco.com/">docs.alfresco.com</a>.</li>
