@@ -98,7 +98,7 @@ So the rating content type will contain business logic that knows
 how to compute the overall average rating for a whitepaper. But what
 will trigger that logic? The answer is that there are a bunch of
 *policies* to which your behavior can be bound. To find out what's
-available, you need only look as far as the source code (or the [Javadocs](http://dev.alfresco.com/resource/docs/java/repository/index.html?index-all.html)).
+available, you need only look as far as the source code (or the [Javadocs](http://dev.alfresco.com/resource/docs/java/)).
 If you search for classes that end in "*Policies" you'll find several interfaces, including:
 
 * CheckOutCheckInServicePolicies
