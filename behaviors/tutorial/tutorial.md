@@ -8,7 +8,7 @@ License
 
 This work is licensed under the Creative Commons Attribution-ShareAlike 3.0 Unported License. To view a copy of this license, visit http://creativecommons.org/licenses/by-sa/3.0/ or send a letter to Creative Commons, 444 Castro Street, Suite 900, Mountain View, California, 94041, USA.
 
-Introduction 
+Introduction
 ============
 This tutorial discusses how to write your own custom behavior code in
 Java or JavaScript and then bind that code to node events or “policies”.
@@ -181,14 +181,14 @@ Tools
 -----
 Here is what I am using on my machine:
 
-* Mac OS X 10.10.3
-* Java 1.7.0_71
-* Apache Maven 3.3.1 (installed using Macports)
-* Alfresco Maven SDK 2.0 (No download necessary)
+* Mac OS X 10.10.5
+* Java 1.8.0_31
+* Apache Maven 3.3.3 (installed using Macports)
+* Alfresco Maven SDK 2.1 (No download necessary)
 * Eclipse Java EE IDE for Web Developers, Luna
 * Alfresco Community Edition 5.0.d ([Download](http://www.alfresco.com/products/community))
 
-By default, when you create an Alfresco project using Alfresco Maven SDK 2.0 the project will be configured to depend on Alfresco Community Edition 5.0.c. Until that is updated to reflect the most current version you should edit the generated pom.xml file to change it to 5.0.d.
+By default, when you create an Alfresco project using Alfresco Maven SDK 2.1 the project will be configured to depend on Alfresco Community Edition 5.0.d.
 
 The Eclipse IDE is optional. Most people working with Alfresco use Eclipse or something similar, so this tutorial will assume that's what you are using.
 
@@ -232,12 +232,12 @@ Now, create a new model XML file called "[scRatingsModel.xml](https://github.com
     <?xml version="1.0" encoding="UTF-8"?>
     <!-- Definition of new Model -->
     <model name="scr:somecoratingsmodel" xmlns="http://www.alfresco.org/model/dictionary/1.0">
-    
+
         <!-- Optional meta-data about the model -->
         <description>Someco Ratings Model</description>
         <author>Jeff Potts</author>
         <version>1.0</version>
-    
+
         <!-- Imports are required to allow references to definitions in other models -->
         <imports>
             <!-- Import Alfresco Dictionary Definitions -->
@@ -246,7 +246,7 @@ Now, create a new model XML file called "[scRatingsModel.xml](https://github.com
             <import uri="http://www.alfresco.org/model/content/1.0" prefix="cm" />
             <import uri="http://www.alfresco.org/model/system/1.0" prefix="sys" />
     	</imports>
-    
+
         <!-- Introduction of new namespaces defined by this model -->
         <namespaces>
             <namespace uri="http://www.someco.com/model/ratings/1.0" prefix="scr" />
@@ -351,7 +351,7 @@ The content of that file looks like this:
     scr_somecoratingsmodel.type.scr_rating.title=Rating
     scr_somecoratingsmodel.property.scr_rating.title=Rating
     scr_somecoratingsmodel.property.scr_rater.title=Rater
-    
+
     #scr:rateable
     scr_somecoratingsmodel.aspect.scr_rateable.title=SomeCo Rateable
     scr_somecoratingsmodel.property.scr_averageRating=Average Rating
@@ -374,23 +374,23 @@ I've created a project called behavior-tutorial-common. It will contain a Java c
 The class looks like this:
 
     public interface SomeCoRatingsModel {
-    
+
         // Namespaces
         public static final String NAMESPACE_SOMECO_RATINGS_CONTENT_MODEL  = "http://www.someco.com/model/ratings/1.0";
-        
+
         // Types
         public static final String TYPE_SCR_RATING = "rating";
-            
+
         // Aspects
         public static final String ASPECT_SCR_RATEABLE = "rateable";
-        
+
         // Properties
         public static final String PROP_RATING = "rating";
         public static final String PROP_RATER = "rater";
         public static final String PROP_AVERAGE_RATING= "averageRating";
         public static final String PROP_TOTAL_RATING= "totalRating";
         public static final String PROP_RATING_COUNT= "ratingCount";
-        
+
         // Associations
         public static final String ASSN_SCR_RATINGS = "ratings";
     }
@@ -411,11 +411,11 @@ Here is the [RateableAspectTest](https://github.com/jpotts/alfresco-developer-se
     @Remote(runnerClass=SpringJUnit4ClassRunner.class)
     @ContextConfiguration("classpath:alfresco/application-context.xml")
     public class RateableAspectTest {
-        
+
         private static final String ADMIN_USER_NAME = "admin";
-    
+
         static Logger log = Logger.getLogger(RateableAspectTest.class);
-    
+
         private final QName RATING = QName.createQName(
         		SomeCoRatingsModel.NAMESPACE_SOMECO_RATINGS_CONTENT_MODEL,
         		SomeCoRatingsModel.PROP_AVERAGE_RATING);
@@ -425,26 +425,26 @@ Here is the [RateableAspectTest](https://github.com/jpotts/alfresco-developer-se
         private final QName COUNT = QName.createQName(
         		SomeCoRatingsModel.NAMESPACE_SOMECO_RATINGS_CONTENT_MODEL,
         		SomeCoRatingsModel.PROP_RATING_COUNT);
-    
+
         @Autowired
         @Qualifier("NodeService")
         protected NodeService nodeService;
-    
+
         @Autowired
         @Qualifier("nodeLocatorService")
         protected NodeLocatorService nodeLocatorService;
-        
+
         @Test
         public void testAddRateableAspect() {
         	AuthenticationUtil.setFullyAuthenticatedUser(ADMIN_USER_NAME);
 
             NodeRef companyHome = nodeLocatorService.getNode(CompanyHomeNodeLocator.NAME, null, null);
-            
+
             // assign name
             String name = "Add Rateable Aspect Test (" + System.currentTimeMillis() + ")";
             Map<QName, Serializable> contentProps = new HashMap<QName, Serializable>();
             contentProps.put(ContentModel.PROP_NAME, name);
-    
+
             // create content node
             ChildAssociationRef association = nodeService.createNode(
             				companyHome,
@@ -453,25 +453,25 @@ Here is the [RateableAspectTest](https://github.com/jpotts/alfresco-developer-se
                             ContentModel.TYPE_CONTENT,
                             contentProps
                             );
-    
+
             NodeRef content = association.getChildRef();
-    
+
             // set up some aspect-based properties
             Map<QName, Serializable> aspectProps = new HashMap<QName, Serializable>();
             aspectProps.put(RATING, 1.0);
             aspectProps.put(TOTAL, 1);
             aspectProps.put(COUNT, 1);
-            
+
             // add the aspect and set the properties
             nodeService.addAspect(content, QName.createQName(SomeCoRatingsModel.NAMESPACE_SOMECO_RATINGS_CONTENT_MODEL, SomeCoRatingsModel.ASPECT_SCR_RATEABLE), aspectProps);
-        	        
+
             assertEquals(1.0, nodeService.getProperty(content, RATING));
             assertEquals(1, nodeService.getProperty(content, TOTAL));
             assertEquals(1, nodeService.getProperty(content, COUNT));
-            
+
         	nodeService.deleteNode(content);
         }
-    
+
     }
 
 The test creates a new content node in Company Home and then adds the `scr:rateable` aspect to it, simultaneously setting the aspect-based properties to test values. It then makes sure it can get those same test values back.
@@ -494,16 +494,16 @@ this example, the two policy interfaces are: `NodeServicePolicies.OnDeleteNodePo
     public class Rating
     implements NodeServicePolicies.OnDeleteNodePolicy,
     NodeServicePolicies.OnCreateNodePolicy {
-    
+
 The class has two dependencies that Spring will handle for us. One is
 the `NodeService` which will be used in the average calculation logic and
 the other is the `PolicyComponent` which is used to bind the behavior to
 the policies.
-    
+
     // Dependencies
     private NodeService nodeService;
     private PolicyComponent policyComponent;
-    
+
     // Behaviours
     private Behaviour onCreateNode;
     private Behaviour onDeleteNode;
@@ -513,19 +513,19 @@ to a policy. A method called `init()` will handle the binding. It will get calle
 Spring loads the bean.
 
     public void init() {
-    
+
         // Create behaviours
         this.onCreateNode = new JavaBehaviour(this, "onCreateNode", NotificationFrequency.TRANSACTION_COMMIT);
-        
+
         this.onDeleteNode = new JavaBehaviour(this, "onDeleteNode", NotificationFrequency.TRANSACTION_COMMIT);
-        
+
         // Bind behaviours to node policies
         this.policyComponent.bindClassBehaviour(
             Qname.createQName(NamespaceService.ALFRESCO_URI, "onCreateNode"),
             Qname.createQName(SomeCoModel.NAMESPACE_SOMECO_CONTENT_MODEL, SomeCoModel.TYPE_SC_RATING),
             this.onCreateNode
         );
-        
+
         this.policyComponent.bindClassBehaviour(
             QName.createQName(NamespaceService.ALFRESCO_URI, "onDeleteNode"),
             Qname.createQName(SomeCoModel.NAMESPACE_SOMECO_CONTENT_MODEL, SomeCoModel.TYPE_SC_RATING),
@@ -552,15 +552,15 @@ Next are the methods required by the two policy interfaces.
 Regardless of whether a ratings node is created or deleted, the average needs to be recalculated. So the `onCreateNode` and `onDeleteNode` methods call `computeAverage` and pass in the rating node reference.
 
     public void onCreateNode(ChildAssociationRef childAssocRef) {
-    
+
         computeAverage(childAssocRef);
-        
+
     }
-        
+
     public void onDeleteNode(ChildAssociationRef childAssocRef, boolean isNodeArchived) {
-        
+
         computeAverage(childAssocRef);
-    
+
     }
 
 The `computeAverage` method asks the child (the rating object) for its parent
@@ -569,24 +569,24 @@ list of its children. It iterates over the children, computes an
 average, and sets the average property on the content.
 
     public void computeAverage(ChildAssociationRef childAssocRef) {
-    
+
         // get the parent node
         NodeRef parentRef = childAssocRef.getParentRef();
-        
+
         // check the parent to make sure it has the right aspect
         if (nodeService.exists(parentRef) && nodeService.hasAspect(parentRef, Qname.createQName(SomeCoModel.NAMESPACE_SOMECO_CONTENT_MODEL, SomeCoModel.ASPECT_SC_RATEABLE))) {
-        
+
             // continue, this is what we want
-        
+
         } else {
-        
+
             return;
-        
+
         }
-        
+
         // get the parent node's children
         List<ChildAssociationRef> children = nodeService.getChildAssocs(parentRef);
-        
+
         // iterate through the children to compute the total
         Double average = 0d;
         int total = 0;
@@ -596,10 +596,10 @@ average, and sets the average property on the content.
             Qname.createQName(SomeCoModel.NAMESPACE_SOMECO_CONTENT_MODEL, SomeCoModel.PROP_RATING));
             total += rating;
         }
-        
+
         // compute the average
         average = total / (children.size() / 1.0d);
-        
+
         // store the average, total, count on the parent node
         nodeService.setProperty(
             parentRef,
@@ -621,9 +621,9 @@ average, and sets the average property on the content.
                 SomeCoRatingsModel.NAMESPACE_SOMECO_RATINGS_CONTENT_MODEL,
                 SomeCoRatingsModel.PROP_RATING_COUNT),
             count);		
-        
+
         return;
-    
+
     }
 
 The class stores the total rating and rating count, so it could actually compute the average without iterating over the rating objects. All it really needs to know is the value of the new rating. For this example we'll only have a handful of associations anyway but in the real world, you need to think carefully about such performance considerations when you write your behaviors.
@@ -666,11 +666,11 @@ Here's the code:
     @Remote(runnerClass=SpringJUnit4ClassRunner.class)
     @ContextConfiguration("classpath:alfresco/application-context.xml")
     public class RatingTest {
-        
+
         private static final String ADMIN_USER_NAME = "admin";
-    
+
         static Logger log = Logger.getLogger(RatingTest.class);
-    
+
         private final QName RATING = QName.createQName(
         		SomeCoRatingsModel.NAMESPACE_SOMECO_RATINGS_CONTENT_MODEL,
         		SomeCoRatingsModel.PROP_RATING);
@@ -686,28 +686,28 @@ Here's the code:
         private final QName COUNT = QName.createQName(
         		SomeCoRatingsModel.NAMESPACE_SOMECO_RATINGS_CONTENT_MODEL,
         		SomeCoRatingsModel.PROP_RATING_COUNT);
-        
+
         private final String RATER_STRING = "jpotts";
-        
+
         @Autowired
         @Qualifier("NodeService")
         protected NodeService nodeService;
-    
+
         @Autowired
         @Qualifier("nodeLocatorService")
         protected NodeLocatorService nodeLocatorService;
-    
+
         @Test
         public void ratingTypeTest() {
-        	
+
         	AuthenticationUtil.setFullyAuthenticatedUser(ADMIN_USER_NAME);
             NodeRef companyHome = nodeLocatorService.getNode(CompanyHomeNodeLocator.NAME, null, null);
-            
+
             // assign name
             String name = "Add Rateable Aspect Test (" + System.currentTimeMillis() + ")";
             Map<QName, Serializable> contentProps = new HashMap<QName, Serializable>();
             contentProps.put(ContentModel.PROP_NAME, name);
-    
+
             // create content node
             ChildAssociationRef association = nodeService.createNode(
             				companyHome,
@@ -716,9 +716,9 @@ Here's the code:
                             ContentModel.TYPE_CONTENT,
                             contentProps
                             );
-    
+
             NodeRef content = association.getChildRef();    	
-    
+
             // add the aspect
             nodeService.addAspect(
                 content,
@@ -727,35 +727,35 @@ Here's the code:
                     SomeCoRatingsModel.ASPECT_SCR_RATEABLE
                 ),
                 null);
-        	
+
             createRating(content, 1, RATER_STRING);
-            
+
             assertEquals(1.0, nodeService.getProperty(content, AVERAGE));
             assertEquals(1, nodeService.getProperty(content, TOTAL));
             assertEquals(1, nodeService.getProperty(content, COUNT));
-            
+
             NodeRef rating2 = createRating(content, 2, RATER_STRING);
-    
+
             assertEquals(1.5, nodeService.getProperty(content, AVERAGE));
             assertEquals(3, nodeService.getProperty(content, TOTAL));
             assertEquals(2, nodeService.getProperty(content, COUNT));
-    
+
             createRating(content, 3, RATER_STRING);
-            
+
             assertEquals(2.0, nodeService.getProperty(content, AVERAGE));
             assertEquals(6, nodeService.getProperty(content, TOTAL));
             assertEquals(3, nodeService.getProperty(content, COUNT));
-            
+
             nodeService.deleteNode(rating2);
-            
+
             assertEquals(nodeService.getProperty(content, AVERAGE), 2.0);
             assertEquals(nodeService.getProperty(content, TOTAL), 4);
             assertEquals(nodeService.getProperty(content, COUNT), 2);
-            
+
             nodeService.deleteNode(content);
-            
+
         }
-    
+
         public NodeRef createRating(NodeRef content, int rating, String rater) {
     	    // assign name
     	    String name = "Rating (" + System.currentTimeMillis() + ")";
@@ -763,7 +763,7 @@ Here's the code:
     	    contentProps.put(ContentModel.PROP_NAME, name);
     	    contentProps.put(RATING, rating);
     	    contentProps.put(RATER, rater);
-    
+
     	    // create rating as a child of the content node using the scr:ratings child association
     	    ChildAssociationRef association = nodeService.createNode(
                 content,
@@ -775,7 +775,7 @@ Here's the code:
                     SomeCoRatingsModel.NAMESPACE_SOMECO_RATINGS_CONTENT_MODEL,
                     SomeCoRatingsModel.TYPE_SCR_RATING),
                 contentProps);
-    
+
     	    return association.getChildRef();
         }
     }
@@ -849,13 +849,13 @@ The [onCreateRating.js](https://github.com/jpotts/alfresco-developer-series/blob
 
     <import resource="classpath:alfresco/extension/scripts/rating.js">
     var scriptFailed = false;
-    
+
     // Have a look at the behaviour object that should have been passed
     if (behaviour == null) {
         logger.log("The behaviour object has not been set.");
         scriptFailed = true;
     }
-    
+
     // Check the name of the behaviour
     if (behaviour.name == null && behaviour.name != "onCreateNode") {
         logger.log("The behaviour name has not been set correctly.");
@@ -863,7 +863,7 @@ The [onCreateRating.js](https://github.com/jpotts/alfresco-developer-series/blob
     } else {
         logger.log("Behaviour name: " + behaviour.name);
     }
-    
+
     // Check the arguments
     if (behaviour.args == null) {
         logger.log("The args have not been set.");
@@ -887,9 +887,9 @@ The `computeAverage()` function lives in [rating.js](https://github.com/jpotts/a
 
     //calculate rating
     function computeAverage(childAssocRef) {
-        
+
         var parentRef = childAssocRef.parent;
-        
+
         // check the parent to make sure it has the right aspect
         if (parentRef.hasAspect("{http://www.someco.com/model/ratings/1.0}rateable")) {
             // continue, this is what we want
@@ -897,37 +897,37 @@ The `computeAverage()` function lives in [rating.js](https://github.com/jpotts/a
             logger.log("Rating's parent ref did not have rateable aspect.");
             return;
         }
-        
+
         // get the parent node's children
         var children = parentRef.children;
-        
+
         // iterate through the children to compute the total
         var average = 0.0;
         var total = 0;
-        
+
         if (children != null && children.length > 0) {
             for (i in children) {
                 var child = children[i];
                 var rating = child.properties["{http://www.someco.com/model/content/1.0}rating"];
                 total += rating;
             }
-            
+
             // compute the average
             average = total / children.length;
         }
-        
+
         logger.log("Computed average:" + average);
-		
+
         // store the average, total, count on the parent node
         parentRef.properties["{http://www.someco.com/model/ratings/1.0}averageRating"] = average;
         parentRef.properties["{http://www.someco.com/model/ratings/1.0}totalRating"] = total;
         parentRef.properties["{http://www.someco.com/model/ratings/1.0}ratingCount"] = children.length;
         parentRef.save();
-        		
+
         logger.log("Property set");
-        		
+
         return;
-    
+
     }
 
 As you can see, this is the same logic used in the Java example
@@ -1061,7 +1061,7 @@ Successful unit tests are certainly comforting, but they are not very satisfying
 
    ![This piece of content has 20 ratings with an average of 3](./images/content-with-test-ratings.png)
 
-This shouldn't be too surprising--you are using a web script to exercise the same behavior as the unit test, but at least this way you can log in to Share and see for yourself that the behavior works. 
+This shouldn't be too surprising--you are using a web script to exercise the same behavior as the unit test, but at least this way you can log in to Share and see for yourself that the behavior works.
 
 Deploying the AMPs to your Alfresco server
 ==========================================
@@ -1082,7 +1082,7 @@ Alternatively, you can use the Alfresco Maven SDK to install the AMPs by changin
 In my case, I run the alfresco.war and share.war files exploded under \$TOMCAT\_HOME/webapps, so I would specify \$TOMCAT\_HOME/webapps/alfresco or \$TOMCAT\_HOME/webapps/share for my `warLocation` depending on which AMPs I am installing. If you are running the WAR files unexploded you can specify the file path of each WAR.
 
 
-Conclusion 
+Conclusion
 ==========
 This tutorial has shown how to bind custom behavior to Alfresco policies.
 Specifically, the tutorial showed how to implement a custom "rateable" aspect and a custom
@@ -1092,7 +1092,7 @@ the average rating for a piece of content any time a rating is created
 or deleted. The tutorial showed how to implement the average rating
 calculation behavior in Java as well as JavaScript.
 
-Where to Find More Information 
+Where to Find More Information
 ==============================
 
 * The complete source code for these examples is available on [GitHub](https://github.com/jpotts/alfresco-developer-series).

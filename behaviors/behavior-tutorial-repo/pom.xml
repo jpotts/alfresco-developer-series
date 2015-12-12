@@ -11,50 +11,39 @@
     <parent>
         <groupId>org.alfresco.maven</groupId>
         <artifactId>alfresco-sdk-parent</artifactId>
-        <version>2.0.0</version>
+        <version>2.1.1</version>
     </parent>
 
-    <!-- 
-       | SDK properties have sensible defaults in the SDK parent,
-       | but you can override the properties below to use another version. 
-       | For more available properties see the alfresco-sdk-parent POM. 
+    <!--
+        SDK properties have sensible defaults in the SDK parent,
+        but you can override the properties below to use another version.
+        For more available properties see the alfresco-sdk-parent POM.
        -->
     <properties>
-        <!--
-            | Defines the groupId for the Alfresco Artifacts to work against. As of 4.2 the only allowed value is: org.alfresco
-            | NOTE: See http://docs.alfresco.com/4.2/concepts/dev-extensions-maven-sdk-tutorials-alfresco-enterprise.html for details
+        <!-- The following are default values for data location and Alfresco Community version.
+             Uncomment if you need to change (Note. current default version for Enterprise edition is 5.0.1)
+          <alfresco.version>5.0.d</alfresco.version>
+          <alfresco.data.location>/absolute/path/to/alf_data_dev</alfresco.data.location> -->
+
+        <!-- This control the root logging level for all apps uncomment and change, defaults to WARN
+            <app.log.root.level>WARN</app.log.root.level>
         -->
-        <!-- <alfresco.groupId>org.alfresco</alfresco.groupId> -->
-        <!-- Defines the Alfresco version to work against.
-             Community versions are typically identified by major.minor.character (4.2.a) while Enterprise versions are identified by major.minor.digit (4.2.0)  -->
-        <alfresco.version>5.0.d</alfresco.version>
-        <app.log.root.level>WARN</app.log.root.level>
-        <alfresco.data.location>alf_data_dev</alfresco.data.location>
-        <!-- This controls which properties will be picked in src/test/properties for embedded run -->
+
+        <!-- Set the enviroment to use, this controls which properties will be picked in src/test/properties
+             for embedded run, defaults to the 'local' environment. See SDK Parent POM for more info.
         <env>local</env>
-        <!-- Defines the target WAR artifactId to run this amp, only used with the -Pamp-to-war profile
-             | Defaults to a vanilla repository AMP, but could point to your foundation / aggregator WAR 
-        .    | Allowed values for Community: alfresco | share
-             | Allowed values for Enterprise: alfresco-enterprise | share-enterprise
-             <alfresco.client.war>${alfresco.repo.artifactId}</alfresco.client.war> -->
-        <!-- Context path to run alfresco on -->
-        <alfresco.client.contextPath>/alfresco</alfresco.client.contextPath>
-        <!-- Defines the target WAR groupId to run this amp, only used with the -Pamp-to-war switch
-        .    | Could be org.alfresco or your corporate groupId -->
-        <!-- <alfresco.client.war.groupId>${alfresco.groupId}</alfresco.client.war.groupId> -->
-        
-        <!-- Defines the target WAR version to run this amp, only used with the -Pamp-to-war switch -->
-        <!-- <alfresco.client.war.version>${alfresco.version}</alfresco.client.war.version>-->
+        -->
     </properties>
 
-    <!-- Here we realize the connection with the Alfresco selected platform 
+    <!-- Here we realize the connection with the Alfresco selected platform
         (e.g.version and edition) -->
     <dependencyManagement>
         <dependencies>
-            <!-- This will import the dependencyManagement for all artifacts in the selected Alfresco version/edition
-                (see http://maven.apache.org/guides/introduction/introduction-to-dependency-mechanism.html#Importing_Dependencies) 
-                NOTE: You still need to define dependencies in your POM, but you can omit version as it's enforced by this dependencyManagement. NOTE: It defaults 
-                to the latest version this SDK pom has been tested with, but alfresco version can/should be overridden in your project's pom -->
+            <!-- Setup what versions of the different Alfresco artifacts that will be used (depends on alfresco.version),
+                 so we don't have to specify version in any of the dependency definitions in our POM.
+                 For more info see:
+                    http://maven.apache.org/guides/introduction/introduction-to-dependency-mechanism.html#Importing_Dependencies
+            -->
             <dependency>
                 <groupId>${alfresco.groupId}</groupId>
                 <artifactId>alfresco-platform-distribution</artifactId>
@@ -64,10 +53,11 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
-    <!-- Following dependencies are needed for compiling Java code in src/main/java; 
-         <scope>provided</scope> is inherited for each of the following; 
-         for more info, please refer to alfresco-platform-distribution POM -->
+
     <dependencies>
+        <!-- Following dependencies are needed for compiling Java code in src/main/java;
+             <scope>provided</scope> is inherited for each of the following;
+             for more info, please refer to alfresco-platform-distribution POM -->
         <dependency>
             <groupId>${alfresco.groupId}</groupId>
             <artifactId>alfresco-repository</artifactId>
@@ -78,8 +68,12 @@
             <version>1.0-SNAPSHOT</version>
         </dependency>
     </dependencies>
+
     <profiles>
-    	<!-- Enterprise profile, manually activated, automatically adds support for Enterprise edition development (dependencies) -->
+        <!--
+            Brings in the extra Enterprise specific repository classes,
+            if the 'enterprise' profile has been activated, needs to be activated manually.
+            -->
         <profile>
             <id>enterprise</id>
             <dependencies>
@@ -91,6 +85,23 @@
                 </dependency>
             </dependencies>
         </profile>
-    </profiles>
-</project>
 
+        <!--
+            If the 'amp-to-war' profile is enabled then make sure to bring in the alfresco-rad module,
+            which has the H2 scripts and other RAD features.
+
+            TODO: TO INVESTIGATE: This dependency is already defined in the parent SDK pom in the 'amp-to-war' profile
+                  but this does not work, it is not include...
+
+        <profile>
+            <id>amp-to-war</id>
+            <dependencies>
+                <dependency>
+                    <groupId>org.alfresco.maven</groupId>
+                    <artifactId>alfresco-rad</artifactId>
+                    <version>${maven.alfresco.version}</version>
+                </dependency>
+            </dependencies>
+        </profile> -->
+    </profiles>
+    </project>
