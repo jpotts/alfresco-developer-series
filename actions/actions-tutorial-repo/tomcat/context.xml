@@ -1,22 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Context docBase="${alfresco.client.war.folder}" path="${alfresco.client.contextPath}">
+<!-- ===================================================================================================================
+    This context file is used only in a development IDE for rapid development,
+    it is never released with the Alfresco.war
+    =================================================================================================================-->
 
+<!-- Setup docBase to something like repo-amp/target/repo-amp-war
+     and path to /alfresco
+     The Alfresco.war 5.0 does not have a webapp (it used to have Alfresco Explorer but not anymore)
+     that we will access, so this docBase might not be needed
+-->
+<Context docBase="${app.amp.client.war.folder}" path="${alfresco.client.contextPath}">
 
   <Resources className="org.apache.naming.resources.VirtualDirContext"
-    extraResourcePaths="/=${project.build.directory}/${project.build.finalName}/web" />
-    
-     
-    <Loader searchVirtualFirst="true" className="org.apache.catalina.loader.VirtualWebappLoader"
-    virtualClasspath="${project.build.outputDirectory};${project.build.testOutputDirectory};${project.build.directory}/${project.build.finalName}/config" />
-  
-  <!-- 
-  <Environment override="false" type="java.lang.Boolean" name="properties/startup.enable" description="A flag that globally enables or disables startup of the major Alfresco subsystems." value="true"/>
-  <Environment override="false" type="java.lang.String" name="properties/dir.root" description="The filesystem directory below which content and index data is stored. Should be on a shared disk if this is a clustered installation."/>
-  <Environment override="false" type="java.lang.String" name="properties/hibernate.dialect" description="The fully qualified name of a org.hibernate.dialect.Dialect subclass that allows Hibernate to generate SQL optimized for a particular relational database. Choose from org.hibernate.dialect.DerbyDialect, org.hibernate.dialect.MySQLInnoDBDialect, org.alfresco.repo.domain.hibernate.dialect.AlfrescoOracle9Dialect, org.alfresco.repo.domain.hibernate.dialect.AlfrescoSybaseAnywhereDialect, org.alfresco.repo.domain.hibernate.dialect.AlfrescoSQLServerDialect, org.hibernate.dialect.PostgreSQLDialect"/>
-  <Environment override="false" type="java.lang.String" name="properties/hibernate.query.substitutions" description="Mapping from tokens in Hibernate queries to SQL tokens. For PostgreSQL, set this to &quot;true TRUE, false FALSE&quot;."/>
-  <Environment override="false" type="java.lang.Boolean" name="properties/hibernate.jdbc.use_get_generated_keys" description="Enable use of JDBC3 PreparedStatement.getGeneratedKeys() to retrieve natively generated keys after insert. Requires JDBC3+ driver. Set to false if your driver has problems with the Hibernate identifier generators. By default, tries to determine the driver capabilities using connection metadata."/>
-  <Environment override="false" type="java.lang.String" name="properties/hibernate.default_schema" description="Qualify unqualified table names with the given schema/tablespace in generated SQL. It may be necessary to set this when the target database has more than one schema."/>
-   -->
-   
-  
+             extraResourcePaths="/=${project.build.directory}/${project.build.finalName}/web" />
+
+    <!-- Setup the virtual class path like this:
+         1) target/classes
+         2) target/${project.build.finalName}/config
+         3) target/test-classes
+
+         This way mvn compile can be invoked and all changes will be picked up
+    -->
+    <Loader searchVirtualFirst="true"
+            className="org.apache.catalina.loader.VirtualWebappLoader"
+            virtualClasspath="${project.build.outputDirectory};${project.build.directory}/${project.build.finalName}/config;${project.build.testOutputDirectory}" />
+
+
+    <!-- This enables hot reloading of web resources from uncompressed jars (while in prod they would be loaded from  WEB-INF/lib/{\*.jar}/META-INF/resources -->
+    <JarScanner scanAllDirectories="true" />
 </Context>

@@ -66,14 +66,14 @@ Tools
 -----
 Here is what I am using on my machine:
 
-* Mac OS X 10.10.3
-* Java 1.7.0_71
-* Apache Maven 3.3.1 (installed using Macports)
-* Alfresco Maven SDK 2.0 (No download necessary)
+* Mac OS X 10.10.5
+* Java 1.8.0_31
+* Apache Maven 3.3.3 (installed using Macports)
+* Alfresco Maven SDK 2.1 (No download necessary)
 * Eclipse Java EE IDE for Web Developers, Luna
 * Alfresco Community Edition 5.0.d ([Download](http://www.alfresco.com/products/community))
 
-By default, when you create an Alfresco project using Alfresco Maven SDK 2.0 the project will be configured to depend on Alfresco Community Edition 5.0.c. Until it is updated to depend on the most recent version you should edit the generated pom.xml to change it to 5.0.d.
+By default, when you create an Alfresco project using Alfresco Maven SDK 2.1 the project will be configured to depend on Alfresco Community Edition 5.0.d.
 
 The Eclipse IDE is optional. Most people working with Alfresco use Eclipse or something similar, so this tutorial will assume that's what you are using.
 
@@ -239,7 +239,7 @@ this:
         {
             // Do nothing
         }
-    } 
+    }
 
 The code simply grabs the parameter value for the destination folder and
 then calls the `FileFolderService` to do the move. This is a good start
@@ -270,7 +270,7 @@ and then for each result, set up and perform a move.
                 }
             } // next assocNode
         } // end if isEmpty
-    } 
+    }
 
 The only other change needed is to change the value of the constant NAME
 from "move" to "move-replaced". (Throughout this document I'll only
@@ -376,7 +376,7 @@ The next step is to create the action's logic in the `executeImpl()` method:
             properties.put(
                 QName.createQName(SomeCoModel.NAMESPACE_SOMECO_CONTENT_MODEL, SomeCoModel.PROP_PUBLISHED), new Date());
         }
-        
+
         // if the aspect has already been added, set the properties
         if (nodeService.hasAspect(actionedUponNodeRef,
                     QName.createQName(
@@ -426,7 +426,7 @@ In that folder I created a file called "somecoactions.properties" with the follo
     # Move Replaced action
     move-replaced.title=Move replaced document to space
     move-replaced.description=This will move the target node of a replaces association to a specified space.
-    
+
     # Set web flag action
     set-web-flag.title=Sets the SC Web Flag
     set-web-flag.description=This will add the sc:webable aspect and set the isActive flag.
@@ -486,11 +486,11 @@ see by adding some document library configuation to share-config-custom.xml, lik
                 <visible>
                     <aspect name="cm:replaceable" />
                 </visible>
-    
+
                 <!-- Aspects that a user can add. Same as "visible" if left empty -->
                 <addable>
                 </addable>
-    
+
                 <!-- Aspects that a user can remove. Same as "visible" if left empty -->
                 <removeable>
                 </removeable>
@@ -511,10 +511,10 @@ types tutorial, the association is configured by adding children to the
 
                <show id="surf:mid"/>
                <show id="surf:label"/>
-               
+
                <!-- cm:replaceable -->
                <show id="cm:replaces" />
-               
+
             </field-visibility>
 
 and this:
@@ -546,7 +546,7 @@ Initially, the file contains a Spring bean that points to the properties file, l
     <?xml version='1.0' encoding='UTF-8'?>
     <!DOCTYPE beans PUBLIC '-//SPRING//DTD BEAN//EN' 'http://www.springframework.org/dtd/spring-beans.dtd'>
     <beans>
-    
+
        <!-- Add Someco messages -->
        <bean id="${project.artifactId}_resources" class="org.springframework.extensions.surf.util.ResourceBundleBootstrapComponent">
           <property name="resourceBundles">
@@ -555,7 +555,7 @@ Initially, the file contains a Spring bean that points to the properties file, l
              </list>
           </property>
        </bean>
-    
+
     </beans>
 
 Now the replaceable aspect can be added to and removed from documents using Alfresco Share. The next step is to configure the Move Replaced Rule Action in Share.
@@ -698,15 +698,15 @@ stuff, check the [source](https://github.com/jpotts/alfresco-developer-series/bl
     SomeCo.RuleConfigActionCustom = function(htmlId)
     {
        SomeCo.RuleConfigActionCustom.superclass.constructor.call(this, htmlId);
- 
+
        // Re-register with our own name
        this.name = "SomeCo.RuleConfigActionCustom";
        Alfresco.util.ComponentManager.reregister(this);
- 
+
        // Instance variables
        this.customisations = YAHOO.lang.merge(this.customisations, SomeCo.RuleConfigActionCustom.superclass.customisations);
        this.renderers = YAHOO.lang.merge(this.renderers, SomeCo.RuleConfigActionCustom.superclass.renderers);
-       
+
        return this;
     };
 
@@ -724,11 +724,11 @@ handler is defined:
 
     YAHOO.extend(SomeCo.RuleConfigActionCustom, Alfresco.RuleConfigAction,
     {
- 
+
        /**
         * CUSTOMISATIONS
         */
- 
+
        customisations:
        {         
           MoveReplaced:
@@ -743,7 +743,7 @@ handler is defined:
              {
                  // Hide all parameters since we are using a cusotm ui but set default values
                  this._hideParameters(configDef.parameterDefinitions);
- 
+
                  // Make parameter renderer create a "Destination" button that displays an destination folder browser
                  configDef.parameterDefinitions.push({
                     type: "arca:destination-dialog-button",
@@ -755,7 +755,7 @@ handler is defined:
              }
           },
        },
- 
+
     });
 
 This part is a copy of the out-of-the-box handler for `Move` with the
@@ -1129,7 +1129,7 @@ share-config-custom.xml. All it needs is a pointer to an evaluator. In
 this case, the one created earlier can be reused:
 
         </types>
-        
+
         <!-- Custom Indicators -->
         <indicators>
             <indicator id="someco-website" index="10">
@@ -1169,7 +1169,7 @@ both the browse menu and the details page as shown below.
 ![Indicators show which content has the active flag set in Share](./images/indicators-browse-share.png)
 
 ![Custom UI actions in the document details page](./images/ui-actions-disable-details-share.png)
-                                                                                
+
 ![Custom UI actions in the document list](./images/ui-actions-disable-browse-share.png)
 
 Clicking the “SomeCo” menu item will open a browser window to the URL
@@ -1208,4 +1208,3 @@ Where to Find More Information
 * For general development help, see the [Developer Guide](http://wiki.alfresco.com/wiki/Developer_Guide).
 * For help customizing the data dictionary, see the [Data Dictionary](http://wiki.alfresco.com/wiki/Data_Dictionary_Guide) wiki page.
 * If you are ready to cover new ground, try another [ecmarchitect.com](http://ecmarchitect.com) tutorial in the [Alfresco Developer Series](http://ecmarchitect.com/alfresco-developer-series).
-
