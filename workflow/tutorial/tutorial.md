@@ -838,7 +838,7 @@ The diagram step is just like you've seen before, it's just that the diagram is 
 
     ![Publish Whitepaper BPMN Diagram](images/publish-whitepaper-bpmn.png)
 
-Submit is a Script Task. The rest are User Tasks. This example does not use the Alfresco-specific events or tasks, but feel free to do so in your own diagrams.
+Submit is a Service Task. The rest are User Tasks. This example does not use the Alfresco-specific events or tasks, but feel free to do so in your own diagrams.
 
 Now that the diagram is in place, continue to the next section to see how to set the task properties.
 
@@ -874,13 +874,20 @@ These are pretty easy decisions to make based on process variables.
 
 #### Implement the approval check
 
-In the business process XML, find the `scriptTask` element named "Submit" and add the following script:
+In the business process XML, find the `serviceTask` element named "Submit" and add the following script:
 
-    <scriptTask id="scripttask1" name="Submit" scriptFormat="javascript" activiti:autoStoreVariables="true">
-        <script><![CDATA[var scwf_approveCount = 0; var scwf_tpApproved = false;]]></script>
-    </scriptTask>
+    <serviceTask id="scripttask1" name="Submit" activiti:class="org.alfresco.repo.workflow.activiti.script.AlfrescoScriptDelegate">
+      <extensionElements>
+        <activiti:field name="script">
+          <activiti:string><![CDATA[execution.setVariable('scwf_approveCount', 0);
+              execution.setVariable('scwf_tpApproved', false);]]></activiti:string>
+        </activiti:field>
+      </extensionElements>
+    </serviceTask>
 
 This initializes two variables that will be used as part of the approval check. The `scwf_approveCount` variable will get incremented when the process follows the "approve" sequence flow. If the counter is equal to 2, the package received both approvals. It is important to initialize the counter to 0 and the approved variable to false in the "Submit" script task because it is possible that a whitepaper may go through several review cycles. Every time a new cycle starts the counters need to be reset.
+
+You may be wondering why this is a service task instead of a script task. In 5.0.d, the underlying JavaScript engine in Activiti switched from Rhino to Nashorn. This caused a problem related to setting execution variables. The work around is to use a service task.
 
 Now add code to increment the counter when the execution follows the approve sequence flow. Find the `userTask` named "Operations Review" and add this extension element:
 

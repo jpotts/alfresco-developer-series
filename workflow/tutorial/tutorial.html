@@ -780,7 +780,7 @@ workflow.scwf_helloWorldUI=Hello World UI</code></pre>
 <img src="images/publish-whitepaper-bpmn.png" alt="Publish Whitepaper BPMN Diagram" /><p class="caption">Publish Whitepaper BPMN Diagram</p>
 </div></li>
 </ol>
-<p>Submit is a Script Task. The rest are User Tasks. This example does not use the Alfresco-specific events or tasks, but feel free to do so in your own diagrams.</p>
+<p>Submit is a Service Task. The rest are User Tasks. This example does not use the Alfresco-specific events or tasks, but feel free to do so in your own diagrams.</p>
 <p>Now that the diagram is in place, continue to the next section to see how to set the task properties.</p>
 <h3 id="configure-user-tasks-with-assignments">Configure user tasks with assignments</h3>
 <p>This table tells you how to set the performer type, expression, and form key on each task:</p>
@@ -841,11 +841,17 @@ workflow.scwf_helloWorldUI=Hello World UI</code></pre>
 <p>The process definition has two decisions. One decision figures out if all required approvals have been obtained. If so, the process continues. If not, the initiator gets a chance to make revisions. The other decision is used to determine if a third-party review is required based on whether or not the initiator provided an email address. These are represented by the two exclusive gateways on the diagram.</p>
 <p>These are pretty easy decisions to make based on process variables.</p>
 <h4 id="implement-the-approval-check">Implement the approval check</h4>
-<p>In the business process XML, find the <code>scriptTask</code> element named &quot;Submit&quot; and add the following script:</p>
-<pre><code>&lt;scriptTask id=&quot;scripttask1&quot; name=&quot;Submit&quot; scriptFormat=&quot;javascript&quot; activiti:autoStoreVariables=&quot;true&quot;&gt;
-    &lt;script&gt;&lt;![CDATA[var scwf_approveCount = 0; var scwf_tpApproved = false;]]&gt;&lt;/script&gt;
-&lt;/scriptTask&gt;</code></pre>
+<p>In the business process XML, find the <code>serviceTask</code> element named &quot;Submit&quot; and add the following script:</p>
+<pre><code>&lt;serviceTask id=&quot;scripttask1&quot; name=&quot;Submit&quot; activiti:class=&quot;org.alfresco.repo.workflow.activiti.script.AlfrescoScriptDelegate&quot;&gt;
+  &lt;extensionElements&gt;
+    &lt;activiti:field name=&quot;script&quot;&gt;
+      &lt;activiti:string&gt;&lt;![CDATA[execution.setVariable(&#39;scwf_approveCount&#39;, 0);
+          execution.setVariable(&#39;scwf_tpApproved&#39;, false);]]&gt;&lt;/activiti:string&gt;
+    &lt;/activiti:field&gt;
+  &lt;/extensionElements&gt;
+&lt;/serviceTask&gt;</code></pre>
 <p>This initializes two variables that will be used as part of the approval check. The <code>scwf_approveCount</code> variable will get incremented when the process follows the &quot;approve&quot; sequence flow. If the counter is equal to 2, the package received both approvals. It is important to initialize the counter to 0 and the approved variable to false in the &quot;Submit&quot; script task because it is possible that a whitepaper may go through several review cycles. Every time a new cycle starts the counters need to be reset.</p>
+<p>You may be wondering why this is a service task instead of a script task. In 5.0.d, the underlying JavaScript engine in Activiti switched from Rhino to Nashorn. This caused a problem related to setting execution variables. The work around is to use a service task.</p>
 <p>Now add code to increment the counter when the execution follows the approve sequence flow. Find the <code>userTask</code> named &quot;Operations Review&quot; and add this extension element:</p>
 <pre><code>&lt;userTask id=&quot;usertask1&quot; name=&quot;Operations Review&quot; activiti:candidateGroups=&quot;GROUP_Operations&quot; activiti:formKey=&quot;scwf:activitiOperationsReview&quot;&gt;
     &lt;extensionElements&gt;
