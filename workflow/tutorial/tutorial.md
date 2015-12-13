@@ -156,16 +156,16 @@ Tools
 -----
 Here is what I am using on my machine:
 
-* Mac OS X 10.10.3
-* Java 1.7.0_71
-* Apache Maven 3.3.1 (installed using Macports)
-* Alfresco Maven SDK 2.0 (No download necessary)
+* Mac OS X 10.10.5
+* Java 1.8.0_31
+* Apache Maven 3.3.3 (installed using Macports)
+* Alfresco Maven SDK 2.1 (No download necessary)
 * Eclipse Java EE IDE for Web Developers, Luna
-* Activiti Eclipse BPMN 2.0 Designer 5.15 ([Eclipse Update Site](http://www.activiti.org/designer/update/))
+* Activiti Eclipse BPMN 2.0 Designer 5.18 ([Eclipse Update Site](http://www.activiti.org/designer/update/))
 * Alfresco Community Edition 5.0.d ([Download](http://www.alfresco.com/products/community))
 * Apache James 2.3.1 (for testing third-party notification via SMTP)
 
-By default, when you create an Alfresco project using version 2.0 of the Alfresco Maven SDK the project will be configured to depend on Alfresco Community Edition 5.0.c. Until the SDK is updated to depend on the latest version of Alfresco, you should edit the generated pom.xml file and change it to depend on 5.0.d.
+By default, when you create an Alfresco project using version 2.1 of the Alfresco Maven SDK the project will be configured to depend on Alfresco Community Edition 5.0.3.
 
 Project Organization
 --------------------
