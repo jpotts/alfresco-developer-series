@@ -207,14 +207,14 @@ Foo: bar</code></pre>
 <h2 id="tools">Tools</h2>
 <p>Here is what I am using on my machine:</p>
 <ul>
-<li>Mac OS X 10.10.3</li>
-<li>Java 1.7.0_71</li>
-<li>Apache Maven 3.3.1 (installed using Macports)</li>
-<li>Alfresco Maven SDK 2.0 (No download necessary)</li>
+<li>Mac OS X 10.10.5</li>
+<li>Java 1.8.0_31</li>
+<li>Apache Maven 3.3.3 (installed using Macports)</li>
+<li>Alfresco Maven SDK 2.1 (No download necessary)</li>
 <li>Eclipse Java EE IDE for Web Developers, Luna</li>
 <li>Alfresco Community Edition 5.0.d (<a href="http://www.alfresco.com/products/community">Download</a>)</li>
 </ul>
-<p>By default, when you create an Alfresco project using Alfresco Maven SDK 2.0 the project will be configured to depend on Alfresco Community Edition 5.0.c. Until the SDK is updated to point to the most recent version of Alfresco, you should modify the generated pom.xml file to change it to 5.0.d.</p>
+<p>By default, when you create an Alfresco project using Alfresco Maven SDK 2.1 the project will be configured to depend on Alfresco Community Edition 5.0.d.</p>
 <p>The Eclipse IDE is optional. Most people working with Alfresco use Eclipse or something similar, so this tutorial will assume that's what you are using.</p>
 <h2 id="project-organization">Project Organization</h2>
 <p>You just saw that web scripts can be created by creating or uploading files to the Alfresco repository. For the rest of these examples, though, you'll create a project that will package the web scripts as an AMP (Alfresco Module Package). This is the recommended way to distribute your Alfresco customizations. It's a lot less error-prone than handing a bunch of files to someone and asking them to upload them to the proper place in the repository.</p>
@@ -721,7 +721,7 @@ if (args.id == null || args.id.length == 0) {
 <pre><code>curl -X POST &quot;http://localhost:8080/alfresco/s/someco/rating?id=802d6f27-82ec-4c9c-8e29-9b6e4a3401ef&amp;rating=5&amp;user=jpotts&amp;guest=true</code></pre>
 <p>That <code>id</code> is from the node reference of an existing whitepaper.</p>
 <p>Running this returns:</p>
-<pre><code>{&quot;rating&quot; : 
+<pre><code>{&quot;rating&quot; :
         {
          &quot;node&quot; : &quot;802d6f27-82ec-4c9c-8e29-9b6e4a3401ef&quot;,
          &quot;rating&quot; : &quot;5&quot;,
@@ -750,7 +750,7 @@ if (args.id == null || args.id.length == 0) {
 
     // get the node&#39;s children
     var children = curNode.children;
-    
+
     if (children != null &amp;&amp; children.length \&gt; 0) {
         logger.log(&quot;Found children...iterating&quot;);
         for (i in children) {

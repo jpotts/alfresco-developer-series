@@ -113,14 +113,14 @@ Architect | Alfresco Developer Tutorials</title>
 <h2 id="tools">Tools</h2>
 <p>Here is what I am using on my machine:</p>
 <ul>
-<li>Mac OS X 10.10.3</li>
-<li>Java 1.7.0_71</li>
-<li>Apache Maven 3.3.1 (installed using Macports)</li>
-<li>Alfresco Maven SDK 2.0 (No download necessary)</li>
+<li>Mac OS X 10.10.5</li>
+<li>Java 1.8.0_31</li>
+<li>Apache Maven 3.3.3 (installed using Macports)</li>
+<li>Alfresco Maven SDK 2.1 (No download necessary)</li>
 <li>Eclipse Java EE IDE for Web Developers, Luna</li>
 <li>Alfresco Community Edition 5.0.d (<a href="http://www.alfresco.com/products/community">Download</a>)</li>
 </ul>
-<p>By default, when you create an Alfresco project using Alfresco Maven SDK 2.0 the project will be configured to depend on Alfresco Community Edition 5.0.c. Until it is updated to depend on the most recent version you should edit the generated pom.xml to change it to 5.0.d.</p>
+<p>By default, when you create an Alfresco project using Alfresco Maven SDK 2.1 the project will be configured to depend on Alfresco Community Edition 5.0.d.</p>
 <p>The Eclipse IDE is optional. Most people working with Alfresco use Eclipse or something similar, so this tutorial will assume that's what you are using.</p>
 <h2 id="project-organization">Project Organization</h2>
 <p>I am going to use the Alfresco Maven SDK to create projects that will package up my customizations as AMPs (Alfresco Module Packages). I will ultimately create two AMPs. One AMP is for the Alfresco web application (the &quot;repo&quot; tier) and the other is for the Alfresco Share web application (the &quot;Share&quot; tier). Unless you have a good reason to do otherwise, this should be your default approach to packaging and deploying your customizations.</p>
@@ -179,7 +179,7 @@ Architect | Alfresco Developer Tutorials</title>
     {
         // Do nothing
     }
-} </code></pre>
+}</code></pre>
 <p>The code simply grabs the parameter value for the destination folder and then calls the <code>FileFolderService</code> to do the move. This is a good start for Move Replaced. All I need to do is modify the <code>executeImpl()</code> method to find the nodes related to the current node by a &quot;replaces&quot; association, and then for each result, set up and perform a move.</p>
 <pre><code>public void executeImpl(Action ruleAction, NodeRef actionedUponNodeRef) {
     // get the replaces associations for this node
@@ -204,7 +204,7 @@ Architect | Alfresco Developer Tutorials</title>
             }
         } // next assocNode
     } // end if isEmpty
-} </code></pre>
+}</code></pre>
 <p>The only other change needed is to change the value of the constant NAME from &quot;move&quot; to &quot;move-replaced&quot;. (Throughout this document I'll only include relevant pieces of these classes—check the source that accompanies this tutorial for code that actually compiles).</p>
 <h3 id="step-2-configure-the-action-in-spring">Step 2: Configure the action in Spring</h3>
 <p>In the content types tutorial, you learned that Spring bean configurations go in the context file for the AMP. That file is called &quot;service-context.xml&quot; and it resides in:</p>
@@ -264,7 +264,7 @@ protected void executeImpl(Action action, NodeRef actionedUponNodeRef) {
         properties.put(
             QName.createQName(SomeCoModel.NAMESPACE_SOMECO_CONTENT_MODEL, SomeCoModel.PROP_PUBLISHED), new Date());
     }
-    
+
     // if the aspect has already been added, set the properties
     if (nodeService.hasAspect(actionedUponNodeRef,
                 QName.createQName(
@@ -342,10 +342,10 @@ set-web-flag.description=This will add the sc:webable aspect and set the isAct
 <p>Just like in the content types tutorial, the association is configured by adding children to the <code>field-visibility</code> and <code>appearance</code> elements, like this:</p>
 <pre><code>           &lt;show id=&quot;surf:mid&quot;/&gt;
            &lt;show id=&quot;surf:label&quot;/&gt;
-           
+
            &lt;!-- cm:replaceable --&gt;
            &lt;show id=&quot;cm:replaces&quot; /&gt;
-           
+
         &lt;/field-visibility&gt;</code></pre>
 <p>and this:</p>
 <pre><code>           &lt;field id=&quot;cm:sentdate&quot; read-only=&quot;true&quot; /&gt;
@@ -453,7 +453,7 @@ assoc.cm_replaces=Replaces</code></pre>
    // Instance variables
    this.customisations = YAHOO.lang.merge(this.customisations, SomeCo.RuleConfigActionCustom.superclass.customisations);
    this.renderers = YAHOO.lang.merge(this.renderers, SomeCo.RuleConfigActionCustom.superclass.renderers);
-   
+
    return this;
 };</code></pre>
 <p>If this is your first foray into the world of object-oriented client-side JavaScript, relax. What, you thought just because “Java” and “JavaScript” have a word in common that object inheritance would work the same way? How literal of you! Basically, what's going on here is that the constructor is calling its superclass constructor, then it is registering itself with the Alfresco component manager. The YUI merge calls provide a way to avoid re-typing a bunch of code that exists in the parent class.</p>
@@ -675,7 +675,7 @@ message.web-flag.failure=Error setting the SomeCo active flag</code></pre>
 <p>The goal here is to show a little icon in the document library only if the <code>sc:isActive</code> property is set to <code>true</code>. If you are already thinking, “Hey, that sounds like an evaluator!” you've got it.</p>
 <p>Indicators are part of the “DocumentLibrary” config in share-config-custom.xml. All it needs is a pointer to an evaluator. In this case, the one created earlier can be reused:</p>
 <pre><code>    &lt;/types&gt;
-    
+
     &lt;!-- Custom Indicators --&gt;
     &lt;indicators&gt;
         &lt;indicator id=&quot;someco-website&quot; index=&quot;10&quot;&gt;

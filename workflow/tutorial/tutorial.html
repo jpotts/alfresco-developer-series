@@ -109,7 +109,7 @@ Architect | Alfresco Developer Tutorials</title>
 <p>This tutorial builds upon the &quot;SomeCo&quot; examples covered in earlier tutorials. In it, I'll implement a business process that helps SomeCo route whitepapers for review and approval by internal as well as external parties.</p>
 <h1 id="what-is-a-workflow">What is a workflow?</h1>
 <p>When Alfresco released version 1.4 of the product, they made a huge leap forward in enterprise readiness. That was the release when Alfresco embedded the JBoss jBPM engine into the product which meant that enterprises could route Alfresco repository content through complex business processes. A content repository without the ability to facilitate business processes that produce, consume, or transform the content within it is little more than a glorified file server, so this was a welcome addition.</p>
-<p>But before I geek out on the wonders of graph based execution languages let's agree on what the term <em>workflow</em> means. Generically, a workflow is &quot;a reliably repeatable pattern of activity enabled by a systematic organization of resources...that can be documented and learned&quot;(<a href="[http://en.wikipedia.org/wiki/Workflow](http://en.wikipedia.org/wiki/Workflow)">source</a>). The term has been around since people started studying the nature of work in the early 20<sup>th</sup> century in an effort to streamline manufacturing processes.</p>
+<p>But before I geek out on the wonders of graph based execution languages let's agree on what the term <em>workflow</em> means. Generically, a workflow is &quot;a reliably repeatable pattern of activity enabled by a systematic organization of resources...that can be documented and learned&quot;(<a href="http://en.wikipedia.org/wiki/Workflow">source</a>). The term has been around since people started studying the nature of work in the early 20<sup>th</sup> century in an effort to streamline manufacturing processes.</p>
 <p>In fact, in the world of ECM, it is sometimes helpful to think of an assembly line or manufacturing process when thinking about how content flows through an organization. Content is born of raw material (data), shaped and molded by one or more people (collaboration) or machines (systems), reviewed for quality, and delivered to consumers. Content may go through a single process or many sub-processes. Content may take different routes through a process based on certain characteristics of that content. The output of an organization or department of knowledge workers is essentially the content that comes rolling off the assembly line (the collection of workflows that define that organization's business processes).</p>
 <p>Although not always formalized or automated, almost everyone in modern society has been involved in a workflow in some way:</p>
 <ul>
@@ -222,16 +222,16 @@ Architect | Alfresco Developer Tutorials</title>
 <h2 id="tools">Tools</h2>
 <p>Here is what I am using on my machine:</p>
 <ul>
-<li>Mac OS X 10.10.3</li>
-<li>Java 1.7.0_71</li>
-<li>Apache Maven 3.3.1 (installed using Macports)</li>
-<li>Alfresco Maven SDK 2.0 (No download necessary)</li>
+<li>Mac OS X 10.10.5</li>
+<li>Java 1.8.0_31</li>
+<li>Apache Maven 3.3.3 (installed using Macports)</li>
+<li>Alfresco Maven SDK 2.1 (No download necessary)</li>
 <li>Eclipse Java EE IDE for Web Developers, Luna</li>
-<li>Activiti Eclipse BPMN 2.0 Designer 5.15 (<a href="http://www.activiti.org/designer/update/">Eclipse Update Site</a>)</li>
+<li>Activiti Eclipse BPMN 2.0 Designer 5.18 (<a href="http://www.activiti.org/designer/update/">Eclipse Update Site</a>)</li>
 <li>Alfresco Community Edition 5.0.d (<a href="http://www.alfresco.com/products/community">Download</a>)</li>
 <li>Apache James 2.3.1 (for testing third-party notification via SMTP)</li>
 </ul>
-<p>By default, when you create an Alfresco project using version 2.0 of the Alfresco Maven SDK the project will be configured to depend on Alfresco Community Edition 5.0.c. Until the SDK is updated to depend on the latest version of Alfresco, you should edit the generated pom.xml file and change it to depend on 5.0.d.</p>
+<p>By default, when you create an Alfresco project using version 2.1 of the Alfresco Maven SDK the project will be configured to depend on Alfresco Community Edition 5.0.3.</p>
 <h2 id="project-organization">Project Organization</h2>
 <p>I am going to use the Alfresco Maven SDK to create projects that will package up my customizations as AMPs (Alfresco Module Packages). I will ultimately create two AMPs. One AMP is for the Alfresco web application (the &quot;repo&quot; tier) and the other is for the Alfresco Share web application (the &quot;Share&quot; tier). Unless you have a good reason to do otherwise, this should be your default approach to packaging and deploying your customizations.</p>
 <p>I am not going to spend much time talking about how the Alfresco Maven SDK works. If you aren't already familiar with it, you may want to read the <a href="http://ecmarchitect.com/alfresco-developer-series">Getting Started with the Alfresco Maven SDK</a> tutorial on ecmarchitect.com first and then come back to this one.</p>
@@ -337,10 +337,10 @@ Architect | Alfresco Developer Tutorials</title>
 <p>The Activiti Workflow Console isn't available in Community Edition, so if you are running Community Edition you'll have to use one of these other options.</p>
 <p>There are two other options for deploying workflows to Alfresco:</p>
 <ol style="list-style-type: decimal">
-<li>Use the Alfresco Explorer Workflow Console</li>
+<li>Use the Alfresco Workflow Console</li>
 <li>Configure the workflows through Spring configuration</li>
 </ol>
-<p>Because these two options are available in both Enterprise Edition and Community Edition, this tutorial will focus on these. The approach will be to use Spring to deploy the workflows initially. Then, use the Alfresco Explorer Workflow Console to deploy subsequent versions if needed.</p>
+<p>Because these two options are available in both Enterprise Edition and Community Edition, this tutorial will focus on these. The approach will be to use Spring to deploy the workflows initially. Then, use the Alfresco Workflow Console to deploy subsequent versions if needed.</p>
 <h3 id="deploying-the-workflows-with-spring">Deploying the workflows with Spring</h3>
 <p>As you learned in previous tutorials, the AMP project created by the Alfresco Maven SDK already has a Spring context file. It is named &quot;<a href="https://github.com/jpotts/alfresco-developer-series/blob/master/workflow/workflow-tutorial-repo/src/main/amp/config/alfresco/module/workflow-tutorial-repo/context/service-context.xml">service-context.xml</a>&quot; and resides in:</p>
 <pre><code>$TUTORIAL_HOME/workflow-tutorial-repo/src/main/amp/config/alfresco/module/workflow-tutorial-repo/context</code></pre>
@@ -371,21 +371,23 @@ Architect | Alfresco Developer Tutorials</title>
 <p>Now everything is ready to go. For this test, you can leverage the embedded Alfresco server that the Alfresco Maven SDK sets up for you. To run your AMP in the embedded Alfresco server, open a command-line window, switch to $TUTORIAL_HOME/workflow-tutorial-repo, and run:</p>
 <pre><code>mvn integration-test -Pamp-to-war -Dmodule.log.level=debug</code></pre>
 <p>Apache Maven will download some dependencies, build your AMP, merge it with the Alfresco WAR file, then start up an embedded Tomcat server.</p>
-<p>Next you'll see how to use the Alfresco Explorer Workflow Console to test the two hello world process definitions.</p>
+<p>Next you'll see how to use the Alfresco Workflow Console to test the two hello world process definitions.</p>
 <h2 id="using-the-workflow-console">Using the workflow console</h2>
-<p>Your Alfresco server is running and the hello world process definitions should have been deployed when the server started up. The Alfresco Explorer Workflow Console can be used to verify that they were deployed successfully. And you can use it to start instances of those workflows to test them out. It can also be a handy workflow debugging tool.</p>
-<p>For reasons that cannot be fully explained, the Alfresco Explorer Workflow Console is not linked to anywhere in the user interface. Like Easter Island, the pyramids, and Stonehenge, it is one of the great mysteries of our time. You just have to know that the URL is <a href="http://localhost:8080/alfresco/faces/jsp/admin/workflow-console.jsp">http://localhost:8080/alfresco/faces/jsp/admin/workflow-console.jsp</a>. If you haven't already logged in to Alfresco Explorer as admin you will be asked to do so when you go to that URL.</p>
+<p>Your Alfresco server is running and the hello world process definitions should have been deployed when the server started up. The Alfresco Workflow Console can be used to verify that they were deployed successfully. And you can use it to start instances of those workflows to test them out. It can also be a handy workflow debugging tool.</p>
+<p>In Alfresco Enterprise, the Workflow Console link is: <a href="http://localhost:8080/alfresco/s/enterprise/admin/admin-workflowconsole">http://localhost:8080/alfresco/s/enterprise/admin/admin-workflowconsole</a></p>
+<p>In Alfresco Community, the Workflow Console link is: <a href="http://localhost:8080/alfresco/s/admin/admin-workflowconsole">http://localhost:8080/alfresco/s/admin/admin-workflowconsole</a></p>
+<p>If you haven't already authenticated as an administrator you will be asked to do so when you go to that URL.</p>
 <p>In the workflow console do this:</p>
 <ol style="list-style-type: decimal">
-<li><p>Type &quot;show definitions all&quot; then click Submit to see what process definitions have been deployed:</p>
+<li><p>Type &quot;show definitions all&quot; then click Execute to see what process definitions have been deployed:</p>
 <div class="figure">
 <img src="images/workflow-console.png" alt="Workflow console: Show definitions all" /><p class="caption">Workflow console: Show definitions all</p>
 </div></li>
 </ol>
 <p>You should see entries for helloWorld and helloWorldFork. Note that the ID for helloWorld is &quot;activiti<span class="math">$helloWorld:1:104&quot; and the ID for helloWorldFork is &quot;activiti$</span>helloWorldFork:1:108&quot;. Your IDs may be different.</p>
 <ol start="2" style="list-style-type: decimal">
-<li>Type &quot;use definition activiti$helloWorld:1:104&quot; and click Submit. Subsequent commands having to do with a workflow definition will now use that one by default.</li>
-<li><p>Start an instance of the helloWorld workflow by typing &quot;start&quot; and clicking &quot;Submit&quot;. You should see something like this:</p>
+<li>Type &quot;use definition activiti$helloWorld:1:104&quot; and click Execute. Subsequent commands having to do with a workflow definition will now use that one by default.</li>
+<li><p>Start an instance of the helloWorld workflow by typing &quot;start&quot; and clicking Execute. You should see something like this:</p>
 <div class="figure">
 <img src="images/workflow-console-start-workflow.png" alt="Workflow console: Start workflow" /><p class="caption">Workflow console: Start workflow</p>
 </div></li>
@@ -398,7 +400,7 @@ Architect | Alfresco Developer Tutorials</title>
 <div class="figure">
 <img src="images/hello-world-fork-log-output.png" alt="Hello World log output" /><p class="caption">Hello World log output</p>
 </div>
-<p>After running helloWorldFork go back to the workflow console and type &quot;show workflows all&quot; and click Submit. That command shows the running workflow instances. You'll notice that the helloWorldFork workflow is still running. The easiest way to get rid of it is to use the &quot;delete workflow [workflow ID]&quot; command (you'll need the workflow's ID from the &quot;show workflows all&quot; command you just completed).</p>
+<p>After running helloWorldFork go back to the workflow console and type &quot;show workflows all&quot; and click Execute. That command shows the running workflow instances. You'll notice that the helloWorldFork workflow is still running. The easiest way to get rid of it is to use the &quot;delete workflow [workflow ID]&quot; command (you'll need the workflow's ID from the &quot;show workflows all&quot; command you just completed).</p>
 <p>You've seen how to start workflows and how to list and delete running workflows using the workflow console. The table below shows some other common commands and what they do.</p>
 <table>
 <caption>Partial list of workflow console commands</caption>
@@ -443,7 +445,7 @@ Architect | Alfresco Developer Tutorials</title>
 </tr>
 </tbody>
 </table>
-<p>These are a subset of the commands available. Type &quot;help&quot; and click Submit to see the full list of commands.</p>
+<p>These are a subset of the commands available. Type &quot;help&quot; and click Execute to see the full list of commands.</p>
 <p>You may be wondering what happens to running workflow instances when a new version of the process definition is checked in. The answer is that Activiti handles that—it makes sure that running workflows continue to run with their original process definition. By default, all new workflows will use the most current version of the process definition.</p>
 <h1 id="configuring-a-workflow-for-alfresco-share">Configuring a workflow for Alfresco Share</h1>
 <p>So far you've learned what a workflow is and some Activiti concepts. You used the process designer to diagram two simple processes, deployed those to Alfresco, and ran them using the workflow console. This part of the tutorial explains how to configure a workflow in the Alfresco Share user interface.</p>
@@ -1327,9 +1329,6 @@ prop.scwf_reviewerEmail=Reviewer Email</code></pre>
 <ul>
 <li><a href="http://docs.alfresco.com/4.0/topic/com.alfresco.enterprise.doc/concepts/wf-architecture.html">Workflow Architecture</a> page on docs.alfresco.com</li>
 <li><a href="http://wiki.alfresco.com/wiki/JavaScript_API">Alfresco JavaScript API</a> wiki page</li>
-<li>For deployment help, see <a href="http://wiki.alfresco.com/wiki/Packaging_And_Deploying_Extensions">Packaging and Deploying Extensions</a> in the Alfresco wiki.</li>
-<li>For general development help, see the <a href="http://wiki.alfresco.com/wiki/Developer_Guide">Developer Guide</a>.</li>
-<li>For help customizing the data dictionary, see the <a href="http://wiki.alfresco.com/wiki/Data_Dictionary_Guide">Data Dictionary</a> wiki page.</li>
 </ul></li>
 <li>Activiti and BPMN
 <ul>

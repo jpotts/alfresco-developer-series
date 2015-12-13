@@ -260,14 +260,14 @@ Architect | Alfresco Developer Tutorials</title>
 <h4 id="tools">Tools</h4>
 <p>Here is what I am using on my machine:</p>
 <ul>
-<li>Mac OS X 10.10.3</li>
-<li>Java 1.7.0_71</li>
-<li>Apache Maven 3.3.1 (installed using Macports)</li>
-<li>Alfresco Maven SDK 2.0 (No download necessary)</li>
+<li>Mac OS X 10.10.5</li>
+<li>Java 1.8.0_31</li>
+<li>Apache Maven 3.3.3 (installed using Macports)</li>
+<li>Alfresco Maven SDK 2.1 (No download necessary)</li>
 <li>Eclipse Java EE IDE for Web Developers, Luna</li>
 </ul>
-<p>By default, when you create an Alfresco project using version 2.0 of the Alfresco Maven SDK the project will be configured to depend on Alfresco Community Edition 5.0.c. The latest release of Alfresco Community Edition is 5.0.d.</p>
-<p>If you are using Alfresco 4.x you must use Alfresco Maven SDK 1.0. The 2.0 SDK will not work with Alfresco 4.x.</p>
+<p>By default, when you create an Alfresco project using version 2.1 of the Alfresco Maven SDK the project will be configured to depend on Alfresco Community Edition 5.0.d.</p>
+<p>If you are using Alfresco 4.x you must use Alfresco Maven SDK 1.0. The 2.x SDK will not work with Alfresco 4.x.</p>
 <p>Projects created using the Alfresco Maven SDK have the ability to run Alfresco on an embedded Tomcat server. This makes <a href="http://www.alfresco.com/products/community">downloading</a> and installing Alfresco optional. But if you want to run a full Alfresco server locally, you are welcome to do that.</p>
 <p>The Eclipse IDE is also optional. Most people working with Alfresco use Eclipse or something similar, so this tutorial will assume that's what you are using.</p>
 <h4 id="project-organization">Project Organization</h4>
@@ -297,7 +297,7 @@ Architect | Alfresco Developer Tutorials</title>
 <li><p>Now use the Alfresco Maven SDK to create a project for the repo tier AMP. Using the command line, change directories to $TUTORIAL_HOME, then run:</p>
 <pre><code>mvn archetype:generate -Dfilter=org.alfresco:</code></pre></li>
 <li>Choose the Alfresco AMP archetype (option 2).</li>
-<li>Choose version 2.0.0 of the archetype (option 5).</li>
+<li>Choose version 2.1.1 of the archetype (option 5).</li>
 <li>Specify &quot;com.someco&quot; for the <code>groupId</code>.</li>
 <li>Specify &quot;content-tutorial-repo&quot; for the <code>artifactId</code>.</li>
 <li><p>If Eclipse isn't running, start it up. Use File, Import, Maven, Existing Maven Projects to import the content-tutorial-repo project you just created.</p></li>
@@ -417,7 +417,7 @@ The &quot;model&quot; directory does not exist when the project is initially cre
                     &lt;multiple&gt;true&lt;/multiple&gt;
                 &lt;/property&gt;
             &lt;/properties&gt;
-        &lt;/aspect&gt;   
+        &lt;/aspect&gt;
     &lt;/aspects&gt;
 &lt;/model&gt;</code></pre></li>
 </ol>
@@ -640,7 +640,7 @@ This will start up an Alfresco server with your repo tier AMP and it will leave 
     &lt;show id=&quot;surf:widgetType&quot;/&gt;
     &lt;show id=&quot;surf:mid&quot;/&gt;
     &lt;show id=&quot;surf:label&quot;/&gt;
-               
+
     &lt;!-- sc:doc --&gt;
     &lt;show id=&quot;sc:relatedDocuments&quot; /&gt;
 &lt;/field-visibility&gt;</code></pre>
@@ -848,7 +848,7 @@ prop.sc_version=Version</code></pre></li>
         &lt;id&gt;artifacts.alfresco.com&lt;/id&gt;
         &lt;name&gt;Alfresco Maven Repository&lt;/name&gt;
         &lt;url&gt;https://artifacts.alfresco.com/nexus/content/groups/public/&lt;/url&gt;
-    &lt;/repository&gt; 
+    &lt;/repository&gt;
 &lt;/repositories&gt;</code></pre></li>
 <li><p>The content-tutorial-common project will contain code common the CMIS project will use as well as projects in later tutorials. For this tutorial, all we need is the com.someco.model.SomeCoModel.java class which contains constants that map to the custom content model. These constants are used for convenience by Java classes that need to know things like namespaces, names of content types, etc. If you are building your own project just copy it from the source.</p></li>
 </ol>
@@ -862,10 +862,10 @@ prop.sc_version=Version</code></pre></li>
 <p>A common mistake is to use an old CMIS service URL, so make sure you are using the correct one according to the version of Alfresco you are using.</p>
 <p>Once the code has a session, it gets a reference to the folder where the content will be created. The timestamp is incorporated into the content name so that if the code is run multiple times, the object names will be unique.</p>
 <pre><code>Session session = getSession();
-        
+
 // Grab a reference to the folder where we want to create content
 Folder folder = (Folder) session.getObjectByPath(&quot;/&quot; + getFolderName());
-        
+
 String timeStamp = new Long(System.currentTimeMillis()).toString();
 String filename = getContentName() + &quot; (&quot; + timeStamp + &quot;)&quot;;</code></pre>
 <p>Next, the code sets up the properties that will be set on the new document. It creates a <code>Map</code> of <code>Strings</code> and <code>Objects</code> to hold the property names and values.</p>
@@ -973,7 +973,7 @@ System.out.println(&quot;Finding content of type:&quot; +
      SomeCoModel.TYPE_SC_DOC.toString());
 queryString = &quot;select * from sc:doc&quot;;
 dumpQueryResults(getQueryResults(queryString));
-        
+
 System.out.println(RESULT_SEP);
 System.out.println(&quot;Find content in the root folder with text like &#39;sample&#39;&quot;);
 queryString = &quot;select * from cmis:document where contains(&#39;sample&#39;) and
@@ -992,7 +992,7 @@ dumpQueryResults(getQueryResults(queryString));</code></pre>
 <pre><code>System.out.println(RESULT_SEP);
 System.out.println(&quot;Find active content with a product equal to &#39;SomePortal&#39;&quot;);
 String queryString1 = &quot;select d.cmis:objectId from cmis:document as d join
-    sc:productRelated as p on d.cmis:objectId = p.cmis:objectId &quot; + 
+    sc:productRelated as p on d.cmis:objectId = p.cmis:objectId &quot; +
     &quot;where p.sc:product = &#39;SomePortal&#39;&quot;;
 String queryString2 = &quot;select d.cmis:objectId from cmis:document as d join
     sc:webable as w on d.cmis:objectId = w.cmis:objectId &quot; +
@@ -1002,7 +1002,7 @@ dumpQueryResults(getSubQueryResults(queryString1, queryString2));</code></pre>
 <p>The last query uses the aspect join trick to do a date range search on instances of <code>sc:whitepaper</code> published between a specific range.</p>
 <pre><code>System.out.println(RESULT_SEP);
 System.out.println(&quot;Find content of type sc:whitepaper published between 1/1/2006
-    and 6/1/2007&quot;); 
+    and 6/1/2007&quot;);
 queryString = &quot;select d.cmis:objectId, w.sc:published from sc:whitepaper as d join
     sc:webable as w on d.cmis:objectId = w.cmis:objectId &quot; +  
     &quot;where w.sc:published &gt; TIMESTAMP &#39;2006-01-01T00:00:00.000-05:00&#39; &quot; +
@@ -1132,7 +1132,7 @@ created:Jan 23, 2014 2:20:59 PM</code></pre>
 <h2 id="deleting-content-with-opencmis">Deleting Content with OpenCMIS</h2>
 <p>Now it is time to clean up after ourselves by deleting content from the repository. The delete logic in the <a href="https://github.com/jpotts/alfresco-developer-series/blob/master/content/content-tutorial-cmis/src/main/java/com/someco/cmis/examples/SomeCoCMISDataCleaner.java">SomeCoCMISDataCleaner</a> class is similar to the search logic except that instead of dumping the results, the CmisObject’s <code>delete()</code> method gets called on every hit that is returned.</p>
 <pre><code>Session session = getSession();
-        
+
 // execute query
 String queryString = &quot;select * from sc:doc&quot;;
 ItemIterable&lt;QueryResult&gt; results = session.query(queryString, false);
@@ -1140,7 +1140,7 @@ ItemIterable&lt;QueryResult&gt; results = session.query(queryString, false);
 // if we found some rows, create an array of DeleteCML objects      
 if (results.getTotalNumItems() &gt;= 0)
     System.out.println(&quot;Found &quot; + results.getTotalNumItems() + &quot; objects to delete.&quot;);
-        
+
 for (QueryResult qResult : results) {
     PropertyData&lt;?&gt; propData = qResult.getPropertyById(&quot;cmis:objectId&quot;);
     String objectId = (String) propData.getFirstValue();

@@ -89,14 +89,14 @@ Architect | Alfresco Developer Tutorials</title>
 <p>Today's developers are used to rails-like frameworks where you have an empty directory one moment and a fully instantiated, ready-to-run project the next. Why should Alfresco developers settle for anything less?</p>
 <p>With the Alfresco Maven SDK you don't have to. The goal of the Maven-based SDK is to make it extremely easy for you to get started with Alfresco development. It consists of a project template (an &quot;archetype&quot; in Maven parlance) and some built-in smarts that make Maven understand how to create AMPs and deploy them to Alfresco.</p>
 <p>If you are writing your own custom application that is separate from the Alfresco and Share WARs you don't need the Alfresco Maven SDK. But if you intend to write code that runs within either of those web applications, the Alfresco Maven SDK is where you need to start.</p>
-<p>A quick word about versions. This tutorial assumes you are using Alfresco Maven SDK 2.0. It requires Alfresco 5.0. If you are using Alfresco 4.x you must use an older version of this tutorial which covers Alfresco Maven SDK 1.0. If you are using a version older than 4.x you should upgrade already! (But seriously, you'll have to use the old Ant-based SDK for versions older than 4.x).</p>
+<p>A quick word about versions. This tutorial assumes you are using Alfresco Maven SDK 2.1. It requires Alfresco 5.0. If you are using Alfresco 4.x you must use an older version of this tutorial which covers Alfresco Maven SDK 1.0. If you are using a version older than 4.x you should upgrade already! (But seriously, you'll have to use the old Ant-based SDK for versions older than 4.x).</p>
 <h3 id="what-about-the-old-ant-based-sdk">What About the Old Ant-based SDK?</h3>
 <p>Alfresco has provided a downloadable SDK since the early-days. The SDK consisted of a ZIP that contained compile-time dependencies, source code, JavaDocs, and sample Eclipse projects. The sample projects used Ant-based builds.</p>
 <p>There was nothing wrong with this approach, but as the platform evolved, the Ant-based SDK failed to evolve with it. Today, it contains examples for parts of the product that have fallen out-of-favor (the native Web Services API, for example, or the Alfresco Explorer user interface) and lacks examples for hugely important pieces of the product such as CMIS, Web Scripts, and advanced workflows using Activiti.</p>
 <p>Aside from its out-of-date examples, the old Ant-based SDK required developers to do too much work. With the Alfresco Maven SDK, you don't even have to download anything yourself--you just create your project and start coding.</p>
 <p>Now you have a high-level understanding of Apache Maven, AMPs, and the Alfresco Maven SDK. It's time to see them in action.</p>
 <h1 id="your-first-project">Your First Project</h1>
-<p>Let me show you how easy it can be to get started with Alfresco development using the Alfresco Maven SDK. Before I start I'm going to assume you have JDK 1.7 installed as well as Apache Maven 3. You don't need to download anything else. Seriously. Not even Alfresco.</p>
+<p>Let me show you how easy it can be to get started with Alfresco development using the Alfresco Maven SDK. Before I start I'm going to assume you have JDK 1.8 installed as well as Apache Maven 3. You don't need to download anything else. Seriously. Not even Alfresco.</p>
 <ol style="list-style-type: decimal">
 <li><p>Create an empty directory. It doesn't matter where it is or what you call it. I'll refer to it as $TUTORIAL_HOME. We're going to be creating some additional directories in here shortly.</p></li>
 <li><p>Now let's create a new project. For now, let's assume you want to create something that you will deploy to the Alfresco repository tier such as a custom content model, some custom rule actions, a new set of web scripts, or some Activiti business processes. It doesn't really matter. To create the new project, change directories to $TUTORIAL_HOME, then run this command:</p>
@@ -108,7 +108,7 @@ Architect | Alfresco Developer Tutorials</title>
 <li>share-amp-archetype</li>
 </ol>
 <p>Our goal is to create an AMP that can be deployed to Alfresco so the second one is the one we want. Type 2 and hit enter.</p></li>
-<li><p>Now Maven is asking you to specify the version of the archetype you want to base your project on. Currently, the latest version is 2.0.0 which is the 5th option in the list, so type 5 and hit enter.</p></li>
+<li><p>Now Maven is asking you to specify the version of the archetype you want to base your project on. Currently, the latest version is 2.1.1 which is the 7th option in the list, so type 7 and hit enter.</p></li>
 <li><p>Maven now asks for a groupId. You should be thinking &quot;Java package&quot;. My examples always assume I am working at a fictitious company called SomeCo, so I will specify &quot;com.someco&quot; here. Specify what makes sense in your case and hit enter.</p></li>
 <li><p>Next is the artifactId. You can think of this as what you want your project to be called. It will also be the ID of your AMP so make it something unique. You should also append the string &quot;-repo&quot; to your artifactId because this module is intended to be deployed to the repository tier. I'm going to specify &quot;someco-mvn-tutorial-repo&quot; for mine followed by enter.</p></li>
 <li><p>At this point Maven will show you the values you entered plus some others that were defaulted and ask you to confirm your choices. If you want to change something you can specify &quot;N&quot; and then make changes or you can enter &quot;Y&quot; to continue. I can always change these values later if needed, so I'm going to specify &quot;Y&quot; followed by enter.</p></li>
@@ -121,7 +121,7 @@ Architect | Alfresco Developer Tutorials</title>
 <li>Configuration required to run a local instance of Alfresco suitable for testing</li>
 <li>A default POM (Project Object Model) XML file that tells Maven what your project depends on</li>
 </ul>
-<p>The SDK defaults to &quot;5.0.c&quot; as the Alfresco version. You might want to edit someco-mvn-tutorial-repo/pom.xml and change that to &quot;5.0.d&quot; before you proceed.</p>
+<p>The SDK defaults to &quot;5.0.d&quot; as the Alfresco version. If you need to run on a different version, you might want to edit someco-mvn-tutorial-repo/pom.xml and change it before you proceed.</p>
 <h2 id="lets-run-it">Let's Run It</h2>
 <p>You haven't downloaded anything. You haven't edited anything. All you've done is tell Maven to create a project based on a template. But the cool thing is this: Your project is runnable right now.</p>
 <p>Try this:</p>
@@ -135,7 +135,7 @@ mvn integration-test -Pamp-to-war</code></pre>
 <pre><code>Jan 16, 2014 8:38:20 AM org.apache.coyote.AbstractProtocol start INFO: Starting ProtocolHandler [&quot;http-bio-8080&quot;]</code></pre>
 <p>You should be able to go to:</p>
 <pre><code>http://localhost:8080/alfresco</code></pre>
-<p>And you will see the &quot;Welcome to Alfresco' page. In versions prior to 5.0.d this would be the Alfresco Explorer login page.log in using &quot;admin&quot; and &quot;admin&quot;. If you want to verify that you can log in, go to the Alfresco web script console, which is:</p>
+<p>And you will see the &quot;Welcome to Alfresco' page. In versions prior to 5.0.d this would be the Alfresco Explorer login page. Log in using &quot;admin&quot; and &quot;admin&quot;. If you want to verify that you can log in, go to the Alfresco web script console, which is:</p>
 <pre><code>http://localhost:8080/alfresco/s/index</code></pre>
 <p>When you are done poking around, go back to the window where you ran your Maven command and type ctrl-c to shutdown the server.</p>
 <p>If you get an out-of-memory error when you run the integration test, you may need to pass some JVM memory parameters to Maven. One way to do that is by setting the MAVEN_OPTS environment variable. For example, I have mine set to:</p>
