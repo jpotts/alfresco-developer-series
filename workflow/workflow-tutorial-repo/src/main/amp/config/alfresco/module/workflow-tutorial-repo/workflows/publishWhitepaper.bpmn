@@ -66,9 +66,19 @@
             </activiti:taskListener>
         </extensionElements>    
     </userTask>
-    <scriptTask id="scripttask1" name="Submit" scriptFormat="javascript" activiti:autoStoreVariables="true">
-      <script>execution.setVariable('scwf_approveCount', 0); execution.setVariable('scwf_tpApproved', false);</script>
-    </scriptTask>
+    <serviceTask id="scripttask1" name="Submit" activiti:class="org.alfresco.repo.workflow.activiti.script.AlfrescoScriptDelegate">
+      <extensionElements>
+        <activiti:field name="runAs">
+          <activiti:string><![CDATA[admin]]></activiti:string>
+        </activiti:field>
+        <activiti:field name="script">
+          <activiti:string><![CDATA[
+              execution.setVariable('scwf_approveCount', 0);
+              execution.setVariable('scwf_tpApproved', false);
+          ]]></activiti:string>
+        </activiti:field>
+      </extensionElements>
+    </serviceTask>
     <parallelGateway id="parallelgateway1" name="Parallel Gateway"></parallelGateway>
     <parallelGateway id="parallelgateway2" name="Parallel Gateway"></parallelGateway>
     <exclusiveGateway id="exclusivegateway1" name="Exclusive Gateway"></exclusiveGateway>

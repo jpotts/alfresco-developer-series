@@ -3,30 +3,16 @@ Alfresco Developer Series Tutorials
 
 Source code from the [ecmarchitect.com Alfresco Developer Series](http://ecmarchitect.com/alfresco-developer-series) tutorials.
 
-Moving to Maven/AMP
--------------------
-I am in the process of refactoring this source code to use Maven for dependency management and to produce AMPs as the packaging/distribution mechanism.
+These tutorials are written for Alfresco Community Edition 5.0.d and Alfresco Enterprise 5.0. They leverage the Alfresco SDK 2.0. That version of the SDK only works with Alfresco 5.x. Older versions of the tutorials use an older version of the SDK which works with Alfresco 4.x.
 
-My plan is to do that first for all of the projects, then come back and update the tutorials. So for now the tutorials and the exact location of the source files will be out-of-sync. It's all the same stuff, just structured differently in the project.
+The tutorials build upon each other. The recommended order of progression is:
 
-If this is causing you confusion, use the tagged source code. Those match up with what's described in the tutorial.
-
-Progress
---------
-
-| Tutorial | Move to Maven/AMP | Move tutorial to markdown | Update tutorial to match refactored code | Re-Render Tutorial as HTML |
-| -------- | ----------------- | ------------------------- | ---------------------------------------- | ---------------------- |
-|Maven SDK|Done|Done|Done|[Done](http://ecmarchitect.com/alfresco-developer-series-tutorials/maven-sdk/tutorial/tutorial.html)|
-|Content|Done|Done|Done|[Done](http://ecmarchitect.com/alfresco-developer-series-tutorials/content/tutorial/tutorial.html)|
-|Actions|Done|Done|Done|[Done](http://ecmarchitect.com/alfresco-developer-series-tutorials/actions/tutorial/tutorial.html)|
-|Behaviors|Done|Done|Done|[Done](http://ecmarchitect.com/alfresco-developer-series-tutorials/behaviors/tutorial/tutorial.html)|
-|Webscripts|Done|Done|Done|[Done](http://ecmarchitect.com/alfresco-developer-series-tutorials/webscripts/tutorial/tutorial.html)|
-|Workflows|Done|Done|WIP|Not Started|
-
-Known Issues
-------------
-
-The publish to web advanced workflow in the workflows tutorial is not currently working properly under 4.2.e. The workflow is not firing the set-web-flag action.
+* [Alfresco Maven SDK](http://ecmarchitect.com/alfresco-developer-series-tutorials/maven-sdk/tutorial/tutorial.html)
+* [Custom Content Types & CMIS](http://ecmarchitect.com/alfresco-developer-series-tutorials/content/tutorial/tutorial.html)
+* [Actions](http://ecmarchitect.com/alfresco-developer-series-tutorials/actions/tutorial/tutorial.html)
+* [Behaviors](http://ecmarchitect.com/alfresco-developer-series-tutorials/behaviors/tutorial/tutorial.html)
+* [Webscripts](http://ecmarchitect.com/alfresco-developer-series-tutorials/webscripts/tutorial/tutorial.html)
+* [Workflows](http://ecmarchitect.com/alfresco-developer-series-tutorials/workflow/tutorial/tutorial.html)
 
 Repository Structure
 --------------------

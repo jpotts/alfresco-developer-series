@@ -1,6 +1,6 @@
 % Creating Custom Actions in Alfresco
-% Jeff Potts
-% January, 2014
+% Jeff Potts, [Metaversant Group](http://www.metaversant.com)
+% April, 2015
 
 License
 =======
@@ -66,14 +66,14 @@ Tools
 -----
 Here is what I am using on my machine:
 
-* Mac OS X 10.9.1
-* Java 1.7.0_51
-* Apache Maven 3.0.5 (installed using Macports)
-* Alfresco Maven SDK, AMP Archetype 1.1.1 (No download necessary)
-* Eclipse Java EE IDE for Web Developers, Kepler
-* Alfresco Community Edition 4.2.e ([Download](http://www.alfresco.com/products/community))
+* Mac OS X 10.10.5
+* Java 1.8.0_31
+* Apache Maven 3.3.3 (installed using Macports)
+* Alfresco Maven SDK 2.1 (No download necessary)
+* Eclipse Java EE IDE for Web Developers, Luna
+* Alfresco Community Edition 5.0.d ([Download](http://www.alfresco.com/products/community))
 
-By default, when you create an Alfresco project using version 1.1.1 of the Alfresco Maven SDK the project will be configured to depend on Alfresco Community Edition 4.2.e.
+By default, when you create an Alfresco project using Alfresco Maven SDK 2.1 the project will be configured to depend on Alfresco Community Edition 5.0.d.
 
 The Eclipse IDE is optional. Most people working with Alfresco use Eclipse or something similar, so this tutorial will assume that's what you are using.
 
@@ -239,7 +239,7 @@ this:
         {
             // Do nothing
         }
-    } 
+    }
 
 The code simply grabs the parameter value for the destination folder and
 then calls the `FileFolderService` to do the move. This is a good start
@@ -270,7 +270,7 @@ and then for each result, set up and perform a move.
                 }
             } // next assocNode
         } // end if isEmpty
-    } 
+    }
 
 The only other change needed is to change the value of the constant NAME
 from "move" to "move-replaced". (Throughout this document I'll only
@@ -376,7 +376,7 @@ The next step is to create the action's logic in the `executeImpl()` method:
             properties.put(
                 QName.createQName(SomeCoModel.NAMESPACE_SOMECO_CONTENT_MODEL, SomeCoModel.PROP_PUBLISHED), new Date());
         }
-        
+
         // if the aspect has already been added, set the properties
         if (nodeService.hasAspect(actionedUponNodeRef,
                     QName.createQName(
@@ -426,7 +426,7 @@ In that folder I created a file called "somecoactions.properties" with the follo
     # Move Replaced action
     move-replaced.title=Move replaced document to space
     move-replaced.description=This will move the target node of a replaces association to a specified space.
-    
+
     # Set web flag action
     set-web-flag.title=Sets the SC Web Flag
     set-web-flag.description=This will add the sc:webable aspect and set the isActive flag.
@@ -486,11 +486,11 @@ see by adding some document library configuation to share-config-custom.xml, lik
                 <visible>
                     <aspect name="cm:replaceable" />
                 </visible>
-    
+
                 <!-- Aspects that a user can add. Same as "visible" if left empty -->
                 <addable>
                 </addable>
-    
+
                 <!-- Aspects that a user can remove. Same as "visible" if left empty -->
                 <removeable>
                 </removeable>
@@ -511,10 +511,10 @@ types tutorial, the association is configured by adding children to the
 
                <show id="surf:mid"/>
                <show id="surf:label"/>
-               
+
                <!-- cm:replaceable -->
                <show id="cm:replaces" />
-               
+
             </field-visibility>
 
 and this:
@@ -546,7 +546,7 @@ Initially, the file contains a Spring bean that points to the properties file, l
     <?xml version='1.0' encoding='UTF-8'?>
     <!DOCTYPE beans PUBLIC '-//SPRING//DTD BEAN//EN' 'http://www.springframework.org/dtd/spring-beans.dtd'>
     <beans>
-    
+
        <!-- Add Someco messages -->
        <bean id="${project.artifactId}_resources" class="org.springframework.extensions.surf.util.ResourceBundleBootstrapComponent">
           <property name="resourceBundles">
@@ -555,7 +555,7 @@ Initially, the file contains a Spring bean that points to the properties file, l
              </list>
           </property>
        </bean>
-    
+
     </beans>
 
 Now the replaceable aspect can be added to and removed from documents using Alfresco Share. The next step is to configure the Move Replaced Rule Action in Share.
@@ -647,41 +647,7 @@ With this configuration in place, the custom Move Replaced action will show up i
 
 ### Step 2: Add a reference to the custom client-side JavaScript file to the head
 
-The `move-replaced` action is going to be invoking some client-side JavaScript. So a reference to the file that contains the JavaScript needs to be added to the page so it can be loaded by the browser. There are two ways to do this:
-
-* Prior to Alfresco 4.2 you can do this by overriding the ".get.head.ftl" part of the web script and add your reference there in a `script` tag.
-* Starting with Alfresco 4.2, that approach is deprecated. Instead, you add the script tag to the Freemarker view as a dependency.
-
-Let me show you each option and you can pick the right one depending on which version you are running.
-
-#### Adding the Client-Side JavaScript Reference to the Head Web Script
-
-The client-side JavaScript file where the custom client-side component
-resides needs to be pulled in to the “\<head\>” section of the page so
-the browser knows about it. Before Alfresco 4.2, web scripts that end with “head.ftl” were
-used for this purpose. For rules, there are two web scripts that will
-need to refer to the custom client-side JavaScript: “rule details” and
-“rule edit”. So the rule-details.get.head.ftl and rule-edit.get.head.ftl
-files are copied from:
-
-    $TOMCAT_HOME/webapps/share/WEB-INF/classes/alfresco/site-webscripts/org/alfresco/components/rules
-
-Into the tutorial project under:
-
-    $TUTORIAL_HOME/actions-tutorial-share/src/main/amp/config/alfresco/web-extension/site-webscripts/org/alfresco/components/rules
-
-The modifications to both are identical. All we need to do is add a new `script` element to the end of the list, like this:
-
-    <@link rel="stylesheet" type="text/css" href="${page.url.context}/res/components/rules/rule-details.css" />
-    <@script type="text/javascript" src="${page.url.context}/res/components/rules/rule-details.js"></@script>
-    <!--Custom javascript file include for detail mode -->
-    <@script type="text/javascript" src="${page.url.context}/someco/components/rules/config/rule-config-action-custom.js"></@script> 
-
-Now when the page renders, the web script framework will insert the reference to the custom JavaScript into the `head` tag of the page.
-
-#### Adding the Client-Side JavaScript Reference to the Freemarker as a Dependency
-
-Starting with Alfresco 4.2, the preferred way to point to a client-side resource is by adding it to the view itself. To do that, the rule-details.get.html.ftl and rule-edit.get.html.ftl files are copied from:
+The `move-replaced` action is going to be invoking some client-side JavaScript. So a reference to the file that contains the JavaScript needs to be added to the page so it can be loaded by the browser. The preferred way to point to a client-side resource is by adding it to the Freemarker view as a dependency. To do that, the rule-details.get.html.ftl and rule-edit.get.html.ftl files are copied from:
 
     $TOMCAT_HOME/webapps/share/WEB-INF/classes/alfresco/site-webscripts/org/alfresco/components/rules
 
@@ -698,7 +664,7 @@ In both files, the new `script` element is added to the end of the JavaScript de
         <@script type="text/javascript" src="${url.context}/res/components/someco/rules/config/rule-config-action-custom.js" group="rules_custom"></@script>
     </@>
 
-Okay, at this point, regardless of which of the two options you chose for adding the client-side JavaScript file to `head`, the rule form will be looking for a custom
+Okay, at this point, the rule form will be looking for a custom
 client-side JavaScript component called SomeCo.RuleConfigActionCustom,
 the action will show up in the right place, and the page's `head`
 element will include a reference to the custom client-side JavaScript
@@ -732,15 +698,15 @@ stuff, check the [source](https://github.com/jpotts/alfresco-developer-series/bl
     SomeCo.RuleConfigActionCustom = function(htmlId)
     {
        SomeCo.RuleConfigActionCustom.superclass.constructor.call(this, htmlId);
- 
+
        // Re-register with our own name
        this.name = "SomeCo.RuleConfigActionCustom";
        Alfresco.util.ComponentManager.reregister(this);
- 
+
        // Instance variables
        this.customisations = YAHOO.lang.merge(this.customisations, SomeCo.RuleConfigActionCustom.superclass.customisations);
        this.renderers = YAHOO.lang.merge(this.renderers, SomeCo.RuleConfigActionCustom.superclass.renderers);
-       
+
        return this;
     };
 
@@ -758,11 +724,11 @@ handler is defined:
 
     YAHOO.extend(SomeCo.RuleConfigActionCustom, Alfresco.RuleConfigAction,
     {
- 
+
        /**
         * CUSTOMISATIONS
         */
- 
+
        customisations:
        {         
           MoveReplaced:
@@ -777,7 +743,7 @@ handler is defined:
              {
                  // Hide all parameters since we are using a cusotm ui but set default values
                  this._hideParameters(configDef.parameterDefinitions);
- 
+
                  // Make parameter renderer create a "Destination" button that displays an destination folder browser
                  configDef.parameterDefinitions.push({
                     type: "arca:destination-dialog-button",
@@ -789,7 +755,7 @@ handler is defined:
              }
           },
        },
- 
+
     });
 
 This part is a copy of the out-of-the-box handler for `Move` with the
@@ -1061,7 +1027,7 @@ hide UI actions based on things like:
 
 Evaluators can also be chained together if multiple conditions need to
 apply. The out-of-the-box evaluators live in
-slingshot-document-library-context.xml so refer to that file for the
+slingshot-documentlibrary-context.xml so refer to that file for the
 full list of evaluators and an example of how chaining works. You can
 also write completely new evaluators using Java deployed to the Share
 tier.
@@ -1163,7 +1129,7 @@ share-config-custom.xml. All it needs is a pointer to an evaluator. In
 this case, the one created earlier can be reused:
 
         </types>
-        
+
         <!-- Custom Indicators -->
         <indicators>
             <indicator id="someco-website" index="10">
@@ -1203,7 +1169,7 @@ both the browse menu and the details page as shown below.
 ![Indicators show which content has the active flag set in Share](./images/indicators-browse-share.png)
 
 ![Custom UI actions in the document details page](./images/ui-actions-disable-details-share.png)
-                                                                                
+
 ![Custom UI actions in the document list](./images/ui-actions-disable-browse-share.png)
 
 Clicking the “SomeCo” menu item will open a browser window to the URL
@@ -1242,4 +1208,3 @@ Where to Find More Information
 * For general development help, see the [Developer Guide](http://wiki.alfresco.com/wiki/Developer_Guide).
 * For help customizing the data dictionary, see the [Data Dictionary](http://wiki.alfresco.com/wiki/Data_Dictionary_Guide) wiki page.
 * If you are ready to cover new ground, try another [ecmarchitect.com](http://ecmarchitect.com) tutorial in the [Alfresco Developer Series](http://ecmarchitect.com/alfresco-developer-series).
-

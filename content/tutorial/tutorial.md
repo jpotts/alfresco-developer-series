@@ -1,6 +1,6 @@
 % Working With Custom Content Types in Alfresco
-% Jeff Potts
-% January, 2014
+% Jeff Potts, [Metaversant Group](http://www.metaversant.com)
+% April, 2015
 
 License
 =======
@@ -70,7 +70,7 @@ Associations come in two flavors: Peer Associations and Child Associations. (Not
 
 An out-of-the-box association that's easy to relate to is `cm:contains`. The `cm:contains` association defines a Child Association between folders (`cm:folder`) and all other objects (instances of `sys:base` or its child types). So, for example, a folder named “Human Resources” (an instance of `cm:folder`) would have a `cm:contains` association between itself and all of its immediate children. The children could be instances of custom types like Resume, Policy, or Performance Review.
 
-Another example might be a “Whitepaper” and its “Related Documents”. Suppose that a company publishes whitepapers on their web site. The whitepaper might be related to other documents such as product marketing materials or other research. If the relationship between the whitepaper and its related documents is formalized it can be shown in the user interface. To implement this, as part of the Whitepaper content type, you'd define a Peer Association. You could use `sys:base` as the target type to allow any piece of content in the repository to be associated with a Whitepaper or you could restrict the association to a specific type like `cm:content` or `sc:whitepaper`. 
+Another example might be a “Whitepaper” and its “Related Documents”. Suppose that a company publishes whitepapers on their web site. The whitepaper might be related to other documents such as product marketing materials or other research. If the relationship between the whitepaper and its related documents is formalized it can be shown in the user interface. To implement this, as part of the Whitepaper content type, you'd define a Peer Association. You could use `sys:base` as the target type to allow any piece of content in the repository to be associated with a Whitepaper or you could restrict the association to a specific type like `cm:content` or `sc:whitepaper`.
 
 ### Aspects
 
@@ -82,7 +82,7 @@ Neither of these are great options. In the first option, there would be a proper
 
 As you have probably figured out by now, there is a third option that addresses these issues: Aspects. Aspects “cross-cut” the content model with properties and associations by attaching them to content types (or even specific instances of content) when and where they are needed.
 
-Going back to the portal example, a “Portal Displayable” aspect could be defined with a publish date property. The aspect would then be added to any piece of content, regardless of type, that needed to be displayed in the portal. 
+Going back to the portal example, a “Portal Displayable” aspect could be defined with a publish date property. The aspect would then be added to any piece of content, regardless of type, that needed to be displayed in the portal.
 
 ### Custom Behavior
 
@@ -114,21 +114,21 @@ Now that you know the building blocks of a content model, it makes sense to cons
 
 ### Out-of-the-Box Models
 
-The Alfresco source code is an indispensable reference tool which you should always have at the ready, along with the documentation, wiki, forums, and Jira. With that said, if you are following along with this article but have not yet downloaded the source, you are in luck. The out-of-the-box content model files are written in XML and get deployed with the web client. They can be found in the alfresco.war file in /WEB-INF/classes/alfresco/model. The table below describes several of the model files that can be found in the directory.
+The Alfresco source code is an indispensable reference tool which you should always have at the ready, along with the documentation, wiki, forums, and Jira. With that said, if you are following along with this article but have not yet downloaded the source, you are in luck. The out-of-the-box content model files are written in XML and get deployed with the web client. They can be found in the alfresco.war inside various JAR files stored in /WEB-INF/lib. The table below describes several of the out-of-the-box model files.
 
-| File | Namespaces | Prefix | Imports | Description |
-| --------------- | ------------ | --------------- | ------------------------ |
-| dictionaryModel.xml | model/dictionary/1.0 | d | None | Fundamental data types used in all other models. |
-| systemModel.xml | model/system/1.0 | sys | d | System-level objects like base, store root, and reference. |
-|                 | system/registry/1.0 | reg |  |  |
-|                 | system/modules/1.0 | module |  |  |
-| contentModel.xml | model/content/1.0 | cm | d, sys | Types and aspects extended most often by your models like Content, Folder, Versionable, and Auditable. |
-|                 | model/rendition/1.0 | rn | | |
-|                 | model/exif/1.0 | exif | | |
-|                 | model/audio/1.0 | audio | | |
-|                 | model/webdav/1.0 | webdav | | |
-| bpmModel.xml | model/bpm/1.0 | bpm | d, sys, cm, usr | Advanced workflow types. Extend these when writing your own custom advanced workflows.|
-| forumModel.xml | model/forum/1.0 | fm | d, cm | Types and aspects related to adding discussion threads to objects. |
+|  JAR | File | Namespaces | Prefix | Imports | Description |
+| -----|--------------- | ------------ | --------------- | ------------------------ |
+| alfresco-data-model-[version].jar | dictionaryModel.xml | model/dictionary/1.0 | d | None | Fundamental data types used in all other models. |
+| alfresco-repository-[version].jar | systemModel.xml | model/system/1.0 | sys | d | System-level objects like base, store root, and reference. |
+| |                 | system/registry/1.0 | reg |  |  |
+| |                 | system/modules/1.0 | module |  |  |
+| alfresco-repository-[version].jar | contentModel.xml | model/content/1.0 | cm | d, sys | Types and aspects extended most often by your models like Content, Folder, Versionable, and Auditable. |
+|  |               | model/rendition/1.0 | rn | | |
+|  |               | model/exif/1.0 | exif | | |
+|  |               | model/audio/1.0 | audio | | |
+|  |               | model/webdav/1.0 | webdav | | |
+| alfresco-repository-[version].jar | bpmModel.xml | model/bpm/1.0 | bpm | d, sys, cm, usr | Advanced workflow types. Extend these when writing your own custom advanced workflows.|
+| alfresco-repository-[version].jar | forumModel.xml | model/forum/1.0 | fm | d, cm | Types and aspects related to adding discussion threads to objects. |
 
 Table: Some Out-of-the-Box Content Models
 
@@ -157,7 +157,7 @@ As the drawing shows, there is a common root type called `sc:doc` with one child
 It's not shown on the model diagram, but there is a Peer Association defined as part of `sc:doc` to keep track of related documents. The target class of the association will be `sc:doc` because the requirement is to be able to associate any instance of `sc:doc` or its children with one or more instances of `sc:doc` or its children.
 
 In addition, there are two aspects. One, the `sc:webable` aspect, is used for content that is to be shown on the web site. It contains the `sc:isActive` flag and `sc:published` date. The `sc:productRelated` aspect is used only for content that relates to a SomeCo product. It captures the specific product name the content is related to as well as the product version.
- 
+
 It should be easy to see how the model might be extended over time. The requirements mentioned social features being needed at some point. A rateable aspect could be added along with a rating type. Comments could work the same way. Or you could choose to use the rating and commenting features available out-of-the-box.
 
 As new content types are identified they will be added under `sc:doc`.
@@ -172,13 +172,15 @@ Before starting, let's get a local development environment set up. First I'll gi
 
 Here is what I am using on my machine:
 
-* Mac OS X 10.9.1
-* Java 1.7.0_51
-* Apache Maven 3.0.5 (installed using Macports)
-* Alfresco Maven SDK, AMP Archetype 1.1.1 (No download necessary)
-* Eclipse Java EE IDE for Web Developers, Kepler
+* Mac OS X 10.10.5
+* Java 1.8.0_31
+* Apache Maven 3.3.3 (installed using Macports)
+* Alfresco Maven SDK 2.1 (No download necessary)
+* Eclipse Java EE IDE for Web Developers, Luna
 
-By default, when you create an Alfresco project using version 1.1.1 of the Alfresco Maven SDK the project will be configured to depend on Alfresco Community Edition 4.2.e.
+By default, when you create an Alfresco project using version 2.1 of the Alfresco Maven SDK the project will be configured to depend on Alfresco Community Edition 5.0.d.
+
+If you are using Alfresco 4.x you must use Alfresco Maven SDK 1.0. The 2.x SDK will not work with Alfresco 4.x.
 
 Projects created using the Alfresco Maven SDK have the ability to run Alfresco on an embedded Tomcat server. This makes [downloading](http://www.alfresco.com/products/community) and installing Alfresco optional. But if you want to run a full Alfresco server locally, you are welcome to do that.
 
@@ -217,14 +219,12 @@ The first step is to **create a new AMP project** using the Alfresco Maven SDK. 
 1. If you have not already done so, create an empty directory that can hold the new projects associated with this tutorial. I'll refer to that as $TUTORIAL_HOME.
 2. Now use the Alfresco Maven SDK to create a project for the repo tier AMP. Using the command line, change directories to $TUTORIAL_HOME, then run:
 
-    ```    
-    mvn archetype:generate \
-    -DarchetypeCatalog=https://artifacts.alfresco.com/nexus/content/groups/public/archetype-catalog.xml \
-    -Dfilter=org.alfresco.maven.archetype:
+    ```   
+    mvn archetype:generate -Dfilter=org.alfresco:
     ```
 
-3. Choose the AMP archetype (option 1).
-4. Choose version 1.1.1 of the archetype (option 5).
+3. Choose the Alfresco AMP archetype (option 2).
+4. Choose version 2.1.1 of the archetype (option 5).
 5. Specify "com.someco" for the `groupId`.
 6. Specify "content-tutorial-repo" for the `artifactId`.
 7. If Eclipse isn't running, start it up. Use File, Import, Maven, Existing Maven Projects to import the content-tutorial-repo project you just created.
@@ -243,7 +243,7 @@ Now that you have a project that is ready to produce a repo tier AMP you can cre
     $TUTORIAL_HOME/content-tutorial-repo/src/main/amp/config/alfresco/module/content-tutorial-repo
     ```
 
-    The "model" directory does not exist when the project is initially created by the Alfresco Maven SDK, so go ahead and create it now.
+    The "model" directory does not exist when the project is initially created by the Alfresco Maven SDK, so go ahead and create it now in the directory above.
 2. Custom models live in the model directory as XML. Create a new XML file in the model directory called "scModel.xml". The name of the file isn't important but you should choose a name that will help you and your team distinguish it from other model files you might add to this directory over time.
 3. Copy the following XML into the scModel.xml file and save.
 
@@ -338,7 +338,7 @@ Now that you have a project that is ready to produce a repo tier AMP you can cre
                     </property>
                 </properties>
             </aspect>
-		
+
             <aspect name="sc:productRelated">
                 <title>Someco Product Metadata</title>
                 <properties>
@@ -353,7 +353,7 @@ Now that you have a project that is ready to produce a repo tier AMP you can cre
                         <multiple>true</multiple>
                     </property>
                 </properties>
-            </aspect>	
+            </aspect>
         </aspects>
     </model>
     ```
@@ -461,17 +461,10 @@ Let's do it.
 
 The first step is to create a new project to hold the files that will make up the Share tier AMP. That works exactly as it did for the repo tier AMP. Do this:
 
-1. In $TUTORIAL_HOME, create a new project using the AMP archetype.
-2. Specify "com.someco" as the `groupId`.
-3. Specify "content-tutorial-share" as the `artifactId`.
-4. Specify "share" as the `alfresco_target_amp_client_war`. This is a step you didn't have to do for the repo tier project because it defaulted to "alfresco". One way to specify this is to type `N` after specifying the groupId and artifactId, then re-specify those values, making sure to specify "share" when prompted for the `alfresco_target_amp_client_war`. Alternatively, you can specify `Y` and then edit the pom.xml to change the `alfresco.client.war` setting to "share".
-
-In this case, there are several things the archetype defaults that aren't necessary for our Share tier project. To clean that up:
-
-1. Delete the org.alfresco.demoamp package.
-2. Delete the context directory that contains service-context.xml.
-3. Delete the org.alfresco.demoamp.test package from src/test/java.
-4. Remove the "alfresco-repository" dependency from pom.xml.
+1. Change directories to $TUTORIAL_HOME, then create a new project using Alfresco Maven SDK.
+2. This time, specify the Share AMP archetype (option 3).
+3. Specify "com.someco" as the `groupId`.
+4. Specify "content-tutorial-share" as the `artifactId`.
 
 Now you are ready to create a custom Share configuration file.
 
@@ -667,7 +660,7 @@ Let’s take care of the `sc:relatedDocuments` association. It’s not defined i
         <show id="surf:widgetType"/>
         <show id="surf:mid"/>
         <show id="surf:label"/>
-                   
+
         <!-- sc:doc -->
         <show id="sc:relatedDocuments" />
     </field-visibility>
@@ -789,16 +782,16 @@ We’ve put off localizing the form labels until now. To fix this, first create 
     #sc:doc
     type.sc_doc=SomeCo Doc
     assoc.sc_relatedDocuments=Related Documents
-    
+
     #sc:whitepaper
     type.sc_whitepaper=SomeCo Whitepaper
     search.form.desc.sc_whitepaper=Search for SomeCo Whitepapers
-    
+
     #sc:webable
     aspect.sc_webable=SomeCo Webable
     prop.sc_published=Published
     prop.sc_isActive=Active?
-    
+
     #sc:productRelated
     aspect.sc_productRelated=SomeCo Product Related
     prop.sc_product=Product
@@ -875,12 +868,12 @@ To create the projects we need for this part, do this:
     <dependency>
         <groupId>org.apache.chemistry.opencmis</groupId>
         <artifactId>chemistry-opencmis-client-impl</artifactId>
-        <version>0.10.0</version>
+        <version>0.11.0</version>
     </dependency>
     <dependency>
         <groupId>org.alfresco.cmis.client</groupId>
         <artifactId>alfresco-opencmis-extension</artifactId>
-        <version>0.7</version>
+        <version>1.0</version>
     </dependency>
     <dependency>
         <groupId>com.someco</groupId>
@@ -897,7 +890,7 @@ To create the projects we need for this part, do this:
             <id>artifacts.alfresco.com</id>
             <name>Alfresco Maven Repository</name>
             <url>https://artifacts.alfresco.com/nexus/content/groups/public/</url>
-        </repository> 
+        </repository>
     </repositories>
     ```
 
@@ -913,7 +906,7 @@ The code we're going to use for creating content is almost exactly the same code
 
 The goal here is to create a runnable class called `SomeCoCMISDataCreator` that accepts arguments for the username, password, folder in which to create the content, type of content we're creating, and a name for the new content. I've left out the main method as well as the code that establishes the session, but you can see the full class [here](https://github.com/jpotts/alfresco-developer-series/blob/master/content/content-tutorial-cmis/src/main/java/com/someco/cmis/examples/SomeCoCMISDataCreator.java).
 
-The first thing the code does is grab a session. The `getSession()` method is inherited from a class called [CMISExampleBase](https://github.com/jpotts/alfresco-developer-series/blob/master/content/content-tutorial-cmis/src/main/java/com/someco/cmis/examples/CMISExampleBase.java) which is used for all of the CMIS examples in this document. The important thing to know about that method is that it uses the value of `serviceUrl` to know how to connect to your Alfresco server. The URL currently specified is the one to use when connecting to a 4.2.x server running on localhost using the AtomPub binding. The URL is:
+The first thing the code does is grab a session. The `getSession()` method is inherited from a class called [CMISExampleBase](https://github.com/jpotts/alfresco-developer-series/blob/master/content/content-tutorial-cmis/src/main/java/com/someco/cmis/examples/CMISExampleBase.java) which is used for all of the CMIS examples in this document. The important thing to know about that method is that it uses the value of `serviceUrl` to know how to connect to your Alfresco server. The URL currently specified is the one to use when connecting to a 5.x server running on localhost using the AtomPub binding. The URL is:
 
     http://localhost:8080/alfresco/api/-default-/public/cmis/versions/1.0/atom
 
@@ -922,14 +915,14 @@ A common mistake is to use an old CMIS service URL, so make sure you are using t
 Once the code has a session, it gets a reference to the folder where the content will be created. The timestamp is incorporated into the content name so that if the code is run multiple times, the object names will be unique.
 
     Session session = getSession();
-    		
+
     // Grab a reference to the folder where we want to create content
     Folder folder = (Folder) session.getObjectByPath("/" + getFolderName());
-    		
+
     String timeStamp = new Long(System.currentTimeMillis()).toString();
     String filename = getContentName() + " (" + timeStamp + ")";
 
-Next, the code sets up the properties that will be set on the new document. It creates a `Map` of `Strings` and `Objects` to hold the property names and values. 
+Next, the code sets up the properties that will be set on the new document. It creates a `Map` of `Strings` and `Objects` to hold the property names and values.
 
     // Create a Map of objects with the props we want to set
     Map <String, Object> properties = new HashMap<String, Object>();
@@ -944,7 +937,7 @@ Next, the code sets up the properties that will be set on the new document. It c
 
 Notice that instead of listing a single value for the object type ID, a comma-separated list is being passed in. This is the content type followed by the aspects that need to be added. This is possible because the code leverages an Alfresco-specific extension that allows us to work with aspects. It is also important to point out that, in CMIS, document types begin with “D:” while policy types begin with “P:”. (CMIS 1.0 doesn’t have a native concept of aspects—what Alfresco calls an aspect, CMIS 1.0 calls a “Policy”-just go with it).
 
-Starting with version 4.2, Alfresco began to support CMIS 1.1. That version of the specification calls aspects "secondary types". Using CMIS 1.1 you no longer need to use the Alfresco extension to work with aspects. If you want to see how to add aspects using CMIS 1.1, see [this gist](https://gist.github.com/jpotts/7242070).
+Starting with version 4.2, Alfresco began to support CMIS 1.1. That version of the specification calls aspects "secondary types". Using CMIS 1.1 you no longer need to use the Alfresco OpenCMIS extension to work with aspects. If you want to see how to add aspects using CMIS 1.1, see [this gist](https://gist.github.com/jpotts/7242070).
 
 The next step is to prepare the content that will be set on the new object. This is a matter of calling the `createContentStream()` method on the `ObjectFactory` with the file name, length, mimetype, and an `InputStream` based on the content.
 
@@ -983,7 +976,7 @@ Now let's look at a class that creates a “related documents” association bet
 The [SomeCoCMISDataRelater](https://github.com/jpotts/alfresco-developer-series/blob/master/content/content-tutorial-cmis/src/main/java/com/someco/cmis/examples/SomeCoCMISDataRelater.java) class accepts a source object ID and a target object ID as arguments. The code creates a map of properties containing the association type, source ID, and target ID. Note that the association type is preceded by “R:” when working with CMIS.
 
     Session session = getSession();
-    
+
     // Create a Map of objects with the props we want to set
     Map <String, String> properties = new HashMap<String, String>();
     properties.put(PropertyIds.OBJECT_TYPE_ID, "R:sc:relatedDocuments");
@@ -1049,17 +1042,17 @@ The `getQueryResults()` method is pretty straightforward. It returns a list of `
     public List<CmisObject> getQueryResults(String queryString) {
         List<CmisObject> objList = new ArrayList<CmisObject>();
         Session session = getSession();
-    
+
         // execute query
         ItemIterable<QueryResult> results = session.query(queryString, false);
-    
+
         for (QueryResult qResult : results) {
             PropertyData<?> propData = qResult.getPropertyById("cmis:objectId");
             String objectId = (String) propData.getFirstValue();
             CmisObject obj = session.getObject(session.createObjectId(objectId));
             objList.add(obj);
         }
-    
+
         return objList;
     };
 
@@ -1070,7 +1063,7 @@ The `doExamples()` method then executes a series of example queries and dumps th
          SomeCoModel.TYPE_SC_DOC.toString());
     queryString = "select * from sc:doc";
     dumpQueryResults(getQueryResults(queryString));
-    		
+
     System.out.println(RESULT_SEP);
     System.out.println("Find content in the root folder with text like 'sample'");
     queryString = "select * from cmis:document where contains('sample') and
@@ -1082,7 +1075,7 @@ You might have noticed the `getFolderId()` call. The `in_folder` predicate expec
 ### Queries on Aspect-based Properties
 
 The next query looks for active content. This is when it starts to get interesting because the property that tracks whether or not a piece of content is active, `sc:isActive`, is defined on an aspect. The CMIS specification allows for joins in queries. But Alfresco does not support joins except in the special case of aspects. In Alfresco CMIS, joins are used to relate a base type to one of its aspects. That allows you to use an aspect-based property in a where clause.
-    
+
     System.out.println(RESULT_SEP);
     System.out.println("Find active content");
     queryString = "select d.*, w.* from cmis:document as d join sc:webable as w on
@@ -1096,7 +1089,7 @@ The next query shows another special case. In this example the goal is to find t
     System.out.println(RESULT_SEP);
     System.out.println("Find active content with a product equal to 'SomePortal'");
     String queryString1 = "select d.cmis:objectId from cmis:document as d join
-        sc:productRelated as p on d.cmis:objectId = p.cmis:objectId " + 
+        sc:productRelated as p on d.cmis:objectId = p.cmis:objectId " +
         "where p.sc:product = 'SomePortal'";
     String queryString2 = "select d.cmis:objectId from cmis:document as d join
         sc:webable as w on d.cmis:objectId = w.cmis:objectId " +
@@ -1109,7 +1102,7 @@ The last query uses the aspect join trick to do a date range search on instances
 
     System.out.println(RESULT_SEP);
     System.out.println("Find content of type sc:whitepaper published between 1/1/2006
-        and 6/1/2007");	
+        and 6/1/2007");
     queryString = "select d.cmis:objectId, w.sc:published from sc:whitepaper as d join
         sc:webable as w on d.cmis:objectId = w.cmis:objectId " +  
         "where w.sc:published > TIMESTAMP '2006-01-01T00:00:00.000-05:00' " +
@@ -1120,7 +1113,9 @@ The last query uses the aspect join trick to do a date range search on instances
 
 If you want to compile and run this on your own machine, you can use one of the Ant tasks in the build.xml file included in the code that accompanies this article. Just type:
 
-    ant cmis-data-queries
+    mvn exec:java \
+    -Dexec.mainClass="com.someco.cmis.examples.SomeCoCMISDataQueries" \
+    -Dexec.args="admin admin SomeCo"
 
 Your results will vary based on how much content you've created and the values you've set in the content properties, but when I ran my test, the results were as shown below.
 
@@ -1242,18 +1237,18 @@ Your results will vary based on how much content you've created and the values y
 
 Deleting Content with OpenCMIS
 ------------------------------
-Now it is time to clean up after ourselves by deleting content from the repository. The delete logic in the [SomeCoCMISDataCleaner](https://github.com/jpotts/alfresco-developer-series/blob/master/content/content-tutorial-cmis/src/main/java/com/someco/cmis/examples/SomeCoCMISDataCleaner.java) class is similar to the search logic except that instead of dumping the results, the CmisObject’s `delete()` method gets called on every hit that is returned. 
+Now it is time to clean up after ourselves by deleting content from the repository. The delete logic in the [SomeCoCMISDataCleaner](https://github.com/jpotts/alfresco-developer-series/blob/master/content/content-tutorial-cmis/src/main/java/com/someco/cmis/examples/SomeCoCMISDataCleaner.java) class is similar to the search logic except that instead of dumping the results, the CmisObject’s `delete()` method gets called on every hit that is returned.
 
     Session session = getSession();
-        	
+
     // execute query
     String queryString = "select * from sc:doc";
     ItemIterable<QueryResult> results = session.query(queryString, false);
-    
+
     // if we found some rows, create an array of DeleteCML objects    	
     if (results.getTotalNumItems() >= 0)
         System.out.println("Found " + results.getTotalNumItems() + " objects to delete.");
-       		
+
     for (QueryResult qResult : results) {
         PropertyData<?> propData = qResult.getPropertyById("cmis:objectId");
         String objectId = (String) propData.getFirstValue();
@@ -1270,7 +1265,7 @@ Similar to the other examples, you can compile and run this on the command line 
     mvn exec:java \
     -Dexec.mainClass="com.someco.cmis.examples.SomeCoCMISDataCleaner" \
     -Dexec.args="admin admin SomeCo"
-    
+
 Again, your results will vary based on the content you've created but in my repository, running the code results in the following:
 
     Found 8 objects to delete.
@@ -1306,7 +1301,7 @@ Where to Find More Information
 * The [Search-related pages](http://wiki.alfresco.com/wiki/Category:Search) on the Alfresco wiki provide query examples using both Lucene and XPath.
 * The [Apache Chemistry Home Page](http://chemistry.apache.org/) has examples and source code that works with CMIS.
 * See [“Getting Started with CMIS”](http://ecmarchitect.com/archives/2009/11/23/1094) on [ecmarchitect.com](http://ecmarchitect.com) for a brief introduction to CMIS. The [Alfresco CMIS](http://cmis.alfresco.com/) page is also a great resource. And there is now a [CMIS book](http://www.manning.com/mueller/) availaible.
-* For deployment help, see [Packaging and Deploying Extensions](http://wiki.alfresco.com/wiki/Packaging_And_Deploying_Extensions) in the Alfresco wiki. 
-* For general development help, see the [Developer Guide](http://wiki.alfresco.com/wiki/Developer_Guide). 
+* For deployment help, see [Packaging and Deploying Extensions](http://wiki.alfresco.com/wiki/Packaging_And_Deploying_Extensions) in the Alfresco wiki.
+* For general development help, see the [Developer Guide](http://wiki.alfresco.com/wiki/Developer_Guide).
 * For help customizing the data dictionary, see the [Data Dictionary](http://wiki.alfresco.com/wiki/Data_Dictionary_Guide) wiki page.
 * If you are ready to cover new ground, try another [ecmarchitect.com](http://ecmarchitect.com) tutorial in the [Alfresco Developer Series](http://ecmarchitect.com/alfresco-developer-series).

@@ -1,6 +1,6 @@
 % Introduction to the Web Script Framework
-% Jeff Potts
-% February, 2014
+% Jeff Potts, [Metaversant Group](http://www.metaversant.com)
+% April, 2015
 
 License
 =======
@@ -8,7 +8,7 @@ License
 
 This work is licensed under the Creative Commons Attribution-ShareAlike 3.0 Unported License. To view a copy of this license, visit http://creativecommons.org/licenses/by-sa/3.0/ or send a letter to Creative Commons, 444 Castro Street, Suite 900, Mountain View, California, 94041, USA.
 
-Introduction 
+Introduction
 ============
 This tutorial is an introduction to the Alfresco Web Script Framework. It continues the “SomeCo Whitepapers” example started in previous tutorials. Here's what you have seen in the previous tutorials:
 
@@ -36,7 +36,7 @@ The complete source code that accompanies this tutorial is available at [GitHub]
 
 Sound decent? Okay, let's get started.
 
-What is the Web Script Framework? 
+What is the Web Script Framework?
 =================================
 
 In today's everything-as-a-service environment, the CMS is increasingly seen as a black-box component. Other systems, both producers and consumers of content, need to interact with the CMS and other components via REST.
@@ -117,7 +117,7 @@ simple "Hello World" web script. After that, the examples will get progressively
 complex until, at the end, you will have a REST-based interface for creating,
 reading, and deleting SomeCo whitepaper ratings.
 
-Hello World Example 
+Hello World Example
 -------------------
 Let's implement the most basic web script possible: A "Hello World" script
 that echoes back an argument. You'll need one descriptor and one
@@ -213,7 +213,7 @@ Most web scripts are going to use a controller, though, so go ahead and add one.
 
     ```
     Hello, Jeff!
-    
+
     Foo: bar
     ```
 
@@ -256,14 +256,14 @@ Tools
 -----
 Here is what I am using on my machine:
 
-* Mac OS X 10.9.1
-* Java 1.7.0_51
-* Apache Maven 3.0.5 (installed using Macports)
-* Alfresco Maven SDK, AMP Archetype 1.1.1 (No download necessary)
-* Eclipse Java EE IDE for Web Developers, Kepler
-* Alfresco Community Edition 4.2.e ([Download](http://www.alfresco.com/products/community))
+* Mac OS X 10.10.5
+* Java 1.8.0_31
+* Apache Maven 3.3.3 (installed using Macports)
+* Alfresco Maven SDK 2.1 (No download necessary)
+* Eclipse Java EE IDE for Web Developers, Luna
+* Alfresco Community Edition 5.0.d ([Download](http://www.alfresco.com/products/community))
 
-By default, when you create an Alfresco project using version 1.1.1 of the Alfresco Maven SDK the project will be configured to depend on Alfresco Community Edition 4.2.e.
+By default, when you create an Alfresco project using Alfresco Maven SDK 2.1 the project will be configured to depend on Alfresco Community Edition 5.0.d.
 
 The Eclipse IDE is optional. Most people working with Alfresco use Eclipse or something similar, so this tutorial will assume that's what you are using.
 
@@ -277,7 +277,7 @@ I am not going to spend much time talking about how the Alfresco Maven SDK works
 
 If you are planning on following along, go ahead and use the Alfresco Maven SDK to create your project directory. Use a `groupId` of "com.someco" and an `artifactId` of "webscripts-tutorial-repo".
 
-I'll refer to the directory where you created the project directory as $TUTORIAL_HOME. 
+I'll refer to the directory where you created the project directory as $TUTORIAL_HOME.
 
 Creating Your Own REST API for Ratings
 ======================================
@@ -386,9 +386,9 @@ The controller is where the logic that queries the whitepapers will live. Create
 the following content:
 
     <import resource="classpath:alfresco/extension/scripts/rating.js">
-    
+
     var whitepapers = search.luceneSearch("PATH:\"/app:company_home/cm:Someco/*\" +TYPE:\"{http://www.someco.com/model/content/1.0}whitepaper\"");
-    
+
     if (whitepapers == null || whitepapers.length == 0) {
         status.code = 404;
         status.message = "No whitepapers found";
@@ -402,7 +402,7 @@ the following content:
         }
         model.whitepapers = whitepaperInfo;
     }
-    
+
     function whitepaperEntry(whitepaper, rating) {
         this.whitepaper = whitepaper;
         this.rating = rating;
@@ -634,7 +634,7 @@ results, there's something wrong with your test data (or your query). You can us
 
 Remember that if you make changes to the web script without restarting the application server, you may need to use the web script console to refresh the web scripts.
 
-Retrieving the ratings for a specific whitepaper 
+Retrieving the ratings for a specific whitepaper
 ------------------------------------------------
 
 You have a working web script that fetches a list of whitepapers. Now let's create a web script that retrieves rating summary data for a specific object.
@@ -700,7 +700,7 @@ If you change the ".html" suffix to ".json", the result should look like this:
 
 Now you have a web script that can retrieve the rating information for a specific object. Next, you'll add a web script that creates new ratings.
 
-Posting a rating with a Java-backed Web Script 
+Posting a rating with a Java-backed Web Script
 ----------------------------------------------
 
 You have seen how to retrieve whitepapers and rating data about specific whitepapers. Now let's create a web script that can create ratings. But first, a few words about authentication.
@@ -776,10 +776,10 @@ Create a new package called "com.someco.beans" in:
 In that package, create a new class called "[RatingBean](https://github.com/jpotts/alfresco-developer-series/blob/master/webscripts/webscripts-tutorial-repo/src/main/java/com/someco/beans/RatingBean.java)". The class (without the imports) looks like this:
 
     public class RatingBean {
-    
+
         // Dependencies
         private NodeService nodeService;
-    
+
         public void create(final NodeRef nodeRef, final int rating, final String user) {
             // add the aspect to this document if it needs it
             if (nodeService.hasAspect(nodeRef, QName.createQName(SomeCoRatingsModel.NAMESPACE_SOMECO_RATINGS_CONTENT_MODEL, SomeCoRatingsModel.ASPECT_SCR_RATEABLE))) {
@@ -791,12 +791,12 @@ In that package, create a new class called "[RatingBean](https://github.com/jpot
             props.put(QName.createQName(SomeCoRatingsModel.NAMESPACE_SOMECO_RATINGS_CONTENT_MODEL, "rater"), user);
             nodeService.createNode(nodeRef, QName.createQName(SomeCoRatingsModel.NAMESPACE_SOMECO_RATINGS_CONTENT_MODEL, SomeCoRatingsModel.ASSN_SCR_RATINGS), QName.createQName(SomeCoRatingsModel.NAMESPACE_SOMECO_RATINGS_CONTENT_MODEL, "rating" + new Date().getTime()), QName.createQName(SomeCoRatingsModel.NAMESPACE_SOMECO_RATINGS_CONTENT_MODEL, SomeCoRatingsModel.TYPE_SCR_RATING), props);
         }
-    
+
         public NodeService getNodeService() {
             return nodeService;
     	}
-    
-    
+
+
         public void setNodeService(NodeService nodeService) {
             this.nodeService = nodeService;
     	}    
@@ -821,17 +821,17 @@ Within that package, create a new class called "[PostRating](https://github.com/
 The class needs to extend `org.alfresco.webscripts.DeclarativeWebScript`. The logic goes in `executeImpl` as shown below.
 
     public class PostRating extends DeclarativeWebScript {
-    
+
         private RatingBean ratingBean;
         private NodeService nodeService;
-    
+
         @Override
         protected Map<String, Object> executeImpl(WebScriptRequest req,
                 Status status) {
             String id = req.getParameter("id");
             String rating = req.getParameter("rating");
             String user = req.getParameter("user");
-    
+
             if (id == null || rating == null || rating.equals("0") || user == null) {
                 status.setCode(400, "Required data has not been provided");
                 status.setRedirect(true);
@@ -843,33 +843,33 @@ The class needs to extend `org.alfresco.webscripts.DeclarativeWebScript`. The lo
                 } else {
                     ratingBean.create(curNode, Integer.parseInt(rating), user);
                 }
-    
+
             }
-    
+
             Map<String, Object> model = new HashMap<String, Object>();
             model.put("node", id);
             model.put("rating", rating);
             model.put("user", user);
-    
+
             return model;
         }
-    
+
         public NodeService getNodeService() {
             return nodeService;
         }
-    
+
         public void setNodeService(NodeService nodeService) {
             this.nodeService = nodeService;
         }
-    
+
         public RatingBean getRatingBean() {
             return ratingBean;
         }
-    
+
         public void setRatingBean(RatingBean ratingBean) {
             this.ratingBean = ratingBean;
         }
-    
+
     }
 
 This code should look strikingly similar to a JavaScript controller and
@@ -900,7 +900,7 @@ Edit that file and make the `beans` element look like this:
                 <ref bean="NodeService" />
             </property>
         </bean>
-    
+
         <bean id="webscript.com.someco.ratings.rating.post" class="com.someco.scripts.PostRating" parent="webscript">
         	<property name="ratingBean">
         		<ref bean="ratingBean" />    	
@@ -944,7 +944,7 @@ That `id` is from the node reference of an existing whitepaper.
 
 Running this returns:
 
-    {"rating" : 
+    {"rating" :
             {
              "node" : "802d6f27-82ec-4c9c-8e29-9b6e4a3401ef",
              "rating" : "5",
@@ -954,7 +954,7 @@ Running this returns:
 
 Assuming everything is okay, you now have web scripts that can retrieve as well as create content in the repository. Let's finish up the custom ratings API by creating a web script that deletes ratings.
 
-Deleting ratings 
+Deleting ratings
 ----------------
 
 This should be old hat by now. Creating a web script to delete the ratings associated with a specific whitepaper is similar to the other web scripts, it's just that this one is invoked with the DELETE HTTP method. Let's look at the descriptor and the controller.
@@ -987,7 +987,7 @@ As in previous examples, the controller JavaScript, [rating.delete.js](https://g
 
         // get the node's children
         var children = curNode.children;
-        
+
         if (children != null && children.length \> 0) {
             logger.log("Found children...iterating");
             for (i in children) {
@@ -1025,7 +1025,7 @@ If everything goes as planned you will see something similar to:
 
 If you then visit the GET rating web script, either in your browser or through curl, you'll see the object no longer has any ratings.
 
-Example summary 
+Example summary
 ---------------
 
 You've seen how to implement two GET web scripts (one that retrieves a list of whitepapers and that retrieves a specific rating), a POST web script for creating new ratings, and a DELETE web script for clearing out ratings. At this point SomeCo has everything they need to build a front-end that talks to the Alfresco repository via REST.
@@ -1110,7 +1110,7 @@ ratings.
         }
         postRating(widgetId, starNbr, curUser);
     }           
-    
+
     function postRating(id, rating, user) {
         if (receiveReq.readyState == 4 || receiveReq.readyState == 0) {
             receiveReq.open("POST", "${url.serviceContext}/someco/rating?id=" + id + "&rating=" + rating + "&guest=true&user=" + user, true);
@@ -1127,12 +1127,12 @@ ratings.
 
 Those of you familiar with AJAX techniques may be wondering why I didn't use the prototype library to make the post--it is already already being used with the rating widget. I had trouble getting prototype to play nicely with the web script framework and this particular version of prototype is quite old, so rather than spend time upgrading the library and debugging the problem, I chose to use the lower-level `XMLHttpRequest`.
 
-Dealing with the cross-domain scripting limitation 
+Dealing with the cross-domain scripting limitation
 --------------------------------------------------
 
 In this example, the Alfresco server and the server serving up the page with the ratings widget are the same machine. In production, Alfresco and the front-end might be different machines. Browsers hitting the front-end web site will be able to make AJAX calls to the front-end servers but not the Alfresco server. This known as the “cross-domain scripting limitation”. Ways to deal with the limitation are widely documented on the Internet. The web script framework does provide a callback mechanism if you choose to go that route.
 
-Conclusion 
+Conclusion
 ==========
 This tutorial provided an introduction to the Alfresco web script framework. It began with a very simple "Hello World" web script deployed to the content repository and then gradually moved to more complex examples.
 
@@ -1157,7 +1157,7 @@ There are still topics left to explore. For now, that's up to you. Here are some
 
 The number of web scripts shipped with Alfresco has grown tremendously over the years. Before writing your own, browse the web script index to see what you might be able to leverage. Be careful, though. Not all out-of-the-box web scripts are meant for public use. The web script console can sort web scripts by "lifecycle". Avoid web scripts marked "deprecated" or "internal".
 
-Where to Find More Information 
+Where to Find More Information
 ==============================
 
 * The complete source code for these examples is available on [GitHub](https://github.com/jpotts/alfresco-developer-series).
@@ -1173,4 +1173,3 @@ Where to Find More Information
         info)
 * Learn more about FreeMarker at [freemarker.sourceforge.net](http://freemarker.sourceforge.net/).
 * Learn more about JSON at [json.org](http://www.json.org/)
-
