@@ -4,9 +4,9 @@ Alfresco Custom Content Types Tutorial
 Alfresco Share Configuration
 ----------------------------
 
-These sample Alfresco Share extension config files accompany an article called
-[Alfresco Developer Series: Working with Custom Content Types, 2nd Edition]
-(http://ecmarchitect.com).
+These sample Alfresco Share extension config files accompany a tutorial called
+[Working with Custom Content Types in Alfresco]
+(http://ecmarchitect.com/alfresco-developer-series-tutorials/content/tutorial/tutorial.html).
 
 Building the source
 -------------------
@@ -29,9 +29,9 @@ For example, if you are running Alfresco installed with the binary installer in
 to `/opt/alfresco/4.2e-installer/amps_share`, then run `bin/apply_amps.sh`.
 
 Alternatively, you can run:
-`mvn integration-test -Pamp-to-war -Djetty.port=8081`
+`mvn integration-test -Pamp-to-war`
 
-Which will start Alfresco Share on an embedded Jetty server with the AMP deployed
+Which will start Alfresco Share on an embedded Tomcat server with the AMP deployed
 to a WAR. If you want to change the version of the Alfresco WAR, edit the
 pom.xml file.
 

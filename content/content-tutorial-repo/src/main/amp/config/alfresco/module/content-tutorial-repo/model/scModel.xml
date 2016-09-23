@@ -30,6 +30,15 @@
                 </list>
             </parameter>
         </constraint>
+    	<constraint name="sc:ownerList" type="LIST">
+            <parameter name="allowedValues">
+                <list>
+                    <value>Smith</value>
+                    <value>Jones</value>
+                    <value>Jacobsen</value>
+                </list>
+            </parameter>
+        </constraint>
     </constraints>
 
 	<types>
@@ -67,9 +76,18 @@
                 <properties>
                         <property name="sc:campaign">
                                 <type>d:text</type>
+                                <mandatory>true</mandatory>
                                 <multiple>true</multiple>
                                 <constraints>
                                         <constraint ref="sc:campaignList" />
+                                </constraints>
+                        </property>
+                        <property name="sc:campaignOwner">
+                                <type>d:text</type>
+                                <mandatory>true</mandatory>
+                                <multiple>false</multiple>
+                                <constraints>
+                                        <constraint ref="sc:ownerList" />
                                 </constraints>
                         </property>
                 </properties>

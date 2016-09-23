@@ -1,6 +1,6 @@
 % Working With Custom Content Types in Alfresco
 % Jeff Potts, [Metaversant Group](http://www.metaversant.com)
-% April, 2015
+% September, 2016
 
 License
 =======
@@ -172,15 +172,15 @@ Before starting, let's get a local development environment set up. First I'll gi
 
 Here is what I am using on my machine:
 
-* Mac OS X 10.10.5
-* Java 1.8.0_31
-* Apache Maven 3.3.3 (installed using Macports)
-* Alfresco Maven SDK 2.1 (No download necessary)
+* Mac OS X 10.11.6
+* Java 1.8.0_77
+* Apache Maven 3.3.9 (installed using Macports)
+* Alfresco Maven SDK 2.2.0 (No download necessary)
 * Eclipse Java EE IDE for Web Developers, Luna
 
-By default, when you create an Alfresco project using version 2.1 of the Alfresco Maven SDK the project will be configured to depend on Alfresco Community Edition 5.0.d.
+By default, when you create an Alfresco project using version 2.2.0 of the Alfresco Maven SDK the project will be configured to depend on Alfresco Community Edition 5.1.e.
 
-If you are using Alfresco 4.x you must use Alfresco Maven SDK 1.0. The 2.x SDK will not work with Alfresco 4.x.
+Note that the version of the Alfresco Maven SDK you are using may dictate which Alfresco versions you can use. Check the [Compatibility Matrix](http://docs.alfresco.com/community/concepts/alfresco-sdk-compatibility.html) to find out.
 
 Projects created using the Alfresco Maven SDK have the ability to run Alfresco on an embedded Tomcat server. This makes [downloading](http://www.alfresco.com/products/community) and installing Alfresco optional. But if you want to run a full Alfresco server locally, you are welcome to do that.
 
@@ -190,7 +190,7 @@ The Eclipse IDE is also optional. Most people working with Alfresco use Eclipse 
 
 I am going to use the Alfresco Maven SDK to create projects that will package up my customizations as AMPs (Alfresco Module Packages). I will ultimately create two AMPs. One AMP is for the Alfresco web application (the "repo" tier) and the other is for the Alfresco Share web application (the "Share" tier). Unless you have a good reason to do otherwise, this should be your default approach to packaging and deploying your customizations.
 
-Normally, your custom content model would use two projects--one for the repo tier AMP and one for the Share tier AMP. But, because of how I am structuring this and other tutorials, I'm going to use some extra projects. If you follow the entire tutorial you will end up creating four:
+Normally, your custom content model would use two projects--one for the repo tier AMP and one for the Share tier AMP. But, because of how I am structuring this and other tutorials, I'm going to use some extra projects. If you follow the entire tutorial you will end up creating four projects:
 
 * **content-tutorial-repo**: This project creates the repo tier AMP. It contains the custom content model declaration. You'll create this project in Part 1 of this tutorial.
 * **content-tutorial-share**: This project creates the Share tier AMP. It contains the Alfresco Share user interface configuration. You'll create this project in Part 2 of this tutorial.
@@ -224,7 +224,7 @@ The first step is to **create a new AMP project** using the Alfresco Maven SDK. 
     ```
 
 3. Choose the Alfresco AMP archetype (option 2).
-4. Choose version 2.1.1 of the archetype (option 5).
+4. Choose version 2.2.0 of the archetype (option 8).
 5. Specify "com.someco" for the `groupId`.
 6. Specify "content-tutorial-repo" for the `artifactId`.
 7. If Eclipse isn't running, start it up. Use File, Import, Maven, Existing Maven Projects to import the content-tutorial-repo project you just created.
@@ -413,7 +413,7 @@ If you get a build failure, it is time to debug. Make sure that:
 * The bean in service-context.xml refers to the proper path and file name of your custom content model XML file.
 * Your custom content model XML file is well-formed and valid.
 
-If you still have problems, post as much detail as you can in the [Alfresco Forums](http://forums.alfresco.com).
+If you still have problems, post as much detail as you can in the [Alfresco Forums](http://community.alfresco.com).
 
 #### Success
 
@@ -547,7 +547,7 @@ You need two things to test this: An Alfresco repository that is running the rep
 5. Run:
 
     ```
-    mvn integration-test -Pamp-to-war -Dmaven.tomcat.port=8081
+    mvn integration-test -Pamp-to-war
     ```
 
     This will start up Alfresco Share running on port 8081. It will automatically connect to the Alfresco server you just started, which is running on port 8080.
@@ -616,7 +616,7 @@ To test this change:
 3. Re-run the server using:
 
     ```
-    mvn integration-test -Pamp-to-war -Dmaven.tomcat.port=8081
+    mvn integration-test -Pamp-to-war
     ```
 
 There is no need to restart the Alfresco repository web application because nothing has changed in that AMP.
@@ -862,7 +862,7 @@ To create the projects we need for this part, do this:
 3. If you are using Eclipse, convert the project to a Maven project using Configure, Convert to Maven Project. This will create a default pom.xml in the root of your project folder. I am using "com.someco" for the `groupId` and "content-tutorial-common" for the `artifactId`.
 4. Repeat the steps above for a new project called "content-tutorial-cmis".
 5. Edit the pom.xml file that belongs to "content-tutorial-cmis".
-6. This project uses the OpenCMIS library from Apache Chemistry, the Alfresco OpenCMIS Extension Library, and the content-tutorial-common project, so add those as dependencies:
+6. This project uses the OpenCMIS library from Apache Chemistry and the content-tutorial-common project, so add those as dependencies:
 
     ```
     <dependency>
@@ -871,44 +871,54 @@ To create the projects we need for this part, do this:
         <version>0.11.0</version>
     </dependency>
     <dependency>
-        <groupId>org.alfresco.cmis.client</groupId>
-        <artifactId>alfresco-opencmis-extension</artifactId>
-        <version>1.0</version>
-    </dependency>
-    <dependency>
         <groupId>com.someco</groupId>
         <artifactId>content-tutorial-common</artifactId>
         <version>1.0-SNAPSHOT</version>
     </dependency>
     ```
 
-8. The alfresco-opencmis-extension artifact resides in the Alfresco artifacts repository, so add that repository to your pom.xml:
+7. The content-tutorial-common project will contain code common the CMIS project will use as well as projects in later tutorials. For this tutorial, all we need is the com.someco.model.SomeCoModel.java class which contains constants that map to the custom content model. These constants are used for convenience by Java classes that need to know things like namespaces, names of content types, etc. If you are building your own project just copy it from the source.
 
-    ```
-    <repositories>
-        <repository>
-            <id>artifacts.alfresco.com</id>
-            <name>Alfresco Maven Repository</name>
-            <url>https://artifacts.alfresco.com/nexus/content/groups/public/</url>
-        </repository>
-    </repositories>
-    ```
+CMIS 1.0 and the Alfresco OpenCMIS Extension Library
+----------------------------------------------------
+Alfresco offers support for both CMIS 1.0 and CMIS 1.1. Unless you have a good reason to stick with the old version, you should be hitting the CMIS 1.1 end points. If you are using CMIS 1.1, skip this section and go on to "Start Your Repository".
 
-9. The content-tutorial-common project will contain code common the CMIS project will use as well as projects in later tutorials. For this tutorial, all we need is the com.someco.model.SomeCoModel.java class which contains constants that map to the custom content model. These constants are used for convenience by Java classes that need to know things like namespaces, names of content types, etc. If you are building your own project just copy it from the source.
+If you are using CMIS 1.0, you may want to use an additional library called the Alfresco OpenCMIS Extension. It was created to make it easier to work with aspects before native support for aspects was added to CMIS 1.1. If you need to work with CMIS 1.0 for some reason, add the following to the CMIS project pom.xml:
 
-To run the examples in Part 3 you need to have an Alfresco repository running with the repo tier AMP you created in Part 1. Using the embedded Tomcat server as shown in that part of the tutorial works fine.
+```
+<dependency>
+    <groupId>org.alfresco.cmis.client</groupId>
+    <artifactId>alfresco-opencmis-extension</artifactId>
+    <version>1.0</version>
+</dependency>
+```
+
+As well as the repository where the OpenCMIS Extension Library resides:
+
+```
+<repositories>
+    <repository>
+        <id>artifacts.alfresco.com</id>
+        <name>Alfresco Maven Repository</name>
+        <url>https://artifacts.alfresco.com/nexus/content/groups/public/</url>
+    </repository>
+</repositories>
+```
+
+Start Your Repository
+---------------------
+
+To run the examples in Part 3 you need to have an Alfresco repository running with the repo tier AMP you created in Part 1. Using the embedded Tomcat server as shown in that part of the tutorial works fine. If it isn't running already, go ahead and start it up.
 
 Now you are ready to write some code.
 
 Creating Content with OpenCMIS
 ------------------------------
-The code we're going to use for creating content is almost exactly the same code that comes with the old non-CMIS Alfresco SDK Samples.
-
 The goal here is to create a runnable class called `SomeCoCMISDataCreator` that accepts arguments for the username, password, folder in which to create the content, type of content we're creating, and a name for the new content. I've left out the main method as well as the code that establishes the session, but you can see the full class [here](https://github.com/jpotts/alfresco-developer-series/blob/master/content/content-tutorial-cmis/src/main/java/com/someco/cmis/examples/SomeCoCMISDataCreator.java).
 
 The first thing the code does is grab a session. The `getSession()` method is inherited from a class called [CMISExampleBase](https://github.com/jpotts/alfresco-developer-series/blob/master/content/content-tutorial-cmis/src/main/java/com/someco/cmis/examples/CMISExampleBase.java) which is used for all of the CMIS examples in this document. The important thing to know about that method is that it uses the value of `serviceUrl` to know how to connect to your Alfresco server. The URL currently specified is the one to use when connecting to a 5.x server running on localhost using the AtomPub binding. The URL is:
 
-    http://localhost:8080/alfresco/api/-default-/public/cmis/versions/1.0/atom
+    http://localhost:8080/alfresco/api/-default-/public/cmis/versions/1.1/atom
 
 A common mistake is to use an old CMIS service URL, so make sure you are using the correct one according to the version of Alfresco you are using.
 
@@ -926,18 +936,22 @@ Next, the code sets up the properties that will be set on the new document. It c
 
     // Create a Map of objects with the props we want to set
     Map <String, Object> properties = new HashMap<String, Object>();
-    // Following sets the content type and adds the webable and productRelated aspects
-    // This works because we are using the OpenCMIS extension for Alfresco
-    properties.put(PropertyIds.OBJECT_TYPE_ID,
-                   "D:sc:whitepaper,P:sc:webable,P:sc:productRelated");
     properties.put(PropertyIds.NAME, filename);
+    properties.put(PropertyIds.OBJECT_TYPE_ID, "D:sc:whitepaper");
+    properties.put(PropertyIds.SECONDARY_OBJECT_TYPE_IDS,
+        Arrays.asList(
+            "P:sc:webable",
+            "P:sc:productRelated",
+            "P:cm:generalclassifiable"
+        )
+    );
     properties.put("sc:isActive", true);
     GregorianCalendar publishDate = new GregorianCalendar(2007,4,1,5,0);
     properties.put("sc:published", publishDate);
 
-Notice that instead of listing a single value for the object type ID, a comma-separated list is being passed in. This is the content type followed by the aspects that need to be added. This is possible because the code leverages an Alfresco-specific extension that allows us to work with aspects. It is also important to point out that, in CMIS, document types begin with “D:” while policy types begin with “P:”. (CMIS 1.0 doesn’t have a native concept of aspects—what Alfresco calls an aspect, CMIS 1.0 calls a “Policy”-just go with it).
+Notice that the base type is being set with the OBJECT_TYPE_ID property. The aspects are being set with the SECONDARY_OBJECT_TYPE_IDS property, which accepts a list of aspect IDs.
 
-Starting with version 4.2, Alfresco began to support CMIS 1.1. That version of the specification calls aspects "secondary types". Using CMIS 1.1 you no longer need to use the Alfresco OpenCMIS extension to work with aspects. If you want to see how to add aspects using CMIS 1.1, see [this gist](https://gist.github.com/jpotts/7242070).
+It is also important to point out that, in CMIS, document types begin with “D:” while policy types begin with “P:”. (The 'P' stands for "Policy". CMIS 1.0 didn’t have a native concept of aspects, and as a workaround, aspects were referred to using a CMIS concept called a “Policy”).
 
 The next step is to prepare the content that will be set on the new object. This is a matter of calling the `createContentStream()` method on the `ObjectFactory` with the file name, length, mimetype, and an `InputStream` based on the content.
 
@@ -973,7 +987,7 @@ Creating Associations with OpenCMIS
 -----------------------------------
 Now let's look at a class that creates a “related documents” association between two documents.
 
-The [SomeCoCMISDataRelater](https://github.com/jpotts/alfresco-developer-series/blob/master/content/content-tutorial-cmis/src/main/java/com/someco/cmis/examples/SomeCoCMISDataRelater.java) class accepts a source object ID and a target object ID as arguments. The code creates a map of properties containing the association type, source ID, and target ID. Note that the association type is preceded by “R:” when working with CMIS.
+The [SomeCoCMISDataRelater](https://github.com/jpotts/alfresco-developer-series/blob/master/content/content-tutorial-cmis/src/main/java/com/someco/cmis/examples/SomeCoCMISDataRelater.java) class accepts a source object ID and a target object ID as arguments. The code creates a map of properties containing the association type, source ID, and target ID. Note that the association type is preceded by “R:”, which stands for "relationship", when working with CMIS.
 
     Session session = getSession();
 
@@ -1023,13 +1037,11 @@ Remember the share-config-custom.xml file? It says that any time the default for
 
 Searching for Content with OpenCMIS
 -----------------------------------
-Now that there are some instances of SomeCo’s custom types in the repository it is time to write code that will query for those. Starting with Alfresco 4.0, there are two options for search. The first option is to use Lucene, which is the embedded search engine that has always shipped with Alfresco. The second option is to use Solr. If you upgraded an existing pre-4.0 installation and made no other changes, you are using Lucene. If you installed 4.0 using the installer, you are using Solr. You can switch from one to the other—refer to the documentation to find out how.
+Now that there are some instances of SomeCo’s custom types in the repository it is time to write code that will query for those.
 
-Regardless of the search engine option you’ve chosen, content in the repository is automatically indexed by Alfresco. You can execute searches to find content based on full-text, property values, content types, and folder paths.
+Content in the repository is automatically indexed by Alfresco, including properties in your custom content model. You can execute searches to find content based on full-text, property values, content types, and folder paths.
 
-There are a number of supported search dialects. Prior to 3.4, the most common dialect was Lucene. Starting with 3.4, Alfresco introduced a new dialect called Alfresco FTS which is an abstraction that means you don’t have to learn the specific Lucene search syntax. XPath is also an option, although it’s not used that often. CMIS has its own query language which looks a lot like SQL.
-
-If you are writing code against an Alfresco repository that is 3.4 or higher, you should use either Alfresco FTS or CMIS Query Language, if possible. This part of the tutorial is focused on CMIS, so let's write some CMIS Query Language queries.
+There are a number of supported search dialects. If you are writing code against an Alfresco repository that is 3.4 or higher, you should use either Alfresco FTS or CMIS Query Language, if at all possible. This part of the tutorial is focused on CMIS, so let's write some CMIS Query Language queries.
 
 Just like the content creation code, the [SomeCoCMISDataQueries](https://github.com/jpotts/alfresco-developer-series/blob/master/content/content-tutorial-cmis/src/main/java/com/someco/cmis/examples/SomeCoCMISDataQueries.java) class will be a runnable Java application that accepts the username, password, and folder name as arguments. It includes a generic method used to execute a query which is called repeatedly with multiple query examples.
 
@@ -1281,6 +1293,8 @@ Again, your results will vary based on the content you've created but in my repo
 
 Now you know how to use CMIS, an industry-standard API, to create, relate, query, and delete objects in Alfresco. In fact, the code you've worked with here in Part 3 should work with any CMIS-compliant server (except for the aspect bits).
 
+The source code for this tutorial contains some additional CMIS examples that were not covered specifically, so you might want to take a look at those.
+
 Other Topics to Explore on Your Own
 ===================================
 This tutorial has shown how to extend Alfresco's out-of-the-box content model with your own business-specific content types, how to expose those types, aspects, and properties in Alfresco Share, and how to work with content via OpenCMIS, the Java API for CMIS that is part of Apache Chemistry. I've thrown in a few recommendations that will hopefully save you some time or at least spark some discussion.
@@ -1298,10 +1312,6 @@ Where to Find More Information
 * The complete source code for these examples is available on [GitHub](https://github.com/jpotts/alfresco-developer-series).
 * Official documentation for both Enterprise Edition and Community Edition is available at [docs.alfresco.com](http://docs.alfresco.com/).
 * [Share Extras](http://share-extras.github.io/) has many examples of deeper Share customization.
-* The [Search-related pages](http://wiki.alfresco.com/wiki/Category:Search) on the Alfresco wiki provide query examples using both Lucene and XPath.
 * The [Apache Chemistry Home Page](http://chemistry.apache.org/) has examples and source code that works with CMIS.
 * See [“Getting Started with CMIS”](http://ecmarchitect.com/archives/2009/11/23/1094) on [ecmarchitect.com](http://ecmarchitect.com) for a brief introduction to CMIS. The [Alfresco CMIS](http://cmis.alfresco.com/) page is also a great resource. And there is now a [CMIS book](http://www.manning.com/mueller/) availaible.
-* For deployment help, see [Packaging and Deploying Extensions](http://wiki.alfresco.com/wiki/Packaging_And_Deploying_Extensions) in the Alfresco wiki.
-* For general development help, see the [Developer Guide](http://wiki.alfresco.com/wiki/Developer_Guide).
-* For help customizing the data dictionary, see the [Data Dictionary](http://wiki.alfresco.com/wiki/Data_Dictionary_Guide) wiki page.
 * If you are ready to cover new ground, try another [ecmarchitect.com](http://ecmarchitect.com) tutorial in the [Alfresco Developer Series](http://ecmarchitect.com/alfresco-developer-series).
