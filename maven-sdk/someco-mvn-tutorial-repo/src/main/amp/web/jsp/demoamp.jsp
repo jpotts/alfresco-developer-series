@@ -1,6 +1,3 @@
-#set( $symbol_pound = '#' )
-#set( $symbol_dollar = '$' )
-#set( $symbol_escape = '\' )
 <!-- 
     Licensed to the Apache Software Foundation (ASF) under one or more
 	contributor license agreements.  See the NOTICE file distributed with
@@ -17,3 +14,4 @@
 	See the License for the specific language governing permissions and
 	limitations under the License.
  -->
+ This is a demo JSP. When running with -Pamp-to-war, just change this text and it will be automatically reloaded! 

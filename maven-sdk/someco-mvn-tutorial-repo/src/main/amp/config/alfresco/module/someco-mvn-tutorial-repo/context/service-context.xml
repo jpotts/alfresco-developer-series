@@ -17,19 +17,22 @@
     limitations under the License.
 -->
 <beans>
-    
+
     <!-- A simple class that is initialized by Spring -->
-    <bean id="changeme.exampleBean" class="org.alfresco.demoamp.Demo" init-method="init" />
-    
-    <!-- A simple module component that will be executed once -->
-    <bean id="changeme.exampleComponent" class="org.alfresco.demoamp.DemoComponent" parent="module.baseComponent" >
+    <bean id="someco-mvn-tutorial-repo.exampleBean" class="com.someco.demoamp.Demo" init-method="init" />
+
+    <!-- A simple module component that will be executed once.
+        Note. this module component will only be executed once, and then there will be an entry for it in the Repo.
+        So doing for example $ mvn clean install -Pamp-to-war twice will only execute this component the first time.
+        You need to remove /alf_data_dev for it to be executed again. -->
+    <bean id="someco-mvn-tutorial-repo.exampleComponent" class="com.someco.demoamp.DemoComponent" parent="module.baseComponent" >
         <property name="moduleId" value="${project.artifactId}" />  <!-- See module.properties -->
         <property name="name" value="exampleComponent" />
         <property name="description" value="A demonstration component" />
-        <property name="sinceVersion" value="2.0" />
-        <property name="appliesFromVersion" value="2.0" />
+        <property name="sinceVersion" value="1.0" />
+        <property name="appliesFromVersion" value="1.0" />
         <property name="nodeService" ref="NodeService" />
         <property name="nodeLocatorService" ref="nodeLocatorService" />
     </bean>
-    
+
 </beans>

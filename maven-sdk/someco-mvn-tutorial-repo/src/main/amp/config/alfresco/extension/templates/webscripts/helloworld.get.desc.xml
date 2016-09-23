@@ -1,0 +1,7 @@
+<webscript>
+    <shortname>Hello World Sample Webscript</shortname>
+    <description>Hands back a greeting</description>
+    <url>/sample/helloworld</url>
+    <authentication>user</authentication>
+    <format default="html"></format>
+</webscript>

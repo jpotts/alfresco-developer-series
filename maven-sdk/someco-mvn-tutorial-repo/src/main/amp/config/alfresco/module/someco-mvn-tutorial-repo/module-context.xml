@@ -19,6 +19,11 @@
 
 <beans>
 	<!-- This is filtered by Maven at build time, so that module name is single sourced. -->
+	<!-- Note. The bootstrap-context.xml file has to be loaded first.
+				Otherwise your custom models are not yet loaded when your service beans are instantiated and you
+				cannot for example register policies on them. -->
+	<import resource="classpath:alfresco/module/${project.artifactId}/context/bootstrap-context.xml" />
     <import resource="classpath:alfresco/module/${project.artifactId}/context/service-context.xml" />
-    
+	<import resource="classpath:alfresco/module/${project.artifactId}/context/webscript-context.xml" />
+
 </beans>

@@ -1,0 +1,14 @@
+<!-- Share configuration related to this particular Share module extension, such as:
+     - Doclib action config
+     - Form config
+     - Aspect and Type config
+
+    Note. Any configuration related to the whole Share.war webapp
+           (i.e. not specific to this share extension) should be
+            placed in the environment specific config:
+             alfresco/tomcat/shared/classes/alfresco/web-extension/share-config-custom.xml file
+     -->
+<alfresco-config>
+
+
+</alfresco-config>
