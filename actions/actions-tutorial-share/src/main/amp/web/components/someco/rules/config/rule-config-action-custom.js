@@ -24,7 +24,7 @@ if (typeof SomeCo == "undefined" || !SomeCo)
     */
     var $html = Alfresco.util.encodeHTML,
        $hasEventInterest = Alfresco.util.hasEventInterest;
-   
+
    SomeCo.RuleConfigActionCustom = function(htmlId)
    {
       SomeCo.RuleConfigActionCustom.superclass.constructor.call(this, htmlId);
@@ -36,7 +36,7 @@ if (typeof SomeCo == "undefined" || !SomeCo)
       // Instance variables
       this.customisations = YAHOO.lang.merge(this.customisations, SomeCo.RuleConfigActionCustom.superclass.customisations);
       this.renderers = YAHOO.lang.merge(this.renderers, SomeCo.RuleConfigActionCustom.superclass.renderers);
-      
+
       return this;
    };
 
@@ -48,7 +48,7 @@ if (typeof SomeCo == "undefined" || !SomeCo)
        */
 
       customisations:
-      {         
+      {
          MoveReplaced:
          {
             text: function(configDef, ruleConfig, configEl)
@@ -63,7 +63,7 @@ if (typeof SomeCo == "undefined" || !SomeCo)
                 this._hideParameters(configDef.parameterDefinitions);
 
                 // Make parameter renderer create a "Destination" button that displays an destination folder browser
-                configDef.parameterDefinitions.push({
+                configDef.parameterDefinitions.splice(0,0,{
                    type: "arca:destination-dialog-button",
                    displayLabel: this.msg("label.to"),
                    _buttonLabel: this.msg("button.select-folder"),

@@ -1,5 +1,5 @@
 <alfresco-config>
-    
+
     <!-- Document Library config section -->
     <config evaluator="string-compare" condition="DocumentLibrary">
         <!--
@@ -22,7 +22,7 @@
             <removeable>
             </removeable>
         </aspects>
-        
+
         <!-- Custom Indicators -->
         <indicators>
             <indicator id="someco-website" index="10">
@@ -47,11 +47,11 @@
                <show id="cm:created" for-mode="view" />
                <show id="cm:modifier" for-mode="view" />
                <show id="cm:modified" for-mode="view" />
-               
+
                <!-- tags and categories -->
                <show id="cm:taggable" for-mode="edit" force="true" />
                <show id="cm:categories" />
-               
+
                <!-- cm:dublincore aspect -->
                <show id="cm:publisher"/>
                <show id="cm:contributor"/>
@@ -61,36 +61,36 @@
                <show id="cm:coverage"/>
                <show id="cm:rights"/>
                <show id="cm:subject"/>
-               
+
                <!-- cm:complianceable aspect -->
                <show id="cm:removeAfter" />
-               
+
                <!-- cm:effectivity aspect -->
                <show id="cm:from"/>
                <show id="cm:to"/>
-               
+
                <!--  cm:summarizable aspect -->
                <show id="cm:summary" />
-               
+
                <!-- cm:translatable aspect -->
                <show id="cm:translations" />
-               
+
                <!-- cm:localizable aspect -->
                <show id="cm:locale" />
-               
+
                <!-- cm:ownable aspect -->
                <show id="cm:owner" />
-               
+
                <!-- cm:attachable aspect -->
                <show id="cm:attachments" />
-               
+
                <!-- cm:emailed aspect -->
                <show id="cm:originator" />
                <show id="cm:addressee" />
                <show id="cm:addressees" />
                <show id="cm:sentdate" />
                <show id="cm:subjectline" />
-               
+
                <!-- exif:exif aspect -->
                <show id="exif:dateTimeOriginal" />
                <show id="exif:pixelXDimension" />
@@ -120,11 +120,11 @@
                <show id="audio:sampleType" />
                <show id="audio:channelType" />
                <show id="audio:compressor" />
-               
+
                <!-- cm:indexControl aspect -->
                <show id="cm:isIndexed" />
                <show id="cm:isContentIndexed" />
-               
+
                <!-- cm:geographic aspect -->
                <show id="cm:latitude" />
                <show id="cm:longitude" />
@@ -133,7 +133,7 @@
                <show id="surf:widgetType"/>
                <show id="surf:mid"/>
                <show id="surf:label"/>
-               
+
                <!-- cm:replaceable -->
                <show id="cm:replaces" />
 
@@ -190,7 +190,7 @@
                <show id="cm:taggable" for-mode="edit" force="true" />
                <show id="cm:categories" />
                <!-- sc:doc -->
-               <show id="sc:relatedDocuments" />               
+               <show id="sc:relatedDocuments" />
             </field-visibility>
             <edit-form template="../documentlibrary/forms/doclib-simple-metadata.ftl" />
             <appearance>
@@ -250,7 +250,7 @@
          </form>
       </forms>
     </config>
-   
+
     <!-- Actions -->
     <config evaluator="string-compare" condition="DocLibActions">
         <actions>
@@ -283,13 +283,13 @@
             <actionGroup id="document-browse">
                 <action index="500" id="someco-web-site" />
                 <action index="510" id="someco-web-enable" />
-                <action index="520" id="someco-web-disable" />                
+                <action index="520" id="someco-web-disable" />
             </actionGroup>
             <actionGroup id="document-details">
                 <action index="500" id="someco-web-site" />
                 <action index="510" id="someco-web-enable" />
-                <action index="520" id="someco-web-disable" />                
+                <action index="520" id="someco-web-disable" />
             </actionGroup>
-        </actionGroups>        
+        </actionGroups>
     </config>
 </alfresco-config>

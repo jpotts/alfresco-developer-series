@@ -13,8 +13,7 @@
    <@script src="${url.context}/res/components/rules/config/rule-config-type.js" group="rules"/>
    <@script src="${url.context}/res/components/rules/config/rule-config-condition.js" group="rules"/>
    <@script src="${url.context}/res/components/rules/config/rule-config-action.js" group="rules"/>
-   <@script src="${url.context}/res/components/rules/rule-details.js"
-   group="rules"/>
+   <@script src="${url.context}/res/components/rules/rule-details.js" group="rules"/>
    <!--Custom javascript file include for detail mode -->
    <@script type="text/javascript" src="${url.context}/res/components/someco/rules/config/rule-config-action-custom.js" group="rules_custom"></@script>
 </@>
@@ -54,4 +53,3 @@
       </div>
    </@>
 </@>
-

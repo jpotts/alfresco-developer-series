@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.someco</groupId>
     <artifactId>actions-tutorial-share</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0.0-SNAPSHOT</version>
     <name>actions-tutorial-share AMP project</name>
     <packaging>amp</packaging>
     <description>Manages the lifecycle of the actions-tutorial-share AMP (Alfresco Module Package)</description>
@@ -12,9 +12,9 @@
     <parent>
         <groupId>org.alfresco.maven</groupId>
         <artifactId>alfresco-sdk-parent</artifactId>
-        <version>2.1.1</version>
+        <version>2.2.0</version>
     </parent>
-    
+
     <!--
         SDK properties have sensible defaults in the SDK parent,
         but you can override the properties below to use another version.
@@ -89,22 +89,4 @@
             </plugin>
         </plugins>
     </build>
-
-    <profiles>
-        <!--
-            Brings in the extra Enterprise specific share classes,
-            if the 'enterprise' profile has been activated, needs to be activated manually. -->
-        <profile>
-            <id>enterprise</id>
-            <dependencies>
-                <dependency>
-                    <groupId>${alfresco.groupId}</groupId>
-                    <artifactId>share-enterprise</artifactId>
-                    <version>${alfresco.version}</version>
-                    <classifier>classes</classifier>
-                    <scope>provided</scope>
-                </dependency>
-            </dependencies>
-        </profile>
-    </profiles>
-    </project>
+</project>

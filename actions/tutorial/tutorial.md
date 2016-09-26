@@ -1,6 +1,6 @@
 % Creating Custom Actions in Alfresco
 % Jeff Potts, [Metaversant Group](http://www.metaversant.com)
-% April, 2015
+% September, 2016
 
 License
 =======
@@ -66,14 +66,14 @@ Tools
 -----
 Here is what I am using on my machine:
 
-* Mac OS X 10.10.5
-* Java 1.8.0_31
-* Apache Maven 3.3.3 (installed using Macports)
-* Alfresco Maven SDK 2.1 (No download necessary)
+* Mac OS X 10.11.6
+* Java 1.8.0_77
+* Apache Maven 3.3.9 (installed using Macports)
+* Alfresco Maven SDK 2.2.0 (No download necessary)
 * Eclipse Java EE IDE for Web Developers, Luna
-* Alfresco Community Edition 5.0.d ([Download](http://www.alfresco.com/products/community))
+* Alfresco Community Edition 5.1.f ([Download](https://sourceforge.net/projects/alfresco/files/Alfresco%20201604%20Community/))
 
-By default, when you create an Alfresco project using Alfresco Maven SDK 2.1 the project will be configured to depend on Alfresco Community Edition 5.0.d.
+By default, when you create an Alfresco project using Alfresco Maven SDK 2.2.0 the project will be configured to depend on Alfresco Community Edition 5.1.e.
 
 The Eclipse IDE is optional. Most people working with Alfresco use Eclipse or something similar, so this tutorial will assume that's what you are using.
 
@@ -576,10 +576,9 @@ target folder would be a very bad thing. Instead, Share needs to render
 a folder picker dialog for the target folder argument. Luckily, Alfresco
 has already developed such a dialog—Share just has to be told to use it.
 
-In Alfresco 4, a lot of work has been done to make customizing and
-extending the user interface easier. Unfortunately, at the moment,
-getting a folder picker to show up for this action takes a bit more work
-than it ought to. My guess is that this will get resolved in the future.
+Unfortunately, at the moment, getting a folder picker to show up for this action
+takes a bit more work than it ought to. My guess is that this will get resolved
+in the future.
 Until then, here is what is involved:
 
 1.  Override the rule config action web script to point to a custom
@@ -597,9 +596,7 @@ Let's go through the steps.
 
 ### Step 1: Specify the custom client-side component and set the action order
 
-In Alfresco 4, a lot of the action configuration has been pulled into
-share-config-custom.xml. But rule config still lives in the rule
-config web script. This isn't a big deal—it is easy to override one or
+Rule config lives in the rule config web script. It is easy to override one or
 more files that make up a web script. In this case, copy the
 rule-config-action.get.config.xml file from:
 
@@ -710,12 +707,8 @@ stuff, check the [source](https://github.com/jpotts/alfresco-developer-series/bl
        return this;
     };
 
-If this is your first foray into the world of object-oriented
-client-side JavaScript, relax. What, you thought just because “Java” and
-“JavaScript” have a word in common that object inheritance would work
-the same way? How literal of you! Basically, what's going on here is
-that the constructor is calling its superclass constructor, then it is
-registering itself with the Alfresco component manager. The YUI merge
+What's going on here is that the constructor is calling its superclass constructor,
+then it is registering itself with the Alfresco component manager. The YUI merge
 calls provide a way to avoid re-typing a bunch of code that exists in
 the parent class.
 
@@ -745,7 +738,7 @@ handler is defined:
                  this._hideParameters(configDef.parameterDefinitions);
 
                  // Make parameter renderer create a "Destination" button that displays an destination folder browser
-                 configDef.parameterDefinitions.push({
+                 configDef.parameterDefinitions.splice(0,0,{
                     type: "arca:destination-dialog-button",
                     displayLabel: this.msg("label.to"),
                     _buttonLabel: this.msg("button.select-folder"),
@@ -818,7 +811,7 @@ I am going to go with the second one because it allows me to quickly iterate on 
 
 So, to do that, I'm going start up my standalone Tomcat server that I just deployed my repo tier AMPs to. Then, I'm going to switch to my actions-tutorial-share project directory and run:
 
-    mvn integration-test -Pamp-to-war -Dmaven.tomcat.port=8081
+    mvn integration-test -Pamp-to-war
 
 That starts Alfresco Share on my embedded Tomcat server on port 8081 running the customizations in actions-tutorial-share. It will automatically find the Alfresco repository running on a standalone Tomcat at port 8080.
 
@@ -827,7 +820,7 @@ Configuring the Set Web Flag UI Action in Share
 
 Now it is time to shift focus from rule actions to UI actions. SomeCo
 wants end-users to be able to click an item in the menu that either
-enables or disables the web flag. Alfresco 4 has a framework that allows
+enables or disables the web flag. Alfresco has a framework that allows
 you to easily add new UI actions to the menu. You can configure:
 
 * UI actions that call a web page (external or within Share),
@@ -901,7 +894,7 @@ actions in the document library and document details menus. While we're
 at it, I'm going to also drop in a UI action that calls a web page just
 for kicks.
 
-The action config has moved to share-config-custom.xml in Alfresco 4.
+The action config is in share-config-custom.xml.
 Action configuration consists of two parts. The `actions` element
 contains a list of action definitions. The `actionGroups` element
 contains a list of action groups. Action groups are things like the list
@@ -1040,7 +1033,7 @@ nicely. The steps, then, will be as follows:
 2.  Update the action config in share-config-custom.xml to point to the
     evaluator
 
-Alfresco 4 has also made it easy to configure “indicators”, which are
+Alfresco has also made it easy to configure “indicators”, which are
 little icons in the document library column. This isn't entirely
 relevant to the subject at hand, but because they work just like
 evaluators and because it makes it easy to see from the document library
@@ -1203,8 +1196,5 @@ Where to Find More Information
 
 * The complete source code for these examples is available on [GitHub](https://github.com/jpotts/alfresco-developer-series).
 * Official documentation for both Enterprise Edition and Community Edition is available at [docs.alfresco.com](http://docs.alfresco.com/).
-* [Mike Hatfield](http://blogs.alfresco.com/wp/mikeh/) and [David Draper](http://blogs.alfresco.com/wp/ddraper/) are two examples of Alfresco engineer blogs that are extremely useful if you are customizing Share.
-* For deployment help, see [Packaging and Deploying Extensions](http://wiki.alfresco.com/wiki/Packaging_And_Deploying_Extensions) in the Alfresco wiki.
-* For general development help, see the [Developer Guide](http://wiki.alfresco.com/wiki/Developer_Guide).
-* For help customizing the data dictionary, see the [Data Dictionary](http://wiki.alfresco.com/wiki/Data_Dictionary_Guide) wiki page.
+* Check the [Alfresco Community](https://community.alfresco.com) site for blog posts from Mike Hatfield and David Draper, two Alfresco engineers that write about customizing Share.
 * If you are ready to cover new ground, try another [ecmarchitect.com](http://ecmarchitect.com) tutorial in the [Alfresco Developer Series](http://ecmarchitect.com/alfresco-developer-series).
