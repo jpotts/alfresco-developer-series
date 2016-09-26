@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.someco</groupId>
     <artifactId>workflow-tutorial-repo</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0.0-SNAPSHOT</version>
     <name>workflow-tutorial-repo AMP project</name>
     <packaging>amp</packaging>
     <description>Manages the lifecycle of the workflow-tutorial-repo AMP (Alfresco Module Package)</description>
@@ -65,8 +65,8 @@
         <dependency>
             <groupId>com.someco</groupId>
             <artifactId>content-tutorial-common</artifactId>
-            <version>1.0-SNAPSHOT</version>
-        </dependency>        
+            <version>1.0.0-SNAPSHOT</version>
+        </dependency>
     </dependencies>
 
     <profiles>

@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.someco</groupId>
     <artifactId>webscripts-tutorial-repo</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0.0-SNAPSHOT</version>
     <name>webscripts-tutorial-repo AMP project</name>
     <packaging>amp</packaging>
     <description>Manages the lifecycle of the webscripts-tutorial-repo AMP (Alfresco Module Package)</description>
@@ -65,7 +65,7 @@
         <dependency>
             <groupId>com.someco</groupId>
             <artifactId>behavior-tutorial-common</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <version>1.0.0-SNAPSHOT</version>
         </dependency>
     </dependencies>
 

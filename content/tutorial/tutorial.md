@@ -873,7 +873,7 @@ To create the projects we need for this part, do this:
     <dependency>
         <groupId>com.someco</groupId>
         <artifactId>content-tutorial-common</artifactId>
-        <version>1.0-SNAPSHOT</version>
+        <version>1.0.0-SNAPSHOT</version>
     </dependency>
     ```
 
