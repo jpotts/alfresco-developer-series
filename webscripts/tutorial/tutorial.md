@@ -1,6 +1,6 @@
 % Introduction to the Web Script Framework
 % Jeff Potts, [Metaversant Group](http://www.metaversant.com)
-% April, 2015
+% September, 2016
 
 License
 =======
@@ -256,14 +256,14 @@ Tools
 -----
 Here is what I am using on my machine:
 
-* Mac OS X 10.10.5
-* Java 1.8.0_31
-* Apache Maven 3.3.3 (installed using Macports)
-* Alfresco Maven SDK 2.1 (No download necessary)
+* Mac OS X 10.11.6
+* Java 1.8.0_77
+* Apache Maven 3.3.9 (installed using Macports)
+* Alfresco Maven SDK 2.2.0 (No download necessary)
 * Eclipse Java EE IDE for Web Developers, Luna
-* Alfresco Community Edition 5.0.d ([Download](http://www.alfresco.com/products/community))
+* Alfresco Community Edition 5.1.f ([Download](https://sourceforge.net/projects/alfresco/files/Alfresco%20201604%20Community/))
 
-By default, when you create an Alfresco project using Alfresco Maven SDK 2.1 the project will be configured to depend on Alfresco Community Edition 5.0.d.
+By default, when you create an Alfresco project using Alfresco Maven SDK 2.2.0 the project will be configured to depend on Alfresco Community Edition 5.1.e.
 
 The Eclipse IDE is optional. Most people working with Alfresco use Eclipse or something similar, so this tutorial will assume that's what you are using.
 
@@ -1162,14 +1162,7 @@ Where to Find More Information
 
 * The complete source code for these examples is available on [GitHub](https://github.com/jpotts/alfresco-developer-series).
 * Official documentation for both Enterprise Edition and Community Edition is available at [docs.alfresco.com](http://docs.alfresco.com/).
-* For deployment help, see [Packaging and Deploying Extensions](http://wiki.alfresco.com/wiki/Packaging_And_Deploying_Extensions) in the Alfresco wiki.
-* For general development help, see the [Developer Guide](http://wiki.alfresco.com/wiki/Developer_Guide).
-* Ask questions about web scripts in the [forums](http://forums.alfresco.com).
+* Ask questions about web scripts in the [community](http://community.alfresco.com).
 * If you are ready to cover new ground, try another [ecmarchitect.com](http://ecmarchitect.com) tutorial in the [Alfresco Developer Series](http://ecmarchitect.com/alfresco-developer-series).
-* Alfresco wiki pages related to [Web Scripts](http://wiki.alfresco.com/wiki/Web_Scripts):
-    * [Alfresco Web Script Runtimes](http://wiki.alfresco.com/wiki/Web_Script_Runtimes)
-    * [Alfresco JavaScript API](http://wiki.alfresco.com/wiki/JavaScript_API)
-    * [Alfresco Template Guide](http://wiki.alfresco.com/wiki/Template_Guide) (FreeMarker
-        info)
 * Learn more about FreeMarker at [freemarker.sourceforge.net](http://freemarker.sourceforge.net/).
 * Learn more about JSON at [json.org](http://www.json.org/)

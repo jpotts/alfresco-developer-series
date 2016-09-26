@@ -1,19 +1,8 @@
-::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-::      Dev environment startup script for Alfresco Community.    ::
-::                                                                ::
-::      Downloads the spring-loaded lib if not existing and       ::
-::      runs the Repo AMP applied to Alfresco WAR.                ::
-::      Note. the Share WAR is not deployed.                      ::
-::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-@echo off
+@ECHO OFF
 
-set springloadedfile=%HOME%\.m2\repository\org\springframework\springloaded\1.2.3.RELEASE\springloaded-1.2.3.RELEASE.jar
-
-if not exist %springloadedfile% (
-  mvn validate -Psetup
+IF "%MAVEN_OPTS%" == "" (
+    ECHO The environment variable 'MAVEN_OPTS' is not set, setting it for you
+    SET MAVEN_OPTS=-Xms256m -Xmx2G -XX:PermSize=300m
 )
-
-set MAVEN_OPTS=-javaagent:"%springloadedfile%" -noverify -Xms256m -Xmx2G
-
-mvn integration-test -Pamp-to-war -nsu
-:: mvn integration-test -Pamp-to-war 
+ECHO MAVEN_OPTS is set to '%MAVEN_OPTS%'
+mvn clean install -Pamp-to-war

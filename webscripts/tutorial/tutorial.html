@@ -30,7 +30,7 @@ Architect | Alfresco Developer Tutorials</title>
 <div id="header">
 <h1 class="entry-title">Introduction to the Web Script Framework</h1>
 <h2 class="author">Jeff Potts, <a href="http://www.metaversant.com">Metaversant Group</a></h2>
-<h3 class="date">April, 2015</h3>
+<h3 class="date">September, 2016</h3>
 </div>
 <div id="TOC">
 <ul>
@@ -207,14 +207,14 @@ Foo: bar</code></pre>
 <h2 id="tools">Tools</h2>
 <p>Here is what I am using on my machine:</p>
 <ul>
-<li>Mac OS X 10.10.5</li>
-<li>Java 1.8.0_31</li>
-<li>Apache Maven 3.3.3 (installed using Macports)</li>
-<li>Alfresco Maven SDK 2.1 (No download necessary)</li>
+<li>Mac OS X 10.11.6</li>
+<li>Java 1.8.0_77</li>
+<li>Apache Maven 3.3.9 (installed using Macports)</li>
+<li>Alfresco Maven SDK 2.2.0 (No download necessary)</li>
 <li>Eclipse Java EE IDE for Web Developers, Luna</li>
-<li>Alfresco Community Edition 5.0.d (<a href="http://www.alfresco.com/products/community">Download</a>)</li>
+<li>Alfresco Community Edition 5.1.f (<a href="https://sourceforge.net/projects/alfresco/files/Alfresco%20201604%20Community/">Download</a>)</li>
 </ul>
-<p>By default, when you create an Alfresco project using Alfresco Maven SDK 2.1 the project will be configured to depend on Alfresco Community Edition 5.0.d.</p>
+<p>By default, when you create an Alfresco project using Alfresco Maven SDK 2.2.0 the project will be configured to depend on Alfresco Community Edition 5.1.e.</p>
 <p>The Eclipse IDE is optional. Most people working with Alfresco use Eclipse or something similar, so this tutorial will assume that's what you are using.</p>
 <h2 id="project-organization">Project Organization</h2>
 <p>You just saw that web scripts can be created by creating or uploading files to the Alfresco repository. For the rest of these examples, though, you'll create a project that will package the web scripts as an AMP (Alfresco Module Package). This is the recommended way to distribute your Alfresco customizations. It's a lot less error-prone than handing a bunch of files to someone and asking them to upload them to the proper place in the repository.</p>
@@ -867,16 +867,8 @@ function handleRatingPosted() {
 <ul>
 <li>The complete source code for these examples is available on <a href="https://github.com/jpotts/alfresco-developer-series">GitHub</a>.</li>
 <li>Official documentation for both Enterprise Edition and Community Edition is available at <a href="http://docs.alfresco.com/">docs.alfresco.com</a>.</li>
-<li>For deployment help, see <a href="http://wiki.alfresco.com/wiki/Packaging_And_Deploying_Extensions">Packaging and Deploying Extensions</a> in the Alfresco wiki.</li>
-<li>For general development help, see the <a href="http://wiki.alfresco.com/wiki/Developer_Guide">Developer Guide</a>.</li>
-<li>Ask questions about web scripts in the <a href="http://forums.alfresco.com">forums</a>.</li>
+<li>Ask questions about web scripts in the <a href="http://community.alfresco.com">community</a>.</li>
 <li>If you are ready to cover new ground, try another <a href="http://ecmarchitect.com">ecmarchitect.com</a> tutorial in the <a href="http://ecmarchitect.com/alfresco-developer-series">Alfresco Developer Series</a>.</li>
-<li>Alfresco wiki pages related to <a href="http://wiki.alfresco.com/wiki/Web_Scripts">Web Scripts</a>:
-<ul>
-<li><a href="http://wiki.alfresco.com/wiki/Web_Script_Runtimes">Alfresco Web Script Runtimes</a></li>
-<li><a href="http://wiki.alfresco.com/wiki/JavaScript_API">Alfresco JavaScript API</a></li>
-<li><a href="http://wiki.alfresco.com/wiki/Template_Guide">Alfresco Template Guide</a> (FreeMarker info)</li>
-</ul></li>
 <li>Learn more about FreeMarker at <a href="http://freemarker.sourceforge.net/">freemarker.sourceforge.net</a>.</li>
 <li>Learn more about JSON at <a href="http://www.json.org/">json.org</a></li>
 </ul>
