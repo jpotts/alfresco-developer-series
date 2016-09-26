@@ -3,7 +3,7 @@ Alfresco Developer Series Tutorials
 
 Source code from the [ecmarchitect.com Alfresco Developer Series](http://ecmarchitect.com/alfresco-developer-series) tutorials.
 
-These tutorials are written for Alfresco Community Edition 5.0.d and Alfresco Enterprise 5.0. They leverage the Alfresco SDK 2.0. That version of the SDK only works with Alfresco 5.x. Older versions of the tutorials use an older version of the SDK which works with Alfresco 4.x.
+These tutorials are written for Alfresco Community Edition 5.1.e and Alfresco Enterprise 5.1. They leverage the Alfresco SDK 2.2.0. That version of the SDK does not work with older versions of Alfresco. Check the [Alfresco SDK Compatibility Matrix](http://docs.alfresco.com/community/concepts/alfresco-sdk-compatibility.html) for more information.
 
 The tutorials build upon each other. The recommended order of progression is:
 
