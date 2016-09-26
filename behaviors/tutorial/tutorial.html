@@ -30,7 +30,7 @@ Architect | Alfresco Developer Tutorials</title>
 <div id="header">
 <h1 class="entry-title">Implementing Custom Behaviors in Alfresco</h1>
 <h2 class="author">Jeff Potts, <a href="http://www.metaversant.com">Metaversant Group</a></h2>
-<h3 class="date">April, 2015</h3>
+<h3 class="date">September, 2016</h3>
 </div>
 <div id="TOC">
 <ul>
@@ -148,14 +148,14 @@ Architect | Alfresco Developer Tutorials</title>
 <h2 id="tools">Tools</h2>
 <p>Here is what I am using on my machine:</p>
 <ul>
-<li>Mac OS X 10.10.5</li>
-<li>Java 1.8.0_31</li>
-<li>Apache Maven 3.3.3 (installed using Macports)</li>
-<li>Alfresco Maven SDK 2.1 (No download necessary)</li>
+<li>Mac OS X 10.11.6</li>
+<li>Java 1.8.0_77</li>
+<li>Apache Maven 3.3.9 (installed using Macports)</li>
+<li>Alfresco Maven SDK 2.2.0 (No download necessary)</li>
 <li>Eclipse Java EE IDE for Web Developers, Luna</li>
-<li>Alfresco Community Edition 5.0.d (<a href="http://www.alfresco.com/products/community">Download</a>)</li>
+<li>Alfresco Community Edition 5.1.f (<a href="https://sourceforge.net/projects/alfresco/files/Alfresco%20201604%20Community/">Download</a>)</li>
 </ul>
-<p>By default, when you create an Alfresco project using Alfresco Maven SDK 2.1 the project will be configured to depend on Alfresco Community Edition 5.0.d.</p>
+<p>By default, when you create an Alfresco project using Alfresco Maven SDK 2.2.0 the project will be configured to depend on Alfresco Community Edition 5.1.e.</p>
 <p>The Eclipse IDE is optional. Most people working with Alfresco use Eclipse or something similar, so this tutorial will assume that's what you are using.</p>
 <h2 id="project-organization">Project Organization</h2>
 <p>I am going to use the Alfresco Maven SDK to create two projects that will package up my customizations as AMPs (Alfresco Module Packages). One project will create an AMP for the &quot;repo&quot; tier and one project will create an AMP for the &quot;share&quot; tier. I will also create a third &quot;common&quot; project for a Java class that will be used by this and other tutorials.</p>
@@ -823,7 +823,7 @@ parent=&quot;policyRegistration&quot;&gt;
 <li><p>Switch to $TUTORIAL_HOME/behavior-tutorial-repo and run:</p>
 <pre><code>mvn integration-test -Pamp-to-war</code></pre></li>
 <li><p>In a new terminal window, switch to $TUTORIAL_HOME/behavior-tutorial-share and run:</p>
-<pre><code>mvn integration-test -Pamp-to-war -Dmaven.tomcat.port=8081</code></pre>
+<pre><code>mvn integration-test -Pamp-to-war</code></pre>
 <p>You now have an Alfresco repository running on port 8080 and a Share web application running on port 8081, both with your repo and share AMPs installed.</p></li>
 <li><p>Once both servers come up, log in to http://localhost:8081/share as admin, password admin.</p></li>
 <li><p>Create a piece of test content somewhere in the repository. It doesn't matter what it is or what it is named.</p></li>
@@ -858,9 +858,7 @@ mvn alfresco:install -Dmaven.alfresco.warLocation=$TOMCAT_HOME/webapps/[alfresco
 <ul>
 <li>The complete source code for these examples is available on <a href="https://github.com/jpotts/alfresco-developer-series">GitHub</a>.</li>
 <li>Official documentation for both Enterprise Edition and Community Edition is available at <a href="http://docs.alfresco.com/">docs.alfresco.com</a>.</li>
-<li>For deployment help, see <a href="http://wiki.alfresco.com/wiki/Packaging_And_Deploying_Extensions">Packaging and Deploying Extensions</a> in the Alfresco wiki.</li>
-<li>For general development help, see the <a href="http://wiki.alfresco.com/wiki/Developer_Guide">Developer Guide</a>.</li>
-<li>For help customizing the data dictionary, see the <a href="http://wiki.alfresco.com/wiki/Data_Dictionary_Guide">Data Dictionary</a> wiki page.</li>
+<li>Get help from the <a href="http://community.alfresco.com">community</a>.</li>
 <li>If you are ready to cover new ground, try another <a href="http://ecmarchitect.com">ecmarchitect.com</a> tutorial in the <a href="http://ecmarchitect.com/alfresco-developer-series">Alfresco Developer Series</a>.</li>
 </ul>
 					</div><!-- .entry-content -->

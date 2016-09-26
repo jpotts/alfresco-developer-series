@@ -4,26 +4,33 @@
     it is never released with the Alfresco.war
     =================================================================================================================-->
 
-<!-- Setup docBase to something like repo-amp/target/repo-amp-war
-     and path to /alfresco
-     The Alfresco.war 5.0 does not have a webapp (it used to have Alfresco Explorer but not anymore)
-     that we will access, so this docBase might not be needed
--->
-<Context docBase="${app.amp.client.war.folder}" path="${alfresco.client.contextPath}">
+<!-- Setup a virtual context for the /alfresco webapp by specifying this as path for Context.
+     The amp-to-war profile uses the tomcat7-maven-plugin to kick off the webapp.
+     This profile is used for both the repo and share AMP archetypes, and has no config for path or resources,
+     so we need to specify here both the context path and where the webapp resources can be found.
 
-  <Resources className="org.apache.naming.resources.VirtualDirContext"
-             extraResourcePaths="/=${project.build.directory}/${project.build.finalName}/web" />
+     The webapp resources are located in the {repo-amp-dir}/target/amp-war directory, However, we
+     cannot just set this up as the docBase attribute for the Context as it would always be read
+     before any paths in the extraResourcePaths. So to allow for customizations to override
+     stuff in the alfresco.war webapp, such as the /images/logo/logo.png, we add the webapp resource
+     path last in the extraResourcePaths.
+
+     Note. Alfresco.war 5.0 does not have a webapp, just an index page, the Alfresco Explorer webapp is no longer available.
+-->
+<Context path="${alfresco.client.contextPath}">
+    <Resources className="org.apache.naming.resources.VirtualDirContext"
+               extraResourcePaths="/=${project.build.directory}/amp/web,${app.amp.client.war.folder}" />
 
     <!-- Setup the virtual class path like this:
          1) target/classes
-         2) target/${project.build.finalName}/config
+         2) target/amp/config
          3) target/test-classes
 
          This way mvn compile can be invoked and all changes will be picked up
     -->
     <Loader searchVirtualFirst="true"
             className="org.apache.catalina.loader.VirtualWebappLoader"
-            virtualClasspath="${project.build.outputDirectory};${project.build.directory}/${project.build.finalName}/config;${project.build.testOutputDirectory}" />
+            virtualClasspath="${project.build.outputDirectory};${project.build.directory}/amp/config;${project.build.testOutputDirectory}" />
 
 
     <!-- This enables hot reloading of web resources from uncompressed jars (while in prod they would be loaded from  WEB-INF/lib/{\*.jar}/META-INF/resources -->
