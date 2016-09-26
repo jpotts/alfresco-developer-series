@@ -30,7 +30,7 @@ Architect | Alfresco Developer Tutorials</title>
 <div id="header">
 <h1 class="entry-title">Creating Custom Advanced Workflows in Alfresco</h1>
 <h2 class="author">Jeff Potts, <a href="http://www.ecmarchitect.com/">Metaversant Group</a></h2>
-<h3 class="date">April, 2015</h3>
+<h3 class="date">September, 2016</h3>
 </div>
 <div id="TOC">
 <ul>
@@ -199,10 +199,7 @@ Architect | Alfresco Developer Tutorials</title>
 <h2 id="why-two-advanced-workflow-engines">Why two advanced workflow engines?</h2>
 <p>I mentioned earlier that Alfresco started embedding JBoss jBPM in Alfresco with release 1.4. Starting with Alfresco 4.0, Alfresco added Activiti.</p>
 <p>Alfresco added Activiti because they wanted an Apache-licensed workflow engine. JBoss was unwilling to change the jBPM license, so Alfresco hired jBPM creator, Tom Baeyens, and some of his team to start a new open source project aimed at building an Apache-licensed, BPMN 2.0 compliant workflow engine. The result is Activiti.</p>
-<p>Both jBPM and Activiti are open source and both can be used as standalone workflow engines in solutions completely unrelated to Alfresco and document management.</p>
-<p>Alfresco has obviously made a significant investment in Activiti and that is the workflow engine being actively maintained by Alfresco and the Activiti team, so, if possible, you should use Activiti for your Alfresco workflows going forward.</p>
-<p>If you are starting with a fresh Alfresco installation, Activiti is the default and all of the old jBPM example workflows are there but have been undeployed. If you upgrade an old Alfresco installation, you can continue to use jBPM for old workflows, but you should use Activiti for any new business process definitions you create.</p>
-<p>The rest of this tutorial focuses exclusively on Activiti.</p>
+<p>In Alfresco 5.1, Alfresco dropped jBPM from the product and is moving forward with Activiti. If you are on older versions of Alfresco and you are still using jBPM, you should move to Activiti now.</p>
 <h2 id="bpmn-2.0">BPMN 2.0</h2>
 <p>I mentioned earlier that Activiti is BPMN 2.0-compliant. BPMN stands for Business Process Modeling Notation. It's a specification managed by the Object Management Group (OMG) that defines exactly what the name suggests: A standard syntax for describing business processes. The specification is aimed at both humans (i.e., graphical notation of a business process) and machines (i.e., XML syntax describing the business process).</p>
 <p>The two main benefits of using a BPMN-compliant workflow engine are:</p>
@@ -330,17 +327,12 @@ Architect | Alfresco Developer Tutorials</title>
 <p>Remember to save the diagram.</p>
 <p>With a couple of, admittedly, ridiculously simple examples saved in the workflow-tutorial-repo project, it is time to deploy them to Activiti running within Alfresco and try them out.</p>
 <h2 id="deploying-processes">Deploying processes</h2>
-<p>If you are using Alfresco 4.x Enterprise, you have several deployment options. The first option is to use the Activiti Workflow Console which is accessible to administrators through a link in the Share Administration console, or by navigating directly to <a href="http://localhost:8080/alfresco/activiti-admin">http://localhost:8080/alfresco/activiti-admin</a>. From there clicking Deployments, Upload New will display a file upload dialog which can be used to upload the bpmn file.</p>
-<div class="figure">
-<img src="images/upload-process.png" alt="Uploading a process using the Activiti Workflow Console" /><p class="caption">Uploading a process using the Activiti Workflow Console</p>
-</div>
-<p>The Activiti Workflow Console isn't available in Community Edition, so if you are running Community Edition you'll have to use one of these other options.</p>
 <p>There are two other options for deploying workflows to Alfresco:</p>
 <ol style="list-style-type: decimal">
 <li>Use the Alfresco Workflow Console</li>
 <li>Configure the workflows through Spring configuration</li>
 </ol>
-<p>Because these two options are available in both Enterprise Edition and Community Edition, this tutorial will focus on these. The approach will be to use Spring to deploy the workflows initially. Then, use the Alfresco Workflow Console to deploy subsequent versions if needed.</p>
+<p>This tutorial will use Spring to deploy the workflows initially. Then, use the Alfresco Workflow Console to deploy subsequent versions if needed.</p>
 <h3 id="deploying-the-workflows-with-spring">Deploying the workflows with Spring</h3>
 <p>As you learned in previous tutorials, the AMP project created by the Alfresco Maven SDK already has a Spring context file. It is named &quot;<a href="https://github.com/jpotts/alfresco-developer-series/blob/master/workflow/workflow-tutorial-repo/src/main/amp/config/alfresco/module/workflow-tutorial-repo/context/service-context.xml">service-context.xml</a>&quot; and resides in:</p>
 <pre><code>$TUTORIAL_HOME/workflow-tutorial-repo/src/main/amp/config/alfresco/module/workflow-tutorial-repo/context</code></pre>
@@ -1327,15 +1319,9 @@ prop.scwf_reviewerEmail=Reviewer Email</code></pre>
 <ul>
 <li>The complete source code for these examples is available on <a href="https://github.com/jpotts/alfresco-developer-series">GitHub</a>.</li>
 <li>Official documentation for both Enterprise Edition and Community Edition is available at <a href="http://docs.alfresco.com/">docs.alfresco.com</a>.</li>
-<li>For deployment help, see <a href="http://wiki.alfresco.com/wiki/Packaging_And_Deploying_Extensions">Packaging and Deploying Extensions</a> in the Alfresco wiki.</li>
-<li>For general development help, see the <a href="http://wiki.alfresco.com/wiki/Developer_Guide">Developer Guide</a>.</li>
-<li>Ask questions about Activiti embedded within Alfresco in the <a href="http://forums.alfresco.com/en/viewforum.php?f=34">Workflow forum</a>.</li>
+<li>Ask questions about Activiti embedded within Alfresco in the <a href="http://community.alfresco.com">Alfresco Community</a>.</li>
+<li>Ask questions about Activiti standalone in the <a href="https://forums.activiti.org/forums/activiti-users">Activiti Forums</a>.</li>
 <li>If you are ready to cover new ground, try another <a href="http://ecmarchitect.com">ecmarchitect.com</a> tutorial in the <a href="http://ecmarchitect.com/alfresco-developer-series">Alfresco Developer Series</a>.</li>
-<li>Alfresco wiki and docs pages related to <a href="http://wiki.alfresco.com/wiki/Workflow_with_Activiti">workflow with Activiti</a>:
-<ul>
-<li><a href="http://docs.alfresco.com/4.0/topic/com.alfresco.enterprise.doc/concepts/wf-architecture.html">Workflow Architecture</a> page on docs.alfresco.com</li>
-<li><a href="http://wiki.alfresco.com/wiki/JavaScript_API">Alfresco JavaScript API</a> wiki page</li>
-</ul></li>
 <li>Activiti and BPMN
 <ul>
 <li>The <a href="http://activiti.org/">Activiti home page</a> has documentation and tutorials.</li>
