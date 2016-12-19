@@ -385,7 +385,7 @@ The next step is to write the controller.
 The controller is where the logic that queries the whitepapers will live. Create a file called "[whitepapers.get.js](https://github.com/jpotts/alfresco-developer-series/blob/master/webscripts/webscripts-tutorial-repo/src/main/amp/config/alfresco/extension/templates/webscripts/com/someco/whitepapers/whitepapers.get.js)" in the same directory as the controller. Edit the file with
 the following content:
 
-    <import resource="classpath:alfresco/extension/scripts/rating.js">
+    <import resource="classpath:alfresco/module/behavior-tutorial-repo/scripts/rating.js">
 
     var whitepapers = search.luceneSearch("PATH:\"/app:company_home/cm:Someco/*\" +TYPE:\"{http://www.someco.com/model/content/1.0}whitepaper\"");
 
