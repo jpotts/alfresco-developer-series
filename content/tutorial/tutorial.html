@@ -540,7 +540,7 @@ As the comments suggest, the <code>addable</code> and <code>removeable</code> el
     &lt;/type&gt;
 &lt;/types&gt;</code></pre></li>
 </ol>
-<p>Notice how <code>sc:whitepaper</code> appears in the list twice—once as a subtype of <code>cm:content</code> and once as a subtype of <code>sc:doc</code>. This allows a user to specialize directly to the <code>sc:whitepaper</code> type regardless of whether the original type is <code>cm:content</code> or <code>sc:doc</code>.</p>
+<p>Notice how <code>sc:whitepaper</code> appears in the list twice—once as a subtype of <code>cm:content</code> and once as a subtype of <code>sc:doc</code>. This allows a user to specialize directly to the <code>sc:whitepaper</code> type regardless of whether the original type is <code>cm:content</code> or <code>sc:doc</code>. In the same line, we added no configuration for our third type <code>sc:marketingDoc</code>. In this case Alfresco Share will not take care about it.</p>
 <h3 id="step-3-test-your-changes">Step 3: Test Your Changes</h3>
 <p>You need two things to test this: An Alfresco repository that is running the repo tier AMP you created in Part 1 and an Alfresco Share web application running the Share tier AMP you just started working on. One way to do this is to leverage the embedded Tomcat server present in both projects. Do this:</p>
 <ol style="list-style-type: decimal">
