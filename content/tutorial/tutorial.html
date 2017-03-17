@@ -679,7 +679,7 @@ This will start up an Alfresco server with your repo tier AMP and it will leave 
         &lt;/forms&gt;
     &lt;/advanced-search&gt;
 &lt;/config&gt;</code></pre>
-<p>Notice that the list of advanced search forms replaces the out-of-the-box list. If the list only had <code>sc:whitepaper</code> and left out <code>cm:content</code> and <code>cm:folder</code>, Share users would not be able to search for plain content or folders.</p>
+<p>Notice that the list of advanced search forms replaces the out-of-the-box list, due to the param <code>replace</code>. In this case, if the list only had <code>sc:whitepaper</code> and left out <code>cm:content</code> and <code>cm:folder</code>, Share users would not be able to search for plain content or folders.</p>
 <p>The next step is to tell Share which form to use when a given type is selected. Recall earlier that there are two sets of form configuration—one for existing nodes (evaluator of <code>node-type</code>) and one for new nodes (evaluator of <code>model-type</code>). Search forms go in the <code>model-type</code> evaluator.</p>
 <p>The search form for whitepapers should be the same as the one for plain content, but should include the four properties defined in the custom aspects. The easiest way to do this is to copy the <code>cm:content</code> search form from the out-of-the-box form configuration into share-config-custom.xml and then modify it to suit our needs. The code listing below shows this:</p>
 <pre><code>&lt;!-- sc:whitepaper type (new nodes) --&gt;
