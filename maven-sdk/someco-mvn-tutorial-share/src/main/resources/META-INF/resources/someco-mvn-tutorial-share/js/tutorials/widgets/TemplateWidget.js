@@ -9,7 +9,7 @@ define(["dojo/_base/declare",
             templateString: template,
             i18nRequirements: [ {i18nFile: "./i18n/TemplateWidget.properties"} ],
             cssRequirements: [{cssFile:"./css/TemplateWidget.css"}],
-            
+
             buildRendering: function example_widgets_TemplateWidget__buildRendering() {
                 this.greeting = this.message('hello-label');
 

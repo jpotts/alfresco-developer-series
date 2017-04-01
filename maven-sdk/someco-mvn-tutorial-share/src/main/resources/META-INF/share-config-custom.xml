@@ -2,11 +2,12 @@
      - Doclib action config
      - Form config
      - Aspect and Type config
+     - Advanced Search
 
     Note. Any configuration related to the whole Share.war webapp
            (i.e. not specific to this share extension) should be
-            placed in the environment specific config:
-             alfresco/tomcat/shared/classes/alfresco/web-extension/share-config-custom.xml file
+            placed in the environment specific config file:
+             alfresco/tomcat/shared/classes/alfresco/web-extension/share-config-custom.xml
      -->
 <alfresco-config>
 
