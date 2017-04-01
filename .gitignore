@@ -8,3 +8,8 @@ maven-sdk/someco-mvn-tutorial-share/alf_data_dev
 actions/actions-tutorial-repo/alf_data_dev
 behaviors/behavior-tutorial-repo/alf_data_dev
 behaviors/alf_data_dev
+content/.idea
+alfresco.log
+solr.log
+maven-sdk/someco-mvn-tutorial-repo/.idea
+maven-sdk/someco-mvn-tutorial-share/.idea
