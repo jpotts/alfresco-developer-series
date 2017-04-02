@@ -4,10 +4,10 @@
 <beans>
 
     <!-- Add Someco Workflow messages -->
-    <bean id="${project.artifactId}_resources" class="org.springframework.extensions.surf.util.ResourceBundleBootstrapComponent">
+    <bean id="com.someco.workflow-tutorial-share.resources" class="org.springframework.extensions.surf.util.ResourceBundleBootstrapComponent">
         <property name="resourceBundles">
             <list>
-                <value>alfresco.module.${project.artifactId}.messages.scWorkflow</value>
+                <value>alfresco.web-extension.messages.scWorkflow</value>
             </list>
         </property>
     </bean>
