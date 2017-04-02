@@ -20,18 +20,11 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.someco.model.SomeCoRatingsModel;
-import com.tradeshift.test.remote.Remote;
-import com.tradeshift.test.remote.RemoteTestRunner;
 
-@RunWith(RemoteTestRunner.class)
-@Remote(runnerClass=SpringJUnit4ClassRunner.class)
-@ContextConfiguration("classpath:alfresco/application-context.xml")
 public class RateableAspectTest {
-    
+
     private static final String ADMIN_USER_NAME = "admin";
 
     static Logger log = Logger.getLogger(RateableAspectTest.class);
@@ -53,12 +46,12 @@ public class RateableAspectTest {
     @Autowired
     @Qualifier("nodeLocatorService")
     protected NodeLocatorService nodeLocatorService;
-    
+
     @Test
     public void testAddRateableAspect() {
     	AuthenticationUtil.setFullyAuthenticatedUser(ADMIN_USER_NAME);
         NodeRef companyHome = nodeLocatorService.getNode(CompanyHomeNodeLocator.NAME, null, null);
-        
+
         // assign name
         String name = "Add Rateable Aspect Test (" + System.currentTimeMillis() + ")";
         Map<QName, Serializable> contentProps = new HashMap<QName, Serializable>();
@@ -80,14 +73,14 @@ public class RateableAspectTest {
         aspectProps.put(RATING, 1.0);
         aspectProps.put(TOTAL, 1);
         aspectProps.put(COUNT, 1);
-        
+
         // add the aspect and set the properties
         nodeService.addAspect(content, QName.createQName(SomeCoRatingsModel.NAMESPACE_SOMECO_RATINGS_CONTENT_MODEL, SomeCoRatingsModel.ASPECT_SCR_RATEABLE), aspectProps);
-    	        
+
         assertEquals(1.0, nodeService.getProperty(content, RATING));
         assertEquals(1, nodeService.getProperty(content, TOTAL));
         assertEquals(1, nodeService.getProperty(content, COUNT));
-        
+
     	nodeService.deleteNode(content);
     }
 
