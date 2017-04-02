@@ -1,6 +1,6 @@
 % Getting Started with the Alfresco Maven SDK
 % Jeff Potts, [Metaversant Group](http://www.metaversant.com)
-% September, 2016
+% April, 2017
 
 License
 =======
@@ -43,7 +43,7 @@ The goal of the Maven-based SDK is to make it extremely easy for you to get star
 
 If you are writing your own custom application that is separate from the Alfresco and Share WARs you don't need the Alfresco Maven SDK. But if you intend to write code that runs within either of those web applications, the Alfresco Maven SDK is where you need to start.
 
-A quick word about versions. This tutorial assumes you are using Alfresco Maven SDK 2.2.0. The version you use may depend on which version of Alfresco you want to use. Check the [Alfresco SDK Compatability Matrix](http://docs.alfresco.com/community/concepts/alfresco-sdk-compatibility.html) to be sure. If you are using a version older than 4.x you'll have to use the old Ant-based SDK. The rest of this document won't apply to you.
+A quick word about versions. This tutorial assumes you are using Alfresco Maven SDK 3.0.0. The version you use may depend on which version of Alfresco you want to use. Check the [Alfresco SDK Compatability Matrix](http://docs.alfresco.com/community/concepts/alfresco-sdk-compatibility.html) to be sure. If you are using a version older than 4.x you'll have to use the old Ant-based SDK. The rest of this document won't apply to you.
 
 Now you have a high-level understanding of Apache Maven, AMPs, and the Alfresco Maven SDK. It's time to see them in action.
 
@@ -63,10 +63,13 @@ Let me show you how easy it can be to get started with Alfresco development usin
     1. alfresco-allinone-archetype
     2. alfresco-amp-archetype
     3. share-amp-archetype
+    4. alfresco-platform-jar-archetype
+    5. alfresco-share-jar-archetype
+    6. activiti-jar-archetype
 
-    Our goal is to create an AMP that can be deployed to Alfresco so the second one is the one we want. Type 2 and hit enter.
+    Even though our goal is to create an AMP that can be deployed to Alfresco, neither of the two options with "amp" in their names are what we want. Those are for old versions of the SDK. Instead, we want to choose one that has "jar" in the name. For now, our goal is to deploy to Alfresco, so "alfresco-platform-jar-archetype" is the one we want. Type 4 and hit enter.
 
-4. Now Maven is asking you to specify the version of the archetype you want to base your project on. Currently, the latest version is 2.2.0 which is the 8th option in the list, so type 8 and hit enter. Again, the version you choose may not support all Alfresco versions, so check the compatibility matrix I mentioned earlier.
+4. If Maven asks you to specify the version of the archetype you want, choose 3.0.0. Again, the version you choose may not support all Alfresco versions, so check the compatibility matrix I mentioned earlier.
 
 5. Maven now asks for a groupId. You should be thinking "Java package". My examples always assume I am working at a fictitious company called SomeCo, so I will specify "com.someco" here. Specify what makes sense in your case and hit enter.
 
@@ -94,38 +97,40 @@ You haven't downloaded anything. You haven't edited anything. All you've done is
 Try this:
 
     cd someco-mvn-tutorial-repo
-    mvn integration-test -Pamp-to-war
+    ./run.sh
+
+If you get a permissions error, run `chmod u+x ./run.sh` and try again. If you are on Windows, use run.bat instead.
 
 If you watch the output, you'll see that Maven is downloading everything it needs to compile the project, creating an AMP, deploying the AMP to the Alfresco WAR, deploying the Alfresco WAR to the embedded Tomcat server, and starting the server up. Eventually you'll see:
 
-    2014-01-15 18:01:19,339  INFO  [repo.module.ModuleServiceImpl] [localhost-startStop-1] Found 1 module(s).
-    2014-01-15 18:01:19,480  INFO  [repo.module.ModuleServiceImpl] [localhost-startStop-1] Installing module 'someco-mvn-tutorial-repo' version 1.0.1401151758.
+    2017-04-02 16:00:55,036  INFO  [repo.module.ModuleServiceImpl] [localhost-startStop-1] Found 3 module package(s).
+    2017-04-02 16:00:55,055  INFO  [repo.module.ModuleServiceImpl] [localhost-startStop-1] Installing module 'someco-mvn-tutorial-repo' version 1.0-SNAPSHOT.
 
 Which means that the module your project generated was recognized by the Alfresco server.
 
 Once you see:
 
-    Jan 16, 2014 8:38:20 AM org.apache.coyote.AbstractProtocol start INFO: Starting ProtocolHandler ["http-bio-8080"]
+    Apr 02, 2017 4:01:13 PM org.apache.coyote.AbstractProtocol start INFO: Starting ProtocolHandler ["http-bio-8080"]
 
 You should be able to go to:
 
     http://localhost:8080/alfresco
 
-And you will see the "Welcome to Alfresco' page. In versions prior to 5.0.d this would be the Alfresco Explorer login page. Log in using "admin" and "admin". If you want to verify that you can log in, go to the Alfresco web script console, which is:
+And you will see the "Welcome to Alfresco' page. In versions prior to 5.0.d this would be the Alfresco Explorer login page. If you want to verify that you can log in, go to the Alfresco web script console, which is:
 
     http://localhost:8080/alfresco/s/index
 
-When you are done poking around, go back to the window where you ran your Maven command and type ctrl-c to shutdown the server.
+Log in using "admin" and "admin". When you are done poking around, go back to the window where you ran your Maven command and type ctrl-c to shutdown the server.
 
 If you get an out-of-memory error when you run the integration test, you may need to pass some JVM memory parameters to Maven. One way to do that is by setting the MAVEN_OPTS environment variable. For example, I have mine set to:
 
     -Xmx1024M -XX:MaxPermSize=512m
 
-With MAVEN_OPTS set you should not see any out-of-memory errors.
+Another option is to edit the run.sh or run.bat script. With MAVEN_OPTS set you should not see any out-of-memory errors.
 
 What Just Happened?
 -------------------
-You asked maven to run the "integration-test" goal using the "amp-to-war" profile. This causes the project to be built, deployed as an AMP to a fresh Alfresco WAR, and run on the embedded Tomcat server. Once it started up, you were able to log in to the admin console and the web scripts console.
+If you looked at the run script, you'll see that you asked maven to run the alfresco:run goal. This causes the project to be built, deployed as an AMP to a fresh Alfresco WAR, and run on the embedded Tomcat server. Once it started up, you were able to log in to the admin console and the web scripts console.
 
 If you go look in the target directory you'll see the AMP that was produced and subsequently deployed to the Alfresco WAR. In my case it is called "someco-mvn-tutorial-repo.amp". This file is what you would give to your IT team if you were ready to deploy your repository tier changes to a real Alfresco server.
 
@@ -182,7 +187,7 @@ Working With Your Project in an IDE
 -----------------------------------
 Althought it isn't required, most people prefer to work in an IDE when developing Alfresco customizations. Any IDE will do, but the most popular one is Eclipse so let's see how that works.
 
-I'll be using the Luna version of Eclipse Java EE IDE for Web Developers. It comes with built-in Maven support.
+I'll be using the Neon version of Eclipse Java EE IDE for Web Developers. It comes with built-in Maven support.
 
 To open the project we created earlier in Eclipse, do this:
 
@@ -200,18 +205,19 @@ Understanding the Project Structure
 -----------------------------------
 The folder structure of your project is a bit more pleasant to explore in your IDE. Let's see what we've got.
 
-* *pom.xml* In the root of the project directory you'll see pom.xml. This tells Maven everything it needs to know about your project. Remember those settings you specified when you created the project from the archetype? You can make changes to those settings here. For example, version 2.2.0 of the archetype assumes you are working with Alfresco Community Edition 5.1.e. If you wanted to work with a different version, you would simply change those properties and then tell Maven to update and it will take care of the rest.
+* *pom.xml* In the root of the project directory you'll see pom.xml. This tells Maven everything it needs to know about your project. Remember those settings you specified when you created the project from the archetype? You can make changes to those settings here. For example, version 3.0.0 of the archetype assumes you are working with Alfresco Community Edition 5.2.e. If you wanted to work with a different version, you would simply change those properties and then tell Maven to update and it will take care of the rest.
 
 * *src/main/java* This is where you should create your own packages to organize your Java code. Things like custom action executer classes, custom behaviors, Java-based controllers for web scripts go here. If you don't know what those are, don't worry, there are tutorials available [here](http://ecmarchitect.com/alfresco-developer-series). These files will ultimately be placed in a JAR. When the AMP is installed into the Alfresco WAR, the JAR will be placed under WEB-INF/lib.
 
 * *src/test* Everything under src/test is about running unit tests. The unit tests themselves go in src/test/java. Any resources those classes need go in src/test/resources. In src/test/properties/local you'll see an alfresco-global.properties file. If you are already know something about Alfresco you know that this is used to configure Alfresco. In this case, it is only used when running the embedded Alfresco server for testing purposes.
 
-* *src/main/amp* Everything else goes somewhere in this part of the project. The structure of an AMP is well-documented so I don't want to duplicate that here. Let me just point out the highlights:
+* *src/main/assembly* Everything in this directory tells Maven how to construct an AMP file.
 
-    * The module.properties file tells Alfresco what it needs to know about this AMP such as its ID, version, the minimum and maximum version of Alfresco required to run the AMP, and any other AMPs on which this one depends.
-    * The config/alfresco/module/someco-mvn-tutorial-repo directory is the heart of the AMP. This is where you place Spring config XML files, content model XML files, and user interface configuration. As you'll see in later tutorials, I prefer separate sub-directories for each of these things.
-    * If your module includes web scripts or workflows, those don't reside under the module directory. Instead, those would go under config/alfresco/extension/templates/webscripts and config/alfresco/extension/workflows.
-    * Your module may include client-side resources that need to be deployed to the root of the web application. Those go in src/main/amp/web in directories such as css, jsp, scripts, and images.
+* *src/main/resources* Everything else goes somewhere in this part of the project. The structure of an AMP is well-documented so I don't want to duplicate that here. Let me just point out the highlights:
+
+    * The alfresco/module/someco-mvn-tutorial-repo directory is the heart of the AMP. This is where you place Spring config XML files, content model XML files, and user interface configuration. As you'll see in later tutorials, I prefer separate sub-directories for each of these things.
+    * If your module includes web scripts, those don't reside under the module directory. Instead, those go under alfresco/extension/templates/webscripts.
+    * Your module may include client-side resources that need to be deployed to the root of the web application. Those go in META-INF/resources in directories such as css, jsp, scripts, and images.
 
 You should check this entire project into source code control. You will want to configure your source code control client to ignore the target directory and the alf_data_dev directory.
 
@@ -237,7 +243,7 @@ Another option is to configure Eclipse so you can create new Alfresco projects u
     ![](./images/select-an-archetype.png)
 
 4. Click Add Remote Catalog
-5. Specify "http://repo.maven.apache.org/maven2/archetype-catalog.xml" as the Catalog File. Specify "Alfresco Archetypes" as the description. Then, click OK and OK again to close the Preferences panel.
+5. Specify "https://nexus.alfresco.com/nexus/content/groups/public/archetype-catalog.xml" as the Catalog File. Specify "Alfresco Archetypes" as the description. Then, click OK and OK again to close the Preferences panel.
 
     ![](./images/add-archetype-catalog.png)
 
@@ -247,7 +253,7 @@ Another option is to configure Eclipse so you can create new Alfresco projects u
 
     ![](./images/select-amp-archetype.png)
 
-9. Specify "com.someco" for the groupId and "someco-mvn-tutorial-share" as the artifactId. Similar to the command line step, I changed my alfresco_target_version from "5.0.c" to "5.0.d". Then click Finish.
+9. Specify "com.someco" for the groupId and "someco-mvn-tutorial-share" as the artifactId, then click Finish.
 
     ![](./images/specify-archetype-params.png)
 
@@ -255,19 +261,19 @@ Now your Share customization project is in your workspace. The next time you cre
 
 Understanding the Share Project Folder Structure
 ------------------------------------------------
-As I mentioned earlier, the structure of this project is exactly the same as the one we created for our repo project. The only difference worth mentioning is that in the repo project, things like web scripts went into src/main/amp/config/alfresco/extension/templates/webscripts. In a Share project, those go in src/main/amp/config/alfresco/web-extension/site-webscripts.
+As I mentioned earlier, the structure of this project is exactly the same as the one we created for our repo project. The only difference worth mentioning is that in the repo project, things like web scripts went into src/main/resources/alfresco/extension/templates/webscripts. In a Share project, those go in src/main/resources/alfresco/web-extension/site-webscripts.
 
 Running an Integration Test with Share
 --------------------------------------
 Often you will work on both repo tier customizations and share tier customizations at the same time. Your Share tier needs an Alfresco repository to talk to. One way to do that is to tell Maven to start your repo project using:
 
     cd someco-mvn-tutorial-repo
-    mvn integration-test -Pamp-to-war
+    ./run.sh
 
 And then start your Share project using:
 
     cd someco-mvn-tutorial-share
-    mvn integration-test -Pamp-to-war
+    ./run.sh
 
 The Share project configuration defaults its Tomcat to port 8081 so that it won't conflict with the repository project's Tomcat.
 
