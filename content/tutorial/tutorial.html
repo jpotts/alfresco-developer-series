@@ -30,7 +30,7 @@ Architect | Alfresco Developer Tutorials</title>
 <div id="header">
 <h1 class="entry-title">Working With Custom Content Types in Alfresco</h1>
 <h2 class="author">Jeff Potts, <a href="http://www.metaversant.com">Metaversant Group</a></h2>
-<h3 class="date">September, 2016</h3>
+<h3 class="date">April, 2017</h3>
 </div>
 <div id="TOC">
 <ul>
@@ -265,10 +265,10 @@ Architect | Alfresco Developer Tutorials</title>
 <li>Mac OS X 10.11.6</li>
 <li>Java 1.8.0_77</li>
 <li>Apache Maven 3.3.9 (installed using Macports)</li>
-<li>Alfresco Maven SDK 2.2.0 (No download necessary)</li>
-<li>Eclipse Java EE IDE for Web Developers, Luna</li>
+<li>Alfresco Maven SDK 3.0.0 (No download necessary)</li>
+<li>Eclipse Java EE IDE for Web Developers, Neon</li>
 </ul>
-<p>By default, when you create an Alfresco project using version 2.2.0 of the Alfresco Maven SDK the project will be configured to depend on Alfresco Community Edition 5.1.e.</p>
+<p>By default, when you create an Alfresco project using version 3.0.0 of the Alfresco Maven SDK the project will be configured to depend on Alfresco Community Edition 5.2.e.</p>
 <p>Note that the version of the Alfresco Maven SDK you are using may dictate which Alfresco versions you can use. Check the <a href="http://docs.alfresco.com/community/concepts/alfresco-sdk-compatibility.html">Compatibility Matrix</a> to find out.</p>
 <p>Projects created using the Alfresco Maven SDK have the ability to run Alfresco on an embedded Tomcat server. This makes <a href="http://www.alfresco.com/products/community">downloading</a> and installing Alfresco optional. But if you want to run a full Alfresco server locally, you are welcome to do that.</p>
 <p>The Eclipse IDE is also optional. Most people working with Alfresco use Eclipse or something similar, so this tutorial will assume that's what you are using.</p>
@@ -298,8 +298,8 @@ Architect | Alfresco Developer Tutorials</title>
 <li>If you have not already done so, create an empty directory that can hold the new projects associated with this tutorial. I'll refer to that as $TUTORIAL_HOME.</li>
 <li><p>Now use the Alfresco Maven SDK to create a project for the repo tier AMP. Using the command line, change directories to $TUTORIAL_HOME, then run:</p>
 <pre><code>mvn archetype:generate -Dfilter=org.alfresco:</code></pre></li>
-<li>Choose the Alfresco AMP archetype (option 2).</li>
-<li>Choose version 2.2.0 of the archetype (option 8).</li>
+<li>Choose the Alfresco Platform JAR archetype (option 4).</li>
+<li>Choose version 3.0.0 of the archetype if prompted.</li>
 <li>Specify &quot;com.someco&quot; for the <code>groupId</code>.</li>
 <li>Specify &quot;content-tutorial-repo&quot; for the <code>artifactId</code>.</li>
 <li><p>If Eclipse isn't running, start it up. Use File, Import, Maven, Existing Maven Projects to import the content-tutorial-repo project you just created.</p></li>
@@ -310,8 +310,8 @@ Architect | Alfresco Developer Tutorials</title>
 <p>Now that you have a project that is ready to produce a repo tier AMP you can create your content model XML file. To do that, follow these steps:</p>
 <ol style="list-style-type: decimal">
 <li><p>Models belong in a directory called “model” in your project's module directory, which is:</p>
-<pre><code>$TUTORIAL_HOME/content-tutorial-repo/src/main/amp/config/alfresco/module/content-tutorial-repo</code></pre>
-The &quot;model&quot; directory does not exist when the project is initially created by the Alfresco Maven SDK, so go ahead and create it now in the directory above.</li>
+<pre><code>$TUTORIAL_HOME/content-tutorial-repo/src/main/resources/alfresco/module/content-tutorial-repo</code></pre>
+If the &quot;model&quot; directory does not exist when the project is initially created by the Alfresco Maven SDK, go ahead and create it now. If it does exist and there are files in it, delete them now.</li>
 <li>Custom models live in the model directory as XML. Create a new XML file in the model directory called &quot;scModel.xml&quot;. The name of the file isn't important but you should choose a name that will help you and your team distinguish it from other model files you might add to this directory over time.</li>
 <li><p>Copy the following XML into the scModel.xml file and save.</p>
 <pre><code>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
@@ -428,8 +428,9 @@ The &quot;model&quot; directory does not exist when the project is initially cre
 <p>Here's an important note about the content model schema that may save you some time: Order matters. For example, if you move the <code>associations</code> element after <code>mandatory-aspects</code> Alfresco won't be able to parse your model. Refer to the modelSchema.xsd referenced earlier to determine the expected order.</p>
 <h4 id="step-3-register-the-new-model-with-a-spring-bean">Step 3: Register the new model with a Spring bean</h4>
 <p>The next step is to <strong>register the new model with a Spring bean</strong> in a Spring context file. You'll find that the Alfresco Maven SDK has already created a Spring context file for your module in:</p>
-<pre><code>$TUTORIAL_HOME/content-tutorial-repo/src/main/amp/config/alfresco/module/content-tutorial-repo/context</code></pre>
-<p>The file is named service-context.xml. If you open that file you'll see that two Spring beans are already there. They were created by the Alfresco Maven SDK and they are used to wire in some example classes.</p>
+<pre><code>$TUTORIAL_HOME/content-tutorial-repo/src/main/resources/alfresco/module/content-tutorial-repo/context</code></pre>
+<p>The file is named bootstrap-context.xml. If you open that file you'll see that two Spring beans are already there. They were created by the Alfresco Maven SDK and they are used to wire in an example content model, workflow model, and sample workflows.</p>
+<p>Delete the two sample Spring beans. You will replace these with your own definitions.</p>
 <p>To register the custom content model with Spring, all we have to do is add a new <code>bean</code> element to the list of <code>beans</code>. The new <code>bean</code> element looks like this:</p>
 <pre><code>&lt;!-- Registration of new models --&gt;
 &lt;bean id=&quot;${project.artifactId}_dictionaryBootstrap&quot; parent=&quot;dictionaryModelBootstrap&quot; depends-on=&quot;dictionaryBootstrap&quot;&gt;
@@ -465,7 +466,7 @@ The &quot;model&quot; directory does not exist when the project is initially cre
 <h4 id="success">Success</h4>
 <p>You have now created an AMP that contains a custom content model. If you go look in:</p>
 <pre><code>$TUTORIAL_HOME/content-tutorial-repo/target</code></pre>
-<p>you'll see a file named content-tutorial-repo.amp. That AMP can be installed in an Alfresco installation. For example, if you are running Alfresco using the binary installer, you can copy the AMP to <code>$ALFRESCO_HOME/amps</code> and then run <code>$ALFRESCO_HOME/bin/apply_amps.sh</code> to install the AMP into your Alfresco web application.</p>
+<p>you'll see a file named content-tutorial-repo-1.0-SNAPSHOT.amp. That AMP can be installed in an Alfresco installation. For example, if you are running Alfresco using the binary installer, you can copy the AMP to <code>$ALFRESCO_HOME/amps</code> and then run <code>$ALFRESCO_HOME/bin/apply_amps.sh</code> to install the AMP into your Alfresco web application.</p>
 <p>For the purpose of this tutorial, though, let's keep moving. You've got your content model defined but the Alfresco Share user interface doesn't know anything about it yet. You'll learn how to do that next.</p>
 <h1 id="part-2-configuring-alfresco-share">Part 2: Configuring Alfresco Share</h1>
 <p>Now that the model is defined, you could begin using it right away by writing code against one of Alfresco's API's that creates instances of your custom types, adds aspects, etc. In practice it is usually a good idea to do just that to make sure the model behaves like you expect. In fact, if you just can’t wait to see some code to create, query, and update content, skip to <a href="#part-3-working-with-content-programmatically">Part 3</a>. For everyone else, let's talk about how to configure Alfresco Share so that end-users can work with the custom content model you just created.</p>
@@ -492,7 +493,7 @@ The &quot;model&quot; directory does not exist when the project is initially cre
 <p>The first step is to create a new project to hold the files that will make up the Share tier AMP. That works exactly as it did for the repo tier AMP. Do this:</p>
 <ol style="list-style-type: decimal">
 <li>Change directories to $TUTORIAL_HOME, then create a new project using Alfresco Maven SDK.</li>
-<li>This time, specify the Share AMP archetype (option 3).</li>
+<li>This time, specify the Alfresco Share JAR archetype (option 5).</li>
 <li>Specify &quot;com.someco&quot; as the <code>groupId</code>.</li>
 <li>Specify &quot;content-tutorial-share&quot; as the <code>artifactId</code>.</li>
 </ol>
@@ -540,18 +541,19 @@ As the comments suggest, the <code>addable</code> and <code>removeable</code> el
     &lt;/type&gt;
 &lt;/types&gt;</code></pre></li>
 </ol>
-<p>Notice how <code>sc:whitepaper</code> appears in the list twice—once as a subtype of <code>cm:content</code> and once as a subtype of <code>sc:doc</code>. This allows a user to specialize directly to the <code>sc:whitepaper</code> type regardless of whether the original type is <code>cm:content</code> or <code>sc:doc</code>. In the same line, we added no configuration for our third type <code>sc:marketingDoc</code>. In this case Alfresco Share will not add <code>sc:marketingDoc</code> to the list.</p>
+<p>Notice how <code>sc:whitepaper</code> appears in the list twice—once as a subtype of <code>cm:content</code> and once as a subtype of <code>sc:doc</code>. This allows a user to specialize directly to the <code>sc:whitepaper</code> type regardless of whether the original type is <code>cm:content</code> or <code>sc:doc</code>.</p>
 <h3 id="step-3-test-your-changes">Step 3: Test Your Changes</h3>
 <p>You need two things to test this: An Alfresco repository that is running the repo tier AMP you created in Part 1 and an Alfresco Share web application running the Share tier AMP you just started working on. One way to do this is to leverage the embedded Tomcat server present in both projects. Do this:</p>
 <ol style="list-style-type: decimal">
 <li>Open two command line windows.</li>
 <li>In the first window, switch to $TUTORIAL_HOME/content-tutorial-repo.</li>
 <li><p>Run:</p>
-<pre><code>mvn integration-test -Pamp-to-war</code></pre>
+<pre><code>./run.sh</code></pre>
+<p>If you get a permissions problem you may have to run <code>chmod u+x run.sh</code> first.</p>
 This will start up an Alfresco server with your repo tier AMP and it will leave it running.</li>
 <li>In the second window, switch to $TUTORIAL_HOME/content-tutorial-share.</li>
 <li><p>Run:</p>
-<pre><code>mvn integration-test -Pamp-to-war</code></pre>
+<pre><code>./run.sh</code></pre>
 <p>This will start up Alfresco Share running on port 8081. It will automatically connect to the Alfresco server you just started, which is running on port 8080.</p></li>
 </ol>
 <p>Now open your browser and point it to http://localhost:8081/share. Log in using admin/admin and let’s see what’s different.</p>
@@ -591,7 +593,7 @@ This will start up an Alfresco server with your repo tier AMP and it will leave 
 </ol>
 <p>Clearly something prettier is needed for both the default form and the edit metadata form, so let’s fix that.</p>
 <h3 id="configuring-the-form-service-for-a-custom-type">Configuring the form service for a custom type</h3>
-<p>Alfresco Share uses the Form Service to decide which properties to show for a given form, how to lay out forms, and the control to use for each property. Let’s take a look at the out-of-the-box form configuration for <code>cm:content</code>. Because you've already launched Alfresco Share on your embedded Tomcat server, the exploded Share web application exists in your project's target directory. The out-of-the-box share-form-config.xml file resides in target/content-tutorial-share-war/WEB-INF/classes/alfresco/share-form-config.xml.</p>
+<p>Alfresco Share uses the Form Service to decide which properties to show for a given form, how to lay out forms, and the control to use for each property. Let’s take a look at the out-of-the-box form configuration for <code>cm:content</code>. Because you've already launched Alfresco Share on your embedded Tomcat server, the exploded Share web application exists in your project's target directory. The out-of-the-box share-form-config.xml file resides in target/share-war/WEB-INF/classes/alfresco/share-form-config.xml.</p>
 <p>If you open that file and search for ‘condition=”cm:content”’ you’ll find two config elements that contain a total of six form configurations. One config element, identified by the <code>node-type</code> evaluator, is for forms dealing with existing nodes. The config element with the <code>model-type</code> evaluator is for forms used to create new nodes.</p>
 <p>Let’s focus on existing nodes for now. The three forms in that config element are:</p>
 <ul>
@@ -609,7 +611,7 @@ This will start up an Alfresco server with your repo tier AMP and it will leave 
 <li>Go to the terminal window currently running your embedded Alfresco Share web application.</li>
 <li>Click ctrl+c to stop the Alfresco Share server.</li>
 <li><p>Re-run the server using:</p>
-<pre><code>mvn integration-test -Pamp-to-war</code></pre></li>
+<pre><code>./run.sh</code></pre></li>
 </ol>
 <p>There is no need to restart the Alfresco repository web application because nothing has changed in that AMP.</p>
 <p>Now when you log in to Alfresco Share, you’ll see that the property sets match for <code>sc:whitepaper</code> and <code>cm:content</code> across all forms, as shown below:</p>
@@ -679,7 +681,7 @@ This will start up an Alfresco server with your repo tier AMP and it will leave 
         &lt;/forms&gt;
     &lt;/advanced-search&gt;
 &lt;/config&gt;</code></pre>
-<p>Notice that the list of advanced search forms replaces the out-of-the-box list, due to the param <code>replace</code>. In this case, if the list only had <code>sc:whitepaper</code> and left out <code>cm:content</code> and <code>cm:folder</code>, Share users would not be able to search for plain content or folders.</p>
+<p>Notice that the list of advanced search forms replaces the out-of-the-box list. If the list only had <code>sc:whitepaper</code> and left out <code>cm:content</code> and <code>cm:folder</code>, Share users would not be able to search for plain content or folders.</p>
 <p>The next step is to tell Share which form to use when a given type is selected. Recall earlier that there are two sets of form configuration—one for existing nodes (evaluator of <code>node-type</code>) and one for new nodes (evaluator of <code>model-type</code>). Search forms go in the <code>model-type</code> evaluator.</p>
 <p>The search form for whitepapers should be the same as the one for plain content, but should include the four properties defined in the custom aspects. The easiest way to do this is to copy the <code>cm:content</code> search form from the out-of-the-box form configuration into share-config-custom.xml and then modify it to suit our needs. The code listing below shows this:</p>
 <pre><code>&lt;!-- sc:whitepaper type (new nodes) --&gt;
@@ -742,7 +744,7 @@ This will start up an Alfresco server with your repo tier AMP and it will leave 
 <h2 id="localizing-strings-for-custom-content-models">Localizing Strings for Custom Content Models</h2>
 <p>We’ve put off localizing the form labels until now. To fix this, first create a messages bundle, then register it with a Spring bean. Here are the steps:</p>
 <ol style="list-style-type: decimal">
-<li>Create a new folder called &quot;messages&quot; in $TUTORIAL_HOME/content-tutorial-share/src/main/amp/config/alfresco/module/content-tutorial-share.</li>
+<li>Create a new folder called &quot;messages&quot; in $TUTORIAL_HOME/content-tutorial-share/src/main/resources/alfresco/web-extension. If the folder is already there, delete any files that may already be present.</li>
 <li><p>In the messages folder, create a new file called &quot;scModel.properties&quot; with the following content:</p>
 <pre><code>#sc:doc
 type.sc_doc=SomeCo Doc
@@ -761,17 +763,17 @@ prop.sc_isActive=Active?
 aspect.sc_productRelated=SomeCo Product Related
 prop.sc_product=Product
 prop.sc_version=Version</code></pre></li>
-<li>We need to register this properties bundle with Spring. Share does not look in module directories for Spring context files. Instead, it uses the web-extension folder. Create a new folder called &quot;web-extension&quot; in $TUTORIAL_HOME/content-tutorial-share/src/main/amp/config/alfresco.</li>
-<li>In the web-extension folder, create a new file called &quot;content-tutorial-share-context.xml&quot;. I am using the <code>artifactId</code> as part of the file name because this file will ultimately end up in a folder that may contain other Spring configuration files and I don't want this one to collide with any of those.</li>
+<li>We need to register this properties bundle with Spring. Share does not look in module directories for Spring context files. Instead, it uses the web-extension folder. That folder already exists in $TUTORIAL_HOME/content-tutorial-share/src/main/resources/alfresco.</li>
+<li>In the web-extension folder, create a new file called &quot;content-tutorial-share-context.xml&quot;. I am using the <code>artifactId</code> as part of the file name because this file will ultimately end up in a folder that may contain other Spring configuration files and I don't want this one to collide with any of those. If the SDK already placed a similar file in the folder, it is okay to use it instead, just clear out the contents of the file.</li>
 <li><p>Add the following content to the file, then save:</p>
 <pre><code>&lt;?xml version=&#39;1.0&#39; encoding=&#39;UTF-8&#39;?&gt;&lt;!DOCTYPE beans PUBLIC &#39;-//SPRING//DTD BEAN//EN&#39; &#39;http://www.springframework.org/dtd/spring-beans.dtd&#39;&gt;
 
 &lt;beans&gt;
     &lt;!-- Add Someco messages --&gt;
-    &lt;bean id=&quot;${project.artifactId}_resources&quot; class=&quot;org.springframework.extensions.surf.util.ResourceBundleBootstrapComponent&quot;&gt;
+    &lt;bean id=&quot;com.someco.content-tutorial-share.resources&quot; class=&quot;org.springframework.extensions.surf.util.ResourceBundleBootstrapComponent&quot;&gt;
         &lt;property name=&quot;resourceBundles&quot;&gt;
             &lt;list&gt;
-                &lt;value&gt;alfresco.module.${project.artifactId}.messages.scModel&lt;/value&gt;
+                &lt;value&gt;alfresco.web-extension.messages.scModel&lt;/value&gt;
             &lt;/list&gt;
         &lt;/property&gt;
     &lt;/bean&gt;
@@ -813,7 +815,7 @@ prop.sc_version=Version</code></pre></li>
 <tr class="odd">
 <td align="left">Custom applications using a remote Alfresco repository</td>
 <td align="left">Java, Python, PHP, .NET, or any language that can make calls via HTTP</td>
-<td align="left">CMIS, Web Scripts</td>
+<td align="left">CMIS, Web Scripts, REST API</td>
 </tr>
 </tbody>
 </table>
@@ -832,12 +834,12 @@ prop.sc_version=Version</code></pre></li>
 <pre><code>&lt;dependency&gt;
     &lt;groupId&gt;org.apache.chemistry.opencmis&lt;/groupId&gt;
     &lt;artifactId&gt;chemistry-opencmis-client-impl&lt;/artifactId&gt;
-    &lt;version&gt;0.11.0&lt;/version&gt;
+    &lt;version&gt;1.0.0&lt;/version&gt;
 &lt;/dependency&gt;
 &lt;dependency&gt;
     &lt;groupId&gt;com.someco&lt;/groupId&gt;
     &lt;artifactId&gt;content-tutorial-common&lt;/artifactId&gt;
-    &lt;version&gt;1.0-SNAPSHOT&lt;/version&gt;
+    &lt;version&gt;1.0.0-SNAPSHOT&lt;/version&gt;
 &lt;/dependency&gt;</code></pre></li>
 <li><p>The content-tutorial-common project will contain code common the CMIS project will use as well as projects in later tutorials. For this tutorial, all we need is the com.someco.model.SomeCoModel.java class which contains constants that map to the custom content model. These constants are used for convenience by Java classes that need to know things like namespaces, names of content types, etc. If you are building your own project just copy it from the source.</p></li>
 </ol>
