@@ -23,17 +23,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import com.tradeshift.test.remote.Remote;
-import com.tradeshift.test.remote.RemoteTestRunner;
-
-@RunWith(RemoteTestRunner.class)
-@Remote(runnerClass=SpringJUnit4ClassRunner.class)
-@ContextConfiguration("classpath:alfresco/application-context.xml")
 public class MoveReplacedActionTest {
-    
+
     private static final String ADMIN_USER_NAME = "admin";
 
     static Logger log = Logger.getLogger(MoveReplacedActionTest.class);
@@ -41,11 +33,11 @@ public class MoveReplacedActionTest {
     @Autowired
     @Qualifier("NodeService")
     protected NodeService nodeService;
-    
+
     @Autowired
     @Qualifier("ActionService")
     protected ActionService actionService;
-    
+
     @Autowired
     @Qualifier("nodeLocatorService")
     protected NodeLocatorService nodeLocatorService;
@@ -56,12 +48,12 @@ public class MoveReplacedActionTest {
     	Action action = actionService.createAction("move-replaced");
     	assertNotNull(action);
     }
-    
+
     @Test
     public void testExecuteAction() {
     	AuthenticationUtil.setFullyAuthenticatedUser(ADMIN_USER_NAME);
         NodeRef companyHome = nodeLocatorService.getNode(CompanyHomeNodeLocator.NAME, null, null);
-        
+
         // assign name
         String name = "Move Replaced Action Test (" + System.currentTimeMillis() + ")";
         Map<QName, Serializable> contentProps = new HashMap<QName, Serializable>();
@@ -77,13 +69,13 @@ public class MoveReplacedActionTest {
                         );
 
         NodeRef content = association.getChildRef();
-            	
+
         NodeRef targetFolder = nodeLocatorService.getNode(UserHomeNodeLocator.NAME, null, null);
-        
+
     	Action action = actionService.createAction("move-replaced");
     	action.setParameterValue("destination-folder", targetFolder);
     	actionService.executeAction(action, content);
-    	
+
     	nodeService.deleteNode(content);
     }
 

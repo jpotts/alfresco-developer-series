@@ -12,18 +12,11 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.someco.action.executer.SetWebFlag;
-import com.tradeshift.test.remote.Remote;
-import com.tradeshift.test.remote.RemoteTestRunner;
 
-@RunWith(RemoteTestRunner.class)
-@Remote(runnerClass=SpringJUnit4ClassRunner.class)
-@ContextConfiguration("classpath:alfresco/application-context.xml")
 public class SetWebFlagActionTest {
-    
+
     private static final String ADMIN_USER_NAME = "admin";
 
     static Logger log = Logger.getLogger(SetWebFlagActionTest.class);
@@ -31,11 +24,11 @@ public class SetWebFlagActionTest {
     @Autowired
     @Qualifier("NodeService")
     protected NodeService nodeService;
-    
+
     @Autowired
     @Qualifier("ActionService")
     protected ActionService actionService;
-    
+
     @Autowired
     @Qualifier("nodeLocatorService")
     protected NodeLocatorService nodeLocatorService;
@@ -46,7 +39,7 @@ public class SetWebFlagActionTest {
     	Action action = actionService.createAction(SetWebFlag.NAME);
     	assertNotNull(action);
     }
-    
+
     /*
      * This test depends on the presence of the content tutorial repo AMP
      */
@@ -55,7 +48,7 @@ public class SetWebFlagActionTest {
     public void testExecuteAction() {
     	AuthenticationUtil.setFullyAuthenticatedUser(ADMIN_USER_NAME);
         NodeRef companyHome = nodeLocatorService.getNode(CompanyHomeNodeLocator.NAME, null, null);
-        
+
         // assign name
         String name = "Move Replaced Action Test (" + System.currentTimeMillis() + ")";
         Map<QName, Serializable> contentProps = new HashMap<QName, Serializable>();
@@ -71,11 +64,11 @@ public class SetWebFlagActionTest {
                         );
 
         NodeRef content = association.getChildRef();
-            	
+
     	Action action = actionService.createAction(SetWebFlag.NAME);
     	action.setParameterValue(SetWebFlag.PARAM_ACTIVE, true);
     	actionService.executeAction(action, content);
-    	
+
     	nodeService.deleteNode(content);
     }
     */
