@@ -3,10 +3,10 @@
 <beans>
 
    <!-- Add Someco messages -->
-   <bean id="${project.artifactId}_resources" class="org.springframework.extensions.surf.util.ResourceBundleBootstrapComponent">
+   <bean id="com.someco.behavior-tutorial-share.resources" class="org.springframework.extensions.surf.util.ResourceBundleBootstrapComponent">
       <property name="resourceBundles">
          <list>
-         	<value>alfresco.module.${project.artifactId}.messages.scRatingsModel</value>
+         	<value>alfresco.web-extension.messages.scRatingsModel</value>
          </list>
       </property>
    </bean>
