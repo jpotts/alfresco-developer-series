@@ -6,4 +6,5 @@
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 @echo off
 
-mvn clean install alfresco:run
+mvnDebug clean install alfresco:run
+
