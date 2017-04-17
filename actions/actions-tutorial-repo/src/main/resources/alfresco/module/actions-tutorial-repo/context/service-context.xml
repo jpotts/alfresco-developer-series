@@ -7,9 +7,9 @@
     The ASF licenses this file to You under the Apache License, Version 2.0
     (the "License"); you may not use this file except in compliance with
     the License.  You may obtain a copy of the License at
-    	
+
     http://www.apache.org/licenses/LICENSE-2.0
-    	
+
     Unless required by applicable law or agreed to in writing, software
     distributed under the License is distributed on an "AS IS" BASIS,
     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -30,14 +30,6 @@
     <bean id="set-web-flag" class="com.someco.action.executer.SetWebFlag" parent="action-executer">
         <property name="nodeService">
             <ref bean="NodeService" />
-        </property>
-    </bean>
-
-    <bean id="${project.artifactId}_actionResourceBundles" parent="actionResourceBundles">
-        <property name="resourceBundles">
-            <list>
-                <value>alfresco.module.${project.artifactId}.messages.somecoactions</value>
-            </list>
         </property>
     </bean>
 
