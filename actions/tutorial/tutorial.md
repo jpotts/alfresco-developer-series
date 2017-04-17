@@ -88,7 +88,23 @@ This tutorial relies on code from the [Custom Content Types](http://ecmarchitect
 
 If you are planning on following along, go ahead and use the Alfresco Maven SDK to create two new projects. One should use a `groupId` of "com.someco" and an `artifactId` of "actions-tutorial-repo" for the repo tier project and "actions-tutorial-share" for the share tier project.
 
-TBD need language here talking about adding the content repo tutorial dependency to the action tutorial POM. Need to make a similar addition to the behavior tutorial.
+I'm going to make two quick changes to the default pom.xml file in the root of
+actions-tutorial-repo:
+
+1. As I just mentioned, the actions tutorial project depends on the content
+tutorial project. So that needs to go into the pom.xml file as a dependency:
+
+        <dependency>
+            <groupId>com.someco</groupId>
+            <artifactId>content-tutorial-common</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
+        </dependency>
+
+2. Second, we want to generate an AMP file. Starting with SDK 3.0.0, the default
+is to generate only a JAR file. That's easily fixed by uncommenting the "maven-assembly-plugin"
+in the list of plugins in the pom.xml file.
+
+Now we're ready to begin.
 
 Part 1: Implementing an Action
 ==============================
@@ -407,7 +423,7 @@ set in a single call.
 ### Step 2: Configure the action in Spring
 
 The Spring configuration for this action goes in the same context file
-as the pervious action:
+as the pervious action (service-context.xml):
 
     <bean id="set-web-flag" class="com.someco.action.executer.SetWebFlag" parent="action-executer">
         <property name="nodeService">
@@ -778,7 +794,7 @@ selection is made.
 
 ![Configuring the Move Replaced action in Share](./images/move-replaced-config-share.png)
 
-Note that in my installation, I had trouble getting the Alfresco Maven SDK to package the components directory into the AMP. I addressed this by creating a file called "file-mapping.properties" in:
+In older versions of the SDK, I had trouble getting the Alfresco Maven SDK to package the components directory into the AMP. I addressed this by creating a file called "file-mapping.properties" in:
 
     $TUTORIAL_HOME/actions-tutorial-share/src/main/amp
 
@@ -787,6 +803,8 @@ With the following content:
     /web/components=/components
 
 This just tells the MMT (Module Management Tool) to put the files and folders it finds in the AMP under "/web/components" in a directory called "/components" relative to the Share web app root.
+
+This should not be needed in more recent versions of the SDK.
 
 ### Testing Your Share Configuration
 
@@ -877,7 +895,7 @@ minimum. Here's the `EnableWebFlag` action executer in its entirety:
 The `DisableWebFlag` action looks just like this but sets the `active` flag
 to `false`. I won't repeat it here.
 
-The Spring configuration for the action is similarly short:
+The Spring configuration for the action is similarly short. It goes in service-context.xml:
 
     <bean id="enable-web-flag" class="com.someco.action.executer.EnableWebFlag" parent="set-web-flag">
         <property name="publicAction">
@@ -976,7 +994,7 @@ ends with “-16.png”. Entirely lacking in graphics skills, I grabbed a
 couple of out-of-the-box icons that looked somewhat applicable and
 copied them in to my project under:
 
-    $TUTORIAL_HOME/actions-tutorial-share/src/main/amp/web/components/documentlibrary/actions
+    $TUTORIAL_HOME/actions-tutorial-share/src/main/resources/META-INF/resources/components/documentlibrary/actions
 
 Because this is Alfresco's
 folder structure, I made sure to name the icons starting with “someco”
@@ -1003,8 +1021,9 @@ show up at the same time, which is lame. Check it out:
 
 ![Yuck, SC Enable and SC Disable show up simultaneously](./images/enable-disable-same-time.png)
 
-The enable should only show up when the active flag is not set to `true`. The disable should only show up
-when the active flag is set to `true`. That's easy to fix with an evaluator and that's covered in the next section.
+The enable should only show up when the active flag is not set to `true`. The
+disable should only show up when the active flag is set to `true`. That's easy
+to fix with an evaluator and that's covered in the next section.
 
 Finishing Touches: Evaluators & Indicators
 ------------------------------------------
@@ -1054,9 +1073,8 @@ with the `sc:isActive` flag set to `true` from the document list.
 Only one evaluator is needed for this example. The evaluator just needs
 to know the value of the `sc:isActive` flag—the UI actions can show or hide
 themselves based on that. Evaluators live in Spring config. This project already
-has “actions-article-share-context.xml” so I added the evaluator
-to that file:
-
+has “actions-tutorial-share-slingshot-application-context.xml” so I added the
+evaluator to that file:
 
     <bean id="someco.evaluator.doclib.action.isActive" parent="evaluator.doclib.action.value">
         <property name="accessor" value="node.properties.sc:isActive" />
@@ -1082,28 +1100,31 @@ specify the aspect you are looking for in one of the properties.
 
 With an evaluator declared the next step is to tell the action
 configuration which evaluator to use to decide whether or not to show
-the UI action. So, back over in share-config-custom.xml, I've added two new `evaluator` elements to the existing `action` elements. The `evaluator` elements point to the `someco.evaluator.doclib.action.isActive` evaluator configured in the previous step:
+the UI action. So, back over in share-config-custom.xml, I've added two new
+`evaluator` elements to the existing `action` elements. The `evaluator` elements
+point to the `someco.evaluator.doclib.action.isActive` evaluator configured in
+the previous step:
 
-            <action id="someco-web-enable" type="javascript" label="actions.someco.web-enable" icon="someco-create-website">
-                <param name="function">onActionSimpleRepoAction</param>
-                <permissions>
-                    <permission allow="true">Write</permission>
-                </permissions>
-                <param name="action">enable-web-flag</param>
-                <param name="successMessage">message.web-flag.enabled</param>
-                <param name="failureMessage">message.web-flag.failure</param>
-                <evaluator negate="true">someco.evaluator.doclib.action.isActive</evaluator>
-            </action>
-            <action id="someco-web-disable" type="javascript" label="actions.someco.web-disable" icon="someco-delete-website">
-                <param name="function">onActionSimpleRepoAction</param>
-                <permissions>
-                    <permission allow="true">Write</permission>
-                </permissions>
-                <param name="action">disable-web-flag</param>
-                <param name="successMessage">message.web-flag.disabled</param>
-                <param name="failureMessage">message.web-flag.failure</param>
-                <evaluator>someco.evaluator.doclib.action.isActive</evaluator>
-            </action>
+    <action id="someco-web-enable" type="javascript" label="actions.someco.web-enable" icon="someco-create-website">
+        <param name="function">onActionSimpleRepoAction</param>
+        <permissions>
+            <permission allow="true">Write</permission>
+        </permissions>
+        <param name="action">enable-web-flag</param>
+        <param name="successMessage">message.web-flag.enabled</param>
+        <param name="failureMessage">message.web-flag.failure</param>
+        <evaluator negate="true">someco.evaluator.doclib.action.isActive</evaluator>
+    </action>
+    <action id="someco-web-disable" type="javascript" label="actions.someco.web-disable" icon="someco-delete-website">
+        <param name="function">onActionSimpleRepoAction</param>
+        <permissions>
+            <permission allow="true">Write</permission>
+        </permissions>
+        <param name="action">disable-web-flag</param>
+        <param name="successMessage">message.web-flag.disabled</param>
+        <param name="failureMessage">message.web-flag.failure</param>
+        <evaluator>someco.evaluator.doclib.action.isActive</evaluator>
+    </action>
 
 Both actions use the same evaluator. For the `someco-web-enable` action,
 the evaluator is negated. So if the evaluator returns true (i.e., the
@@ -1137,7 +1158,7 @@ this case, the one created earlier can be reused:
 Alfresco will use the indicator's id attribute appended with “-16.png”
 for the icon. I copied the same icon used for the “enable” action into:
 
-    $TUTORIAL_HOME/actions-tutorial-share/src/main/amp/web/components/documentlibrary/indicators
+    $TUTORIAL_HOME/actions-tutorial-share/src/main/resources/META-INF/resources/components/documentlibrary/indicators
 
 for this purpose.
 
