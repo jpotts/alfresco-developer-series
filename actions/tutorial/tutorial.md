@@ -1,6 +1,6 @@
 % Creating Custom Actions in Alfresco
 % Jeff Potts, [Metaversant Group](http://www.metaversant.com)
-% September, 2016
+% April, 2017
 
 License
 =======
@@ -39,6 +39,7 @@ custom action. For example, you could:
 * Write some Java, Groovy, Python, PHP, or .NET code that leverages an Apache Chemistry library to work with content stored in Alfresco
 * Create some server-side JavaScript
 that gets executed using the [JavaScript Console](http://share-extras.github.io/addons/js-console/) add-on available from Share Extras
+* Use curl or some other HTTP client to make calls against the Alfresco REST API
 * Use curl or some other HTTP client to make calls against web scripts
 
 None of the above require you to write actions.
@@ -69,11 +70,11 @@ Here is what I am using on my machine:
 * Mac OS X 10.11.6
 * Java 1.8.0_77
 * Apache Maven 3.3.9 (installed using Macports)
-* Alfresco Maven SDK 2.2.0 (No download necessary)
-* Eclipse Java EE IDE for Web Developers, Luna
-* Alfresco Community Edition 5.1.f ([Download](https://sourceforge.net/projects/alfresco/files/Alfresco%20201604%20Community/))
+* Alfresco Maven SDK 3.0.0 (No download necessary)
+* Eclipse Java EE IDE for Web Developers, Neon
+* Alfresco Community Edition 5.2.e ([Download](https://sourceforge.net/projects/alfresco/files/Alfresco%20201702%20Community/))
 
-By default, when you create an Alfresco project using Alfresco Maven SDK 2.2.0 the project will be configured to depend on Alfresco Community Edition 5.1.e.
+By default, when you create an Alfresco project using Alfresco Maven SDK 3.0.0 the project will be configured to depend on Alfresco Community Edition 5.2.e.
 
 The Eclipse IDE is optional. Most people working with Alfresco use Eclipse or something similar, so this tutorial will assume that's what you are using.
 
@@ -86,6 +87,8 @@ I am not going to spend much time talking about how the Alfresco Maven SDK works
 This tutorial relies on code from the [Custom Content Types](http://ecmarchitect.com/alfresco-developer-series-tutorials/content/tutorial/tutorial.html) tutorial. The tutorial assumes that the repo tier AMP and Share tier AMP created during that tutorial have been deployed to the Alfresco server you will be deploying your custom actions AMPs to.
 
 If you are planning on following along, go ahead and use the Alfresco Maven SDK to create two new projects. One should use a `groupId` of "com.someco" and an `artifactId` of "actions-tutorial-repo" for the repo tier project and "actions-tutorial-share" for the share tier project.
+
+TBD need language here talking about adding the content repo tutorial dependency to the action tutorial POM. Need to make a similar addition to the behavior tutorial.
 
 Part 1: Implementing an Action
 ==============================
@@ -283,9 +286,11 @@ In the content types tutorial, you learned that Spring bean
 configurations go in the context file for the AMP. That file
 is called "service-context.xml" and it resides in:
 
-    $TUTORIAL_HOME/actions-tutorial-repo/src/main/amp/config/alfresco/module/actions-tutorial-repo/context
+    $TUTORIAL_HOME/actions-tutorial-repo/src/main/resources/alfresco/module/actions-tutorial-repo/context
 
-The file is created for you by the Alfresco Maven SDK. Initially, it contains some `bean` elements for some demo classes that are also created by the Alfresco Maven SDK. Add the following `bean` element to the existing list of `beans`:
+The file is created for you by the Alfresco Maven SDK. Initially, it contains some `bean` elements for some demo classes that are also created by the Alfresco Maven SDK. It is safe to delete the demo beans. If you deleted the demo Java code that the SDK created, you must also delete the demo beans.
+
+Add the following `bean` element to the existing `beans` element:
 
     <bean id="move-replaced" class="com.someco.action.executer.MoveReplacedActionExecuter" parent="action-executer">
         <property name="fileFolderService">
@@ -419,7 +424,9 @@ This step isn't strictly necessary at this point, but it will save a step later.
 
 Following the same pattern as the content tutorial, I created a "messages" folder in:
 
-    $TUTORIAL_HOME/actions-tutorial-repo/src/main/amp/config/alfresco/module/actions-tutorial-repo
+    $TUTORIAL_HOME/actions-tutorial-repo/src/main/resources/alfresco/module/actions-tutorial-repo
+
+It is okay to delete the demo properties file that the SDK may have put in the messages folder.
 
 In that folder I created a file called "somecoactions.properties" with the following content:
 
@@ -431,7 +438,7 @@ In that folder I created a file called "somecoactions.properties" with the follo
     set-web-flag.title=Sets the SC Web Flag
     set-web-flag.description=This will add the sc:webable aspect and set the isActive flag.
 
-Spring needs to know about this properties bundle, so I added this bean to service-context.xml:
+Spring needs to know about this properties bundle, so I replaced the demo Spring beans in bootstrap-context.xml with this bean:
 
     <bean id="${project.artifactId}_actionResourceBundles" parent="actionResourceBundles">
         <property name="resourceBundles">
@@ -474,6 +481,8 @@ Recall from the content types tutorial that the Share user interface
 configuration resides in a file called “share-config-custom.xml”. The actions-tutorial-share project will have its own share-config-custom.xml that contains Share configuration specific to the custom actions. The file resides under:
 
     $TUTORIAL_HOME/actions-tutorial-share/src/main/resources/META-INF
+
+You can replace the demo config elements the SDK populated in share-config-custom.xml as instructed in this section.
 
 The `cm:replaceable` aspect can be added to the list of aspects a user can
 see by adding some document library configuation to share-config-custom.xml, like this:
@@ -529,7 +538,9 @@ and this:
 The last step in exposing the `cm:replaceable` aspect and `cm:replaces`
 association is localizing the labels. As you saw in the content types tutorial, custom labels go in:
 
-    $TUTORIAL_HOME/actions-tutorial-share/src/main/amp/config/alfresco/module/actions-tutorial-share/messages
+    $TUTORIAL_HOME/actions-tutorial-share/src/main/resources/alfresco/web-extension/messages
+
+The SDK probably created a demo properties file in that directory. Delete it.
 
 I'll create a new file for this module called scActions.properties. In it goes the following:
 
@@ -537,26 +548,20 @@ I'll create a new file for this module called scActions.properties. In it goes t
     aspect.cm_replaceable=Replaceable
     assoc.cm_replaces=Replaces
 
-The custom properties file needs to be configured using Spring. So, again, just like the custom content types tutorial, I'll create a context file called "actions-article-share-context.xml" in:
+The custom properties file needs to be configured using Spring. So, again, just like the custom content types tutorial, I'll edit a context file called "actions-tutorial-share-slingshot-application-context.xml" in:
 
-    $TUTORIAL_HOME/actions-tutorial-share/src/main/amp/config/alfresco/web-extension
+    $TUTORIAL_HOME/actions-tutorial-share/src/main/resources/alfresco/web-extension
 
-Initially, the file contains a Spring bean that points to the properties file, like this:
+Replace the demo bean that the SDK created for you with this:
 
-    <?xml version='1.0' encoding='UTF-8'?>
-    <!DOCTYPE beans PUBLIC '-//SPRING//DTD BEAN//EN' 'http://www.springframework.org/dtd/spring-beans.dtd'>
-    <beans>
-
-       <!-- Add Someco messages -->
-       <bean id="${project.artifactId}_resources" class="org.springframework.extensions.surf.util.ResourceBundleBootstrapComponent">
-          <property name="resourceBundles">
-             <list>
-             	<value>alfresco.module.${project.artifactId}.messages.scActions</value>
-             </list>
-          </property>
-       </bean>
-
-    </beans>
+    <!-- Add Someco messages -->
+    <bean id="${project.artifactId}_resources" class="org.springframework.extensions.surf.util.ResourceBundleBootstrapComponent">
+        <property name="resourceBundles">
+            <list>
+                <value>alfresco.web-extension.messages.scActions</value>
+            </list>
+        </property>
+    </bean>
 
 Now the replaceable aspect can be added to and removed from documents using Alfresco Share. The next step is to configure the Move Replaced Rule Action in Share.
 
@@ -605,7 +610,7 @@ rule-config-action.get.config.xml file from:
 into your own project. For example, in the code that accompanies this
 tutorial, I copied the file into:
 
-    $TUTORIAL_HOME/actions-tutorial-share/src/main/amp/config/alfresco/web-extension/site-webscripts/org/alfresco/components/rules/config
+    $TUTORIAL_HOME/actions-tutorial-share/src/main/resources/alfresco/web-extension/site-webscripts/org/alfresco/components/rules/config
 
 The first change is to specify a custom client-side JavaScript
 component:
@@ -650,7 +655,7 @@ The `move-replaced` action is going to be invoking some client-side JavaScript. 
 
 Into the tutorial project under:
 
-    $TUTORIAL_HOME/actions-tutorial-share/src/main/amp/config/alfresco/web-extension/site-webscripts/org/alfresco/components/rules
+    $TUTORIAL_HOME/actions-tutorial-share/src/main/resources/alfresco/web-extension/site-webscripts/org/alfresco/components/rules
 
 In both files, the new `script` element is added to the end of the JavaScript dependencies, like this:
 
@@ -673,7 +678,7 @@ client-side JavaScript.
 The FreeMarker files have been modified to include a reference to a file
 called rule-config-action-custom.js. This file will contain client-side JavaScript. It goes in:
 
-    $TUTORIAL_HOME/actions-tutorial-share/src/main/amp/web/components/someco/rules/config
+    $TUTORIAL_HOME/actions-tutorial-share/src/main/resources/META-INF/resources/components/someco/rules/config
 
 Alfresco has their rule-related client-side JavaScript under
 “components/rules/config” so I used the same folder structure, using "someco" to keep my stuff separate from Alfresco's.
@@ -689,7 +694,7 @@ might install.
     }
 
 Next, comes the constructor for the component (I've left out some boring
-stuff, check the [source](https://github.com/jpotts/alfresco-developer-series/blob/master/actions/actions-tutorial-share/src/main/amp/web/components/someco/rules/config/rule-config-action-custom.js) for the full listing):
+stuff, check the [source](https://github.com/jpotts/alfresco-developer-series/blob/master/actions/actions-tutorial-share/src/main/resources/META-INF/resources/components/someco/rules/config/rule-config-action-custom.js) for the full listing):
 
 
     SomeCo.RuleConfigActionCustom = function(htmlId)
@@ -809,9 +814,7 @@ At this point you have an Alfresco installation with everything your Share proje
 
 I am going to go with the second one because it allows me to quickly iterate on my Share project and test changes without having to restart the entire Alfresco stack.
 
-So, to do that, I'm going start up my standalone Tomcat server that I just deployed my repo tier AMPs to. Then, I'm going to switch to my actions-tutorial-share project directory and run:
-
-    mvn integration-test -Pamp-to-war
+So, to do that, I'm going start up my standalone Tomcat server that I just deployed my repo tier AMPs to. Then, I'm going to switch to my actions-tutorial-share project directory and run `run.sh` (if you are on Windows, use `run.bat` instead).
 
 That starts Alfresco Share on my embedded Tomcat server on port 8081 running the customizations in actions-tutorial-share. It will automatically find the Alfresco repository running on a standalone Tomcat at port 8080.
 
