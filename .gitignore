@@ -25,3 +25,6 @@ webscripts/webscripts-tutorial-repo/alf_data_dev
 workflow/workflow-tutorial-repo/.idea
 workflow/workflow-tutorial-repo/alf_data_dev
 workflow/workflow-tutorial-share/.idea
+alfresco.log.*
+solr.log.*
+share.log.*
