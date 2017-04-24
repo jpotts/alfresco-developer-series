@@ -30,7 +30,7 @@ Architect | Alfresco Developer Tutorials</title>
 <div id="header">
 <h1 class="entry-title">Introduction to the Web Script Framework</h1>
 <h2 class="author">Jeff Potts, <a href="http://www.metaversant.com">Metaversant Group</a></h2>
-<h3 class="date">September, 2016</h3>
+<h3 class="date">April, 2017</h3>
 </div>
 <div id="TOC">
 <ul>
@@ -210,18 +210,19 @@ Foo: bar</code></pre>
 <li>Mac OS X 10.11.6</li>
 <li>Java 1.8.0_77</li>
 <li>Apache Maven 3.3.9 (installed using Macports)</li>
-<li>Alfresco Maven SDK 2.2.0 (No download necessary)</li>
-<li>Eclipse Java EE IDE for Web Developers, Luna</li>
-<li>Alfresco Community Edition 5.1.f (<a href="https://sourceforge.net/projects/alfresco/files/Alfresco%20201604%20Community/">Download</a>)</li>
+<li>Alfresco Maven SDK 3.0.0 (No download necessary)</li>
+<li>Eclipse Java EE IDE for Web Developers, Neon</li>
+<li>Alfresco Community Edition 5.2.f (<a href="https://sourceforge.net/projects/alfresco/files/Alfresco%20201604%20Community/">Download</a>)</li>
 </ul>
-<p>By default, when you create an Alfresco project using Alfresco Maven SDK 2.2.0 the project will be configured to depend on Alfresco Community Edition 5.1.e.</p>
+<p>By default, when you create an Alfresco project using version the Alfresco Maven SDK the project will be configured to depend on the latest stable Alfresco Community Edition build.</p>
 <p>The Eclipse IDE is optional. Most people working with Alfresco use Eclipse or something similar, so this tutorial will assume that's what you are using.</p>
 <h2 id="project-organization">Project Organization</h2>
 <p>You just saw that web scripts can be created by creating or uploading files to the Alfresco repository. For the rest of these examples, though, you'll create a project that will package the web scripts as an AMP (Alfresco Module Package). This is the recommended way to distribute your Alfresco customizations. It's a lot less error-prone than handing a bunch of files to someone and asking them to upload them to the proper place in the repository.</p>
 <p>In previous tutorials you've seen examples that use multiple projects to house the customizations. In this tutorial you just need a single project created using the AMP archetype that is part of the Alfresco Maven SDK.</p>
 <p>I am not going to spend much time talking about how the Alfresco Maven SDK works. If you aren't already familiar with it, you may want to read the <a href="http://ecmarchitect.com/alfresco-developer-series">Getting Started with the Alfresco Maven SDK</a> tutorial on ecmarchitect.com first and then come back to this one.</p>
-<p>If you are planning on following along, go ahead and use the Alfresco Maven SDK to create your project directory. Use a <code>groupId</code> of &quot;com.someco&quot; and an <code>artifactId</code> of &quot;webscripts-tutorial-repo&quot;.</p>
+<p>If you are planning on following along, go ahead and use the Alfresco Maven SDK to bootstrap your project using the alfresco-platform-jar-archetype. Use a <code>groupId</code> of &quot;com.someco&quot; and an <code>artifactId</code> of &quot;webscripts-tutorial-repo&quot;.</p>
 <p>I'll refer to the directory where you created the project directory as $TUTORIAL_HOME.</p>
+<p>One small change is necessary before continuing. Starting with SDK 3.0.0, the default is to output a JAR. But we want to output an AMP. To configure the project to generate an AMP, edit the pom.xml and uncomment the maven-assembly-plugin.</p>
 <h1 id="creating-your-own-rest-api-for-ratings">Creating Your Own REST API for Ratings</h1>
 <p>SomeCo wants a REST API that front-end developers can use to find whitepapers and ratings as well as post new ratings. Before diving in, it probably makes sense to rough out the API.</p>
 <table>
@@ -283,11 +284,11 @@ Foo: bar</code></pre>
 <p>I'll walk you through the descriptor, controller, and the two views.</p>
 <h3 id="step-1-write-the-descriptor">Step 1: Write the descriptor</h3>
 <p>The first step is to create the descriptor file. Web scripts that are deployed in an AMP go in:</p>
-<pre><code>$TUTORIAL_HOME/webscripts-tutorial-repo/src/main/amp/config/alfresco/extension/templates/webscripts</code></pre>
-<p>The Alfresco Maven SDK will have created the directory structure down to &quot;/alfresco&quot;. You'll have to create everything below that.</p>
+<pre><code>$TUTORIAL_HOME/webscripts-tutorial-repo/src/main/resources/alfresco/extension/templates/webscripts</code></pre>
+<p>The Alfresco Maven SDK probably created that directory structure and added an &quot;alfresco&quot; directory with some demo web scripts. Go ahead and delete the example web scripts. We don't need those.</p>
 <p>The web script framework allows web script assets to be organized in a hierarchical folder or package structure within that directory. This keeps your web scripts from colliding with other people's web scripts or Alfresco's. Use a reverse domain name pattern just like you would for a Java package. This tutorial will use &quot;com/someco&quot; for its package. This particular web script is about whitepapers so the files that make up the whitepapers web script will reside in:</p>
-<pre><code>$TUTORIAL_HOME/webscripts-tutorial-repo/src/main/amp/config/alfresco/extension/templates/webscripts/com/someco/whitepapers</code></pre>
-<p>To create the descriptor, create a new XML file called &quot;<a href="https://github.com/jpotts/alfresco-developer-series/blob/master/webscripts/webscripts-tutorial-repo/src/main/amp/config/alfresco/extension/templates/webscripts/com/someco/whitepapers/whitepapers.get.desc.xml">whitepapers.get.desc.xml</a>&quot; in that directory.</p>
+<pre><code>$TUTORIAL_HOME/webscripts-tutorial-repo/src/main/resources/alfresco/extension/templates/webscripts/com/someco/whitepapers</code></pre>
+<p>To create the descriptor, create a new XML file called &quot;<a href="https://github.com/jpotts/alfresco-developer-series/blob/master/webscripts/webscripts-tutorial-repo/src/main/resources/alfresco/extension/templates/webscripts/com/someco/whitepapers/whitepapers.get.desc.xml">whitepapers.get.desc.xml</a>&quot; in that directory.</p>
 <p>Edit the file to have the following content:</p>
 <pre><code>&lt;webscript&gt;
     &lt;shortname&gt;Get all whitepapers&lt;/shortname&gt;
@@ -313,7 +314,7 @@ Foo: bar</code></pre>
 </ul>
 <p>The next step is to write the controller.</p>
 <h3 id="step-2-write-the-controller">Step 2: Write the controller</h3>
-<p>The controller is where the logic that queries the whitepapers will live. Create a file called &quot;<a href="https://github.com/jpotts/alfresco-developer-series/blob/master/webscripts/webscripts-tutorial-repo/src/main/amp/config/alfresco/extension/templates/webscripts/com/someco/whitepapers/whitepapers.get.js">whitepapers.get.js</a>&quot; in the same directory as the controller. Edit the file with the following content:</p>
+<p>The controller is where the logic that queries the whitepapers will live. Create a file called &quot;<a href="https://github.com/jpotts/alfresco-developer-series/blob/master/webscripts/webscripts-tutorial-repo/src/main/resources/alfresco/extension/templates/webscripts/com/someco/whitepapers/whitepapers.get.js">whitepapers.get.js</a>&quot; in the same directory as the controller. Edit the file with the following content:</p>
 <pre><code>&lt;import resource=&quot;classpath:alfresco/extension/scripts/rating.js&quot;&gt;
 
 var whitepapers = search.luceneSearch(&quot;PATH:\&quot;/app:company_home/cm:Someco/*\&quot; +TYPE:\&quot;{http://www.someco.com/model/content/1.0}whitepaper\&quot;&quot;);
@@ -349,7 +350,7 @@ function whitepaperEntry(whitepaper, rating) {
 }</code></pre>
 <p>The function simply retrieves the <code>scr:averageRating</code> and <code>scr:ratingCount</code> properties from the specified node as well as the current user's rating for this object, and returns everything in a single rating object.</p>
 <h3 id="step-3-write-the-views">Step 3: Write the views</h3>
-<p>Assuming there are items in the search results, the web script will need FreeMarker templates to return them in the appropriate format. Let's create the HTML response template first. Create a new file called &quot;<a href="https://github.com/jpotts/alfresco-developer-series/blob/master/webscripts/webscripts-tutorial-repo/src/main/amp/config/alfresco/extension/templates/webscripts/com/someco/whitepapers/whitepapers.get.html.ftl">whitepapers.get.html.ftl</a>&quot; in the same directory as the controller you just created. Edit the file with the following content:</p>
+<p>Assuming there are items in the search results, the web script will need FreeMarker templates to return them in the appropriate format. Let's create the HTML response template first. Create a new file called &quot;<a href="https://github.com/jpotts/alfresco-developer-series/blob/master/webscripts/webscripts-tutorial-repo/src/main/resources/alfresco/extension/templates/webscripts/com/someco/whitepapers/whitepapers.get.html.ftl">whitepapers.get.html.ftl</a>&quot; in the same directory as the controller you just created. Edit the file with the following content:</p>
 <pre><code>&lt;#assign datetimeformat=&quot;EEE, dd MMM yyyy HH:mm:ss zzz&quot;&gt;
 &lt;html&gt;
     &lt;body&gt;
@@ -416,7 +417,7 @@ function whitepaperEntry(whitepaper, rating) {
     &lt;/body&gt;
 &lt;/html&gt;</code></pre>
 <p>This template iterates through the query results passed in by the controller, and builds an HTML table with properties of each whitepaper. (Yes, the table is ugly. Yes, you could use CSS to spruce it up tremendously or even remove the table entirely. But for SomeCo, this response template is really for debugging purposes only and I didn't want to fool with the CSS so a table it is).</p>
-<p>Now create the response template for the JSON response. In the same directory as the HTML response template, create a file called &quot;<a href="https://github.com/jpotts/alfresco-developer-series/blob/master/webscripts/webscripts-tutorial-repo/src/main/amp/config/alfresco/extension/templates/webscripts/com/someco/whitepapers/whitepapers.get.json.ftl">whitepapers.get.json.ftl</a>&quot; with the following content:</p>
+<p>Now create the response template for the JSON response. In the same directory as the HTML response template, create a file called &quot;<a href="https://github.com/jpotts/alfresco-developer-series/blob/master/webscripts/webscripts-tutorial-repo/src/main/resources/alfresco/extension/templates/webscripts/com/someco/whitepapers/whitepapers.get.json.ftl">whitepapers.get.json.ftl</a>&quot; with the following content:</p>
 <pre><code>&lt;#assign datetimeformat=&quot;EEE, dd MMM yyyy HH:mm:ss zzz&quot;&gt;
 {&quot;whitepapers&quot; : [
     &lt;#list whitepapers as child&gt;
@@ -498,8 +499,8 @@ function whitepaperEntry(whitepaper, rating) {
 <p>Remember that if you make changes to the web script without restarting the application server, you may need to use the web script console to refresh the web scripts.</p>
 <h2 id="retrieving-the-ratings-for-a-specific-whitepaper">Retrieving the ratings for a specific whitepaper</h2>
 <p>You have a working web script that fetches a list of whitepapers. Now let's create a web script that retrieves rating summary data for a specific object.</p>
-<p>This is pretty easy because of the existing <code>getRating()</code> function in rating.js. The controller is called &quot;<a href="https://github.com/jpotts/alfresco-developer-series/blob/master/webscripts/webscripts-tutorial-repo/src/main/amp/config/alfresco/extension/templates/webscripts/com/someco/ratings/rating.get.js">rating.get.js</a>&quot; and it resides in:</p>
-<pre><code>$TUTORIAL_HOME/webscripts-tutorial-repo/src/main/amp/config/alfresco/extension/templates/webscripts/com/someco/ratings</code></pre>
+<p>This is pretty easy because of the existing <code>getRating()</code> function in rating.js. The controller is called &quot;<a href="https://github.com/jpotts/alfresco-developer-series/blob/master/webscripts/webscripts-tutorial-repo/src/main/resources/alfresco/extension/templates/webscripts/com/someco/ratings/rating.get.js">rating.get.js</a>&quot; and it resides in:</p>
+<pre><code>$TUTORIAL_HOME/webscripts-tutorial-repo/src/main/resources/alfresco/extension/templates/webscripts/com/someco/ratings</code></pre>
 <p>All the controller has to do is grab the ID of the rateable object that is being requested, locate the node, then call <code>getRating()</code> as shown below:</p>
 <pre><code>&lt;import resource=&quot;classpath:alfresco/module/behavior-tutorial-repo/scripts/rating.js&quot;&gt;
 if (args.id == null || args.id.length == 0) {
@@ -518,9 +519,9 @@ if (args.id == null || args.id.length == 0) {
 }</code></pre>
 <p>The descriptor and response templates are very similar to the whitepaper example so I won't include them here. If you want to grab them to copy them into your project, they are:</p>
 <ul>
-<li><a href="https://github.com/jpotts/alfresco-developer-series/blob/master/webscripts/webscripts-tutorial-repo/src/main/amp/config/alfresco/extension/templates/webscripts/com/someco/ratings/rating.get.desc.xml">rating.get.desc.xml</a></li>
-<li><a href="https://github.com/jpotts/alfresco-developer-series/blob/master/webscripts/webscripts-tutorial-repo/src/main/amp/config/alfresco/extension/templates/webscripts/com/someco/ratings/rating.get.html.ftl">rating.get.html.ftl</a></li>
-<li><a href="https://github.com/jpotts/alfresco-developer-series/blob/master/webscripts/webscripts-tutorial-repo/src/main/amp/config/alfresco/extension/templates/webscripts/com/someco/ratings/rating.get.json.ftl">rating.get.json.ftl</a></li>
+<li><a href="https://github.com/jpotts/alfresco-developer-series/blob/master/webscripts/webscripts-tutorial-repo/src/main/resources/alfresco/extension/templates/webscripts/com/someco/ratings/rating.get.desc.xml">rating.get.desc.xml</a></li>
+<li><a href="https://github.com/jpotts/alfresco-developer-series/blob/master/webscripts/webscripts-tutorial-repo/src/main/resources/alfresco/extension/templates/webscripts/com/someco/ratings/rating.get.html.ftl">rating.get.html.ftl</a></li>
+<li><a href="https://github.com/jpotts/alfresco-developer-series/blob/master/webscripts/webscripts-tutorial-repo/src/main/resources/alfresco/extension/templates/webscripts/com/someco/ratings/rating.get.json.ftl">rating.get.json.ftl</a></li>
 </ul>
 <p>Now you can deploy and test the rating web script.</p>
 <h3 id="deploying-and-testing-the-rating-web-script">Deploying and testing the rating web script</h3>
@@ -560,11 +561,11 @@ if (args.id == null || args.id.length == 0) {
 <li>Write the views</li>
 </ol>
 <p>The descriptor, together with the two views, reside in the same folder as the GET rating web script you worked on in the previous section, which is:</p>
-<pre><code>$TUTORIAL_HOME/webscripts-tutorial-repo/src/main/amp/config/alfresco/extension/templates/webscripts/com/someco/rating</code></pre>
+<pre><code>$TUTORIAL_HOME/webscripts-tutorial-repo/src/main/resources/alfresco/extension/templates/webscripts/com/someco/ratings</code></pre>
 <p>The controller will be written in the Java source code folder for the project, compiled, and packaged in a JAR as part of the AMP.</p>
 <p>Let's look at each of the steps needed to implement the post rating web script.</p>
 <h3 id="step-1-write-the-descriptor-1">Step 1: Write the descriptor</h3>
-<p>The descriptor, <a href="https://github.com/jpotts/alfresco-developer-series/blob/master/webscripts/webscripts-tutorial-repo/src/main/amp/config/alfresco/extension/templates/webscripts/com/someco/ratings/rating.post.desc.xml">rating.post.desc.xml</a>, has two things you haven't seen yet. First, the <code>authentication</code> element uses the <code>runas</code> attribute to specify that the web script should be executed as &quot;admin&quot; even though it only requires Guest access or higher to execute:</p>
+<p>The descriptor, <a href="https://github.com/jpotts/alfresco-developer-series/blob/master/webscripts/webscripts-tutorial-repo/src/main/resources/alfresco/extension/templates/webscripts/com/someco/ratings/rating.post.desc.xml">rating.post.desc.xml</a>, has two things you haven't seen yet. First, the <code>authentication</code> element uses the <code>runas</code> attribute to specify that the web script should be executed as &quot;admin&quot; even though it only requires Guest access or higher to execute:</p>
 <pre><code>&lt;authentication runas=&quot;admin&quot;&gt;guest&lt;/authentication&gt;</code></pre>
 <p>Note that using <code>runas</code> in this way only works for web scripts that are loaded from the classpath. For security reasons, it will not work for web scripts uploaded to the repository.</p>
 <p>The second piece of the descriptor to look at is the <code>transaction</code> element. Unlike the GET web scripts you've seen so far, this web script creates new content so the web script will need a transaction:</p>
@@ -682,10 +683,10 @@ if (args.id == null || args.id.length == 0) {
 <p>The next step is to configure both of these Java classes in Spring.</p>
 <h4 id="step-2c-create-spring-configuration-for-the-web-script-controller">Step 2c: Create Spring configuration for the web script controller</h4>
 <p>The Java controller for the web script exists, but both the controller class, <code>PostRating</code>, and the bean that contains the business logic, <code>RatingBean</code>, have dependencies that need to be injected. And, the web script framework needs to know to invoke the <code>PostRating</code> class when the web script is called. All of that happens through Spring configuration.</p>
-<p>You learned in earlier tutorials that the Spring context file for a module is called <a href="https://github.com/jpotts/alfresco-developer-series/blob/master/webscripts/webscripts-tutorial-repo/src/main/amp/config/alfresco/module/webscripts-tutorial-repo/context/service-context.xml">service-context.xml</a> and it lives in:</p>
-<pre><code>$TUTORIAL_HOME/webscripts-tutorial-repo/src/main/amp/config/alfresco/module/webscripts-tutorial-repo/context</code></pre>
+<p>You learned in earlier tutorials that the Spring context file for a module is called <a href="https://github.com/jpotts/alfresco-developer-series/blob/master/webscripts/webscripts-tutorial-repo/src/main/resources/alfresco/module/webscripts-tutorial-repo/context/service-context.xml">service-context.xml</a> and it lives in:</p>
+<pre><code>$TUTORIAL_HOME/webscripts-tutorial-repo/src/main/resources/alfresco/module/webscripts-tutorial-repo/context</code></pre>
 <p>The Alfresco Maven SDK created that file for you when you used it to bootstrap the project.</p>
-<p>Edit that file and make the <code>beans</code> element look like this:</p>
+<p>Edit that file. You can delete any sample bean elements that may already be in the file. Make the <code>beans</code> element look like this:</p>
 <pre><code>&lt;beans&gt;
     &lt;bean id=&quot;ratingBean&quot; class=&quot;com.someco.beans.RatingBean&quot;&gt;
         &lt;property name=&quot;nodeService&quot;&gt;
@@ -710,15 +711,15 @@ if (args.id == null || args.id.length == 0) {
 <h3 id="step-3-write-the-views-1">Step 3: Write the views</h3>
 <p>The response templates for this web script look like the examples you've seen so far. Like previous examples, this web script can respond with either an HTML or JSON response:</p>
 <ul>
-<li><a href="https://github.com/jpotts/alfresco-developer-series/blob/master/webscripts/webscripts-tutorial-repo/src/main/amp/config/alfresco/extension/templates/webscripts/com/someco/ratings/rating.post.html.ftl">rating.post.html.ftl</a></li>
-<li><a href="https://github.com/jpotts/alfresco-developer-series/blob/master/webscripts/webscripts-tutorial-repo/src/main/amp/config/alfresco/extension/templates/webscripts/com/someco/ratings/rating.post.json.ftl">rating.post.json.ftl</a></li>
+<li><a href="https://github.com/jpotts/alfresco-developer-series/blob/master/webscripts/webscripts-tutorial-repo/src/main/resources/alfresco/extension/templates/webscripts/com/someco/ratings/rating.post.html.ftl">rating.post.html.ftl</a></li>
+<li><a href="https://github.com/jpotts/alfresco-developer-series/blob/master/webscripts/webscripts-tutorial-repo/src/main/resources/alfresco/extension/templates/webscripts/com/someco/ratings/rating.post.json.ftl">rating.post.json.ftl</a></li>
 </ul>
 <p>These should look similar to the views you've already created.</p>
 <h3 id="deploying-the-post-web-script">Deploying the post web script</h3>
 <p>This web script is written in Java so you'll need to shutdown the server, build the AMP, and deploy it to your Alfresco server as you've done in prior steps, then start Tomcat back up.</p>
 <h3 id="testing-the-post-web-script-with-curl">Testing the post web script with curl</h3>
 <p>Curl, and other types of HTTP clients, are great for testing web scripts. For example, using curl you can post a rating like this:</p>
-<pre><code>curl -X POST &quot;http://localhost:8080/alfresco/s/someco/rating?id=802d6f27-82ec-4c9c-8e29-9b6e4a3401ef&amp;rating=5&amp;user=jpotts&amp;guest=true</code></pre>
+<pre><code>curl -X POST &quot;http://localhost:8080/alfresco/s/someco/rating?id=802d6f27-82ec-4c9c-8e29-9b6e4a3401ef&amp;rating=5&amp;user=jpotts&amp;guest=true&quot;</code></pre>
 <p>That <code>id</code> is from the node reference of an existing whitepaper.</p>
 <p>Running this returns:</p>
 <pre><code>{&quot;rating&quot; :
@@ -732,13 +733,13 @@ if (args.id == null || args.id.length == 0) {
 <h2 id="deleting-ratings">Deleting ratings</h2>
 <p>This should be old hat by now. Creating a web script to delete the ratings associated with a specific whitepaper is similar to the other web scripts, it's just that this one is invoked with the DELETE HTTP method. Let's look at the descriptor and the controller.</p>
 <h3 id="step-1-configure-the-descriptor-to-restrict-the-web-script-to-administrators">Step 1: Configure the descriptor to restrict the web script to administrators</h3>
-<p>It seems rare that you would want to delete all ratings for a given node but highly likely that if you are going to expose it, it should be for admins only. So let's tell Alfresco that this web script can only by run by administrators. The descriptor is named <a href="https://github.com/jpotts/alfresco-developer-series/blob/master/webscripts/webscripts-tutorial-repo/src/main/amp/config/alfresco/extension/templates/webscripts/com/someco/ratings/rating.delete.desc.xml">rating.delete.desc.xml</a>. It lives in:</p>
-<pre><code>$TUTORIAL_HOME/webscripts-tutorial-repo/src/main/amp/config/alfresco/extension/templates/webscripts/com/someco/ratings</code></pre>
+<p>It seems rare that you would want to delete all ratings for a given node but highly likely that if you are going to expose it, it should be for admins only. So let's tell Alfresco that this web script can only by run by administrators. The descriptor is named <a href="https://github.com/jpotts/alfresco-developer-series/blob/master/webscripts/webscripts-tutorial-repo/src/main/resources/alfresco/extension/templates/webscripts/com/someco/ratings/rating.delete.desc.xml">rating.delete.desc.xml</a>. It lives in:</p>
+<pre><code>$TUTORIAL_HOME/webscripts-tutorial-repo/src/main/resources/alfresco/extension/templates/webscripts/com/someco/ratings</code></pre>
 <p>To restrict the web script to administrators, set the <code>authentication</code> element like this:</p>
 <pre><code>&lt;authentication&gt;admin&lt;/authentication&gt;</code></pre>
 <p>Now only administrators can execute the web script.</p>
 <h3 id="step-2-write-the-controller-1">Step 2: Write the controller</h3>
-<p>As in previous examples, the controller JavaScript, <a href="https://github.com/jpotts/alfresco-developer-series/blob/master/webscripts/webscripts-tutorial-repo/src/main/amp/config/alfresco/extension/templates/webscripts/com/someco/ratings/rating.delete.js">rating.delete.js</a>, reads and checks the arguments then calls a function. In this case it is the <code>deleteRatings()</code> function that already exists in the rating.js file packaged in the behavior-tutorial-repo project. The body of the function is:</p>
+<p>As in previous examples, the controller JavaScript, <a href="https://github.com/jpotts/alfresco-developer-series/blob/master/webscripts/webscripts-tutorial-repo/src/main/resources/alfresco/extension/templates/webscripts/com/someco/ratings/rating.delete.js">rating.delete.js</a>, reads and checks the arguments then calls a function. In this case it is the <code>deleteRatings()</code> function that already exists in the rating.js file packaged in the behavior-tutorial-repo project. The body of the function is:</p>
 <pre><code>function deleteRatings(curNode) {
     // check the parent to make sure it has the right aspect
     if (curNode.hasAspect(&quot;{http://www.someco.com/model/content/1.0}rateable&quot;)) {
@@ -762,11 +763,11 @@ if (args.id == null || args.id.length == 0) {
 }</code></pre>
 <p>The script bails if the node doesn't have the rateable aspect (because there wouldn't be any ratings). Otherwise, it grabs the children and deletes them. Note the important assumption that the only children that exist are ratings. If there's a possibility of other child associations, you'd obviously want to be more discriminating.</p>
 <h3 id="step-3-create-the-view">Step 3: Create the view</h3>
-<p>The delete web script has only a single view, <a href="https://github.com/jpotts/alfresco-developer-series/blob/master/webscripts/webscripts-tutorial-repo/src/main/amp/config/alfresco/extension/templates/webscripts/com/someco/ratings/rating.delete.html.ftl">rating.delete.html.ftl</a>, and it is pretty boring. It echos back the ID of the object from which the ratings were deleted, then provides a link back to the GET rating web script.</p>
+<p>The delete web script has only a single view, <a href="https://github.com/jpotts/alfresco-developer-series/blob/master/webscripts/webscripts-tutorial-repo/src/main/resources/alfresco/extension/templates/webscripts/com/someco/ratings/rating.delete.html.ftl">rating.delete.html.ftl</a>, and it is pretty boring. It echos back the ID of the object from which the ratings were deleted, then provides a link back to the GET rating web script.</p>
 <h3 id="testing-the-delete-web-script-with-curl">Testing the delete web script with curl</h3>
 <p>There is no reason to shutdown Alfresco when you deploy this web script. As you've done previously, run <code>mvn install</code> to build the AMP, then use <code>mvn alfresco:install</code> to install the AMP into your Alfresco web application. Once that's done you can use the web scripts console to refresh the list of web scripts and you are ready to test.</p>
 <p>One way to test this web script is to use curl. For example, if you know the node reference of a piece of content with ratings, you can grab the ID part of the nodeRef and invoke the DELETE web script like this:</p>
-<pre><code>curl -uadmin:admin -X DELETE &quot;http://localhost:8080/alfresco/s/someco/rating/delete.html?id=802d6f27-82ec-4c9c-8e29-9b6e4a3401ef</code></pre>
+<pre><code>curl -uadmin:admin -X DELETE &quot;http://localhost:8080/alfresco/s/someco/rating/delete.html?id=802d6f27-82ec-4c9c-8e29-9b6e4a3401ef&quot;</code></pre>
 <p>Notice that the admin username and password are being passed in. The web script requires an administrator to execute it.</p>
 <p>If everything goes as planned you will see something similar to:</p>
 <pre><code>&lt;html&gt;
@@ -802,20 +803,26 @@ if (args.id == null || args.id.length == 0) {
 <p>Next you'll modify the rating web script to leverage these.</p>
 <h2 id="step-2-modify-the-get-rating-web-script-to-include-client-side-javascript">Step 2: Modify the GET rating web script to include client-side JavaScript</h2>
 <p>Recall that the FreeMarker view for the rating GET web script resides in:</p>
-<pre><code>$TUTORIAL_HOME/webscripts-tutorial-repo/src/main/amp/config/alfresco/extension/templates/webscripts/com/someco/ratings</code></pre>
-<p>The file is called <a href="https://github.com/jpotts/alfresco-developer-series/blob/master/webscripts/webscripts-tutorial-repo/src/main/amp/config/alfresco/extension/templates/webscripts/com/someco/ratings/rating.get.html.ftl">rating.get.html.ftl</a>, but let's focus on the main body of the HTML first. Here it is:</p>
-<pre><code>&lt;p&gt;&lt;a href=&quot;${url.serviceContext}/someco/whitepapers.html?guest=true&quot;&gt;Back to the list&lt;/a&gt; of whitepapers&lt;/p&gt;
-&lt;p&gt;Node: ${args.id}&lt;/p&gt;
-&lt;p&gt;Average: ${rating.average}&lt;/p&gt;
-&lt;p&gt;# of Ratings: ${rating.count}&lt;/p&gt;
+<pre><code>$TUTORIAL_HOME/webscripts-tutorial-repo/src/main/resources/alfresco/extension/templates/webscripts/com/someco/ratings</code></pre>
+<p>The file is called <a href="https://github.com/jpotts/alfresco-developer-series/blob/master/webscripts/webscripts-tutorial-repo/src/main/resources/alfresco/extension/templates/webscripts/com/someco/ratings/rating.get.html.ftl">rating.get.html.ftl</a>, but let's focus on the main body of the HTML first. Here it is:</p>
+<pre><code>&lt;p&gt;&lt;a href=&quot;${url.serviceContext}/someco/whitepapers.html?guest=true&quot;&gt;Back</code></pre>
+to the list</a> of whitepapers
+</p>
+    <p>
+Node: ${args.id}
+</p>
+    <p>
+Average: ${rating.average}
+</p>
+    <p>
+# of Ratings: ${rating.count}
+</p>
+    
 &lt;#if (rating.user &gt; 0)&gt;
-    &lt;p&gt;User rating: ${rating.user}&lt;/p&gt;
-&lt;/#if&gt;
-&lt;form name=&quot;login&quot;&gt;
-    Rater:&lt;input name=&quot;userId&quot;&gt;&lt;/input&gt;
-&lt;/form&gt;
-Rating: &lt;div class=&quot;rating&quot; id=&quot;rating_${args.id}&quot; style=&quot;display:inline&quot;&gt;${rating.average}&lt;/div&gt;
-&lt;p&gt;&lt;a href=&quot;#&quot; onclick=deleteRatings(&quot;${args.id}&quot;)&gt;Delete ratings&lt;/a&gt; for this node&lt;/p&gt;</code></pre>
+<p>
+User rating: <span class="math">${rating.user}&lt;/p&gt;  &lt;/#if&gt;  &lt;form name=&quot;login&quot;&gt;  Rater:&lt;input name=&quot;userId&quot;&gt;&lt;/input&gt;  &lt;/form&gt;  Rating: &lt;div class=&quot;rating&quot; id=&quot;rating_$</span>{args.id}&quot; style=&quot;display:inline&quot;&gt;<span class="math">${rating.average}&lt;/div&gt;  &lt;p&gt;&lt;a href=&quot;#&quot; onclick=deleteRatings(&quot;$</span>{args.id}&quot;)&gt;Delete ratings</a> for this node
+</p>
+
 <p>This is all basic HTML/FreeMarker stuff you've seen before. The last line sets up a <code>div</code> for the ratings widget. The <code>id</code> of the <code>div</code> uses the node ref of the whitepaper. This allows multiple ratings widgets to be on the same page and makes it easy for the JavaScript to pass the node ref on to the rating POST web script.</p>
 <p>Now take a look at the inline JavaScript. I'm going to omit some of the less interesting functions and just show the functions related to posting ratings.</p>
 <pre><code>function submitRating(evt) {

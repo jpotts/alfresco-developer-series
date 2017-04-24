@@ -268,7 +268,7 @@ Architect | Alfresco Developer Tutorials</title>
 <li>Alfresco Maven SDK 3.0.0 (No download necessary)</li>
 <li>Eclipse Java EE IDE for Web Developers, Neon</li>
 </ul>
-<p>By default, when you create an Alfresco project using version 3.0.0 of the Alfresco Maven SDK the project will be configured to depend on Alfresco Community Edition 5.2.e.</p>
+<p>By default, when you create an Alfresco project using version the Alfresco Maven SDK the project will be configured to depend on the latest stable Alfresco Community Edition build.</p>
 <p>Note that the version of the Alfresco Maven SDK you are using may dictate which Alfresco versions you can use. Check the <a href="http://docs.alfresco.com/community/concepts/alfresco-sdk-compatibility.html">Compatibility Matrix</a> to find out.</p>
 <p>Projects created using the Alfresco Maven SDK have the ability to run Alfresco on an embedded Tomcat server. This makes <a href="http://www.alfresco.com/products/community">downloading</a> and installing Alfresco optional. But if you want to run a full Alfresco server locally, you are welcome to do that.</p>
 <p>The Eclipse IDE is also optional. Most people working with Alfresco use Eclipse or something similar, so this tutorial will assume that's what you are using.</p>
@@ -305,6 +305,7 @@ Architect | Alfresco Developer Tutorials</title>
 <li><p>If Eclipse isn't running, start it up. Use File, Import, Maven, Existing Maven Projects to import the content-tutorial-repo project you just created.</p></li>
 </ol>
 <p>If you have problems after the import, go ahead and resolve those. Consult the Alfresco Maven SDK tutorial if you need help with that.</p>
+<p>Starting with SDK 3.0.0, the default is to create JAR files. We want to create AMP files instead, so edit the pom.xml and uncomment the maven-assembly-plugin.</p>
 <p>Now you are ready to create your custom content model XML.</p>
 <h4 id="step-2-create-a-custom-content-model-xml-file">Step 2: Create a custom content model XML file</h4>
 <p>Now that you have a project that is ready to produce a repo tier AMP you can create your content model XML file. To do that, follow these steps:</p>
@@ -497,6 +498,7 @@ If the &quot;model&quot; directory does not exist when the project is initially 
 <li>Specify &quot;com.someco&quot; as the <code>groupId</code>.</li>
 <li>Specify &quot;content-tutorial-share&quot; as the <code>artifactId</code>.</li>
 </ol>
+<p>Again, the default is to create a JAR, but we want an AMP, so edit the pom.xml file and uncomment the maven-assembly-plugin.</p>
 <p>Now you are ready to create a custom Share configuration file.</p>
 <h3 id="step-2-create-a-custom-share-configuration-file">Step 2: Create a custom Share configuration file</h3>
 <p>Alfresco Share uses a configuration file called &quot;share-config-custom.xml&quot;. The share-config-custom.xml file is a proprietary file composed of numerous “config” elements. Each config element has an “evaluator” and a “condition”. Extending the out-of-the-box Share configuration is a matter of knowing which evaluator/condition to use.</p>
