@@ -178,7 +178,7 @@ Here is what I am using on my machine:
 * Alfresco Maven SDK 3.0.0 (No download necessary)
 * Eclipse Java EE IDE for Web Developers, Neon
 
-By default, when you create an Alfresco project using version 3.0.0 of the Alfresco Maven SDK the project will be configured to depend on Alfresco Community Edition 5.2.e.
+By default, when you create an Alfresco project using version the Alfresco Maven SDK the project will be configured to depend on the latest stable Alfresco Community Edition build.
 
 Note that the version of the Alfresco Maven SDK you are using may dictate which Alfresco versions you can use. Check the [Compatibility Matrix](http://docs.alfresco.com/community/concepts/alfresco-sdk-compatibility.html) to find out.
 
@@ -230,6 +230,8 @@ The first step is to **create a new AMP project** using the Alfresco Maven SDK. 
 7. If Eclipse isn't running, start it up. Use File, Import, Maven, Existing Maven Projects to import the content-tutorial-repo project you just created.
 
 If you have problems after the import, go ahead and resolve those. Consult the Alfresco Maven SDK tutorial if you need help with that.
+
+Starting with SDK 3.0.0, the default is to create JAR files. We want to create AMP files instead, so edit the pom.xml and uncomment the maven-assembly-plugin.
 
 Now you are ready to create your custom content model XML.
 
@@ -467,6 +469,8 @@ The first step is to create a new project to hold the files that will make up th
 2. This time, specify the Alfresco Share JAR archetype (option 5).
 3. Specify "com.someco" as the `groupId`.
 4. Specify "content-tutorial-share" as the `artifactId`.
+
+Again, the default is to create a JAR, but we want an AMP, so edit the pom.xml file and uncomment the maven-assembly-plugin.
 
 Now you are ready to create a custom Share configuration file.
 

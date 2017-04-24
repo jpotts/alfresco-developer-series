@@ -324,8 +324,9 @@ Here is what I am using on my machine:
 * Eclipse Java EE IDE for Web Developers, Neon
 * Alfresco Community Edition 5.2.f ([Download](https://sourceforge.net/projects/alfresco/files/Alfresco%20201604%20Community/))
 
-By default, when you create an Alfresco project using Alfresco Maven SDK 3.0.0
-the project will be configured to depend on Alfresco Community Edition 5.2.f.
+By default, when you create an Alfresco project using version the Alfresco Maven
+SDK the project will be configured to depend on the latest stable Alfresco
+Community Edition build.
 
 The Eclipse IDE is optional. Most people working with Alfresco use Eclipse or
 something similar, so this tutorial will assume that's what you are using.
