@@ -3,7 +3,7 @@
     <#list whitepapers as child>
         {
             "name" : "${child.whitepaper.properties.name}",
-            "title" : "${child.whitepaper.properties["cm:title"]}",
+            "title" : "${child.whitepaper.properties["cm:title"]!''}",
             "link" : "${url.context}${child.whitepaper.url}",
             "type" : "${child.whitepaper.mimetype}",
             "size" : "${child.whitepaper.size}",

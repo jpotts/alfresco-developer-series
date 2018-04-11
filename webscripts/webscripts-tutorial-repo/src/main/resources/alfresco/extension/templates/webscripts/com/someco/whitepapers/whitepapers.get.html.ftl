@@ -10,7 +10,7 @@
                 </tr>
                 <tr>
                     <td><b>Title</b></td>
-        <td>${child.whitepaper.properties["cm:title"]}</td>
+        <td>${child.whitepaper.properties["cm:title"]!""}</td>
                 </tr>
                 <tr>
                     <td><b>Link</b></td>
