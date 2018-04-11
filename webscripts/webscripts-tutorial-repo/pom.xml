@@ -11,7 +11,7 @@
 
     <properties>
         <!-- Alfresco Maven Plugin version to use -->
-        <alfresco.sdk.version>3.0.0-SNAPSHOT</alfresco.sdk.version>
+        <alfresco.sdk.version>3.0.1</alfresco.sdk.version>
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
@@ -146,6 +146,31 @@
                             <version>${alfresco.share.version}</version>
                             <type>amp</type>
                         </moduleDependency>
+
+                        <!-- Bring in the content tutorial repo AMP so we can run embedded. -->
+                        <moduleDependency>
+                            <groupId>com.someco</groupId>
+                            <artifactId>content-tutorial-repo</artifactId>
+                            <version>1.0.0-SNAPSHOT</version>
+                            <type>amp</type>
+                        </moduleDependency>
+
+                        <!-- Bring in the behavior tutorial repo AMP so we can run embedded. -->
+                        <moduleDependency>
+                            <groupId>com.someco</groupId>
+                            <artifactId>behavior-tutorial-repo</artifactId>
+                            <version>1.0.0-SNAPSHOT</version>
+                            <type>amp</type>
+                        </moduleDependency>
+
+                        <!-- Bring in the actions tutorial repo AMP so we can run embedded. -->
+                        <moduleDependency>
+                            <groupId>com.someco</groupId>
+                            <artifactId>actions-tutorial-repo</artifactId>
+                            <version>1.0.0-SNAPSHOT</version>
+                            <type>amp</type>
+                        </moduleDependency>
+
                         <!-- Bring in this JAR project, need to be included here, otherwise resources from META-INF
                              will not be loaded, such as the test.html page
                         -->
