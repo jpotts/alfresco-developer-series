@@ -11,7 +11,7 @@
 
     <properties>
         <!-- Alfresco Maven Plugin version to use -->
-	    <alfresco.sdk.version>3.0.0-SNAPSHOT</alfresco.sdk.version>
+	    <alfresco.sdk.version>3.0.1</alfresco.sdk.version>
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
@@ -95,6 +95,22 @@
                             <artifactId>aikau</artifactId>
                             <version>${aikau.version}</version>
                         </moduleDependency>
+
+                        <!-- Bring in content and actions tutorial AMPs to run embedded -->
+                        <moduleDependency>
+                            <groupId>com.someco</groupId>
+                            <artifactId>content-tutorial-share</artifactId>
+                            <version>1.0.0-SNAPSHOT</version>
+                            <type>amp</type>
+                        </moduleDependency>
+
+                        <moduleDependency>
+                            <groupId>com.someco</groupId>
+                            <artifactId>actions-tutorial-share</artifactId>
+                            <version>1.0.0-SNAPSHOT</version>
+                            <type>amp</type>
+                        </moduleDependency>
+
                         <!-- Bring in this JAR project, need to be included here, otherwise share-config-custom.xml
                              will not be picked up. It will not be read from target/classes/META-INF -->
                         <moduleDependency>
