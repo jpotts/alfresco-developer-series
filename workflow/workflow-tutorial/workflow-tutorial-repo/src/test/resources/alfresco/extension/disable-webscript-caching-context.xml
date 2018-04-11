@@ -1,0 +1,63 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE beans PUBLIC '-//SPRING//DTD BEAN//EN' 'http://www.springframework.org/dtd/spring-beans.dtd'>
+<!--
+    Licensed to the Apache Software Foundation (ASF) under one or more
+    contributor license agreements.  See the NOTICE file distributed with
+    this work for additional information regarding copyright ownership.
+    The ASF licenses this file to You under the Apache License, Version 2.0
+    (the "License"); you may not use this file except in compliance with
+    the License.  You may obtain a copy of the License at
+        
+    http://www.apache.org/licenses/LICENSE-2.0
+        
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+-->
+<beans>
+    <!--
+        To support hot reloading of server side Javascript files in Share, we have to turn on development mode.
+        This setting will tell the Rhinoscript Processor not to compile and cache the JS files.
+        Cool, we can now change server side JS files and have the changes picked up,
+        without having to restart or refresh web scripts.
+
+        But… Due to a known bug in the Surf framework (ALF-9970) this will break the admin consoles in Share.
+
+        Override this bean and disable javascript compilation so that webscripts can be hot reloaded.
+        We have changed the 'compile' property from true to false.
+        -->
+    <bean id="javaScriptProcessor" class="org.alfresco.repo.jscript.RhinoScriptProcessor" init-method="register">
+        <property name="name">
+            <value>javascript</value>
+        </property>
+        <property name="extension">
+            <value>js</value>
+        </property>
+        <!-- Do not "compile javascript and cache compiled scripts" -->
+        <property name="compile">
+            <value>false</value>
+        </property>
+        <!-- allow sharing of sealed scopes for performance -->
+        <!-- disable to give each script it's own new scope which can be extended -->
+        <property name="shareSealedScopes">
+            <value>true</value>
+        </property>
+        <property name="scriptService">
+            <ref bean="scriptService"/>
+        </property>
+        <!-- Creates ScriptNodes which require the ServiceRegistry -->
+        <property name="serviceRegistry">
+            <ref bean="ServiceRegistry"/>
+        </property>
+        <property name="storeUrl">
+            <value>${spaces.store}</value>
+        </property>
+        <property name="storePath">
+            <value>${spaces.company_home.childname}</value>
+        </property>
+    </bean>
+
+
+</beans>

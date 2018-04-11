@@ -54,3 +54,10 @@ webscripts/webscripts-tutorial/alf_data_dev
 webscripts/webscripts-tutorial/integration-tests/target
 webscripts/webscripts-tutorial/target
 webscripts/webscripts-tutorial/webscripts-tutorial-share/target
+workflow/workflow-tutorial/workflow-tutorial-repo/.idea
+workflow/workflow-tutorial/workflow-tutorial-share/.idea
+workflow/workflow-tutorial/alf_data_dev
+workflow/workflow-tutorial/integration-tests/target
+workflow/workflow-tutorial/target
+workflow/workflow-tutorial/workflow-tutorial-repo/alf_data_dev
+workflow/workflow-tutorial/.idea
