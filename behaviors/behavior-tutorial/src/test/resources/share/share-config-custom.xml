@@ -1,0 +1,105 @@
+<alfresco-config>
+
+    <config evaluator="string-compare" condition="WebFramework">
+        <web-framework>
+            <autowire>
+                <!-- Changing this to 'development' currently breaks the Admin Console.
+                     Instead we make a POST to clear Share dependency caches, see 'clear-caches-refresh-ws' profile. -->
+                <mode>production</mode> <!-- not really need in the long run, used for YUI - deprecate -->
+            </autowire>
+
+            <!--
+                 We don't need to do this when we have the new refresh mojos in the Alfresco plug-in.
+
+                 If resource caching has been disabled then all the dependency caches will be cleared
+                 before processing the Aikau jsonModel request...
+                    (i.e. this.dojoDependencyHandler.clearCaches() )
+
+                 For more information see the Aikau source code: https://github.com/Alfresco/Aikau
+            -->
+            <disable-resource-caching>false</disable-resource-caching>
+        </web-framework>
+    </config>
+
+
+    <!-- Global config section -->
+    <config replace="true">
+        <flags>
+            <!--
+               Developer debugging setting to turn on DEBUG mode for client scripts in the browser
+            -->
+            <client-debug>true</client-debug>
+            <!--
+               LOGGING can always be toggled at runtime when in DEBUG mode (Ctrl, Ctrl, Shift, Shift).
+               This flag automatically activates logging on page load.
+            -->
+            <client-debug-autologging>false</client-debug-autologging>
+        </flags>
+    </config>
+
+    <!--
+        Disable CSRF completely for now
+        It seems Share has issues on 4.2.x with the embedded tomcat and CSRFPolicy
+        -->
+    <config evaluator="string-compare" condition="CSRFPolicy" replace="true">
+        <filter/>
+    </config>
+
+
+    <!--
+        Change so it is picked up from property where the Alfresco Repo Webapp is running
+        (e.g. http://localhost:8080/alfresco)
+        -->
+    <config evaluator="string-compare" condition="Remote">
+        <remote>
+            <endpoint>
+                <id>alfresco-noauth</id>
+                <name>Alfresco - unauthenticated access</name>
+                <description>Access to Alfresco Repository WebScripts that do not require authentication</description>
+                <connector-id>alfresco</connector-id>
+                <endpoint-url>${alfresco.repo.url}/s</endpoint-url>
+                <identity>none</identity>
+            </endpoint>
+
+            <endpoint>
+                <id>alfresco</id>
+                <name>Alfresco - user access</name>
+                <description>Access to Alfresco Repository WebScripts that require user authentication</description>
+                <connector-id>alfresco</connector-id>
+                <endpoint-url>${alfresco.repo.url}/s</endpoint-url>
+                <identity>user</identity>
+            </endpoint>
+
+            <endpoint>
+                <id>alfresco-feed</id>
+                <name>Alfresco Feed</name>
+                <description>Alfresco Feed - supports basic HTTP authentication via the EndPointProxyServlet</description>
+                <connector-id>http</connector-id>
+                <endpoint-url>${alfresco.repo.url}/s</endpoint-url>
+                <basic-auth>true</basic-auth>
+                <identity>user</identity>
+            </endpoint>
+
+            <endpoint>
+                <id>activiti-admin</id>
+                <name>Activiti Admin UI - user access</name>
+                <description>Access to Activiti Admin UI, that requires user authentication</description>
+                <connector-id>activiti-admin-connector</connector-id>
+                <endpoint-url>${alfresco.repo.url}/activiti-admin</endpoint-url>
+                <identity>user</identity>
+            </endpoint>
+
+            <endpoint>
+                <id>alfresco-api</id>
+                <parent-id>alfresco</parent-id>
+                <name>Alfresco Public API - user access</name>
+                <description>Access to Alfresco Repository Public API that require user authentication.
+                    This makes use of the authentication that is provided by parent 'alfresco' endpoint.</description>
+                <connector-id>alfresco</connector-id>
+                <endpoint-url>${alfresco.repo.url}/api</endpoint-url>
+                <identity>user</identity>
+            </endpoint>
+        </remote>
+    </config>
+</alfresco-config>
+

@@ -38,3 +38,9 @@ content/content-tutorial/content-tutorial-repo/.idea
 content/content-tutorial/content-tutorial-share/.idea
 content/content-tutorial/integration-tests/target
 content/content-tutorial/target
+behaviors/behavior-tutorial/.idea
+behaviors/behavior-tutorial/alf_data_dev
+behaviors/behavior-tutorial/behavior-tutorial-repo/.idea
+behaviors/behavior-tutorial/behavior-tutorial-share/.idea
+behaviors/behavior-tutorial/integration-tests/target
+behaviors/behavior-tutorial/target
