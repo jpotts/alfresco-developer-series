@@ -405,8 +405,8 @@ Listing all whitepapers
 
 As a quick review, recall that SomeCo writes whitepapers and manages those
 papers with Alfresco. Some whitepapers are published to the web site. A custom
-aspect called `scr:webable` includes a boolean property called `scr:isActive`.
-Whitepapers with the `scr:isActive` flag set to `true` should be shown on the
+aspect called `sc:webable` includes a boolean property called `sc:isActive`.
+Whitepapers with the `sc:isActive` flag set to `true` should be shown on the
 web site.
 
 Let's write a web script that returns all whitepapers. The list of whitepapers
@@ -682,14 +682,14 @@ deploy the web scripts that are part of this tutorial you will need an Alfresco
 server that has the following AMPs already installed:
 
 * **content-tutorial-repo**. This is required because the web script looks for
-content with the `scr:isActive` flag set and that's defined in the SomeCo
+content with the `sc:isActive` flag set and that's defined in the SomeCo
 Content Model that is part of that project.
 * **behavior-tutorial-repo**. This is required because it contains a behavior
 that calculates the average rating for a piece of content and because it has the
 rating.js server-side JavaScript file that the controllers in this tutorial
 import.
 * **actions-tutorial-repo**. This one is optional. It contains a UI action that
-is used to set the `scr:isActive` flag from within the Alfresco Share user
+is used to set the `sc:isActive` flag from within the Alfresco Share user
 interface.
 
 You can deploy these AMPs to your Alfresco installation using the
