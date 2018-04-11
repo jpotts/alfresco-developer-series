@@ -31,3 +31,4 @@ share.log.*
 behaviors/behavior-tutorial-repo/.idea
 behaviors/behavior-tutorial-share/.idea
 behaviors/behavior-tutorial-common/.idea
+maven-sdk/.idea
