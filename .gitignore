@@ -49,3 +49,8 @@ actions/actions-tutorial/actions-tutorial-share/.idea
 actions/actions-tutorial/alf_data_dev
 actions/actions-tutorial/integration-tests/target
 actions/actions-tutorial/target
+webscripts/webscripts-tutorial/.idea
+webscripts/webscripts-tutorial/alf_data_dev
+webscripts/webscripts-tutorial/integration-tests/target
+webscripts/webscripts-tutorial/target
+webscripts/webscripts-tutorial/webscripts-tutorial-share/target

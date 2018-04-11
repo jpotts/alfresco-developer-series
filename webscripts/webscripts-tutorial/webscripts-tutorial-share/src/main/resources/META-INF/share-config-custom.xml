@@ -1,0 +1,420 @@
+<!-- Share configuration related to this particular Share module extension, such as:
+     - Doclib action config
+     - Form config
+     - Aspect and Type config
+     - Advanced Search
+
+    Note. Any configuration related to the whole Share.war webapp
+           (i.e. not specific to this share extension) should be
+            placed in the environment specific config file:
+             alfresco/tomcat/shared/classes/alfresco/web-extension/share-config-custom.xml
+     -->
+<alfresco-config>
+    <!--================================================================================================================
+        Make custom types and aspects visible in "Change Type" and "Manage Aspects" actions.
+         This will also make them visible when creating rules.
+        (will be merged with out-of-the-box configured types and aspects)
+    =============================================================================================================-->
+
+    <config evaluator="string-compare" condition="DocumentLibrary">
+        <aspects>
+            <visible>
+                <aspect name="acme:securityClassified"/>
+            </visible>
+            <addable> <!-- defaults to visible config -->
+            </addable>
+            <removeable> <!-- defaults to visible config -->
+            </removeable>
+        </aspects>
+        <types>
+            <!-- Define the ACME base doc type as decedent from cm:content -->
+            <type name="cm:content">
+                <subtype name="acme:document"/>
+            </type>
+        </types>
+    </config>
+
+    <!--================================================================================================================
+          Advanced Search Forms for types
+          (search forms for aspects are not available)
+      =============================================================================================================-->
+
+    <config evaluator="string-compare" condition="AdvancedSearch" replace="true">
+        <advanced-search>
+            <forms>
+                <!-- Standard out-of-the-box types -->
+                <form labelId="search.form.label.cm_content" descriptionId="search.form.desc.cm_content">cm:content
+                </form>
+                <form labelId="search.form.label.cm_folder" descriptionId="search.form.desc.cm_folder">cm:folder</form>
+
+                <!-- Custom type -->
+                <form labelId="form.label.advancedsearch.acmeDocument"
+                      descriptionId="form.description.advancedsearch.acmeDocument">acme:document
+                </form>
+            </forms>
+        </advanced-search>
+    </config>
+
+    <!--================================================================================================================
+         View, Edit, Create, and Search forms for custom types
+
+         The following form configurations for the custom types
+         have not been created from scratch. We have instead copied
+         out-of-the-box form configurations for cm:content and cm:folder
+         from the tomcat/webapps/share/WEB-INF/classes/alfresco/share-form-config.xml file
+         in a standard Alfresco installation (with the version matching)
+         and used them as a starting point.
+
+        =============================================================================================================-->
+
+    <!-- __________________________________ acme:document base type _________________________________________________-->
+
+    <!-- View and Edit forms for acme:document -->
+    <config evaluator="node-type" condition="acme:document">
+        <forms>
+            <!-- Default form configuration for the cm:content type -->
+            <form>
+                <field-visibility>
+                    <show id="cm:name"/>
+                    <show id="cm:title" force="true"/>
+                    <show id="cm:description" force="true"/>
+                    <show id="mimetype"/>
+                    <show id="cm:author" force="true"/>
+                    <show id="size" for-mode="view"/>
+                    <show id="cm:creator" for-mode="view"/>
+                    <show id="cm:created" for-mode="view"/>
+                    <show id="cm:modifier" for-mode="view"/>
+                    <show id="cm:modified" for-mode="view"/>
+
+                    <!-- tags and categories -->
+                    <show id="cm:taggable" for-mode="edit" force="true"/>
+                    <show id="cm:categories"/>
+
+                    <!-- cm:dublincore aspect -->
+                    <show id="cm:publisher"/>
+                    <show id="cm:contributor"/>
+                    <show id="cm:type"/>
+                    <show id="cm:identifier"/>
+                    <show id="cm:dcsource"/>
+                    <show id="cm:coverage"/>
+                    <show id="cm:rights"/>
+                    <show id="cm:subject"/>
+
+                    <!-- cm:complianceable aspect -->
+                    <show id="cm:removeAfter"/>
+
+                    <!-- cm:effectivity aspect -->
+                    <show id="cm:from"/>
+                    <show id="cm:to"/>
+
+                    <!--  cm:summarizable aspect -->
+                    <show id="cm:summary"/>
+
+                    <!-- cm:translatable aspect -->
+                    <show id="cm:translations"/>
+
+                    <!-- cm:localizable aspect -->
+                    <show id="cm:locale"/>
+
+                    <!-- cm:ownable aspect -->
+                    <show id="cm:owner"/>
+
+                    <!-- cm:attachable aspect -->
+                    <show id="cm:attachments"/>
+
+                    <!-- cm:emailed aspect -->
+                    <show id="cm:originator"/>
+                    <show id="cm:addressee"/>
+                    <show id="cm:addressees"/>
+                    <show id="cm:sentdate"/>
+                    <show id="cm:subjectline"/>
+
+                    <!-- exif:exif aspect -->
+                    <show id="exif:dateTimeOriginal"/>
+                    <show id="exif:pixelXDimension"/>
+                    <show id="exif:pixelYDimension"/>
+                    <show id="exif:exposureTime"/>
+                    <show id="exif:fNumber"/>
+                    <show id="exif:flash"/>
+                    <show id="exif:focalLength"/>
+                    <show id="exif:isoSpeedRatings"/>
+                    <show id="exif:manufacturer"/>
+                    <show id="exif:model"/>
+                    <show id="exif:software"/>
+                    <show id="exif:orientation"/>
+                    <show id="exif:xResolution"/>
+                    <show id="exif:yResolution"/>
+                    <show id="exif:resolutionUnit"/>
+
+                    <!-- audio:audio aspect -->
+                    <show id="audio:album"/>
+                    <show id="audio:artist"/>
+                    <show id="audio:composer"/>
+                    <show id="audio:engineer"/>
+                    <show id="audio:genre"/>
+                    <show id="audio:trackNumber"/>
+                    <show id="audio:releaseDate"/>
+                    <show id="audio:sampleRate"/>
+                    <show id="audio:sampleType"/>
+                    <show id="audio:channelType"/>
+                    <show id="audio:compressor"/>
+
+                    <!-- cm:indexControl aspect -->
+                    <show id="cm:isIndexed"/>
+                    <show id="cm:isContentIndexed"/>
+
+                    <!-- cm:geographic aspect -->
+                    <show id="cm:latitude"/>
+                    <show id="cm:longitude"/>
+
+                    <!-- surf:widget aspect -->
+                    <show id="surf:widgetType"/>
+                    <show id="surf:mid"/>
+                    <show id="surf:label"/>
+
+                    <!-- ACME custom props -->
+                    <show id="acme:documentId" force="true"/>
+                    <show id="acme:securityClassification"/>
+                </field-visibility>
+                <appearance>
+                    <field id="cm:name">
+                        <control>
+                            <control-param name="maxLength">255</control-param>
+                        </control>
+                    </field>
+                    <field id="cm:title">
+                        <control template="/org/alfresco/components/form/controls/textfield.ftl"/>
+                    </field>
+                    <field id="cm:description">
+                        <control>
+                            <control-param name="activateLinks">true</control-param>
+                        </control>
+                    </field>
+
+                    <set id="cm:content2cols" template="/org/alfresco/components/form/2-column-set.ftl"/>
+
+                    <field set="cm:content2cols" id="mimetype">
+                        <control template="/org/alfresco/components/form/controls/mimetype.ftl"/>
+                    </field>
+
+                    <field set="cm:content2cols" id="size">
+                        <control template="/org/alfresco/components/form/controls/size.ftl"/>
+                    </field>
+                    <field set="cm:content2cols" id="cm:creator"/>
+                    <field set="cm:content2cols" id="cm:created"/>
+                    <field set="cm:content2cols" id="cm:modifier"/>
+                    <field set="cm:content2cols" id="cm:modified"/>
+
+                    <field id="cm:taggable">
+                        <control>
+                            <control-param name="compactMode">true</control-param>
+                            <control-param name="params">aspect=cm:taggable</control-param>
+                            <control-param name="createNewItemUri">/api/tag/workspace/SpacesStore</control-param>
+                            <control-param name="createNewItemIcon">tag</control-param>
+                        </control>
+                    </field>
+                    <field id="cm:categories">
+                        <control>
+                            <control-param name="compactMode">true</control-param>
+                        </control>
+                    </field>
+                    <field id="cm:originator" read-only="true"/>
+                    <field id="cm:addressee" read-only="true"/>
+                    <field id="cm:addressees" read-only="true"/>
+                    <field id="cm:sentdate" read-only="true"/>
+                    <field id="cm:subjectline" read-only="true"/>
+
+                    <!-- ACME Props appearance -->
+                    <set id="acmeDocSet" appearance="bordered-panel" label-id="form.set.label.acme.document"/>
+                    <field id="acme:documentId" label-id="form.field.label.acme.documentId" set="acmeDocSet">
+                        <control template="/org/alfresco/components/form/controls/textfield.ftl"/>
+                    </field>
+                    <field id="acme:securityClassification" label-id="form.field.label.acme.securityClassification"
+                           set="acmeDocSet"/>
+                </appearance>
+            </form>
+
+            <!-- Document Library pop-up Edit Metadata form -->
+            <form id="doclib-simple-metadata">
+                <field-visibility>
+                    <show id="cm:name"/>
+                    <show id="cm:title" force="true"/>
+                    <show id="cm:description" force="true"/>
+                    <!-- tags and categories -->
+                    <show id="cm:taggable" for-mode="edit" force="true"/>
+                    <show id="cm:categories"/>
+
+                    <!-- ACME custom props -->
+                    <show id="acme:documentId" force="true"/>
+                    <show id="acme:securityClassification"/>
+                </field-visibility>
+                <edit-form template="../documentlibrary/forms/doclib-simple-metadata.ftl"/>
+                <appearance>
+                    <field id="cm:name">
+                        <control>
+                            <control-param name="maxLength">255</control-param>
+                        </control>
+                    </field>
+                    <field id="cm:title">
+                        <control template="/org/alfresco/components/form/controls/textfield.ftl"/>
+                    </field>
+                    <field id="cm:description">
+                        <control>
+                            <control-param name="activateLinks">true</control-param>
+                        </control>
+                    </field>
+                    <field id="cm:taggable">
+                        <control>
+                            <control-param name="compactMode">true</control-param>
+                            <control-param name="params">aspect=cm:taggable</control-param>
+                            <control-param name="createNewItemUri">/api/tag/workspace/SpacesStore</control-param>
+                            <control-param name="createNewItemIcon">tag</control-param>
+                        </control>
+                    </field>
+                    <field id="cm:categories">
+                        <control>
+                            <control-param name="compactMode">true</control-param>
+                        </control>
+                    </field>
+
+                    <!-- ACME Props appearance -->
+                    <set id="acmeDocSet" appearance="bordered-panel" label-id="form.set.label.acme.document"/>
+                    <field id="acme:documentId" label-id="form.field.label.acme.documentId" set="acmeDocSet">
+                        <control template="/org/alfresco/components/form/controls/textfield.ftl"/>
+                    </field>
+                    <field id="acme:securityClassification" label-id="form.field.label.acme.securityClassification"
+                           set="acmeDocSet"/>
+                </appearance>
+            </form>
+
+            <!-- Document Library Inline Edit form -->
+            <form id="doclib-inline-edit">
+                <field-visibility>
+                    <show id="cm:name"/>
+                    <show id="cm:content" force="true"/>
+                    <show id="cm:title" force="true"/>
+                    <show id="cm:description" force="true"/>
+
+                    <!-- ACME custom props -->
+                    <show id="acme:documentId" force="true"/>
+                    <show id="acme:securityClassification"/>
+                </field-visibility>
+                <appearance>
+                    <field id="cm:name">
+                        <control>
+                            <control-param name="maxLength">255</control-param>
+                        </control>
+                    </field>
+                    <field id="cm:title">
+                        <control template="/org/alfresco/components/form/controls/textfield.ftl"/>
+                    </field>
+                    <field id="cm:content" label-id="">
+                        <control>
+                            <control-param name="editorAppearance">explorer</control-param>
+                            <control-param name="forceEditor">true</control-param>
+                        </control>
+                    </field>
+
+                    <!-- ACME Props appearance -->
+                    <set id="acmeDocSet" appearance="bordered-panel" label-id="form.set.label.acme.document"/>
+                    <field id="acme:documentId" label-id="form.field.label.acme.documentId" set="acmeDocSet">
+                        <control template="/org/alfresco/components/form/controls/textfield.ftl"/>
+                    </field>
+                    <field id="acme:securityClassification" label-id="form.field.label.acme.securityClassification"
+                           set="acmeDocSet"/>
+                </appearance>
+            </form>
+        </forms>
+    </config>
+
+    <!-- Create and search forms for acme:document -->
+    <config evaluator="model-type" condition="acme:document">
+        <forms>
+            <form>
+                <field-visibility>
+                    <show id="cm:name"/>
+                    <show id="cm:content" force="true"/>
+                    <show id="cm:title" force="true"/>
+                    <show id="cm:description" force="true"/>
+                    <show id="mimetype"/>
+                    <show id="app:editInline" force="true"/>
+
+                    <!-- ACME custom props -->
+                    <show id="acme:documentId" force="true"/>
+                    <show id="acme:securityClassification"/>
+                </field-visibility>
+                <appearance>
+                    <field id="cm:name">
+                        <control>
+                            <control-param name="maxLength">255</control-param>
+                        </control>
+                    </field>
+                    <field id="cm:title">
+                        <control template="/org/alfresco/components/form/controls/textfield.ftl"/>
+                    </field>
+                    <field id="cm:content" label-id="">
+                        <control>
+                            <control-param name="editorAppearance">explorer</control-param>
+                        </control>
+                    </field>
+                    <field id="mimetype">
+                        <control template="/org/alfresco/components/form/controls/hidden.ftl">
+                            <control-param name="contextProperty">mimeType</control-param>
+                        </control>
+                    </field>
+                    <field id="app:editInline">
+                        <control template="/org/alfresco/components/form/controls/hidden.ftl">
+                            <control-param name="contextProperty">editInline</control-param>
+                        </control>
+                    </field>
+
+                    <!-- ACME Props appearance -->
+                    <set id="acmeDocSet" appearance="bordered-panel" label-id="form.set.label.acme.document"/>
+                    <field id="acme:documentId" label-id="form.field.label.acme.documentId" set="acmeDocSet">
+                        <control template="/org/alfresco/components/form/controls/textfield.ftl"/>
+                    </field>
+                    <field id="acme:securityClassification" label-id="form.field.label.acme.securityClassification"
+                           set="acmeDocSet"/>
+                </appearance>
+            </form>
+            <!-- Search form -->
+            <form id="search">
+                <field-visibility>
+                    <show id="cm:name"/>
+                    <show id="cm:title" force="true"/>
+                    <show id="cm:description" force="true"/>
+                    <show id="mimetype"/>
+                    <show id="cm:modified"/>
+                    <show id="cm:modifier"/>
+
+                    <!-- ACME custom props -->
+                    <show id="acme:documentId" force="true"/>
+                    <show id="acme:securityClassification"/>
+                </field-visibility>
+                <appearance>
+                    <field id="mimetype">
+                        <control template="/org/alfresco/components/form/controls/mimetype.ftl"/>
+                    </field>
+                    <field id="cm:modifier">
+                        <control>
+                            <control-param name="forceEditable">true</control-param>
+                        </control>
+                    </field>
+                    <field id="cm:modified">
+                        <control template="/org/alfresco/components/form/controls/daterange.ftl"/>
+                    </field>
+
+                    <!-- ACME Props appearance -->
+                    <set id="acmeDocSet" appearance="bordered-panel" label-id="form.set.label.acme.document"/>
+                    <field id="acme:documentId" label-id="form.field.label.acme.documentId" set="acmeDocSet">
+                        <control template="/org/alfresco/components/form/controls/textfield.ftl"/>
+                    </field>
+                    <field id="acme:securityClassification" label-id="form.field.label.acme.securityClassification"
+                           set="acmeDocSet"/>
+                </appearance>
+            </form>
+        </forms>
+    </config>
+
+
+</alfresco-config>
