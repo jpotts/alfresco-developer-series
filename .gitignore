@@ -44,3 +44,8 @@ behaviors/behavior-tutorial/behavior-tutorial-repo/.idea
 behaviors/behavior-tutorial/behavior-tutorial-share/.idea
 behaviors/behavior-tutorial/integration-tests/target
 behaviors/behavior-tutorial/target
+actions/actions-tutorial/actions-tutorial-repo/.idea
+actions/actions-tutorial/actions-tutorial-share/.idea
+actions/actions-tutorial/alf_data_dev
+actions/actions-tutorial/integration-tests/target
+actions/actions-tutorial/target
