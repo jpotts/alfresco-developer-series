@@ -1,6 +1,6 @@
 % Working With Custom Content Types in Alfresco
 % Jeff Potts, [Metaversant Group](http://www.metaversant.com)
-% April, 2017
+% April, 2018
 
 License
 =======
@@ -175,7 +175,7 @@ Here is what I am using on my machine:
 * Mac OS X 10.11.6
 * Java 1.8.0_77
 * Apache Maven 3.3.9 (installed using Macports)
-* Alfresco Maven SDK 3.0.0 (No download necessary)
+* Alfresco Maven SDK 3.0.1 (No download necessary)
 * Eclipse Java EE IDE for Web Developers, Neon
 
 By default, when you create an Alfresco project using version the Alfresco Maven SDK the project will be configured to depend on the latest stable Alfresco Community Edition build.
@@ -224,14 +224,14 @@ The first step is to **create a new AMP project** using the Alfresco Maven SDK. 
     ```
 
 3. Choose the Alfresco Platform JAR archetype (option 4).
-4. Choose version 3.0.0 of the archetype if prompted.
+4. Choose version 3.0.1 of the archetype if prompted.
 5. Specify "com.someco" for the `groupId`.
 6. Specify "content-tutorial-repo" for the `artifactId`.
 7. If Eclipse isn't running, start it up. Use File, Import, Maven, Existing Maven Projects to import the content-tutorial-repo project you just created.
 
 If you have problems after the import, go ahead and resolve those. Consult the Alfresco Maven SDK tutorial if you need help with that.
 
-Starting with SDK 3.0.0, the default is to create JAR files. We want to create AMP files instead, so edit the pom.xml and uncomment the maven-assembly-plugin.
+Starting with SDK 3.0.1, the default is to create JAR files. We want to create AMP files instead, so edit the pom.xml and uncomment the maven-assembly-plugin.
 
 Now you are ready to create your custom content model XML.
 
