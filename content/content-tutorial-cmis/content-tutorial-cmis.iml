@@ -35,6 +35,6 @@
     <orderEntry type="library" name="Maven: org.apache.neethi:neethi:3.0.3" level="project" />
     <orderEntry type="library" name="Maven: org.slf4j:slf4j-api:1.7.21" level="project" />
     <orderEntry type="library" name="Maven: org.alfresco.cmis.client:alfresco-opencmis-extension:1.0" level="project" />
-    <orderEntry type="module" module-name="content-tutorial-common" />
+    <orderEntry type="library" name="Maven: com.someco:content-tutorial-common:1.0.0-SNAPSHOT" level="project" />
   </component>
 </module>

@@ -32,14 +32,28 @@ import com.someco.examples.ExampleBase;
  */
 public class CMISExampleBase extends ExampleBase {
     //private String serviceUrl = "http://localhost:8080/alfresco/api/-default-/public/cmis/versions/1.0/atom"; // Uncomment for Atom Pub binding
-	//private String serviceUrl = "https://209.132.183.150/alfresco/api/-default-/public/cmis/versions/1.1/browser"; // Uncomment for Browser binding
-    private String serviceUrl = "http://localhost:8080/alfresco/api/-default-/public/cmis/versions/1.1/atom"; // Uncomment for Atom Pub binding
+	private String serviceUrl = "http://localhost:8080/alfresco/api/-default-/public/cmis/versions/1.1/browser"; // Uncomment for Browser binding
+    //private String serviceUrl = "http://localhost:8080/alfresco/api/-default-/public/cmis/versions/1.1/atom"; // Uncomment for Atom Pub binding
 
     private Session session = null;
 
     private String contentType;
     private String contentName;
 
+    public static void main(String[] args) throws Exception {
+    	CMISExampleBase ex = new CMISExampleBase();
+    	ex.setUser(args[0]);
+    	ex.setPassword(args[1]);
+    	ex.getProductInfo();
+    }
+    
+    public void getProductInfo() {
+    	Session session = getSession();
+    	System.out.println(session.getRepositoryInfo().getProductName());
+    	System.out.println(session.getRepositoryInfo().getProductVersion());
+    	System.out.println(session.getRepositoryInfo().getId());
+    }
+    
 	public Session getSession() {
 
 		if (session == null) {
@@ -52,11 +66,11 @@ public class CMISExampleBase extends ExampleBase {
 			parameter.put(SessionParameter.PASSWORD, getPassword());
 	
 			// connection settings
-			parameter.put(SessionParameter.ATOMPUB_URL, getServiceUrl()); // Uncomment for Atom Pub binding
+			//parameter.put(SessionParameter.ATOMPUB_URL, getServiceUrl()); // Uncomment for Atom Pub binding
 			parameter.put(SessionParameter.BINDING_TYPE, BindingType.ATOMPUB.value()); // Uncomment for Atom Pub binding
 
-			//parameter.put(SessionParameter.BROWSER_URL, getServiceUrl()); // Uncomment for Browser binding
-			//parameter.put(SessionParameter.BINDING_TYPE, BindingType.BROWSER.value()); // Uncomment for Browser binding
+			parameter.put(SessionParameter.BROWSER_URL, getServiceUrl()); // Uncomment for Browser binding
+			parameter.put(SessionParameter.BINDING_TYPE, BindingType.BROWSER.value()); // Uncomment for Browser binding
 			
 			// Set the alfresco object factory
 			// Used when using the CMIS extension for Alfresco for working with aspects and CMIS 1.0
