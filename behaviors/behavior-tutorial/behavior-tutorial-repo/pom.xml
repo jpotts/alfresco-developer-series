@@ -21,8 +21,9 @@
     <dependencies>
         <dependency>
             <groupId>com.someco</groupId>
-            <artifactId>behavior-tutorial-common</artifactId>
+            <artifactId>content-tutorial-repo</artifactId>
             <version>1.0.0-SNAPSHOT</version>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 
