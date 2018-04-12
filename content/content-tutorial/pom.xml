@@ -308,6 +308,7 @@
                             <groupId>${project.groupId}</groupId>
                             <artifactId>content-tutorial-repo</artifactId>
                             <version>${project.version}</version>
+                            <type>amp</type>
                         </moduleDependency>
 
                         <!-- Bring in the integration tests -->
@@ -329,6 +330,7 @@
                             <groupId>${project.groupId}</groupId>
                             <artifactId>content-tutorial-share</artifactId>
                             <version>${project.version}</version>
+                            <type>amp</type>
                         </moduleDependency>
                     </shareModules>
                 </configuration>

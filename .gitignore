@@ -61,3 +61,5 @@ workflow/workflow-tutorial/integration-tests/target
 workflow/workflow-tutorial/target
 workflow/workflow-tutorial/workflow-tutorial-repo/alf_data_dev
 workflow/workflow-tutorial/.idea
+actions/actions-tutorial/.idea
+content/content-tutorial-common/.idea
