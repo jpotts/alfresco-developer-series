@@ -11,7 +11,7 @@
     <parent>
         <groupId>com.someco</groupId>
         <artifactId>behavior-tutorial</artifactId>
-        <version>1.0.0-SNAPSHOT</version>
+        <version>1.0-SNAPSHOT</version>
     </parent>
 
     <properties>
@@ -22,8 +22,8 @@
              that is generated for the AIO project -->
         <dependency>
             <groupId>com.someco</groupId>
-            <artifactId>behavior-tutorial-repo</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
+            <artifactId>behavior-tutorial-platform-jar</artifactId>
+            <version>1.0-SNAPSHOT</version>
             <scope>test</scope>
         </dependency>
 

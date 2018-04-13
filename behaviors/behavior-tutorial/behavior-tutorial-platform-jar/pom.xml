@@ -3,34 +3,27 @@
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.someco</groupId>
-    <artifactId>behavior-tutorial-share</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
-    <name>behavior-tutorial-share AMP project</name>
+    <artifactId>behavior-tutorial-platform-jar</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <name>behavior-tutorial repo tier AMP project</name>
     <packaging>jar</packaging>
-    <description>Manages the lifecycle of the behavior-tutorial-share AMP (Alfresco Module Package)</description>
+    <description>Manages the lifecycle of the behavior-tutorial-platform-jar AMP (Alfresco Module Package)</description>
 
     <parent>
         <groupId>com.someco</groupId>
         <artifactId>behavior-tutorial</artifactId>
-        <version>1.0.0-SNAPSHOT</version>
+        <version>1.0-SNAPSHOT</version>
     </parent>
 
     <properties>
     </properties>
 
-    <!-- Following dependencies are needed for compiling Java code in src/main/java;
-         <scope>provided</scope> is inherited for each of the following;
-         for more info, please refer to alfresco-platform-distribution POM -->
     <dependencies>
         <dependency>
-            <groupId>${alfresco.groupId}</groupId>
-            <artifactId>share</artifactId>
-            <classifier>classes</classifier>
-        </dependency>
-
-        <dependency>
-            <groupId>org.alfresco.surf</groupId>
-            <artifactId>spring-surf-api</artifactId>
+            <groupId>com.someco</groupId>
+            <artifactId>content-tutorial-platform-jar</artifactId>
+            <version>1.0-SNAPSHOT</version>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 

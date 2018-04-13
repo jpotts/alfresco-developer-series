@@ -66,3 +66,5 @@ content/content-tutorial-common/.idea
 maven-sdk/maven-sdk-tutorial/.idea
 maven-sdk/maven-sdk-tutorial/alf_data_dev
 maven-sdk/maven-sdk-tutorial/target
+behaviors/behavior-tutorial/behavior-tutorial-platform-jar/.idea
+behaviors/behavior-tutorial/behavior-tutorial-share-jar/.idea
