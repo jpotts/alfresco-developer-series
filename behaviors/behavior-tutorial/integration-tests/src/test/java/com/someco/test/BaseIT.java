@@ -123,7 +123,6 @@ public class BaseIT extends AbstractAlfrescoIT {
         return getServiceRegistry().getNodeLocatorService().getNode(CompanyHomeNodeLocator.NAME, null, null);
     }
 
-    /*
     @After
     public void teardown() {
         // Clean up node
@@ -131,5 +130,4 @@ public class BaseIT extends AbstractAlfrescoIT {
             getServiceRegistry().getNodeService().deleteNode(nodeRef);
         }
     }
-    */
 }
