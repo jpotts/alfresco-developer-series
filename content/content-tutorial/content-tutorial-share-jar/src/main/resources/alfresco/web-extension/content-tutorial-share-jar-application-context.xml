@@ -19,7 +19,7 @@
 <beans>
 
    <!-- Add Someco messages -->
-   <bean id="com.someco.content-tutorial-share.resources" class="org.springframework.extensions.surf.util.ResourceBundleBootstrapComponent">
+   <bean id="com.someco.content-tutorial-share-jar.resources" class="org.springframework.extensions.surf.util.ResourceBundleBootstrapComponent">
       <property name="resourceBundles">
          <list>
          	<value>alfresco.web-extension.messages.scModel</value>

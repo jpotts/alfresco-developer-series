@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.someco</groupId>
     <artifactId>content-tutorial</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>1.0-SNAPSHOT</version>
     <name>content-tutorial</name>
     <packaging>pom</packaging>
     <description>ecmarchitect.com content tutorial</description>
@@ -306,7 +306,7 @@
                         <!-- Bring in custom Modules -->
                         <moduleDependency>
                             <groupId>${project.groupId}</groupId>
-                            <artifactId>content-tutorial-repo</artifactId>
+                            <artifactId>content-tutorial-platform-jar</artifactId>
                             <version>${project.version}</version>
                             <type>amp</type>
                         </moduleDependency>
@@ -328,7 +328,7 @@
                         <!-- Bring in custom Modules -->
                         <moduleDependency>
                             <groupId>${project.groupId}</groupId>
-                            <artifactId>content-tutorial-share</artifactId>
+                            <artifactId>content-tutorial-share-jar</artifactId>
                             <version>${project.version}</version>
                             <type>amp</type>
                         </moduleDependency>
@@ -411,8 +411,8 @@
         </pluginRepository>
     </pluginRepositories>
     <modules>
-        <module>content-tutorial-repo</module>
-        <module>content-tutorial-share</module>
+        <module>content-tutorial-platform-jar</module>
+        <module>content-tutorial-share-jar</module>
         <module>integration-tests</module>
     </modules>
 </project>

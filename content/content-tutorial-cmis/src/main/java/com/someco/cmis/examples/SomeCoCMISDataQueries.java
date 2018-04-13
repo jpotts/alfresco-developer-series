@@ -24,7 +24,7 @@ import com.someco.model.SomeCoModel;
 public class SomeCoCMISDataQueries extends CMISExampleBase {
 
 	private static final String RESULT_SEP = "======================";
-	private static final String USAGE = "java SomeCoDataCreator <username> <password> <root folder>";
+	private static final String USAGE = "java SomeCoCMISDataQueries <username> <password> <root folder>";
 	    
 	public static void main(String[] args) {
 		if (args.length != 3) doUsage(SomeCoCMISDataQueries.USAGE);

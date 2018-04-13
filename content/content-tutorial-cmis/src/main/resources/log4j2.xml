@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration packages="org.noble" monitorInterval="30">
+    <properties>
+        <property name="pattern">[ %d{yyyy/MM/dd HH:mm:ss,SSS} ][ %5p ][ %t ][ %c{1} ]%m%n</property>
+        <property name="hostName">${hostName}</property>
+    </properties>
+
+    <appenders>
+        <Console name="Console" target="SYSTEM_OUT">
+            <PatternLayout pattern="${pattern}"/>
+        </Console>
+    </appenders>
+
+    <loggers>
+        <root level="INFO">
+            <appender-ref ref="Console"/> <!-- To console -->
+        </root>
+        <logger name="com.someco" additivity="false" level="DEBUG">
+            <appender-ref ref="Console" />
+        </logger>
+        <logger name="org.apache.chemistry" additivity="false" level="INFO">
+            <appender-ref ref="Console" />
+        </logger>
+    </loggers>
+
+</configuration>
