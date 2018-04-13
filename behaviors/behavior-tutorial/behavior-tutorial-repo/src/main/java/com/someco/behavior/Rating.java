@@ -34,8 +34,8 @@ public class Rating
     	if (logger.isDebugEnabled()) logger.debug("Initializing rateable behaviors");
     	
         // Create behaviours
-        this.onCreateNode = new JavaBehaviour(this, "onCreateNode", NotificationFrequency.TRANSACTION_COMMIT);
-        this.onDeleteNode = new JavaBehaviour(this, "onDeleteNode", NotificationFrequency.TRANSACTION_COMMIT);
+        this.onCreateNode = new JavaBehaviour(this, "onCreateNode", NotificationFrequency.EVERY_EVENT);
+        this.onDeleteNode = new JavaBehaviour(this, "onDeleteNode", NotificationFrequency.EVERY_EVENT);
 
         // Bind behaviours to node policies
         this.policyComponent.bindClassBehaviour(QName.createQName(NamespaceService.ALFRESCO_URI, "onCreateNode"), QName.createQName(SomeCoRatingsModel.NAMESPACE_SOMECO_RATINGS_CONTENT_MODEL, SomeCoRatingsModel.TYPE_SCR_RATING), this.onCreateNode);
