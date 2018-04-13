@@ -1,0 +1,26 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+                http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+   
+   <!--
+    Define beans related to this Share extension here, such as
+     evaluators and resource bootstrapping.
+
+     Note. Any configuration related to the whole Share.war webapp
+           (i.e. not specific to this share extension) should be
+            placed in the alfresco-allinone/share/src/main/resources/alfresco/web-extension/custom-slingshot-application-context.xml file
+   -->
+
+   <!-- Add module specific messages and labels -->
+   <bean id="com.someco.maven-sdk-tutorial-share-jar.resources"
+         class="org.springframework.extensions.surf.util.ResourceBundleBootstrapComponent">
+      <property name="resourceBundles">
+         <list>
+            <value>alfresco.web-extension.messages.maven-sdk-tutorial-share-jar</value>
+         </list>
+      </property>
+   </bean>
+
+</beans>

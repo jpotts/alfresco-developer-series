@@ -63,3 +63,6 @@ workflow/workflow-tutorial/workflow-tutorial-repo/alf_data_dev
 workflow/workflow-tutorial/.idea
 actions/actions-tutorial/.idea
 content/content-tutorial-common/.idea
+maven-sdk/maven-sdk-tutorial/.idea
+maven-sdk/maven-sdk-tutorial/alf_data_dev
+maven-sdk/maven-sdk-tutorial/target

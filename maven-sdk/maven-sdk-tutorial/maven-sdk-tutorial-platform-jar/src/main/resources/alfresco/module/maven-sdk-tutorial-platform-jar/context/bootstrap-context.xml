@@ -1,0 +1,37 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+          http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+
+    <!-- The bootstrap-context.xml file is used for patch definitions, importers, 
+		 workflow, and loading custom content models.  -->
+
+    <!-- Registration of new models -->
+    <bean id="maven-sdk-tutorial-platform-jar.dictionaryBootstrap" parent="dictionaryModelBootstrap" depends-on="dictionaryBootstrap">
+        <property name="models">
+            <list>
+                <value>alfresco/module/${project.artifactId}/model/content-model.xml</value>
+                <value>alfresco/module/${project.artifactId}/model/workflow-model.xml</value>
+            </list>
+        </property>
+        <property name="labels">
+            <list>
+                <!-- Bootstrap Resource Bundles for the content model types, aspects, properties etc -->
+                <value>alfresco/module/${project.artifactId}/messages/content-model</value>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="com.someco.sampleprocess.workflowBootstrap" parent="workflowDeployer">
+        <property name="workflowDefinitions">
+            <list>
+                <props>
+                    <prop key="engineId">activiti</prop>
+                    <prop key="location">alfresco/module/${project.artifactId}/workflow/sample-process.bpmn20.xml</prop>
+                    <prop key="mimetype">text/xml</prop>
+                </props>
+            </list>
+        </property>
+    </bean>
+</beans>

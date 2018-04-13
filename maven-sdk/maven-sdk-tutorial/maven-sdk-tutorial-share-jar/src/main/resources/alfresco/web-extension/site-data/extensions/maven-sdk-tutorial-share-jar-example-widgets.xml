@@ -1,0 +1,20 @@
+<extension>
+  <modules>
+    <module>
+      <id>maven-sdk-tutorial-share-jar - Example Aikau Widgets</id>
+      <version>1.0</version>
+      <auto-deploy>true</auto-deploy>
+      <configurations>
+        <config evaluator="string-compare" condition="WebFramework" replace="false">
+          <web-framework>
+            <dojo-pages>
+              <packages>
+                <package name="tutorials" location="resources/maven-sdk-tutorial-share-jar/js/tutorials"/>
+              </packages>
+            </dojo-pages>
+          </web-framework>
+        </config>
+      </configurations>
+    </module>
+  </modules>
+</extension>

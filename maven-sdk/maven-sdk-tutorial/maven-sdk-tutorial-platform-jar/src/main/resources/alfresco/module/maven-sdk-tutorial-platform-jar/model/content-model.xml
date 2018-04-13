@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model name="acme:contentModel" xmlns="http://www.alfresco.org/model/dictionary/1.0">
+
+    <!-- Optional meta-data about the model -->
+    <description>Sample Document Model</description>
+    <author>My Name</author>
+    <version>1.0</version>
+
+    <imports>
+        <!-- Import Alfresco Dictionary Definitions -->
+        <import uri="http://www.alfresco.org/model/dictionary/1.0" prefix="d"/>
+        <!-- Import Alfresco Content Domain Model Definitions -->
+        <import uri="http://www.alfresco.org/model/content/1.0" prefix="cm"/>
+        <!-- Import Alfresco System Model Definitions -->
+        <import uri="http://www.alfresco.org/model/system/1.0" prefix="sys"/>
+    </imports>
+
+    <!-- Custom namespace for the ACME company -->
+    <namespaces>
+        <namespace uri="http://www.acme.org/model/content/1.0" prefix="acme"/>
+    </namespaces>
+
+    <constraints>
+        <constraint name="acme:securityClassificationOptions" type="LIST">
+            <parameter name="allowedValues">
+                <list>
+                    <value></value>
+                    <!-- Empty for default search-->
+                    <value>Public</value>
+                    <value>Client Confidential</value>
+                    <value>Company Confidential</value>
+                    <value>Strictly Confidential</value>
+                </list>
+            </parameter>
+        </constraint>
+    </constraints>
+
+    <!-- ===============================================================================================================
+        Constraints, Types, and Aspects go here...
+        -->
+
+    <types>
+        <!--
+            ACME Enterprise-wide Document root type.
+            All other custom document types would extend this one.
+        -->
+        <type name="acme:document">
+            <title>Sample Document Type</title>
+            <parent>cm:content</parent>
+            <properties>
+                <property name="acme:documentId">
+                    <title>Document Identification Number</title>
+                    <type>d:text</type>
+                </property>
+            </properties>
+            <mandatory-aspects>
+                <aspect>acme:securityClassified</aspect>
+            </mandatory-aspects>
+        </type>
+    </types>
+
+    <aspects>
+        <!-- A document can have security classification applied and
+             faceted search is specifically enabled for best performance and we change
+             default index config to not tokenize the value. -->
+        <aspect name="acme:securityClassified">
+            <title>ACME Security Classified</title>
+            <description>Content has been security classified</description>
+            <properties>
+                <property name="acme:securityClassification">
+                    <type>d:text</type>
+                    <index enabled="true">
+                        <atomic>true</atomic>
+                        <stored>false</stored>
+                        <tokenised>false</tokenised>
+                    </index>
+                    <constraints>
+                        <constraint ref="acme:securityClassificationOptions"/>
+                    </constraints>
+                </property>
+            </properties>
+        </aspect>
+    </aspects>
+
+</model>
