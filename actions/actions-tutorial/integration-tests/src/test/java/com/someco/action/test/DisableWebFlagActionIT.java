@@ -1,52 +1,49 @@
-package com.someco.actions.test;
+package com.someco.action.test;
 
-import static org.junit.Assert.assertNotNull;
-
+import com.someco.action.executer.DisableWebFlag;
+import com.someco.action.executer.SetWebFlag;
+import org.alfresco.model.ContentModel;
+import org.alfresco.rad.test.AbstractAlfrescoIT;
+import org.alfresco.rad.test.AlfrescoTestRunner;
+import org.alfresco.repo.nodelocator.CompanyHomeNodeLocator;
 import org.alfresco.repo.nodelocator.NodeLocatorService;
-import org.alfresco.repo.security.authentication.AuthenticationUtil;
 import org.alfresco.service.cmr.action.Action;
 import org.alfresco.service.cmr.action.ActionService;
+import org.alfresco.service.cmr.repository.ChildAssociationRef;
+import org.alfresco.service.cmr.repository.NodeRef;
 import org.alfresco.service.cmr.repository.NodeService;
+import org.alfresco.service.namespace.NamespaceService;
+import org.alfresco.service.namespace.QName;
 import org.apache.log4j.Logger;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 
-import com.someco.action.executer.DisableWebFlag;
+import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
 
-public class DisableWebFlagActionTest {
+import static org.junit.Assert.assertNotNull;
+
+@RunWith(value = AlfrescoTestRunner.class)
+public class DisableWebFlagActionIT extends AbstractAlfrescoIT {
 
     private static final String ADMIN_USER_NAME = "admin";
 
-    static Logger log = Logger.getLogger(DisableWebFlagActionTest.class);
-
-    @Autowired
-    @Qualifier("NodeService")
-    protected NodeService nodeService;
-
-    @Autowired
-    @Qualifier("ActionService")
-    protected ActionService actionService;
-
-    @Autowired
-    @Qualifier("nodeLocatorService")
-    protected NodeLocatorService nodeLocatorService;
+    static Logger log = Logger.getLogger(DisableWebFlagActionIT.class);
 
     @Test
     public void testGetAction() {
-    	AuthenticationUtil.setFullyAuthenticatedUser(ADMIN_USER_NAME);
+        ActionService actionService = getServiceRegistry().getActionService();
     	Action action = actionService.createAction(DisableWebFlag.NAME);
     	assertNotNull(action);
     }
 
-    /*
-     * This test depends on the presence of the content tutorial repo AMP
-     */
-    /*
     @Test
     public void testExecuteAction() {
-    	AuthenticationUtil.setFullyAuthenticatedUser(ADMIN_USER_NAME);
+        NodeLocatorService nodeLocatorService = getServiceRegistry().getNodeLocatorService();
+        NodeService nodeService = getServiceRegistry().getNodeService();
+        ActionService actionService = getServiceRegistry().getActionService();
+
         NodeRef companyHome = nodeLocatorService.getNode(CompanyHomeNodeLocator.NAME, null, null);
 
         // assign name
@@ -71,5 +68,5 @@ public class DisableWebFlagActionTest {
 
     	nodeService.deleteNode(content);
     }
-    */
+
 }
