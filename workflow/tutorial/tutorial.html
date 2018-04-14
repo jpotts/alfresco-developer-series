@@ -30,7 +30,7 @@ Architect | Alfresco Developer Tutorials</title>
 <div id="header">
 <h1 class="entry-title">Creating Custom Advanced Workflows in Alfresco</h1>
 <h2 class="author">Jeff Potts, <a href="http://www.ecmarchitect.com/">Metaversant Group</a></h2>
-<h3 class="date">April, 2017</h3>
+<h3 class="date">April, 2018</h3>
 </div>
 <div id="TOC">
 <ul>
@@ -219,32 +219,81 @@ Architect | Alfresco Developer Tutorials</title>
 <h2 id="tools">Tools</h2>
 <p>Here is what I am using on my machine:</p>
 <ul>
-<li>Mac OS X 10.11.6</li>
-<li>Java 1.8.0_31</li>
-<li>Apache Maven 3.3.9 (installed using Macports)</li>
-<li>Alfresco Maven SDK 3.0.0 (No download necessary)</li>
+<li>Mac OS X 10.12.6</li>
+<li>Java 1.8.0_77</li>
+<li>Apache Maven 3.5.3 (installed using Macports)</li>
+<li>Alfresco Maven SDK 3.0.1 (No download necessary)</li>
 <li>Eclipse Java EE IDE for Web Developers, Neon</li>
 <li>Activiti Eclipse BPMN 2.0 Designer 5.18 (<a href="http://www.activiti.org/designer/update/">Eclipse Update Site</a>)</li>
-<li>Alfresco Community Edition 5.2.f (<a href="http://www.alfresco.com/products/community">Download</a>)</li>
 <li>Apache James 2.3.1 (for testing third-party notification via SMTP)</li>
 </ul>
-<p>By default, when you create an Alfresco project using version 3.0.0 of the Alfresco Maven SDK the project will be configured to depend on Alfresco Community Edition 5.2.f.</p>
+<p>By default, when you create an Alfresco project using the Alfresco Maven SDK the project will be configured to depend on the latest stable Alfresco Community Edition.</p>
 <h2 id="project-organization">Project Organization</h2>
-<p>I am going to use the Alfresco Maven SDK to create projects that will package up my customizations as AMPs (Alfresco Module Packages). I will ultimately create two AMPs. One AMP is for the Alfresco web application (the &quot;repo&quot; tier) and the other is for the Alfresco Share web application (the &quot;Share&quot; tier). Unless you have a good reason to do otherwise, this should be your default approach to packaging and deploying your customizations.</p>
+<p>I am going to use the Alfresco Maven SDK to create a project from the &quot;all-in-one&quot; archetype that will package up my customizations in two AMPs (Alfresco Module Packages). One AMP is for the Alfresco web application (the &quot;repo&quot; tier) and the other is for the Alfresco Share web application (the &quot;Share&quot; tier).</p>
 <p>I am not going to spend much time talking about how the Alfresco Maven SDK works. If you aren't already familiar with it, you may want to read the <a href="http://ecmarchitect.com/alfresco-developer-series">Getting Started with the Alfresco Maven SDK</a> tutorial on ecmarchitect.com first and then come back to this one.</p>
-<p>This tutorial relies on code from the <a href="http://ecmarchitect.com/alfresco-developer-series-tutorials/content/tutorial/tutorial.html">Custom Content Types</a> tutorial. The tutorial assumes that the repo tier AMP and Share tier AMP created during that tutorial have been deployed to the Alfresco server you will be deploying your custom actions AMPs to. More details on that will be discussed later in the document.</p>
-<p>If you are planning on following along, go ahead and use the Alfresco Maven SDK to create two new projects. One should use a <code>groupId</code> of &quot;com.someco&quot; and an <code>artifactId</code> of &quot;workflow-tutorial-repo&quot; for the repo tier project and &quot;workflow-tutorial-share&quot; for the share tier project.</p>
-<p>Starting with 3.0.0, the SDK will generate JAR files. We want to generate AMPs, so edit the pom.xml files to uncomment the maven-assembly-plugin.</p>
+<p>This tutorial relies on code from the <a href="http://ecmarchitect.com/alfresco-developer-series-tutorials/content/tutorial/tutorial.html">Custom Content Types</a> tutorial. The tutorial assumes that the repo tier AMP and Share tier AMP created during that tutorial have been installed into your local Maven repository. Or, if you are deploying to an Alfresco server instead of running the embedded Tomcat server, those AMPs need to be deployed to the Alfresco server. More details on that will be discussed later in the document.</p>
+<p>If you are planning on following along, go ahead and use the Alfresco Maven SDK to create a new project from the &quot;all-in-one&quot; archetype. Use a <code>groupId</code> of &quot;com.someco&quot; and an <code>artifactId</code> of &quot;workflow-tutorial&quot;.</p>
+<p>Starting with 3.0.0, the SDK will generate JAR files by default. We always want to generate AMPs, not JARs, so edit the pom.xml file to uncomment the maven-assembly-plugin.</p>
+<p>We'll be running the project using an embedded Tomcat server. We can configure the project to install AMPs from the earlier tutorials automatically. Edit the pom.xml file in the &quot;workflow-tutorial&quot; directory to add the following &quot;platformModule&quot; dependencies:</p>
+<pre><code>&lt;!-- Bring in the content tutorial repo AMP so we can run embedded. --&gt;
+&lt;moduleDependency&gt;
+    &lt;groupId&gt;com.someco&lt;/groupId&gt;
+    &lt;artifactId&gt;content-tutorial-platform-jar&lt;/artifactId&gt;
+    &lt;version&gt;1.0-SNAPSHOT&lt;/version&gt;
+    &lt;type&gt;amp&lt;/type&gt;
+&lt;/moduleDependency&gt;
+
+&lt;!-- Bring in the behavior tutorial repo AMP so we can run embedded. --&gt;
+&lt;moduleDependency&gt;
+    &lt;groupId&gt;com.someco&lt;/groupId&gt;
+    &lt;artifactId&gt;behavior-tutorial-platform-jar&lt;/artifactId&gt;
+    &lt;version&gt;1.0-SNAPSHOT&lt;/version&gt;
+    &lt;type&gt;amp&lt;/type&gt;
+&lt;/moduleDependency&gt;
+
+&lt;!-- Bring in the actions tutorial repo AMP so we can run embedded. --&gt;
+&lt;moduleDependency&gt;
+    &lt;groupId&gt;com.someco&lt;/groupId&gt;
+    &lt;artifactId&gt;actions-tutorial-platform-jar&lt;/artifactId&gt;
+    &lt;version&gt;1.0-SNAPSHOT&lt;/version&gt;
+    &lt;type&gt;amp&lt;/type&gt;
+&lt;/moduleDependency&gt;</code></pre>
+<p>Those all have corresponding Share tier modules so add those as &quot;shareModule&quot; dependencies:</p>
+<pre><code>&lt;!-- Bring in the content tutorial share AMP so we can run embedded. --&gt;
+&lt;moduleDependency&gt;
+    &lt;groupId&gt;com.someco&lt;/groupId&gt;
+    &lt;artifactId&gt;content-tutorial-share-jar&lt;/artifactId&gt;
+    &lt;version&gt;1.0-SNAPSHOT&lt;/version&gt;
+    &lt;type&gt;amp&lt;/type&gt;
+&lt;/moduleDependency&gt;
+
+&lt;!-- Bring in the behavior tutorial share AMP so we can run embedded. --&gt;
+&lt;moduleDependency&gt;
+    &lt;groupId&gt;com.someco&lt;/groupId&gt;
+    &lt;artifactId&gt;behavior-tutorial-share-jar&lt;/artifactId&gt;
+    &lt;version&gt;1.0-SNAPSHOT&lt;/version&gt;
+    &lt;type&gt;amp&lt;/type&gt;
+&lt;/moduleDependency&gt;
+
+&lt;!-- Bring in the actions tutorial share AMP so we can run embedded. --&gt;
+&lt;moduleDependency&gt;
+    &lt;groupId&gt;com.someco&lt;/groupId&gt;
+    &lt;artifactId&gt;actions-tutorial-share-jar&lt;/artifactId&gt;
+    &lt;version&gt;1.0-SNAPSHOT&lt;/version&gt;
+    &lt;type&gt;amp&lt;/type&gt;
+&lt;/moduleDependency&gt;</code></pre>
+<p>Now when we fire up the embedded Tomcat server the workflow AMPs will be installed as well as the AMPs from the earlier content, behavior, and actions tutorials.</p>
+<p>If you have not installed those artifacts into your local Maven repository, switch to the root of each of those earlier tutorial projects and run <code>mvn install</code> to do so now.</p>
 <h1 id="hello-world-examples">Hello World Examples</h1>
 <p>Let's create a couple of super simple Hello World processes using the Activiti Process Designer. These processes will not be wired into the Alfresco web client user interface. Instead, I'll use the workflow console to start them. Once I've run through the basic steps of diagramming and deploying workflows, I'll show you examples that are fully integrated into the user interface.</p>
 <h2 id="the-helloworld-process">The helloWorld process</h2>
 <p>The helloWorld process will consist of a start event, a user task, and an end event. The goal is to do nothing more than write &quot;Hello, World!&quot; to the Alfresco log.</p>
 <p>Workflows reside in:</p>
-<pre><code>$TUTORIAL_HOME/workflow-tutorial-repo/src/main/resources/alfresco/module/workflow-tutorial-repo/workflow</code></pre>
-<p>When you created the workflow-tutorial-repo project using the Alfresco Maven SDK, the folder structure was created for you, and it may have included a &quot;workflow&quot; directory with a sample workflow. If so, you can delete the sample workflow. If not, create the &quot;workflow&quot; directory now.</p>
+<pre><code>$TUTORIAL_HOME/workflow-tutorial-platform-jar/src/main/resources/alfresco/module/workflow-tutorial-platform-jar/workflow</code></pre>
+<p>When you created the workflow-tutorial project using the Alfresco Maven SDK, the folder structure was created for you, and it may have included a &quot;workflow&quot; directory in the workflow-tutorial-platform-jar module with a sample workflow. If so, you can delete the sample workflow. If not, create the &quot;workflow&quot; directory now.</p>
 <p>Once that is done, follow these steps:</p>
 <ol style="list-style-type: decimal">
-<li>Right-click the workflows folder and choose New, Other, Activiti Diagram. Specify &quot;<a href="https://github.com/jpotts/alfresco-developer-series/blob/master/workflow/workflow-tutorial-repo/src/main/resources/alfresco/module/workflow-tutorial-repo/workflow/helloWorld.bpmn">helloWorld.bpmn</a>&quot; for the process name and click Finish.</li>
+<li>Right-click the workflows folder and choose New, Other, Activiti Diagram. Specify &quot;<a href="https://github.com/jpotts/alfresco-developer-series/blob/master/workflow/workflow-tutorial/workflow-tutorial-platform-jar/src/main/resources/alfresco/module/workflow-tutorial-platform-jar/workflow/helloWorld.bpmn">helloWorld.bpmn</a>&quot; for the process name and click Finish.</li>
 <li>Drag-and-drop a start event, a user task and an end event from the palette onto your blank canvas.</li>
 <li>Connect the start event to the user task and the user task to the end event using sequence flows from the palette. When you are done, the diagram should look like this:</li>
 </ol>
@@ -289,7 +338,7 @@ Architect | Alfresco Developer Tutorials</title>
 <p>Before I show you how to deploy the process definition to Alfresco, let's do another Hello World example that does a fork and a join.</p>
 <p>Do this:</p>
 <ol style="list-style-type: decimal">
-<li>Create a new diagram in the workflows folder called &quot;<a href="https://github.com/jpotts/alfresco-developer-series/blob/master/workflow/workflow-tutorial-repo/src/main/resources/alfresco/module/workflow-tutorial-repo/workflow/helloWorldFork.bpmn">helloWorldFork.bpmn</a>&quot;.</li>
+<li>Create a new diagram in the workflows folder called &quot;<a href="https://github.com/jpotts/alfresco-developer-series/blob/master/workflow/workflow-tutorial/workflow-tutorial-platform-jar/src/main/resources/alfresco/module/workflow-tutorial-platform-jar/workflow/helloWorldFork.bpmn">helloWorldFork.bpmn</a>&quot;.</li>
 <li>From the palette, grab a start event, an end event, two user tasks, and two parallel gateways.</li>
 <li>Click &quot;Select&quot; in the palette, then click each of the two user tasks to change their names to &quot;User Task A&quot; and &quot;User Task B&quot; respectively.</li>
 <li>Click &quot;Sequence Flow&quot; in the palette and connect the nodes in the diagram so it looks like this:</li>
@@ -326,7 +375,7 @@ Architect | Alfresco Developer Tutorials</title>
     &lt;/extensionElements&gt;
 &lt;/sequenceFlow&gt;</code></pre>
 <p>Remember to save the diagram.</p>
-<p>With a couple of, admittedly, ridiculously simple examples saved in the workflow-tutorial-repo project, it is time to deploy them to Activiti running within Alfresco and try them out.</p>
+<p>With a couple of, admittedly, ridiculously simple examples saved in the workflow-tutorial-platform-jar module, it is time to deploy them to Activiti running within Alfresco and try them out.</p>
 <h2 id="deploying-processes">Deploying processes</h2>
 <p>There are two other options for deploying workflows to Alfresco:</p>
 <ol style="list-style-type: decimal">
@@ -335,8 +384,8 @@ Architect | Alfresco Developer Tutorials</title>
 </ol>
 <p>This tutorial will use Spring to deploy the workflows initially. Then, use the Alfresco Workflow Console to deploy subsequent versions if needed.</p>
 <h3 id="deploying-the-workflows-with-spring">Deploying the workflows with Spring</h3>
-<p>As you learned in previous tutorials, the AMP project created by the Alfresco Maven SDK already has a Spring context file. It is named &quot;<a href="https://github.com/jpotts/alfresco-developer-series/blob/master/workflow/workflow-tutorial-repo/src/main/resources/alfresco/module/workflow-tutorial-repo/context/bootstrap-context.xml">bootstrap-context.xml</a>&quot; and resides in:</p>
-<pre><code>$TUTORIAL_HOME/workflow-tutorial-repo/src/main/resources/alfresco/module/workflow-tutorial-repo/context</code></pre>
+<p>As you learned in previous tutorials, the AMP project created by the Alfresco Maven SDK already has a Spring context file. It is named &quot;<a href="https://github.com/jpotts/alfresco-developer-series/blob/master/workflow/workflow-tutorial/workflow-tutorial-platform-jar/src/main/resources/alfresco/module/workflow-tutorial-platform-jar/context/bootstrap-context.xml">bootstrap-context.xml</a>&quot; and resides in:</p>
+<pre><code>$TUTORIAL_HOME/workflow-tutorial-platform-jar/src/main/resources/alfresco/module/workflow-tutorial-platform-jar/context</code></pre>
 <p>Edit that file and delete any existing bean elements that the SDK might have added for you. Then, add a workflow deployer bean, like this:</p>
 <pre><code>&lt;bean id=&quot;${project.artifactId}.workflowBootstrap&quot; parent=&quot;workflowDeployer&quot;&gt;
     &lt;property name=&quot;workflowDefinitions&quot;&gt;
@@ -357,12 +406,12 @@ Architect | Alfresco Developer Tutorials</title>
     &lt;/property&gt;
 &lt;/bean&gt;</code></pre>
 <p>Setting &quot;redeploy&quot; to false prevents the workflows from being redeployed every time Alfresco restarts.</p>
-<p>The JavaScript in these business processes contain &quot;logger&quot; statements. To get those to show up in the log, edit the <a href="https://github.com/jpotts/alfresco-developer-series/blob/master/workflow/workflow-tutorial-repo/src/test/resources/alfresco/extension/dev-log4j.properties">dev-log4j.properties</a> file that is in the test part of your module. It resides in:</p>
-<pre><code>$TUTORIAL_HOME/workflow-tutorial-repo/src/test/resources/alfresco/extension</code></pre>
+<p>The JavaScript in these business processes contain &quot;logger&quot; statements. To get those to show up in the log, edit the <a href="https://github.com/jpotts/alfresco-developer-series/blob/master/workflow/workflow-tutorial/workflow-tutorial-platform-jar/src/test/resources/alfresco/extension/dev-log4j.properties">dev-log4j.properties</a> file that is in the workflow-tutorial-platform-jar module. It resides in:</p>
+<pre><code>$TUTORIAL_HOME/workflow-tutorial-platform-jar/src/test/resources/alfresco/extension</code></pre>
 <p>Change the <code>ScriptLogger</code> to debug by changing this line:</p>
 <pre><code>log4j.logger.org.alfresco.repo.jscript.ScriptLogger=DEBUG</code></pre>
-<p>Now everything is ready to go. For this test, you can leverage the embedded Alfresco server that the Alfresco Maven SDK sets up for you. To run your AMP in the embedded Alfresco server, open a command-line window, switch to $TUTORIAL_HOME/workflow-tutorial-repo, and run <code>run.sh</code> (or <code>run.bat</code> depending on your operating system.).</p>
-<p>Apache Maven will download some dependencies, build your AMP, merge it with the Alfresco WAR file, then start up an embedded Tomcat server.</p>
+<p>Now everything is ready to go. For this test, you can leverage the embedded Alfresco server that the Alfresco Maven SDK sets up for you. To run your AMP in the embedded Alfresco server, open a command-line window, switch to $TUTORIAL_HOME, and run <code>run.sh</code> (or <code>run.bat</code> depending on your operating system).</p>
+<p>Apache Maven will download some dependencies, build your AMPs, merge them with the Alfresco WAR file and Share WAR file, then start up an embedded Tomcat server.</p>
 <p>Next you'll see how to use the Alfresco Workflow Console to test the two hello world process definitions.</p>
 <h2 id="using-the-workflow-console">Using the workflow console</h2>
 <p>Your Alfresco server is running and the hello world process definitions should have been deployed when the server started up. The Alfresco Workflow Console can be used to verify that they were deployed successfully. And you can use it to start instances of those workflows to test them out. It can also be a handy workflow debugging tool.</p>
@@ -452,7 +501,7 @@ Architect | Alfresco Developer Tutorials</title>
 <h2 id="step-1-define-the-helloworldui-process">Step 1: Define the helloWorldUI process</h2>
 <p>The goal for this example is to create a workflow that will capture a piece of metadata (a name the logger should use for a greeting) when the workflow is submitted, and then write the greeting out to the log. The first step is to define the process.</p>
 <ol style="list-style-type: decimal">
-<li>In Eclipse, right-click on the &quot;workflows&quot; folder and create a new Activiti Diagram named &quot;<a href="https://github.com/jpotts/alfresco-developer-series/blob/master/workflow/workflow-tutorial-repo/src/main/resources/alfresco/module/workflow-tutorial-repo/workflow/helloWorldUI.bpmn">helloWorldUI.bpmn</a>&quot;.</li>
+<li>In Eclipse, right-click on the &quot;workflows&quot; folder and create a new Activiti Diagram named &quot;<a href="https://github.com/jpotts/alfresco-developer-series/blob/master/workflow/workflow-tutorial/workflow-tutorial-platform-jar/src/main/resources/alfresco/module/workflow-tutorial-platform-jar/workflow/helloWorldUI.bpmn">helloWorldUI.bpmn</a>&quot;.</li>
 <li>From the palette, drag a start event, an end event, an Alfresco User Task, and an Alfresco Script task onto the canvas. You'll see the benefit of using the Alfresco-specific User Task and Script Task shortly.</li>
 <li><p>Click &quot;Sequence Flow&quot; in the palette and then connect the nodes in the process to look like this:</p>
 <div class="figure">
@@ -529,9 +578,9 @@ Architect | Alfresco Developer Tutorials</title>
 <p>In the helloWorldUI example, you defined the following start event:</p>
 <pre><code>&lt;startEvent id=&quot;startevent1&quot; name=&quot;Start&quot; activiti:formKey=&quot;scwf:submitHelloWorldTask&quot;&gt;&lt;/startEvent&gt;</code></pre>
 <p>Now you need to create a content model with a custom type that corresponds to the form key value. From previous tutorials you know that models are defined in XML and reside in:</p>
-<pre><code>$TUTORIAL_HOME/workflow-tutorial-repo/src/main/resources/alfresco/module/workflow-tutorial-repo/model</code></pre>
+<pre><code>$TUTORIAL_HOME/workflow-tutorial-platform-jar/src/main/resources/alfresco/module/workflow-tutorial-platform-jar/model</code></pre>
 <p>The SDK has already created the &quot;model&quot; folder for you as well as a couple of sample model files. Go ahead and delete the sample model files as they will not be needed.</p>
-<p>In the model folder, create a new content model XML file called &quot;<a href="https://github.com/jpotts/alfresco-developer-series/blob/master/workflow/workflow-tutorial-repo/src/main/resources/alfresco/module/workflow-tutorial-repo/model/scWorkflowModel.xml">scWorkflowModel.xml</a>&quot; with the following content:</p>
+<p>In the model folder, create a new content model XML file called &quot;<a href="https://github.com/jpotts/alfresco-developer-series/blob/master/workflow/workflow-tutorial/workflow-tutorial-platform-jar/src/main/resources/alfresco/module/workflow-tutorial-platform-jar/model/scWorkflowModel.xml">scWorkflowModel.xml</a>&quot; with the following content:</p>
 <pre><code>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
 &lt;!-- Definition of new Model --&gt;
 &lt;model name=&quot;scwf:workflowmodel&quot;
@@ -576,9 +625,9 @@ Architect | Alfresco Developer Tutorials</title>
 <p>The next step is to tell Alfresco Share how to display the process metadata. This works exactly like custom content types. As you saw in that tutorial, Share customizations go in their own project so that they can be packaged in an AMP specifically for the share tier.</p>
 <h3 id="edit-share-config-custom.xml">Edit share-config-custom.xml</h3>
 <p>The user interface configuration for Alfresco Share resides in a directory called:</p>
-<pre><code>$TUTORIAL_HOME/workflow-tutorial-share/src/main/resources/META-INF</code></pre>
+<pre><code>$TUTORIAL_HOME/workflow-tutorial-share-jar/src/main/resources/META-INF</code></pre>
 <p>The SDK probably already created this directory structure as well as a sample share-config-custom.xml file.</p>
-<p>In the META-INF directory, edit the file called &quot;<a href="https://github.com/jpotts/alfresco-developer-series/blob/master/workflow/workflow-tutorial-share/src/main/resources/META-INF/share-config-custom.xml">share-config-custom.xml</a>&quot;. Replace the sample content with the following content:</p>
+<p>In the META-INF directory, edit the file called &quot;<a href="https://github.com/jpotts/alfresco-developer-series/blob/master/workflow/workflow-tutorial/workflow-tutorial-share-jar/src/main/resources/META-INF/share-config-custom.xml">share-config-custom.xml</a>&quot;. Replace the sample content with the following content:</p>
 <pre><code>&lt;alfresco-config&gt;
     &lt;config evaluator=&quot;string-compare&quot; condition=&quot;activiti$helloWorldUI&quot;&gt;
       &lt;forms&gt;
@@ -611,11 +660,11 @@ Architect | Alfresco Developer Tutorials</title>
 <p>This form tells Alfresco Share that when someone starts a process named &quot;activiti$helloWorldUI&quot; it should show the user this form. The form definition includes the <code>scwf:helloName</code> property defined in the custom type.</p>
 <h3 id="externalize-the-strings">Externalize the strings</h3>
 <p>Alfresco Share needs to know which strings to use to display things like the workflow title and description that show up in the &quot;Start Advanced Workflow&quot; dialog, and titles and descriptions for individual tasks. The identifiers for these strings follow a specific format.</p>
-<p>There are two separate properties bundles to deal with. One is for the &quot;repo&quot; tier, so it goes in the workflow-tutorial-repo project. The other is for the &quot;share&quot; tier, so it goes in the workflow-tutorial-share project.</p>
+<p>There are two separate properties bundles to deal with. One is for the &quot;repo&quot; tier, so it goes in the workflow-tutorial-platform-jar module. The other is for the &quot;share&quot; tier, so it goes in the workflow-tutorial-share-jar module.</p>
 <p>Properties for the repo tier go in:</p>
-<pre><code>$TUTORIAL_HOME/workflow-tutorial-repo/src/main/resources/alfresco/module/workflow-tutorial-repo/messages</code></pre>
+<pre><code>$TUTORIAL_HOME/workflow-tutorial-platform-jar/src/main/resources/alfresco/module/workflow-tutorial-platform-jar/messages</code></pre>
 <p>The SDK has already created the &quot;messages&quot; folder along with a sample properties file, which you can delete.</p>
-<p>In the messages folder, create a new file called &quot;<a href="https://github.com/jpotts/alfresco-developer-series/blob/master/workflow/workflow-tutorial-repo/src/main/resources/alfresco/module/workflow-tutorial-repo/messages/scWorkflow.properties">scWorkflow.properties</a>&quot; with the following content:</p>
+<p>In the messages folder, create a new file called &quot;<a href="https://github.com/jpotts/alfresco-developer-series/blob/master/workflow/workflow-tutorial/workflow-tutorial-platform-jar/src/main/resources/alfresco/module/workflow-tutorial-platform-jar/messages/scWorkflow.properties">scWorkflow.properties</a>&quot; with the following content:</p>
 <pre><code># Workflow related strings
 helloWorldUI.workflow.title=Hello World UI (Activiti)
 helloWorldUI.workflow.description=A simple hello world process using Activiti
@@ -627,9 +676,9 @@ scwf_workflowmodel.property.scwf_helloName.title=Name
 scwf_workflowmodel.property.scwf_helloName.description=Say hello to this person</code></pre>
 <p>I tend to think of these properties as belonging to two groups. One group is the set of model-related properties. These properties externalize the strings in the workflow content model. The other is the set of process-related properties. These properties externalize the strings users see when they are working with the process (the workflow title, the workflow history, etc.).</p>
 <p>Properties for the share tier go in:</p>
-<pre><code>$TUTORIAL_HOME/workflow-tutorial-share/src/main/resources/alfresco/web-extension/messages</code></pre>
+<pre><code>$TUTORIAL_HOME/workflow-tutorial-share-jar/src/main/resources/alfresco/web-extension/messages</code></pre>
 <p>The SDK has already created the &quot;messages&quot; folder and a sample properties file which you can delete.</p>
-<p>In the messages folder, create a new file called &quot;<a href="https://github.com/jpotts/alfresco-developer-series/blob/master/workflow/workflow-tutorial-share/src/main/resources/alfresco/web-extension/messages/scWorkflow.properties">scWorkflow.properties</a>&quot; with the following content:</p>
+<p>In the messages folder, create a new file called &quot;<a href="https://github.com/jpotts/alfresco-developer-series/blob/master/workflow/workflow-tutorial/workflow-tutorial-share-jar/src/main/resources/alfresco/web-extension/messages/scWorkflow.properties">scWorkflow.properties</a>&quot; with the following content:</p>
 <pre><code>#scwf:helloName
 prop.scwf_helloName=Name
 
@@ -646,8 +695,8 @@ workflow.scwf_helloWorldUI=Hello World UI</code></pre>
 </ul>
 <p>Let's update the repo tier Spring configuration, then the share tier.</p>
 <h4 id="repo-tier-spring-configuration">Repo tier Spring configuration</h4>
-<p>Edit the <a href="https://github.com/jpotts/alfresco-developer-series/blob/master/workflow/workflow-tutorial-repo/src/main/resources/alfresco/module/workflow-tutorial-repo/context/bootstrap-context.xml">bootstrap-context.xml</a> file that resides in:</p>
-<pre><code>$TUTORIAL_HOME/workflow-tutorial-repo/src/main/resources/alfresco/module/workflow-tutorial-repo/context</code></pre>
+<p>Edit the <a href="https://github.com/jpotts/alfresco-developer-series/blob/master/workflow/workflow-tutorial/workflow-tutorial-platform-jar/src/main/resources/alfresco/module/workflow-tutorial-platform-jar/context/bootstrap-context.xml">bootstrap-context.xml</a> file that resides in:</p>
+<pre><code>$TUTORIAL_HOME/workflow-tutorial-platform-jar/src/main/resources/alfresco/module/workflow-tutorial-platform-jar/context</code></pre>
 <p>You can add the workflow model, the new workflow, and the labels all in the same bean. Edit the bootstrap-context.xml file and append the following to the existing <code>bean</code> element:</p>
 <pre><code>            &lt;props&gt;
                 &lt;prop key=&quot;engineId&quot;&gt;activiti&lt;/prop&gt;
@@ -670,9 +719,9 @@ workflow.scwf_helloWorldUI=Hello World UI</code></pre>
 &lt;/bean&gt;</code></pre>
 <p>Save and close the file.</p>
 <h4 id="share-tier-spring-configuration">Share tier Spring configuration</h4>
-<p>The Spring configuration for the workflow-tutorial-share project resides in:</p>
-<pre><code>$TUTORIAL_HOME/workflow-tutorial-share/src/main/resources/alfresco/web-extension</code></pre>
-<p>In the web-extension directory, the SDK has created file called &quot;<a href="https://github.com/jpotts/alfresco-developer-series/blob/master/workflow/workflow-tutorial-share/src/main/resources/alfresco/web-extension/workflow-tutorial-share-slingshot-application-context.xml">workflow-tutorial-share-slingshot-application-context.xml</a>&quot;. Replace the content of that file with the following content:</p>
+<p>The Spring configuration for the workflow-tutorial-share-jar module resides in:</p>
+<pre><code>$TUTORIAL_HOME/workflow-tutorial-share-jar/src/main/resources/alfresco/web-extension</code></pre>
+<p>In the web-extension directory, the SDK has created file called &quot;<a href="https://github.com/jpotts/alfresco-developer-series/blob/master/workflow/workflow-tutorial/workflow-tutorial-share-jar/src/main/resources/alfresco/web-extension/workflow-tutorial-share-slingshot-application-context.xml">workflow-tutorial-share-slingshot-application-context.xml</a>&quot;. Replace the content of that file with the following content:</p>
 <pre><code>&lt;?xml version=&#39;1.0&#39; encoding=&#39;UTF-8&#39;?&gt;
 &lt;!DOCTYPE beans PUBLIC &#39;-//SPRING//DTD BEAN//EN&#39; &#39;http://www.springframework.org/dtd/spring-beans.dtd&#39;&gt;
 &lt;beans&gt;
@@ -688,16 +737,15 @@ workflow.scwf_helloWorldUI=Hello World UI</code></pre>
 <p>Save and close the file.</p>
 <p>The helloWorldUI example is now ready to deploy.</p>
 <h2 id="deploy-test">Deploy &amp; Test</h2>
-<p>The hello world UI example can be tested using the embedded Tomcat servers that are part of the workflow-tutorial-repo and workflow-tutorial-share projects. The trick is to start each of them separately, passing in an alternative port for the Alfresco Share WAR.</p>
+<p>The hello world UI example can be tested using the embedded Tomcat server that is part of the Alfresco Maven SDK.</p>
 <ol style="list-style-type: decimal">
-<li>Open a command-line window and switch to $TUTORIAL_HOME/workflow-tutorial-repo.</li>
-<li>Run <code>run.sh</code> (or <code>run.bat</code>). Your repo tier project will be installed and started on Tomcat running on port 8080.</li>
-<li>Open a new command-line window and switch to $TUTORIAL_HOME/workflow-tutorial-share.</li>
+<li>Open a command-line window and switch to $TUTORIAL_HOME.</li>
 <li>Run <code>run.sh</code> (or <code>run.bat</code>).</li>
 </ol>
+<p>Your repo tier AMP and Share tier AMP will be built, installed into their respective WARs, and started on Tomcat running on port 8080.</p>
 <p>When everything starts up:</p>
 <ol style="list-style-type: decimal">
-<li>Go to http://localhost:8081/share and log in as admin (password: admin).</li>
+<li>Go to http://localhost:8080/share and log in as admin (password: admin).</li>
 <li><p>In the &quot;My Tasks&quot; dashlet, click &quot;Start Workflow&quot; to start a workflow. You should see the Hello World UI workflow in the list of workflows:</p>
 <div class="figure">
 <img src="images/start-workflow-list.png" alt="Share workflow list shows custom workflows" /><p class="caption">Share workflow list shows custom workflows</p>
@@ -764,7 +812,7 @@ workflow.scwf_helloWorldUI=Hello World UI</code></pre>
 <p>The diagram step is just like you've seen before, it's just that the diagram is a little more complex.</p>
 <ol style="list-style-type: decimal">
 <li>Right-click on the workflows folder, New, Other, Activiti Process Diagram.</li>
-<li>Name the process &quot;<a href="https://github.com/jpotts/alfresco-developer-series/blob/master/workflow/workflow-tutorial-repo/src/main/resources/alfresco/module/workflow-tutorial-repo/workflow/publishWhitepaper.bpmn">publishWhitepaper.bpmn</a>&quot;.</li>
+<li>Name the process &quot;<a href="https://github.com/jpotts/alfresco-developer-series/blob/master/workflow/workflow-tutorial/workflow-tutorial-platform-jar/src/main/resources/alfresco/module/workflow-tutorial-platform-jar/workflow/publishWhitepaper.bpmn">publishWhitepaper.bpmn</a>&quot;.</li>
 <li>Click on the canvas to open the properties editor for the entire process. Set the ID to &quot;publishWhitepaper&quot; and the name to &quot;Publish Whitepaper&quot;.</li>
 <li><p>Drag-and-drop nodes from the palette and connect them with sequence flows to make your diagram look like this:</p>
 <div class="figure">
@@ -919,7 +967,7 @@ workflow.scwf_helloWorldUI=Hello World UI</code></pre>
 <h3 id="workflow-content-model-including-alfresco-share-configuration">Workflow content model including Alfresco Share configuration</h3>
 <p>At this point you've defined the process. It doesn't have all of the logic it will have eventually, but it has enough that you will be able to step through all of the paths in the process once the Alfresco Share user interface is configured. You'll do that in this section by defining the content model and updating the client configuration.</p>
 <h4 id="defining-the-workflow-content-model">Defining the workflow content model</h4>
-<p>You started a workflow content model in the earlier Hello World UI example. The first thing to do is update the content model XML (<a href="https://github.com/jpotts/alfresco-developer-series/blob/master/workflow/workflow-tutorial-repo/src/main/resources/alfresco/module/workflow-tutorial-repo/model/scWorkflowModel.xml">scWorkflowModel.xml</a>) with types and aspects specific to the publish whitepaper process.</p>
+<p>You started a workflow content model in the earlier Hello World UI example. The first thing to do is update the content model XML (<a href="https://github.com/jpotts/alfresco-developer-series/blob/master/workflow/workflow-tutorial/workflow-tutorial-platform-jar/src/main/resources/alfresco/module/workflow-tutorial-platform-jar/model/scWorkflowModel.xml">scWorkflowModel.xml</a>) with types and aspects specific to the publish whitepaper process.</p>
 <p>Edit the file and add:</p>
 <pre><code>&lt;type name=&quot;scwf:submitReviewTask&quot;&gt;
     &lt;parent&gt;bpm:startTask&lt;/parent&gt;
@@ -1018,7 +1066,7 @@ workflow.scwf_helloWorldUI=Hello World UI</code></pre>
 <p>This defines an aspect used to define a property that will store the third-party reviewer's email address.</p>
 <p>That's it for the workflow content model. Now configure it in the Alfresco Share user interface.</p>
 <h4 id="configure-the-alfresco-share-user-interface">Configure the Alfresco Share user interface</h4>
-<p>In the Hello World UI example you saw that Alfresco Share is configured using <a href="https://github.com/jpotts/alfresco-developer-series/blob/master/workflow/workflow-tutorial-share/src/main/resources/META-INF/share-config-custom.xml">share-config-custom.xml</a>. Because it is mostly repetitive, I'll just show the configuration for <code>scwf:activitiReviewTask</code> here and if you want to see the rest of the Share configuration, you can look at the source that accompanies this tutorial.</p>
+<p>In the Hello World UI example you saw that Alfresco Share is configured using <a href="https://github.com/jpotts/alfresco-developer-series/blob/master/workflow/workflow-tutorial/workflow-tutorial-share-jar/src/main/resources/META-INF/share-config-custom.xml">share-config-custom.xml</a>. Because it is mostly repetitive, I'll just show the configuration for <code>scwf:activitiReviewTask</code> here and if you want to see the rest of the Share configuration, you can look at the source that accompanies this tutorial.</p>
 <pre><code>&lt;config evaluator=&quot;task-type&quot; condition=&quot;scwf:activitiReviewTask&quot;&gt;
     &lt;forms&gt;
         &lt;form&gt;
@@ -1071,10 +1119,10 @@ workflow.scwf_helloWorldUI=Hello World UI</code></pre>
 </tbody>
 </table>
 <h4 id="externalize-the-strings-1">Externalize the strings</h4>
-<p>The last step is to externalize the strings in the model and process. Remember that in the Hello World UI example the strings went into two files named &quot;scWorkflow.properties&quot;, one for the workflow-tutorial-repo project and one for the workflow-tutorial-share project.</p>
-<p>The one in the workflow-tutorial-repo project resides in:</p>
-<pre><code>$TUTORIAL_HOME/workflow-tutorial-repo/src/main/resources/alfresco/module/workflow-tutorial-repo/messages</code></pre>
-<p>Add the following to <a href="https://github.com/jpotts/alfresco-developer-series/blob/master/workflow/workflow-tutorial-repo/src/main/resources/alfresco/module/workflow-tutorial-repo/messages/scWorkflow.properties">scWorkflow.properties</a>:</p>
+<p>The last step is to externalize the strings in the model and process. Remember that in the Hello World UI example the strings went into two files named &quot;scWorkflow.properties&quot;, one for the workflow-tutorial-platform-jar module and one for the workflow-tutorial-share-jar module.</p>
+<p>The one in the workflow-tutorial-platform-jar module resides in:</p>
+<pre><code>$TUTORIAL_HOME/workflow-tutorial-platform-jar/src/main/resources/alfresco/module/workflow-tutorial-platform-jar/messages</code></pre>
+<p>Add the following to <a href="https://github.com/jpotts/alfresco-developer-series/blob/master/workflow/workflow-tutorial/workflow-tutorial-platform-jar/src/main/resources/alfresco/module/workflow-tutorial-platform-jar/messages/scWorkflow.properties">scWorkflow.properties</a>:</p>
 <pre><code>publishWhitepaper.workflow.title=Publish Whitepaper to Web (Activiti)
 publishWhitepaper.workflow.description=Review and approve Someco Whitepaper content using Activiti</code></pre>
 <p>Note that the first part of the property key matches the name you gave the process definition. The values for the workflow.title and workflow.description keys will be what the user sees when she clicks &quot;Start Advanced Workflow&quot; in Alfresco Share.</p>
@@ -1106,8 +1154,8 @@ scwf_workflowmodel.property.scwf_approveRejectOutcome.description=Reviewer outco
 scwf_workflowmodel.property.scwf_reviseOutcome.title=Outcome
 scwf_workflowmodel.property.scwf_reviseOutcome.description=Reviewer outcome</code></pre>
 <p>The first part of the key is the name of the workflow model, then whether or not this key is for a type or a property, then the name of the type or property. These are the strings shown when someone manages a task.</p>
-<p>Now edit <a href="https://github.com/jpotts/alfresco-developer-series/blob/master/workflow/workflow-tutorial-share/src/main/resources/alfresco/web-extension/messages/scWorkflow.properties">scWorkflow.properties</a> in the workflow-repo-share project. It resides in:</p>
-<pre><code>$TUTORIAL_HOME/workflow-tutorial-share/src/main/resources/alfresco/web-extension/messages</code></pre>
+<p>Now edit <a href="https://github.com/jpotts/alfresco-developer-series/blob/master/workflow/workflow-tutorial/workflow-tutorial-share-jar/src/main/resources/alfresco/web-extension/messages/scWorkflow.properties">scWorkflow.properties</a> in the workflow-tutorial-share-jar module. It resides in:</p>
+<pre><code>$TUTORIAL_HOME/workflow-tutorial-share-jar/src/main/resources/alfresco/web-extension/messages</code></pre>
 <p>Add these properties to the file:</p>
 <pre><code>workflow.scwf_publishWhitepaper=SC Publish Whitepaper
 
@@ -1115,8 +1163,8 @@ scwf_workflowmodel.property.scwf_reviseOutcome.description=Reviewer outcome</cod
 prop.scwf_reviewerEmail=Reviewer Email</code></pre>
 <p>Save the file and you are ready to deploy and test what you have so far.</p>
 <h3 id="deploy-and-test">Deploy and test</h3>
-<p>You created a new workflow so it needs to be deployed via Spring. Edit the &quot;<a href="https://github.com/jpotts/alfresco-developer-series/blob/master/workflow/workflow-tutorial-repo/src/main/resources/alfresco/module/workflow-tutorial-repo/context/bootstrap-context.xml">bootstrap-context.xml</a>&quot; file that resides in:</p>
-<pre><code>$TUTORIAL_HOME/workflow-tutorial-repo/src/main/resources/alfresco/module/workflow-tutorial-repo/context</code></pre>
+<p>You created a new workflow so it needs to be deployed via Spring. Edit the &quot;<a href="https://github.com/jpotts/alfresco-developer-series/blob/master/workflow/workflow-tutorial/workflow-tutorial-platform-jar/src/main/resources/alfresco/module/workflow-tutorial-platform-jar/context/bootstrap-context.xml">bootstrap-context.xml</a>&quot; file that resides in:</p>
+<pre><code>$TUTORIAL_HOME/workflow-tutorial-platform-jar/src/main/resources/alfresco/module/workflow-tutorial-platform-jar/context</code></pre>
 <p>Add the new workflow to the list of workflows:</p>
 <pre><code>&lt;props&gt;
     &lt;prop key=&quot;engineId&quot;&gt;activiti&lt;/prop&gt;
@@ -1126,14 +1174,12 @@ prop.scwf_reviewerEmail=Reviewer Email</code></pre>
 &lt;/props&gt;</code></pre>
 <p>At this stage you can continue to test using Alfresco on the embedded Tomcat server configured by the Alfresco Maven SDK. Here are the steps necessary to start up that you used earlier:</p>
 <ol style="list-style-type: decimal">
-<li>Open a command-line window and switch to $TUTORIAL_HOME/workflow-tutorial-repo.</li>
-<li>Run <code>run.sh</code> (or <code>run.bat</code>). Your repo tier project will be installed and started on Tomcat running on port 8080.</li>
-<li>Open a new command-line window and switch to $TUTORIAL_HOME/workflow-tutorial-share.</li>
-<li>Run <code>run.sh</code> (or <code>run.bat</code>).</li>
+<li>Open a command-line window and switch to $TUTORIAL_HOME.</li>
+<li>Run <code>run.sh</code> (or <code>run.bat</code>). Your AMPs will be installed and started on Tomcat running on port 8080.</li>
 </ol>
 <p>When everything starts up:</p>
 <ol style="list-style-type: decimal">
-<li>Go to http://localhost:8081/share and log in as admin (password: admin).</li>
+<li>Go to http://localhost:8080/share and log in as admin (password: admin).</li>
 <li>If you haven't done so already, create a group called &quot;Operations&quot; and a group called &quot;Marketing&quot; and place one or more test users in each group.</li>
 <li>Create a piece of test content. It doesn't matter what it is.</li>
 <li>Now start a workflow for that piece of content.</li>
@@ -1169,7 +1215,7 @@ prop.scwf_reviewerEmail=Reviewer Email</code></pre>
 <p>This may seem backwards, but let's build the web script that handles the links first, then you'll see how to build an Activiti task listener class that sends the email notification.</p>
 <h4 id="implement-the-web-script">Implement the Web Script</h4>
 <p>The &quot;<a href="http://ecmarchitect.com/alfresco-developer-series-tutorials/webscripts/tutorial/tutorial.html">Introduction to Web Scripts</a>&quot; tutorial showed you how to create custom web scripts, so I am only going to show you the Java class that acts as the web script controller. See the source for the other files that make up the web script.</p>
-<p>This web script is going to leverage classes created in a previous tutorial. So the first thing to do is to edit <a href="https://github.com/jpotts/alfresco-developer-series/blob/master/workflow/workflow-tutorial-repo/pom.xml">pom.xml</a> to add this dependency:</p>
+<p>This web script is going to leverage classes created in a previous tutorial. So the first thing to do is to edit <a href="https://github.com/jpotts/alfresco-developer-series/blob/master/workflow/workflow-tutorial/workflow-tutorial-platform-jar/pom.xml">pom.xml</a> to add this dependency:</p>
 <pre><code>&lt;dependency&gt;
     &lt;groupId&gt;com.someco&lt;/groupId&gt;
     &lt;artifactId&gt;content-tutorial-common&lt;/artifactId&gt;
@@ -1178,9 +1224,9 @@ prop.scwf_reviewerEmail=Reviewer Email</code></pre>
 &lt;/dependency&gt;</code></pre>
 <p>Now the controller will be able to resolve SomeCo related imports.</p>
 <p>The source for the web script's controller resides in:</p>
-<pre><code>$TUTORIAL_HOME/workflow-tutorial-repo/src/main/java</code></pre>
+<pre><code>$TUTORIAL_HOME/workflow-tutorial-platform-jar/src/main/java</code></pre>
 <p>First, create a package folder structure called &quot;com/someco/scripts&quot;.</p>
-<p>Now create a new class called &quot;<a href="https://github.com/jpotts/alfresco-developer-series/blob/master/workflow/workflow-tutorial-repo/src/main/java/com/someco/scripts/GetReview.java">GetReview</a>&quot;. Here's the class, without the imports or the getter/setter methods:</p>
+<p>Now create a new class called &quot;<a href="https://github.com/jpotts/alfresco-developer-series/blob/master/workflow/workflow-tutorial/workflow-tutorial-platform-jar/src/main/java/com/someco/scripts/GetReview.java">GetReview</a>&quot;. Here's the class, without the imports or the getter/setter methods:</p>
 <pre><code>public class GetReview extends DeclarativeWebScript {
 
     Log logger = LogFactory.getLog(GetReview.class);
@@ -1214,15 +1260,15 @@ prop.scwf_reviewerEmail=Reviewer Email</code></pre>
 <p>The class grabs the task ID and the action to take (the outcome) and then uses the workflow service to update and end the task. So, for example, if someone were to post this URL:</p>
 <pre><code>http://localhost:8080/alfresco/service/someco/bpm/review?id=activiti\$89&amp;action=Approve</code></pre>
 <p>the Java class would update the task identified by activiti$89 with the &quot;Approve&quot; outcome.</p>
-<p>If you are following along, don't forget to copy over the <a href="https://github.com/jpotts/alfresco-developer-series/blob/master/workflow/workflow-tutorial-repo/src/main/resources/alfresco/extension/templates/webscripts/com/someco/bpm/review.get.desc.xml">web script descriptor</a> and the <a href="https://github.com/jpotts/alfresco-developer-series/blob/master/workflow/workflow-tutorial-repo/src/main/resources/alfresco/extension/templates/webscripts/com/someco/bpm/review.get.html.ftl">freemarker</a> for the web script into:</p>
-<pre><code>$TUTORIAL_HOME/workflow-tutorial-repo/src/main/resources/alfresco/extension/templates/webscripts/com/someco/bpm</code></pre>
-<p>You will also need to copy the Spring bean that wires in the Java controller into the <a href="https://github.com/jpotts/alfresco-developer-series/blob/master/workflow/workflow-tutorial-repo/src/main/resources/alfresco/module/workflow-tutorial-repo/context/bootstrap-context.xml">bootstrap-context.xml</a> file located in:</p>
-<pre><code>$TUTORIAL_HOME/workflow-tutorial-repo/src/main/resources/alfresco/module/workflow-tutorial-repo/context</code></pre>
+<p>If you are following along, don't forget to copy over the <a href="https://github.com/jpotts/alfresco-developer-series/blob/master/workflow/workflow-tutorial/workflow-tutorial-platform-jar/src/main/resources/alfresco/extension/templates/webscripts/com/someco/bpm/review.get.desc.xml">web script descriptor</a> and the <a href="https://github.com/jpotts/alfresco-developer-series/blob/master/workflow/workflow-tutorial/workflow-tutorial-platform-jar/src/main/resources/alfresco/extension/templates/webscripts/com/someco/bpm/review.get.html.ftl">freemarker</a> for the web script into:</p>
+<pre><code>$TUTORIAL_HOME/workflow-tutorial-platform-jar/src/main/resources/alfresco/extension/templates/webscripts/com/someco/bpm</code></pre>
+<p>You will also need to copy the Spring bean that wires in the Java controller into the <a href="https://github.com/jpotts/alfresco-developer-series/blob/master/workflow/workflow-tutorial/workflow-tutorial-platform-jar/src/main/resources/alfresco/module/workflow-tutorial-platform-jar/context/bootstrap-context.xml">bootstrap-context.xml</a> file located in:</p>
+<pre><code>$TUTORIAL_HOME/workflow-tutorial-platform-jar/src/main/resources/alfresco/module/workflow-tutorial-platform-jar/context</code></pre>
 <p>Once these are in place, the web script will be ready to receive clicks from the email that gets sent out. Writing code that sends the email is the next step.</p>
 <h4 id="create-a-custom-task-listener">Create a custom task listener</h4>
 <p>The second piece to the Third Party Review is sending the email to the third-party. There is an out-of-the-box mail action, and you've already seen how to call an action from a workflow using Alfresco JavaScript, but there are a few things to take care of other than simply sending an email, so let's write a custom task listener class to handle it.</p>
 <p>First, create a new package called &quot;com.someco.bpm&quot;.</p>
-<p>Then, create a new class called &quot;<a href="https://github.com/jpotts/alfresco-developer-series/blob/master/workflow/workflow-tutorial-repo/src/main/java/com/someco/bpm/ExternalReviewNotification.java">ExternalReviewNotification</a>&quot;. The goal is to send an email that has two links—one for approve and one for reject—that represent the two possible outcomes of the Third Party Review user task. The links need to include the task ID and the desired outcome as arguments.</p>
+<p>Then, create a new class called &quot;<a href="https://github.com/jpotts/alfresco-developer-series/blob/master/workflow/workflow-tutorial/workflow-tutorial-platform-jar/src/main/java/com/someco/bpm/ExternalReviewNotification.java">ExternalReviewNotification</a>&quot;. The goal is to send an email that has two links—one for approve and one for reject—that represent the two possible outcomes of the Third Party Review user task. The links need to include the task ID and the desired outcome as arguments.</p>
 <p>The task listener's notify method will be called by Activiti. Here is what the method looks like:</p>
 <pre><code>public void notify(DelegateTask task) {
 
@@ -1253,7 +1299,7 @@ prop.scwf_reviewerEmail=Reviewer Email</code></pre>
 <pre><code>http://localhost:8080/alfresco/service/someco/bpm/review?id=activiti\$999&amp;action=Approve&amp;guest=true</code></pre>
 <p>The method has the host and port hardcoded which is another thing you'd want to fix if you did this for real.</p>
 <p>The last major block of code in the <code>notify()</code> method uses the action service to execute the Alfresco mail action. Sure, you could use the Java mail API to do it yourself, but why not leverage the mail action? That way you can leverage the same SMTP configuration settings already configured for Alfresco in alfresco-global.properties.</p>
-<p>The last thing to do is to call the <code>ExternalReviewNotification</code> class from the process. Edit the <a href="https://github.com/jpotts/alfresco-developer-series/blob/master/workflow/workflow-tutorial-repo/src/main/resources/alfresco/module/workflow-tutorial-repo/workflow/publishWhitepaper.bpmn">publishWhitepaper.bpmn</a> file and find the task named &quot;Third Party Review&quot;. The user task already has a task listener on the &quot;complete&quot; event that you added earlier. Insert a new <code>activiti:taskListener</code> element that creates a task listener on the &quot;create&quot; event that invokes the ExternalReviewNotification class, like this:</p>
+<p>The last thing to do is to call the <code>ExternalReviewNotification</code> class from the process. Edit the <a href="https://github.com/jpotts/alfresco-developer-series/blob/master/workflow/workflow-tutorial/workflow-tutorial-platform-jar/src/main/resources/alfresco/module/workflow-tutorial-platform-jar/workflow/publishWhitepaper.bpmn">publishWhitepaper.bpmn</a> file and find the task named &quot;Third Party Review&quot;. The user task already has a task listener on the &quot;complete&quot; event that you added earlier. Insert a new <code>activiti:taskListener</code> element that creates a task listener on the &quot;create&quot; event that invokes the ExternalReviewNotification class, like this:</p>
 <pre><code>&lt;userTask id=&quot;usertask5&quot; name=&quot;Third Party Review&quot; activiti:assignee=&quot;${initiator.properties.userName}&quot; activiti:formKey=&quot;scwf:activitiThirdPartyReview&quot;&gt;
     &lt;extensionElements&gt;
         &lt;activiti:taskListener event=&quot;create&quot; class=&quot;com.someco.bpm.ExternalReviewNotification&quot;&gt;&lt;/activiti:taskListener&gt;
@@ -1263,15 +1309,17 @@ prop.scwf_reviewerEmail=Reviewer Email</code></pre>
 <p>Now the process will send an email to a third-party reviewer if an email address is specified, the third-party reviewer can click on the appropriate outcome link which will trigger a web script causing the workflow to continue along the right path, and if the whitepaper is ultimately approved, the workflow will invoke the &quot;set web flag&quot; action to set its properties so it can be searched for and displayed on a web site.</p>
 <h3 id="deploy-and-test-1">Deploy and test</h3>
 <p>It's time to deploy and test. If you want to try out the notification piece, you'll need access to an SMTP server. For developing and testing locally, <a href="http://james.apache.org/">Apache James</a> works great. Remember to edit alfresco-global.properties to set your outgoing email settings to match your environment.</p>
-<p>Two critical dependencies to your test are the content-tutorial-repo and actions-tutorial-repo AMPs. These must be deployed to the same repository your workflow-tutorial-repo AMP is deployed to because your business process leverages an action and some Java code that exists in those AMPs.</p>
-<p>You can deploy these AMPs to your Alfresco installation using the &quot;apply_amps.sh&quot; script. Alternatively, you can use the &quot;alfresco:install&quot; plugin that is part of the Alfresco Maven SDK to install each one.</p>
+<p>Two critical dependencies to your test are the content-tutorial and actions-tutorial AMPs. These must be deployed to the same repository your workflow-tutorial AMP is deployed to because your business process leverages an action and some Java code that exists in those AMPs.</p>
+<p>That's why, in the very beginning of the tutorial, you edited your pom.xml to add those projects as &quot;module dependencies&quot;. That way, when you run the embedded Tomcat server those AMPs will be installed automatically.</p>
+<p>If you are deploying the workflow tutorial AMPs to a standalone Alfresco installation, you can deploy the AMPs to your Alfresco installation as you normally would using the &quot;apply_amps.sh&quot; script. Alternatively, you can use the &quot;alfresco:install&quot; plugin that is part of the Alfresco Maven SDK to install each one.</p>
 <p>For example, on my machine, I have all of these projects checked out from source. I have Alfresco running in $TOMCAT_HOME with an exploded Alfresco WAR. So, for each project I can do this:</p>
 <ol style="list-style-type: decimal">
 <li>Switch to $TUTORIAL_HOME/$PROJECT_DIRECTORY</li>
 <li>Run <code>mvn install</code> to build the AMP. Use <code>mvn install -DskipTests=true</code> to skip the unit tests some of those projects may have.</li>
 <li>Run <code>mvn alfresco:install -Dmaven.alfresco.warLocation=$TOMCAT_HOME/webapps/alfresco</code> to install the AMP to the exploded Alfresco web application. If you are running the alfresco.war unexploded you can specify the path to the WAR file instead.</li>
 </ol>
-<p>After doing that for the dependent AMPs and the workflow-tutorial-repo AMP, start Tomcat and test.</p>
+<p>Deploying to a standalone Alfresco is fine, but while you are developing (and working through these tutorials) it is easiest to use the embedded Tomcat server.</p>
+<p>Start it up by doing <code>run.sh</code> or <code>run.bat</code> depending on your platform. When it comes up, you'll be ready to test.</p>
 <p>At a minimum, you'll need to run several workflows:</p>
 <ol style="list-style-type: decimal">
 <li>The whitepaper receives all of its approvals but does not have a third-party reviewer.</li>
@@ -1296,7 +1344,7 @@ prop.scwf_reviewerEmail=Reviewer Email</code></pre>
 <p>One way to do this is to add a boundary timer to the Third Party Review task. When the timer expires, the timer can cancel the Third Party Review task and then route to the Approved task.</p>
 <p>Here's how to do it:</p>
 <ol style="list-style-type: decimal">
-<li>Edit the <a href="https://github.com/jpotts/alfresco-developer-series/blob/master/workflow/workflow-tutorial-repo/src/main/resources/alfresco/module/workflow-tutorial-repo/workflow/publishWhitepaper.bpmn">publishWhitepaper.bpmn</a> process definition file.</li>
+<li>Edit the <a href="https://github.com/jpotts/alfresco-developer-series/blob/master/workflow/workflow-tutorial/workflow-tutorial-platform-jar/src/main/resources/alfresco/module/workflow-tutorial-platform-jar/workflow/publishWhitepaper.bpmn">publishWhitepaper.bpmn</a> process definition file.</li>
 <li><p>Find the Third-Party Review task. In my diagram it is &quot;usertask2&quot;. Find the &quot;Approved Notification&quot; task. In my diagram it is &quot;usertask5&quot;. With those references updated to reflect the values in your diagram, add the following:</p>
 <pre><code>&lt;boundaryEvent id=&quot;boundarytimer1&quot; cancelActivity=&quot;true&quot; attachedToRef=&quot;usertask2&quot;&gt;
     &lt;timerEventDefinition&gt;
@@ -1308,7 +1356,9 @@ prop.scwf_reviewerEmail=Reviewer Email</code></pre>
 <p>This sets the timer for 5 minutes—that's what the &quot;PT5M&quot; expression means--but you could obviously set it for as long or as short as you wish. That expression is part of the <a href="http://en.wikipedia.org/wiki/ISO_8601">ISO 8601</a> standard for durations.</p>
 <p>Setting an absolute date works as well. The due date could also be the result of an expression. To use a specific date instead of a duration, use a <code>timeDate</code> element instead of a <code>timeDuration</code> element.</p>
 <h3 id="deploy-and-test-2">Deploy and test</h3>
-<p>If you only make changes to the process definition, you can use <code>mvn install</code> to create the AMP, then <code>mvn alfresco:install</code> as you did earlier to deploy the AMP to your Alfresco installation. You don't have to restart. Just remember to use the Alfresco workflow console to redeploy the process definition.</p>
+<p>If you only make changes to the process definition, you can just build the project. You don't have to restart.</p>
+<p>If you are deploying to a separate, standalone Alfresco server, use <code>mvn install</code> to create the AMP, then <code>mvn alfresco:install</code> to deploy the AMP to your Alfresco installation without restarting.</p>
+<p>Regardless of how you are deploying, remember to use the Alfresco workflow console to redeploy the process definition.</p>
 <p>Now test the third-party reviewer path but instead of clicking the approve or reject link that is included in the email, ignore it for five minutes. You should see the workflow continue along the approved path when the timer expires.</p>
 <h1 id="conclusion">Conclusion</h1>
 <p>You now know the ins and outs of implementing advanced workflows using the Activiti engine embedded within Alfresco. You know when Alfresco's basic workflows will suffice and when advanced workflows are more appropriate. You learned that process definitions are collections of events, tasks, and gateways joined by sequence flows. The representation of a process definition, both as a diagram, and as XML, is standardized through BPMN. And, you now know how to add business logic to workflows using expressions, Alfresco JavaScript and Java.</p>
