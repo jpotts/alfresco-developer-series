@@ -577,7 +577,7 @@ content:
 
     <import resource="classpath:alfresco/extension/scripts/rating.js">
 
-    var whitepapers = search.luceneSearch("PATH:\"/app:company_home/cm:Someco/*\" +TYPE:\"{http://www.someco.com/model/content/1.0}whitepaper\"");
+    var whitepapers = search.luceneSearch("PATH:\"/app:company_home/cm:Someco/cm:Whitepapers/*\" +TYPE:\"{http://www.someco.com/model/content/1.0}whitepaper\"");
 
     if (whitepapers == null || whitepapers.length == 0) {
         status.code = 404;
@@ -1320,7 +1320,8 @@ Now only administrators can execute the web script.
 As in previous examples, the controller JavaScript, [rating.delete.js](https://github.com/jpotts/alfresco-developer-series/blob/master/webscripts/webscripts-tutorial/webscripts-tutorial-platform-jar/src/main/resources/alfresco/extension/templates/webscripts/com/someco/ratings/rating.delete.js),
 reads and checks the arguments then calls a function. In this case it is the
 `deleteRatings()` function that already exists in the rating.js file packaged in
-the behavior-tutorial-repo project. The body of the function is:
+the behavior-tutorial project in the behavior-tutorial-platform-jar module.
+The body of the function is:
 
     function deleteRatings(curNode) {
         // check the parent to make sure it has the right aspect
@@ -1457,8 +1458,7 @@ Recall that the FreeMarker view for the rating GET web script resides in:
 
 The file is called [rating.get.html.ftl](https://github.com/jpotts/alfresco-developer-series/blob/master/webscripts/webscripts-tutorial/webscripts-tutorial-platform-jar/src/main/resources/alfresco/extension/templates/webscripts/com/someco/ratings/rating.get.html.ftl), but let's focus on the main body of the HTML first. Here it is:
 
-    <p><a href="${url.serviceContext}/someco/whitepapers.html?guest=true">Back
-to the list</a> of whitepapers</p>
+    <p><a href="${url.serviceContext}/someco/whitepapers.html?guest=true">Back to the list</a> of whitepapers</p>
     <p>Node: ${args.id}</p>
     <p>Average: ${rating.average}</p>
     <p># of Ratings: ${rating.count}</p>
