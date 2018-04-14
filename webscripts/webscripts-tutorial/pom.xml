@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.someco</groupId>
     <artifactId>webscripts-tutorial</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>1.0-SNAPSHOT</version>
     <name>webscripts-tutorial</name>
     <description>ecmarchitect.com webscripts tutorial</description>
     <packaging>pom</packaging>
@@ -305,8 +305,32 @@
                         <!-- Bring in custom Modules -->
                         <moduleDependency>
                             <groupId>${project.groupId}</groupId>
-                            <artifactId>webscripts-tutorial-repo</artifactId>
+                            <artifactId>webscripts-tutorial-platform-jar</artifactId>
                             <version>${project.version}</version>
+                            <type>amp</type>
+                        </moduleDependency>
+
+                        <!-- Bring in the content tutorial repo AMP so we can run embedded. -->
+                        <moduleDependency>
+                            <groupId>com.someco</groupId>
+                            <artifactId>content-tutorial-platform-jar</artifactId>
+                            <version>1.0-SNAPSHOT</version>
+                            <type>amp</type>
+                        </moduleDependency>
+
+                        <!-- Bring in the behavior tutorial repo AMP so we can run embedded. -->
+                        <moduleDependency>
+                            <groupId>com.someco</groupId>
+                            <artifactId>behavior-tutorial-platform-jar</artifactId>
+                            <version>1.0-SNAPSHOT</version>
+                            <type>amp</type>
+                        </moduleDependency>
+
+                        <!-- Bring in the actions tutorial repo AMP so we can run embedded. -->
+                        <moduleDependency>
+                            <groupId>com.someco</groupId>
+                            <artifactId>actions-tutorial-platform-jar</artifactId>
+                            <version>1.0-SNAPSHOT</version>
                             <type>amp</type>
                         </moduleDependency>
 
@@ -327,8 +351,32 @@
                         <!-- Bring in custom Modules -->
                         <moduleDependency>
                             <groupId>${project.groupId}</groupId>
-                            <artifactId>webscripts-tutorial-share</artifactId>
+                            <artifactId>webscripts-tutorial-share-jar</artifactId>
                             <version>${project.version}</version>
+                            <type>amp</type>
+                        </moduleDependency>
+
+                        <!-- Bring in the content tutorial share AMP so we can run embedded. -->
+                        <moduleDependency>
+                            <groupId>com.someco</groupId>
+                            <artifactId>content-tutorial-share-jar</artifactId>
+                            <version>1.0-SNAPSHOT</version>
+                            <type>amp</type>
+                        </moduleDependency>
+
+                        <!-- Bring in the behavior tutorial share AMP so we can run embedded. -->
+                        <moduleDependency>
+                            <groupId>com.someco</groupId>
+                            <artifactId>behavior-tutorial-share-jar</artifactId>
+                            <version>1.0-SNAPSHOT</version>
+                            <type>amp</type>
+                        </moduleDependency>
+
+                        <!-- Bring in the actions tutorial share AMP so we can run embedded. -->
+                        <moduleDependency>
+                            <groupId>com.someco</groupId>
+                            <artifactId>actions-tutorial-share-jar</artifactId>
+                            <version>1.0-SNAPSHOT</version>
                             <type>amp</type>
                         </moduleDependency>
                     </shareModules>
@@ -410,8 +458,8 @@
         </pluginRepository>
     </pluginRepositories>
   <modules>
-    <module>webscripts-tutorial-repo</module>
-    <module>webscripts-tutorial-share</module>
+    <module>webscripts-tutorial-platform-jar</module>
+    <module>webscripts-tutorial-share-jar</module>
     <module>integration-tests</module>
   </modules>
 </project>

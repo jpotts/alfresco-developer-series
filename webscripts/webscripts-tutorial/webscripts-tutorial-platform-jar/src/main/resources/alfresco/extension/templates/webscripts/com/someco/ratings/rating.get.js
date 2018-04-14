@@ -1,4 +1,4 @@
-<import resource="classpath:alfresco/module/behavior-tutorial-repo/scripts/rating.js">
+<import resource="classpath:alfresco/module/behavior-tutorial-platform-jar/scripts/rating.js">
 
 if (args.id == null || args.id.length == 0) {
 	logger.log("ID arg not set");
@@ -14,7 +14,7 @@ if (args.id == null || args.id.length == 0) {
 		status.message = "No node found for id:" + args.id;
 		status.redirect = true;
 	} else {
-		deleteRatings(curNode);
-		model.id = args.id;
+		logger.log("Setting model rating data");
+		model.rating = getRating(curNode, args.user);
 	}
 }

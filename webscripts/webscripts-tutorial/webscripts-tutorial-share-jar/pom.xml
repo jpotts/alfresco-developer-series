@@ -3,16 +3,16 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.someco</groupId>
-    <artifactId>webscripts-tutorial-share</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
-    <name>webscripts-tutorial-share AMP project</name>
+    <artifactId>webscripts-tutorial-share-jar</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <name>webscripts-tutorial share tier AMP project</name>
     <packaging>jar</packaging>
     <description>Sample Share JAR Module (to be included in the share.war) - part of AIO - SDK 3</description>
 
     <parent>
         <groupId>com.someco</groupId>
         <artifactId>webscripts-tutorial</artifactId>
-        <version>1.0.0-SNAPSHOT</version>
+        <version>1.0-SNAPSHOT</version>
     </parent>
 
     <properties>
