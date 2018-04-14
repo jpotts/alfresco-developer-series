@@ -68,3 +68,6 @@ maven-sdk/maven-sdk-tutorial/alf_data_dev
 maven-sdk/maven-sdk-tutorial/target
 behaviors/behavior-tutorial/behavior-tutorial-platform-jar/.idea
 behaviors/behavior-tutorial/behavior-tutorial-share-jar/.idea
+workflow/workflow-tutorial/workflow-tutorial-platform-jar/.idea
+workflow/workflow-tutorial/workflow-tutorial-platform-jar/alf_data_dev
+workflow/workflow-tutorial/workflow-tutorial-share-jar/.idea

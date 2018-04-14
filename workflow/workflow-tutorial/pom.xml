@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.someco</groupId>
     <artifactId>workflow-tutorial</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>1.0-SNAPSHOT</version>
     <name>ecmarchitect.com workflow tutorial</name>
     <description>All-In-One (AIO) project for SDK 3.0</description>
     <packaging>pom</packaging>
@@ -305,7 +305,7 @@
                         <!-- Bring in custom Modules -->
                         <moduleDependency>
                             <groupId>${project.groupId}</groupId>
-                            <artifactId>workflow-tutorial-repo</artifactId>
+                            <artifactId>workflow-tutorial-platform-jar</artifactId>
                             <version>${project.version}</version>
                             <type>amp</type>
                         </moduleDependency>
@@ -318,6 +318,29 @@
                             <classifier>tests</classifier>
                         </moduleDependency>
 
+                        <!-- Bring in the content tutorial repo AMP so we can run embedded. -->
+                        <moduleDependency>
+                            <groupId>com.someco</groupId>
+                            <artifactId>content-tutorial-platform-jar</artifactId>
+                            <version>1.0-SNAPSHOT</version>
+                            <type>amp</type>
+                        </moduleDependency>
+
+                        <!-- Bring in the behavior tutorial repo AMP so we can run embedded. -->
+                        <moduleDependency>
+                            <groupId>com.someco</groupId>
+                            <artifactId>behavior-tutorial-platform-jar</artifactId>
+                            <version>1.0-SNAPSHOT</version>
+                            <type>amp</type>
+                        </moduleDependency>
+
+                        <!-- Bring in the actions tutorial repo AMP so we can run embedded. -->
+                        <moduleDependency>
+                            <groupId>com.someco</groupId>
+                            <artifactId>actions-tutorial-platform-jar</artifactId>
+                            <version>1.0-SNAPSHOT</version>
+                            <type>amp</type>
+                        </moduleDependency>
                     </platformModules>
 
                     <!--
@@ -327,10 +350,35 @@
                         <!-- Bring in custom Modules -->
                         <moduleDependency>
                             <groupId>${project.groupId}</groupId>
-                            <artifactId>workflow-tutorial-share</artifactId>
+                            <artifactId>workflow-tutorial-share-jar</artifactId>
                             <version>${project.version}</version>
                             <type>amp</type>
                         </moduleDependency>
+
+                        <!-- Bring in the content tutorial share AMP so we can run embedded. -->
+                        <moduleDependency>
+                            <groupId>com.someco</groupId>
+                            <artifactId>content-tutorial-share-jar</artifactId>
+                            <version>1.0-SNAPSHOT</version>
+                            <type>amp</type>
+                        </moduleDependency>
+
+                        <!-- Bring in the behavior tutorial share AMP so we can run embedded. -->
+                        <moduleDependency>
+                            <groupId>com.someco</groupId>
+                            <artifactId>behavior-tutorial-share-jar</artifactId>
+                            <version>1.0-SNAPSHOT</version>
+                            <type>amp</type>
+                        </moduleDependency>
+
+                        <!-- Bring in the actions tutorial share AMP so we can run embedded. -->
+                        <moduleDependency>
+                            <groupId>com.someco</groupId>
+                            <artifactId>actions-tutorial-share-jar</artifactId>
+                            <version>1.0-SNAPSHOT</version>
+                            <type>amp</type>
+                        </moduleDependency>
+
                     </shareModules>
                 </configuration>
             </plugin>
@@ -410,8 +458,8 @@
         </pluginRepository>
     </pluginRepositories>
   <modules>
-    <module>workflow-tutorial-repo</module>
-    <module>workflow-tutorial-share</module>
+    <module>workflow-tutorial-platform-jar</module>
+    <module>workflow-tutorial-share-jar</module>
     <module>integration-tests</module>
   </modules>
 </project>
