@@ -152,8 +152,6 @@ Architect | Alfresco Developer Tutorials</title>
 <li>Java 1.8.0_77</li>
 <li>Apache Maven 3.5.3 (installed using Macports)</li>
 <li>Alfresco Maven SDK 3.0.1 (No download necessary)</li>
-<li>IntelliJ IDEA 2017.3.5</li>
-<li>Alfresco Community Edition 5.2.f (<a href="https://sourceforge.net/projects/alfresco/files/Alfresco%20201604%20Community/">Download</a>)</li>
 </ul>
 <p>By default, when you create an Alfresco project using the Alfresco Maven SDK the project will be configured to depend on the latest stable Alfresco Community Edition build.</p>
 <p>An IDE is optional. Most people working with Alfresco use IntelliJ, Eclipse, or something similar.</p>
@@ -176,16 +174,16 @@ Architect | Alfresco Developer Tutorials</title>
 <ol style="list-style-type: decimal">
 <li>Create a new custom model specifically for ratings. The model will define the new rateable aspect and rating type.</li>
 <li>Write the custom behavior class and bind it to the appropriate policies. Configure a Spring bean to initialize the behavior class and pass in any dependencies.</li>
-<li>Write and execute a unit test for the behavior.</li>
+<li>Write and execute an integration test for the behavior.</li>
 </ol>
 <p>Let's get started.</p>
 <h2 id="step-1-create-a-ratings-model">Step 1: Create a ratings model</h2>
-<p>In this step you will implement a content model used to persist ratings, optionally configure the user interface so you can see the average rating and rating count in Alfresco Share, define a Java class to hold constants for the model, and write a unit test to test the new aspect.</p>
+<p>In this step you will implement a content model used to persist ratings, optionally configure the user interface so you can see the average rating and rating count in Alfresco Share, define a Java class to hold constants for the model, and write an integration test to test the new aspect.</p>
 <h3 id="implement-the-rating-type-and-rateable-aspect">Implement the rating type and rateable aspect</h3>
 <p>As you learned in the content types tutorial, models are defined using XML and the XML file resides in:</p>
 <pre><code>$TUTORIAL_HOME/behavior-tutorial-platform-jar/src/main/main/resources/alfresco/module/behavior-tutorial-platform-jar/model</code></pre>
 <p>The Alfresco Maven SDK should have created a model directory for you and it may have populated it with sample content model files. Delete those files as they are not needed.</p>
-<p>Now, create a new model XML file called &quot;<a href="https://github.com/jpotts/alfresco-developer-series/blob/master/behaviors/behavior-tutorial-platform-jar/src/main/resources/alfresco/module/behavior-tutorial-platform-jar/model/scRatingsModel.xml">scRatingsModel.xml</a>&quot; with the following content:</p>
+<p>Now, create a new model XML file called &quot;<a href="https://github.com/jpotts/alfresco-developer-series/blob/master/behaviors/behavior-tutorial/behavior-tutorial-platform-jar/src/main/resources/alfresco/module/behavior-tutorial-platform-jar/model/scRatingsModel.xml">scRatingsModel.xml</a>&quot; with the following content:</p>
 <pre><code>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
 &lt;!-- Definition of new Model --&gt;
 &lt;model name=&quot;scr:somecoratingsmodel&quot; xmlns=&quot;http://www.alfresco.org/model/dictionary/1.0&quot;&gt;
@@ -263,7 +261,7 @@ Architect | Alfresco Developer Tutorials</title>
 &lt;/aspects&gt;</code></pre>
 <p>The <code>scr:rateable</code> aspect has three properties used to store the average rating, total rating, and rating count. It also defines the child association between a piece of content and its ratings.</p>
 <p>Using an aspect means any piece of content in the repository can become &quot;rateable&quot; simply by adding the aspect to the object. SomeCo may start out using ratings only for whitepapers and then decide later to use them for other types of content. If so, it won't require any code changes. That's the beauty of aspects.</p>
-<p>Alfresco needs to know about the new model. Models are registered through Spring. There are multiple Spring context files. It doesn't really matter which one you use to wire in your models. Newer versions of the SDK use the bootstrap-context.xml file, so let's use that. is called <a href="https://github.com/jpotts/alfresco-developer-series/blob/master/behaviors/behavior-tutorial-platform-jar/src/main/resources/alfresco/module/behavior-tutorial-platform-jar/context/bootstrap-context.xml">service-context.xml</a> and it lives in:</p>
+<p>Alfresco needs to know about the new model. Models are registered through Spring. There are multiple Spring context files. It doesn't really matter which one you use to wire in your models. Newer versions of the SDK use the bootstrap-context.xml file, so let's use that. is called <a href="https://github.com/jpotts/alfresco-developer-series/blob/master/behaviors/behavior-tutorial/behavior-tutorial-platform-jar/src/main/resources/alfresco/module/behavior-tutorial-platform-jar/context/bootstrap-context.xml">service-context.xml</a> and it lives in:</p>
 <pre><code>$TUTORIAL_HOME/behavior-tutorial-platform-jar/src/main/resources/alfresco/module/behavior-tutorial-platform-jar/context</code></pre>
 <p>The context file may already exist and probably contains sample Spring beans used to wire in sample models and labels. Replace whatever is there with the bean below. It refers to the model XML file created earlier as well as a properties file that doesn't exist yet:</p>
 <pre><code>&lt;bean id=&quot;${project.artifactId}_dictionaryBootstrap&quot; parent=&quot;dictionaryModelBootstrap&quot; depends-on=&quot;dictionaryBootstrap&quot;&gt;
@@ -281,7 +279,7 @@ Architect | Alfresco Developer Tutorials</title>
 <p>With that, the model is set up and ready to go.</p>
 <h3 id="optionally-configure-the-user-interface">Optionally configure the user interface</h3>
 <p>Behaviors operate behind the scenes. So, really, there is no reason to configure the user interface at all. But I like to do it because it makes it easier to debug. And, SomeCo might want to use Alfresco Share to see the average rating and rating count for a piece of content that has the rateable aspect.</p>
-<p>In the previous step you added a Spring bean that referred to a properties bundle used for the labels associated with the model. The labels go in a file called <a href="https://github.com/jpotts/alfresco-developer-series/blob/master/behaviors/behavior-tutorial-platform-jar/src/main/resources/alfresco/module/behavior-tutorial-platform-jar/messages/scRatingsModel.properties">scRatingsModel.properties</a>. That file lives in:</p>
+<p>In the previous step you added a Spring bean that referred to a properties bundle used for the labels associated with the model. The labels go in a file called <a href="https://github.com/jpotts/alfresco-developer-series/blob/master/behaviors/behavior-tutorial/behavior-tutorial-platform-jar/src/main/resources/alfresco/module/behavior-tutorial-platform-jar/messages/scRatingsModel.properties">scRatingsModel.properties</a>. That file lives in:</p>
 <pre><code>$TUTORIAL_HOME/behavior-tutorial-platform-jar/src/main/resources/alfresco/module/behavior-tutorial-platform-jar/messages</code></pre>
 <p>The content of that file looks like this:</p>
 <pre><code>#scr:rating
@@ -297,9 +295,9 @@ scr_somecoratingsmodel.association.scr_ratings.title=Ratings</code></pre>
 <p>That's all that's needed in the behavior-tutorial-platform-jar project. The rest of the user interface configuration takes place in the behavior-tutorial-share-jar project.</p>
 <p>Because these steps have already been covered in the custom content types tutorial, I'll just list the files here and you can either copy them into your project or do without them:</p>
 <ul>
-<li>$TUTORIAL_HOME/behavior-tutorial-share-jar/src/main/resources/META-INF/<a href="https://github.com/jpotts/alfresco-developer-series/blob/master/behaviors/behavior-tutorial-share-jar/src/main/resources/META-INF/share-config-custom.xml">share-config-custom.xml</a>. The configuration in this file adds the rateable aspect to the list of aspects users can manage. It also defines which properties should be displayed when showing the property list for a piece of content with the rateable aspect applied.</li>
-<li>$TUTORIAL_HOME/behavior-tutorial-share-jar/src/main/resources/alfresco/web-extension/<a href="https://github.com/jpotts/alfresco-developer-series/blob/master/behaviors/behavior-tutorial-share-jar/src/main/resources/alfresco/web-extension/behavior-tutorial-share-jar-context.xml">behavior-tutorial-share-jar-context.xml</a>. This is the Spring context file that tells Alfresco Share where to find the properties bundle.</li>
-<li>$TUTORIAL_HOME/behavior-tutorial-share-jar/src/main/resources/alfresco/web-extension/messages/<a href="https://github.com/jpotts/alfresco-developer-series/blob/master/behaviors/behavior-tutorial-share-jar/src/main/resources/alfresco/web-extension/messages/scRatingsModel.properties">scRatingsModel.properties</a>. This is the properties bundle for the module that Alfresco Share will use to localize the labels.</li>
+<li>$TUTORIAL_HOME/behavior-tutorial-share-jar/src/main/resources/META-INF/<a href="https://github.com/jpotts/alfresco-developer-series/blob/master/behaviors/behavior-tutorial/behavior-tutorial-share-jar/src/main/resources/META-INF/share-config-custom.xml">share-config-custom.xml</a>. The configuration in this file adds the rateable aspect to the list of aspects users can manage. It also defines which properties should be displayed when showing the property list for a piece of content with the rateable aspect applied.</li>
+<li>$TUTORIAL_HOME/behavior-tutorial-share-jar/src/main/resources/alfresco/web-extension/<a href="https://github.com/jpotts/alfresco-developer-series/blob/master/behaviors/behavior-tutorial/behavior-tutorial-share-jar/src/main/resources/alfresco/web-extension/behavior-tutorial-share-jar-context.xml">behavior-tutorial-share-jar-context.xml</a>. This is the Spring context file that tells Alfresco Share where to find the properties bundle.</li>
+<li>$TUTORIAL_HOME/behavior-tutorial-share-jar/src/main/resources/alfresco/web-extension/messages/<a href="https://github.com/jpotts/alfresco-developer-series/blob/master/behaviors/behavior-tutorial/behavior-tutorial-share-jar/src/main/resources/alfresco/web-extension/messages/scRatingsModel.properties">scRatingsModel.properties</a>. This is the properties bundle for the module that Alfresco Share will use to localize the labels.</li>
 </ul>
 <p>Now the Alfresco Share user interface will know how to show values for the average rating and rating count when a piece of content with the rateable aspect is displayed.</p>
 <h3 id="define-a-java-class-to-hold-constants">Define a Java class to hold constants</h3>
@@ -371,9 +369,9 @@ public class SomecoRatingModelIT extends BaseIT {
 <p>In SDK 3.0.1 you may see a stack trace after running <code>mvn install</code>. Scroll up a bit and you should see that the test ran successfully.</p>
 <p>Assuming everything went okay, you now have your model in place and tested and you are ready to write the behavior.</p>
 <h2 id="step-2-implement-the-custom-behavior">Step 2: Implement the custom behavior</h2>
-<p>Implementing the behavior involves writing some Java, configuring a Spring Bean, and adding a unit test for the behavior.</p>
+<p>Implementing the behavior involves writing some Java, configuring a Spring Bean, and adding an integration test for the behavior.</p>
 <h3 id="write-the-behavior-class">Write the behavior class</h3>
-<p>The custom behavior is implemented as a Java class called <a href="https://github.com/jpotts/alfresco-developer-series/blob/master/behaviors/behavior-tutorial-platform-jar/src/main/java/com/someco/behavior/Rating.java">Rating</a>. The class implements the interfaces that correspond to the policies the behavior needs to bind to. In this example, the two policy interfaces are: <code>NodeServicePolicies.OnDeleteNodePolicy</code> and <code>NodeServicePolicies.OnCreateNodePolicy</code> so the class declaration is:</p>
+<p>The custom behavior is implemented as a Java class called <a href="https://github.com/jpotts/alfresco-developer-series/blob/master/behaviors/behavior-tutorial/behavior-tutorial-platform-jar/src/main/java/com/someco/behavior/Rating.java">Rating</a>. The class implements the interfaces that correspond to the policies the behavior needs to bind to. In this example, the two policy interfaces are: <code>NodeServicePolicies.OnDeleteNodePolicy</code> and <code>NodeServicePolicies.OnCreateNodePolicy</code> so the class declaration is:</p>
 <pre><code>public class Rating
 implements NodeServicePolicies.OnDeleteNodePolicy,
 NodeServicePolicies.OnCreateNodePolicy {</code></pre>
@@ -482,7 +480,7 @@ public void onDeleteNode(ChildAssociationRef childAssocRef, boolean isNodeArchiv
 }</code></pre>
 <p>The class stores the total rating and rating count, so it could actually compute the average without iterating over the rating objects. All it really needs to know is the value of the new rating. For this example we'll only have a handful of associations anyway but in the real world, you need to think carefully about such performance considerations when you write your behaviors.</p>
 <h3 id="configure-a-spring-bean">Configure a Spring bean</h3>
-<p>The last step before testing is to configure the behavior class as a Spring bean. The bean config goes in <a href="https://github.com/jpotts/alfresco-developer-series/blob/master/behaviors/behavior-tutorial-platform-jar/src/main/resources/alfresco/module/behavior-tutorial-platform-jar/context/service-context.xml">service-context.xml</a>, which, as a reminder, lives in:</p>
+<p>The last step before testing is to configure the behavior class as a Spring bean. The bean config goes in <a href="https://github.com/jpotts/alfresco-developer-series/blob/master/behaviors/behavior-tutorial/behavior-tutorial-platform-jar/src/main/resources/alfresco/module/behavior-tutorial-platform-jar/context/service-context.xml">service-context.xml</a>, which, as a reminder, lives in:</p>
 <pre><code>$TUTORIAL_HOME/behavior-tutorial-platform-jar/src/main/resources/alfresco/module/behavior-tutorial-platform-jar/context</code></pre>
 <p>You can delete any demo or sample beans that may already be in this file.</p>
 <p>Add the following before the closing <code>beans</code> element:</p>
@@ -573,7 +571,7 @@ public class RatingBehaviorIT extends BaseIT {
         return association.getChildRef();
     }
 }</code></pre>
-<p>To run the test, switch to the $TUTORIAL_HOME directory and run <code>run.sh</code> or <code>run.bat</code> depending on your operating system. Apache Maven will start up an embedded instance of Alfresco with your repo AMP deployed and will then run the unit tests. If you see something like this:</p>
+<p>To run the test, switch to the $TUTORIAL_HOME directory and run <code>run.sh</code> or <code>run.bat</code> depending on your operating system. Apache Maven will start up an embedded instance of Alfresco with your repo AMP deployed and will then run the tests. If you see something like this:</p>
 <pre><code>[INFO] ------------------------------------------------------------------------
 [INFO] BUILD SUCCESS
 [INFO] ------------------------------------------------------------------------
@@ -582,7 +580,7 @@ public class RatingBehaviorIT extends BaseIT {
 [INFO] Final Memory: 13M/122M
 [INFO] ------------------------------------------------------------------------</code></pre>
 <p>...it means your behavior is working.</p>
-<p>If something is broken, try changing <a href="https://github.com/jpotts/alfresco-developer-series/blob/master/behaviors/behavior-tutorial-platform-jar/src/main/resources/alfresco/module/behavior-tutorial-platform-jar/log4j.properties">log4j.properties</a> in:</p>
+<p>If something is broken, try changing <a href="https://github.com/jpotts/alfresco-developer-series/blob/master/behaviors/behavior-tutorial/behavior-tutorial-platform-jar/src/main/resources/alfresco/module/behavior-tutorial-platform-jar/log4j.properties">log4j.properties</a> in:</p>
 <pre><code>$TUTORIAL_HOME/behavior-tutorial-platform-jar/src/main/resources/alfresco/module</code></pre>
 <p>To:</p>
 <pre><code>log4j.logger.com.someco=${module.log.level}</code></pre>
@@ -608,7 +606,7 @@ public class RatingBehaviorIT extends BaseIT {
 <p>In this example, the scripts are going to reside as part of the web application rather than being uploaded to the repository. I'll place them in:</p>
 <pre><code>$TUTORIAL_HOME/behavior-tutorial-platform-jar/src/main/resources/alfresco/module/behavior-tutorial-platform-jar/scripts</code></pre>
 <p>If you are following along, you'll need to create the scripts directory.</p>
-<p>The <a href="https://github.com/jpotts/alfresco-developer-series/blob/master/behaviors/behavior-tutorial-platform-jar/src/main/resources/alfresco/module/behavior-tutorial-platform-jar/scripts/onCreateRating.js">onCreateRating.js</a> and <a href="https://github.com/jpotts/alfresco-developer-series/blob/master/behaviors/behavior-tutorial-platform-jar/src/main/resources/alfresco/module/behavior-tutorial-platform-jar/scripts/onDeleteRating.js">onDeleteRating.js</a> files are virtually identical. They just need to do some basic error checking and then call the <code>computeAverage()</code> function. Here is what onCreateRating.js looks like:</p>
+<p>The <a href="https://github.com/jpotts/alfresco-developer-series/blob/master/behaviors/behavior-tutorial/behavior-tutorial-platform-jar/src/main/resources/alfresco/module/behavior-tutorial-platform-jar/scripts/onCreateRating.js">onCreateRating.js</a> and <a href="https://github.com/jpotts/alfresco-developer-series/blob/master/behaviors/behavior-tutorial/behavior-tutorial-platform-jar/src/main/resources/alfresco/module/behavior-tutorial-platform-jar/scripts/onDeleteRating.js">onDeleteRating.js</a> files are virtually identical. They just need to do some basic error checking and then call the <code>computeAverage()</code> function. Here is what onCreateRating.js looks like:</p>
 <pre><code>&lt;import resource=&quot;classpath:alfresco/extension/scripts/rating.js&quot;&gt;
 var scriptFailed = false;
 
@@ -641,7 +639,7 @@ if (behaviour.args == null) {
     }    
 }</code></pre>
 <p>The code for onDeleteRating.js is identical with the exception of the behavior name and the number of arguments expected (2 instead of 1) so I won't duplicate the listing here.</p>
-<p>The <code>computeAverage()</code> function lives in <a href="https://github.com/jpotts/alfresco-developer-series/blob/master/behaviors/behavior-tutorial-platform-jar/src/main/resources/alfresco/module/behavior-tutorial-platform-jar/scripts/rating.js">rating.js</a>. It does pretty much the same thing as the <code>computeAverage()</code> method in the Java example, but obviously in JavaScript:</p>
+<p>The <code>computeAverage()</code> function lives in <a href="https://github.com/jpotts/alfresco-developer-series/blob/master/behaviors/behavior-tutorial/behavior-tutorial-platform-jar/src/main/resources/alfresco/module/behavior-tutorial-platform-jar/scripts/rating.js">rating.js</a>. It does pretty much the same thing as the <code>computeAverage()</code> method in the Java example, but obviously in JavaScript:</p>
 <pre><code>//calculate rating
 function computeAverage(childAssocRef) {
 
@@ -689,7 +687,7 @@ function computeAverage(childAssocRef) {
 <p>As you can see, this is the same logic used in the Java example modified to follow the Alfresco JavaScript API syntax.</p>
 <h2 id="step-2-configure-a-spring-bean-to-bind-the-script-to-the-appropriate-policies">Step 2: Configure a Spring bean to bind the script to the appropriate policies</h2>
 <p>The Java example used an <code>init()</code> method on the <code>Rating</code> bean to make calls to the <code>bindClassBehaviour()</code> method of <code>PolicyComponent</code>. The JavaScript example doesn't do that. Instead, it uses Spring to associate the JavaScript files with the <code>onCreateNode</code> and <code>onDeleteNode</code> policies.</p>
-<p>As you've seen, the Spring context, <a href="https://github.com/jpotts/alfresco-developer-series/blob/master/behaviors/behavior-tutorial-platform-jar/src/main/resources/alfresco/module/behavior-tutorial-platform-jar/context/service-context.xml">service-context.xml</a> file resides in:</p>
+<p>As you've seen, the Spring context, <a href="https://github.com/jpotts/alfresco-developer-series/blob/master/behaviors/behavior-tutorial/behavior-tutorial-platform-jar/src/main/resources/alfresco/module/behavior-tutorial-platform-jar/context/service-context.xml">service-context.xml</a> file resides in:</p>
 <pre><code>$TUTORIAL_HOME/behavior-tutorial-platform-jar/src/main/resources/alfresco/module/behavior-tutorial-platform-jar/context</code></pre>
 <p>Edit the file. Comment out the <code>ratingBehavior</code> bean element used for the Java example and add two new bean configs below it for the JavaScript behavior code—one for the create and one for the delete:</p>
 <pre><code>&lt;bean id=&quot;onCreateRatingNode&quot;
@@ -736,7 +734,7 @@ parent=&quot;policyRegistration&quot;&gt;
 &lt;/bean&gt;</code></pre>
 <p>Now Alfresco will use the two server-side JavaScript files as the behavior implementation instead of the Java-based behavior created earlier.</p>
 <h2 id="step-3-test-the-javascript-based-behavior">Step 3: Test the JavaScript-based behavior</h2>
-<p>If you are following along and you already did the Java-based behavior, this step is easy. The unit test doesn't have to change at all because all that is different is that the underlying behavior logic is written in JavaScript instead of Java.</p>
+<p>If you are following along and you already did the Java-based behavior, this step is easy. The integration test doesn't have to change at all because all that is different is that the underlying behavior logic is written in JavaScript instead of Java.</p>
 <p>So, switch to the $TUTORIAL_HOME directory and run <code>run.sh</code> or <code>run.bat</code>. Just like the Java example, you should see something like this:</p>
 <pre><code>[INFO] ------------------------------------------------------------------------
 [INFO] BUILD SUCCESS
@@ -745,7 +743,7 @@ parent=&quot;policyRegistration&quot;&gt;
 [INFO] Finished at: Thu Jan 30 17:04:55 CST 2014
 [INFO] Final Memory: 14M/122M
 [INFO] ------------------------------------------------------------------------</code></pre>
-<p>Successful unit tests are certainly comforting, but they are not very satisfying. Wouldn't you like to actually see this behavior working in the user interface? In the web scripts tutorial I'll show you how to create a little web page that lets you click on stars and post ratings for whitepapers. For now, if you'd like to run a little web script that creates test rating objects on specified content, follow these steps:</p>
+<p>Successful tests are certainly comforting, but they are not very satisfying. Wouldn't you like to actually see this behavior working in the user interface? In the web scripts tutorial I'll show you how to create a little web page that lets you click on stars and post ratings for whitepapers. For now, if you'd like to run a simple web script that creates test rating objects on specified content, follow these steps:</p>
 <ol style="list-style-type: decimal">
 <li><p>If you are using the source code checked out from GitHub instead of creating your own project you can move on to step 2. Otherwise, if you are following along in your own project directories, copy the following directory and its descendants from the source code that accompanies this tutorial into your behavior-tutorial-platform-jar module. Copy:</p>
 <pre><code>$TUTORIAL_SOURCE/behavior-tutorial-platform-jar/src/main/resources/alfresco/extension/templates/webscripts</code></pre>
@@ -766,7 +764,7 @@ parent=&quot;policyRegistration&quot;&gt;
 <div class="figure">
 <img src="./images/content-with-test-ratings.png" alt="This piece of content has 20 ratings with an average of 3" /><p class="caption">This piece of content has 20 ratings with an average of 3</p>
 </div>
-<p>This shouldn't be too surprising--you are using a web script to exercise the same behavior as the unit test, but at least this way you can log in to Share and see for yourself that the behavior works.</p>
+<p>This shouldn't be too surprising--you are using a web script to exercise the same behavior as the integration test, but at least this way you can log in to Share and see for yourself that the behavior works.</p>
 <h1 id="deploying-the-amps-to-your-alfresco-server">Deploying the AMPs to your Alfresco server</h1>
 <p>When you are ready, you can deploy these AMPs to any Alfresco server. Both the platform-jar module and the share-jar module directories should have a directory called target. Maven puts the AMP there when you run <code>mvn install</code>. You can install those AMPs as you normally would. For example, if you installed Alfresco with the binary installer, you would:</p>
 <ol style="list-style-type: decimal">
@@ -799,7 +797,7 @@ mvn alfresco:install -Dmaven.alfresco.warLocation=$TOMCAT_HOME/webapps/[alfresco
 		title="ECM Architect" rel="home">ECM
 		Architect</a></p>
 			  
-<a rel="license" href="http://creativecommons.org/licenses/by-sa/3.0/"><img alt="Creative Commons License" style="border-width:0" src="http://i.creativecommons.org/l/by-sa/3.0/88x31.png" /></a><br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/3.0/">Creative Commons Attribution-ShareAlike 3.0 Unported License</a>.			  
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/3.0/"><img alt="Creative Commons License" style="border-width:0" src="./images/cc-by-sa-88x31.png" /></a><br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/3.0/">Creative Commons Attribution-ShareAlike 3.0 Unported License</a>.			  
 			</div><!-- #site-info -->
 		</div><!-- #colophon -->
 	</div><!-- #footer -->

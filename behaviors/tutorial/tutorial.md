@@ -212,8 +212,6 @@ Here is what I am using on my machine:
 * Java 1.8.0_77
 * Apache Maven 3.5.3 (installed using Macports)
 * Alfresco Maven SDK 3.0.1 (No download necessary)
-* IntelliJ IDEA 2017.3.5
-* Alfresco Community Edition 5.2.f ([Download](https://sourceforge.net/projects/alfresco/files/Alfresco%20201604%20Community/))
 
 By default, when you create an Alfresco project using the Alfresco Maven
 SDK the project will be configured to depend on the latest stable Alfresco
