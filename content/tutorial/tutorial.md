@@ -176,11 +176,10 @@ Here is what I am using on my machine:
 * Java 1.8.0_77
 * Apache Maven 3.5.3 (installed using Macports)
 * Alfresco Maven SDK 3.0.1 (No download necessary)
-* IntelliJ IDEA 2017.3.5
 
-By default, when you create an Alfresco project using version the Alfresco Maven SDK the project will be configured to depend on the latest stable Alfresco Community Edition build.
+By default, when you create an Alfresco project using the Alfresco Maven SDK the project will be configured to depend on the latest stable Alfresco Community Edition build.
 
-Note that version 3.0.x of the Alfresco Maven SDK works with Alfresco 4.2.7 and higher. This tutorial assumes you are using the latest Community Edition build.
+Note that version 3.0.x of the Alfresco Maven SDK works with Alfresco 4.2.7 and higher. This tutorial assumes you are using SDK 3.0.x.
 
 Projects created using the Alfresco Maven SDK have the ability to run Alfresco on an embedded Tomcat server. This makes [downloading](http://www.alfresco.com/products/community) and installing Alfresco optional. But if you want to run a full Alfresco server locally, you are welcome to do that.
 
@@ -399,6 +398,12 @@ The last step is to test your changes. The Alfresco Maven SDK makes that easy. D
     ```
 
 The first time you do this it may take quite a while. Maven is downloading everything it needs to run Alfresco in an embedded Tomcat server along with your custom content model.
+
+In this version of the SDK you may see some stack traces. That's because Maven is running integration tests using the embedded Tomcat server and there are some known issues with the Tomcat shutdown hooks. If you scroll up a bit you should see that the integration tests passed.
+
+If you want to run without the tests, run:
+    
+    mvn install -DskipTests=true
 
 If everything goes as expected you should see:
 

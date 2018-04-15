@@ -265,10 +265,9 @@ Architect | Alfresco Developer Tutorials</title>
 <li>Java 1.8.0_77</li>
 <li>Apache Maven 3.5.3 (installed using Macports)</li>
 <li>Alfresco Maven SDK 3.0.1 (No download necessary)</li>
-<li>IntelliJ IDEA 2017.3.5</li>
 </ul>
-<p>By default, when you create an Alfresco project using version the Alfresco Maven SDK the project will be configured to depend on the latest stable Alfresco Community Edition build.</p>
-<p>Note that version 3.0.x of the Alfresco Maven SDK works with Alfresco 4.2.7 and higher. This tutorial assumes you are using the latest Community Edition build.</p>
+<p>By default, when you create an Alfresco project using the Alfresco Maven SDK the project will be configured to depend on the latest stable Alfresco Community Edition build.</p>
+<p>Note that version 3.0.x of the Alfresco Maven SDK works with Alfresco 4.2.7 and higher. This tutorial assumes you are using SDK 3.0.x.</p>
 <p>Projects created using the Alfresco Maven SDK have the ability to run Alfresco on an embedded Tomcat server. This makes <a href="http://www.alfresco.com/products/community">downloading</a> and installing Alfresco optional. But if you want to run a full Alfresco server locally, you are welcome to do that.</p>
 <p>An IDE is also optional. Most people working with Alfresco use IntelliJ, Eclipse, or something similar.</p>
 <h4 id="project-organization">Project Organization</h4>
@@ -447,6 +446,9 @@ If the &quot;model&quot; directory does not exist when the project is initially 
 <pre><code>mvn install</code></pre></li>
 </ol>
 <p>The first time you do this it may take quite a while. Maven is downloading everything it needs to run Alfresco in an embedded Tomcat server along with your custom content model.</p>
+<p>In this version of the SDK you may see some stack traces. That's because Maven is running integration tests using the embedded Tomcat server and there are some known issues with the Tomcat shutdown hooks. If you scroll up a bit you should see that the integration tests passed.</p>
+<p>If you want to run without the tests, run:</p>
+<pre><code>mvn install -DskipTests=true</code></pre>
 <p>If everything goes as expected you should see:</p>
 <pre><code>[INFO] ------------------------------------------------------------------------
 [INFO] BUILD SUCCESS
@@ -1191,7 +1193,7 @@ Done!</code></pre>
 		title="ECM Architect" rel="home">ECM
 		Architect</a></p>
 			  
-<a rel="license" href="http://creativecommons.org/licenses/by-sa/3.0/"><img alt="Creative Commons License" style="border-width:0" src="http://i.creativecommons.org/l/by-sa/3.0/88x31.png" /></a><br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/3.0/">Creative Commons Attribution-ShareAlike 3.0 Unported License</a>.			  
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/3.0/"><img alt="Creative Commons License" style="border-width:0" src="./images/cc-by-sa-88x31.png" /></a><br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/3.0/">Creative Commons Attribution-ShareAlike 3.0 Unported License</a>.			  
 			</div><!-- #site-info -->
 		</div><!-- #colophon -->
 	</div><!-- #footer -->
