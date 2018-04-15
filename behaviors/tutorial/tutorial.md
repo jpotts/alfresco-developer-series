@@ -453,7 +453,7 @@ project or do without them:
 users can manage. It also defines which properties should be displayed when
 showing the property list for a piece of content with the rateable aspect
 applied.
-* $TUTORIAL_HOME/behavior-tutorial-share-jar/src/main/resources/alfresco/web-extension/[behavior-tutorial-share-jar-context.xml](https://github.com/jpotts/alfresco-developer-series/blob/master/behaviors/behavior-tutorial/behavior-tutorial-share-jar/src/main/resources/alfresco/web-extension/behavior-tutorial-share-jar-context.xml). This is the Spring context
+* $TUTORIAL_HOME/behavior-tutorial-share-jar/src/main/resources/alfresco/web-extension/[behavior-tutorial-share-context.xml](https://github.com/jpotts/alfresco-developer-series/blob/master/behaviors/behavior-tutorial/behavior-tutorial-share-jar/src/main/resources/alfresco/web-extension/behavior-tutorial-share-context.xml). This is the Spring context
 file that tells Alfresco Share where to find the properties bundle.
 * $TUTORIAL_HOME/behavior-tutorial-share-jar/src/main/resources/alfresco/web-extension/messages/[scRatingsModel.properties](https://github.com/jpotts/alfresco-developer-series/blob/master/behaviors/behavior-tutorial/behavior-tutorial-share-jar/src/main/resources/alfresco/web-extension/messages/scRatingsModel.properties). This is the properties bundle
 for the module that Alfresco Share will use to localize the labels.
@@ -505,7 +505,7 @@ The test class goes in:
 
     $TUTORIAL_HOME/integration-tests/src/test/java/com/someco/test
 
-Here is the [SomecoRatingModelIT](https://github.com/jpotts/alfresco-developer-series/blob/master/behaviors/integration-tests/src/test/java/com/someco/test/SomecoRatingModelIT.java) test class:
+Here is the [SomecoRatingModelIT](https://github.com/jpotts/alfresco-developer-series/blob/master/behaviors/behavior-tutorial/integration-tests/src/test/java/com/someco/test/SomecoRatingModelIT.java) test class:
 
     @RunWith(value = AlfrescoTestRunner.class)
     public class SomecoRatingModelIT extends BaseIT {
@@ -752,7 +752,7 @@ The behavior should be able to calculate the average rating when rating objects
 are created or deleted from any piece of content that has the `scr:rateable`
 aspect. It's easy to test that with an integration test.
 
-I'll add a class called [RatingBehaviorIT](https://github.com/jpotts/alfresco-developer-series/blob/master/behaviors/integration-tests/src/test/java/com/someco/test/RatingBehaviorIT.java) to the same test package that
+I'll add a class called [RatingBehaviorIT](https://github.com/jpotts/alfresco-developer-series/blob/master/behaviors/behavior-tutorial/integration-tests/src/test/java/com/someco/test/RatingBehaviorIT.java) to the same test package that
 `SomecoRatingModelIT` is in. The test will:
 
 1. Create a piece of content and add the `scr:rateable` aspect to it.

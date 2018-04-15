@@ -296,7 +296,7 @@ scr_somecoratingsmodel.association.scr_ratings.title=Ratings</code></pre>
 <p>Because these steps have already been covered in the custom content types tutorial, I'll just list the files here and you can either copy them into your project or do without them:</p>
 <ul>
 <li>$TUTORIAL_HOME/behavior-tutorial-share-jar/src/main/resources/META-INF/<a href="https://github.com/jpotts/alfresco-developer-series/blob/master/behaviors/behavior-tutorial/behavior-tutorial-share-jar/src/main/resources/META-INF/share-config-custom.xml">share-config-custom.xml</a>. The configuration in this file adds the rateable aspect to the list of aspects users can manage. It also defines which properties should be displayed when showing the property list for a piece of content with the rateable aspect applied.</li>
-<li>$TUTORIAL_HOME/behavior-tutorial-share-jar/src/main/resources/alfresco/web-extension/<a href="https://github.com/jpotts/alfresco-developer-series/blob/master/behaviors/behavior-tutorial/behavior-tutorial-share-jar/src/main/resources/alfresco/web-extension/behavior-tutorial-share-jar-context.xml">behavior-tutorial-share-jar-context.xml</a>. This is the Spring context file that tells Alfresco Share where to find the properties bundle.</li>
+<li>$TUTORIAL_HOME/behavior-tutorial-share-jar/src/main/resources/alfresco/web-extension/<a href="https://github.com/jpotts/alfresco-developer-series/blob/master/behaviors/behavior-tutorial/behavior-tutorial-share-jar/src/main/resources/alfresco/web-extension/behavior-tutorial-share-context.xml">behavior-tutorial-share-context.xml</a>. This is the Spring context file that tells Alfresco Share where to find the properties bundle.</li>
 <li>$TUTORIAL_HOME/behavior-tutorial-share-jar/src/main/resources/alfresco/web-extension/messages/<a href="https://github.com/jpotts/alfresco-developer-series/blob/master/behaviors/behavior-tutorial/behavior-tutorial-share-jar/src/main/resources/alfresco/web-extension/messages/scRatingsModel.properties">scRatingsModel.properties</a>. This is the properties bundle for the module that Alfresco Share will use to localize the labels.</li>
 </ul>
 <p>Now the Alfresco Share user interface will know how to show values for the average rating and rating count when a piece of content with the rateable aspect is displayed.</p>
@@ -328,7 +328,7 @@ scr_somecoratingsmodel.association.scr_ratings.title=Ratings</code></pre>
 <p>The Alfresco Maven SDK will automatically run integration tests when <code>mvn install</code> runs. If you're a TDD (Test-Driven Development) kind of person you could add a test for the to-be-developed behavior. For now, I'll just create a test to make sure I can successfully add the <code>scr:rateable</code> aspect to a piece of content. The rating type will get tested shortly.</p>
 <p>The test class goes in:</p>
 <pre><code>$TUTORIAL_HOME/integration-tests/src/test/java/com/someco/test</code></pre>
-<p>Here is the <a href="https://github.com/jpotts/alfresco-developer-series/blob/master/behaviors/integration-tests/src/test/java/com/someco/test/SomecoRatingModelIT.java">SomecoRatingModelIT</a> test class:</p>
+<p>Here is the <a href="https://github.com/jpotts/alfresco-developer-series/blob/master/behaviors/behavior-tutorial/integration-tests/src/test/java/com/someco/test/SomecoRatingModelIT.java">SomecoRatingModelIT</a> test class:</p>
 <pre><code>@RunWith(value = AlfrescoTestRunner.class)
 public class SomecoRatingModelIT extends BaseIT {
 
@@ -496,7 +496,7 @@ init-method=&quot;init&quot;&gt;
 <p>This bean declares the <code>init</code> method and injects the dependencies the behavior needs.</p>
 <h2 id="step-3-create-an-integration-test-for-the-behavior">Step 3: Create an integration test for the behavior</h2>
 <p>The behavior should be able to calculate the average rating when rating objects are created or deleted from any piece of content that has the <code>scr:rateable</code> aspect. It's easy to test that with an integration test.</p>
-<p>I'll add a class called <a href="https://github.com/jpotts/alfresco-developer-series/blob/master/behaviors/integration-tests/src/test/java/com/someco/test/RatingBehaviorIT.java">RatingBehaviorIT</a> to the same test package that <code>SomecoRatingModelIT</code> is in. The test will:</p>
+<p>I'll add a class called <a href="https://github.com/jpotts/alfresco-developer-series/blob/master/behaviors/behavior-tutorial/integration-tests/src/test/java/com/someco/test/RatingBehaviorIT.java">RatingBehaviorIT</a> to the same test package that <code>SomecoRatingModelIT</code> is in. The test will:</p>
 <ol style="list-style-type: decimal">
 <li>Create a piece of content and add the <code>scr:rateable</code> aspect to it.</li>
 <li>Add three test ratings, checking the values for the average rating, total rating and rating count.</li>
