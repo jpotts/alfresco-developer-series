@@ -188,56 +188,64 @@ project to install AMPs from the earlier tutorials automatically. Edit the pom.x
 file in the "workflow-tutorial" directory to add the following "platformModule"
 dependencies:
 
-    <!-- Bring in the content tutorial repo AMP so we can run embedded. -->
-    <moduleDependency>
-        <groupId>com.someco</groupId>
-        <artifactId>content-tutorial-platform-jar</artifactId>
-        <version>1.0-SNAPSHOT</version>
-        <type>amp</type>
-    </moduleDependency>
+    <platformModules>
+        ...SNIP...
+        <!-- Bring in the content tutorial repo AMP so we can run embedded. -->
+        <moduleDependency>
+            <groupId>com.someco</groupId>
+            <artifactId>content-tutorial-platform-jar</artifactId>
+            <version>1.0-SNAPSHOT</version>
+            <type>amp</type>
+        </moduleDependency>
 
-    <!-- Bring in the behavior tutorial repo AMP so we can run embedded. -->
-    <moduleDependency>
-        <groupId>com.someco</groupId>
-        <artifactId>behavior-tutorial-platform-jar</artifactId>
-        <version>1.0-SNAPSHOT</version>
-        <type>amp</type>
-    </moduleDependency>
+        <!-- Bring in the behavior tutorial repo AMP so we can run embedded. -->
+        <moduleDependency>
+            <groupId>com.someco</groupId>
+            <artifactId>behavior-tutorial-platform-jar</artifactId>
+            <version>1.0-SNAPSHOT</version>
+            <type>amp</type>
+        </moduleDependency>
 
-    <!-- Bring in the actions tutorial repo AMP so we can run embedded. -->
-    <moduleDependency>
-        <groupId>com.someco</groupId>
-        <artifactId>actions-tutorial-platform-jar</artifactId>
-        <version>1.0-SNAPSHOT</version>
-        <type>amp</type>
-    </moduleDependency>
+        <!-- Bring in the actions tutorial repo AMP so we can run embedded. -->
+        <moduleDependency>
+            <groupId>com.someco</groupId>
+            <artifactId>actions-tutorial-platform-jar</artifactId>
+            <version>1.0-SNAPSHOT</version>
+            <type>amp</type>
+        </moduleDependency>
+        ...SNIP...
+    </platformModules>
 
 Those all have corresponding Share tier modules so add those as "shareModule"
 dependencies:
 
-    <!-- Bring in the content tutorial share AMP so we can run embedded. -->
-    <moduleDependency>
-        <groupId>com.someco</groupId>
-        <artifactId>content-tutorial-share-jar</artifactId>
-        <version>1.0-SNAPSHOT</version>
-        <type>amp</type>
-    </moduleDependency>
+    <shareModules>
+        ...SNIP...
+        <!-- Bring in the content tutorial share AMP so we can run embedded. -->
+        <moduleDependency>
+            <groupId>com.someco</groupId>
+            <artifactId>content-tutorial-share-jar</artifactId>
+            <version>1.0-SNAPSHOT</version>
+            <type>amp</type>
+        </moduleDependency>
 
-    <!-- Bring in the behavior tutorial share AMP so we can run embedded. -->
-    <moduleDependency>
-        <groupId>com.someco</groupId>
-        <artifactId>behavior-tutorial-share-jar</artifactId>
-        <version>1.0-SNAPSHOT</version>
-        <type>amp</type>
-    </moduleDependency>
+        <!-- Bring in the behavior tutorial share AMP so we can run embedded. -->
+        <moduleDependency>
+            <groupId>com.someco</groupId>
+            <artifactId>behavior-tutorial-share-jar</artifactId>
+            <version>1.0-SNAPSHOT</version>
+            <type>amp</type>
+        </moduleDependency>
 
-    <!-- Bring in the actions tutorial share AMP so we can run embedded. -->
-    <moduleDependency>
-        <groupId>com.someco</groupId>
-        <artifactId>actions-tutorial-share-jar</artifactId>
-        <version>1.0-SNAPSHOT</version>
-        <type>amp</type>
-    </moduleDependency>
+        <!-- Bring in the actions tutorial share AMP so we can run embedded. -->
+        <moduleDependency>
+            <groupId>com.someco</groupId>
+            <artifactId>actions-tutorial-share-jar</artifactId>
+            <version>1.0-SNAPSHOT</version>
+            <type>amp</type>
+        </moduleDependency>
+        ...SNIP...
+    </shareModules>
 
 Now when we fire up the embedded Tomcat server the workflow AMPs will be installed
 as well as the AMPs from the earlier content, behavior, and actions tutorials.

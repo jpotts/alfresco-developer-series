@@ -235,53 +235,61 @@ Architect | Alfresco Developer Tutorials</title>
 <p>If you are planning on following along, go ahead and use the Alfresco Maven SDK to create a new project from the &quot;all-in-one&quot; archetype. Use a <code>groupId</code> of &quot;com.someco&quot; and an <code>artifactId</code> of &quot;workflow-tutorial&quot;.</p>
 <p>Starting with 3.0.0, the SDK will generate JAR files by default. We always want to generate AMPs, not JARs, so edit the pom.xml file to uncomment the maven-assembly-plugin.</p>
 <p>We'll be running the project using an embedded Tomcat server. We can configure the project to install AMPs from the earlier tutorials automatically. Edit the pom.xml file in the &quot;workflow-tutorial&quot; directory to add the following &quot;platformModule&quot; dependencies:</p>
-<pre><code>&lt;!-- Bring in the content tutorial repo AMP so we can run embedded. --&gt;
-&lt;moduleDependency&gt;
-    &lt;groupId&gt;com.someco&lt;/groupId&gt;
-    &lt;artifactId&gt;content-tutorial-platform-jar&lt;/artifactId&gt;
-    &lt;version&gt;1.0-SNAPSHOT&lt;/version&gt;
-    &lt;type&gt;amp&lt;/type&gt;
-&lt;/moduleDependency&gt;
+<pre><code>&lt;platformModules&gt;
+    ...SNIP...
+    &lt;!-- Bring in the content tutorial repo AMP so we can run embedded. --&gt;
+    &lt;moduleDependency&gt;
+        &lt;groupId&gt;com.someco&lt;/groupId&gt;
+        &lt;artifactId&gt;content-tutorial-platform-jar&lt;/artifactId&gt;
+        &lt;version&gt;1.0-SNAPSHOT&lt;/version&gt;
+        &lt;type&gt;amp&lt;/type&gt;
+    &lt;/moduleDependency&gt;
 
-&lt;!-- Bring in the behavior tutorial repo AMP so we can run embedded. --&gt;
-&lt;moduleDependency&gt;
-    &lt;groupId&gt;com.someco&lt;/groupId&gt;
-    &lt;artifactId&gt;behavior-tutorial-platform-jar&lt;/artifactId&gt;
-    &lt;version&gt;1.0-SNAPSHOT&lt;/version&gt;
-    &lt;type&gt;amp&lt;/type&gt;
-&lt;/moduleDependency&gt;
+    &lt;!-- Bring in the behavior tutorial repo AMP so we can run embedded. --&gt;
+    &lt;moduleDependency&gt;
+        &lt;groupId&gt;com.someco&lt;/groupId&gt;
+        &lt;artifactId&gt;behavior-tutorial-platform-jar&lt;/artifactId&gt;
+        &lt;version&gt;1.0-SNAPSHOT&lt;/version&gt;
+        &lt;type&gt;amp&lt;/type&gt;
+    &lt;/moduleDependency&gt;
 
-&lt;!-- Bring in the actions tutorial repo AMP so we can run embedded. --&gt;
-&lt;moduleDependency&gt;
-    &lt;groupId&gt;com.someco&lt;/groupId&gt;
-    &lt;artifactId&gt;actions-tutorial-platform-jar&lt;/artifactId&gt;
-    &lt;version&gt;1.0-SNAPSHOT&lt;/version&gt;
-    &lt;type&gt;amp&lt;/type&gt;
-&lt;/moduleDependency&gt;</code></pre>
+    &lt;!-- Bring in the actions tutorial repo AMP so we can run embedded. --&gt;
+    &lt;moduleDependency&gt;
+        &lt;groupId&gt;com.someco&lt;/groupId&gt;
+        &lt;artifactId&gt;actions-tutorial-platform-jar&lt;/artifactId&gt;
+        &lt;version&gt;1.0-SNAPSHOT&lt;/version&gt;
+        &lt;type&gt;amp&lt;/type&gt;
+    &lt;/moduleDependency&gt;
+    ...SNIP...
+&lt;/platformModules&gt;</code></pre>
 <p>Those all have corresponding Share tier modules so add those as &quot;shareModule&quot; dependencies:</p>
-<pre><code>&lt;!-- Bring in the content tutorial share AMP so we can run embedded. --&gt;
-&lt;moduleDependency&gt;
-    &lt;groupId&gt;com.someco&lt;/groupId&gt;
-    &lt;artifactId&gt;content-tutorial-share-jar&lt;/artifactId&gt;
-    &lt;version&gt;1.0-SNAPSHOT&lt;/version&gt;
-    &lt;type&gt;amp&lt;/type&gt;
-&lt;/moduleDependency&gt;
+<pre><code>&lt;shareModules&gt;
+    ...SNIP...
+    &lt;!-- Bring in the content tutorial share AMP so we can run embedded. --&gt;
+    &lt;moduleDependency&gt;
+        &lt;groupId&gt;com.someco&lt;/groupId&gt;
+        &lt;artifactId&gt;content-tutorial-share-jar&lt;/artifactId&gt;
+        &lt;version&gt;1.0-SNAPSHOT&lt;/version&gt;
+        &lt;type&gt;amp&lt;/type&gt;
+    &lt;/moduleDependency&gt;
 
-&lt;!-- Bring in the behavior tutorial share AMP so we can run embedded. --&gt;
-&lt;moduleDependency&gt;
-    &lt;groupId&gt;com.someco&lt;/groupId&gt;
-    &lt;artifactId&gt;behavior-tutorial-share-jar&lt;/artifactId&gt;
-    &lt;version&gt;1.0-SNAPSHOT&lt;/version&gt;
-    &lt;type&gt;amp&lt;/type&gt;
-&lt;/moduleDependency&gt;
+    &lt;!-- Bring in the behavior tutorial share AMP so we can run embedded. --&gt;
+    &lt;moduleDependency&gt;
+        &lt;groupId&gt;com.someco&lt;/groupId&gt;
+        &lt;artifactId&gt;behavior-tutorial-share-jar&lt;/artifactId&gt;
+        &lt;version&gt;1.0-SNAPSHOT&lt;/version&gt;
+        &lt;type&gt;amp&lt;/type&gt;
+    &lt;/moduleDependency&gt;
 
-&lt;!-- Bring in the actions tutorial share AMP so we can run embedded. --&gt;
-&lt;moduleDependency&gt;
-    &lt;groupId&gt;com.someco&lt;/groupId&gt;
-    &lt;artifactId&gt;actions-tutorial-share-jar&lt;/artifactId&gt;
-    &lt;version&gt;1.0-SNAPSHOT&lt;/version&gt;
-    &lt;type&gt;amp&lt;/type&gt;
-&lt;/moduleDependency&gt;</code></pre>
+    &lt;!-- Bring in the actions tutorial share AMP so we can run embedded. --&gt;
+    &lt;moduleDependency&gt;
+        &lt;groupId&gt;com.someco&lt;/groupId&gt;
+        &lt;artifactId&gt;actions-tutorial-share-jar&lt;/artifactId&gt;
+        &lt;version&gt;1.0-SNAPSHOT&lt;/version&gt;
+        &lt;type&gt;amp&lt;/type&gt;
+    &lt;/moduleDependency&gt;
+    ...SNIP...
+&lt;/shareModules&gt;</code></pre>
 <p>Now when we fire up the embedded Tomcat server the workflow AMPs will be installed as well as the AMPs from the earlier content, behavior, and actions tutorials.</p>
 <p>If you have not installed those artifacts into your local Maven repository, switch to the root of each of those earlier tutorial projects and run <code>mvn install</code> to do so now.</p>
 <h1 id="hello-world-examples">Hello World Examples</h1>
