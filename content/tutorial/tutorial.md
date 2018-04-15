@@ -1,5 +1,5 @@
 % Working With Custom Content Types in Alfresco
-% Jeff Potts, [Metaversant Group](http://www.metaversant.com)
+% Jeff Potts, [Metaversant Group](https://www.metaversant.com)
 % April, 2018
 
 License
@@ -86,7 +86,7 @@ Going back to the portal example, a “Portal Displayable” aspect could be def
 
 ### Custom Behavior
 
-You may find that your custom aspect or custom type needs to have behavior or business logic associated with it. For example, every time an Expense Report is checked in you want to recalculate the total by iterating through the associated Expenses. One option would be to incorporate this logic into rules or actions in the Alfresco web client or your custom web application. But some behavior is so fundamental to the aspect or type that it should really be “bound” to the aspect or type and invoked any time Alfresco works with those objects. If you are curious how this works, read the [Custom Behaviors tutorial](http://ecmarchitect.com/alfresco-developer-series) on ecmarchitect.com. For now, just know that associating business logic with your custom aspects and types (or overriding out-of-the-box behavior) is possible.
+You may find that your custom aspect or custom type needs to have behavior or business logic associated with it. For example, every time an Expense Report is checked in you want to recalculate the total by iterating through the associated Expenses. One option would be to incorporate this logic into rules or actions in the Alfresco web client or your custom web application. But some behavior is so fundamental to the aspect or type that it should really be “bound” to the aspect or type and invoked any time Alfresco works with those objects. If you are curious how this works, read the [Custom Behaviors tutorial](https://ecmarchitect.com/alfresco-developer-series) on ecmarchitect.com. For now, just know that associating business logic with your custom aspects and types (or overriding out-of-the-box behavior) is possible.
 
 ### Content Modeling Best Practices
 
@@ -196,7 +196,7 @@ This tutorial will use two projects:
 
 From an Apache Maven perspective, each of these two projects as well as each of the content-tutorial project's modules will have their own pom.xml.
 
-Speaking of Apache Maven, I am not going to spend much time talking about how the Alfresco Maven SDK works. If you aren't already familiar with it, you may want to read the [Getting Started with the Alfresco Maven SDK](http://ecmarchitect.com/alfresco-developer-series) tutorial on ecmarchitect.com first and then come back to this one.
+Speaking of Apache Maven, I am not going to spend much time talking about how the Alfresco Maven SDK works. If you aren't already familiar with it, you may want to read the [Getting Started with the Alfresco Maven SDK](https://ecmarchitect.com/alfresco-developer-series) tutorial on ecmarchitect.com first and then come back to this one.
 
 ### Implementing and Deploying the Model
 
@@ -402,7 +402,7 @@ The first time you do this it may take quite a while. Maven is downloading every
 In this version of the SDK you may see some stack traces. That's because Maven is running integration tests using the embedded Tomcat server and there are some known issues with the Tomcat shutdown hooks. If you scroll up a bit you should see that the integration tests passed.
 
 If you want to run without the tests, run:
-    
+
     mvn install -DskipTests=true
 
 If everything goes as expected you should see:
@@ -837,7 +837,7 @@ Table: Alfresco API Options
 
 The best way to make remote calls to the Alfresco repository is to leverage Alfresco’s support for the Content Management Interoperability Services (CMIS) [standard](https://www.oasis-open.org/committees/cmis). So let’s look at CMIS examples for creating, updating, querying, and deleting content. The client API’s available from the [Apache Chemistry](http://chemistry.apache.org) project offer a variety of languages to choose from. This tutorial focuses on Java.
 
-If you need to learn how to make these other styles of customizations, consult [ecmarchitect.com](http://ecmarchitect.com) and the [Alfresco Documentation](http://docs.alfresco.com).
+If you need to learn how to make these other styles of customizations, consult [ecmarchitect.com](https://ecmarchitect.com) and the [Alfresco Documentation](http://docs.alfresco.com).
 
 Setup
 -----
@@ -1301,5 +1301,5 @@ Where to Find More Information
 * Official documentation for both Enterprise Edition and Community Edition is available at [docs.alfresco.com](http://docs.alfresco.com/).
 * [Share Extras](http://share-extras.github.io/) has many examples of deeper Share customization.
 * The [Apache Chemistry Home Page](http://chemistry.apache.org/) has examples and source code that works with CMIS.
-* See [“Getting Started with CMIS”](http://ecmarchitect.com/archives/2009/11/23/1094) on [ecmarchitect.com](http://ecmarchitect.com) for a brief introduction to CMIS. The [Alfresco CMIS](http://cmis.alfresco.com/) page is also a great resource. And there is now a [CMIS book](http://www.manning.com/mueller/) availaible.
-* If you are ready to cover new ground, try another [ecmarchitect.com](http://ecmarchitect.com) tutorial in the [Alfresco Developer Series](http://ecmarchitect.com/alfresco-developer-series).
+* See [“Getting Started with CMIS”](https://ecmarchitect.com/archives/2009/11/23/1094) on [ecmarchitect.com](https://ecmarchitect.com) for a brief introduction to CMIS. The [Alfresco CMIS](http://cmis.alfresco.com/) page is also a great resource. And there is now a [CMIS book](http://www.manning.com/mueller/) availaible.
+* If you are ready to cover new ground, try another [ecmarchitect.com](https://ecmarchitect.com) tutorial in the [Alfresco Developer Series](https://ecmarchitect.com/alfresco-developer-series).

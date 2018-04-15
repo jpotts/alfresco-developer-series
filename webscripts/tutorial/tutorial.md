@@ -1,5 +1,5 @@
 % Introduction to the Web Script Framework
-% Jeff Potts, [Metaversant Group](http://www.metaversant.com)
+% Jeff Potts, [Metaversant Group](https://www.metaversant.com)
 % April, 2018
 
 License
@@ -341,7 +341,7 @@ upload them to the proper place in the repository.
 
 I am not going to spend much time talking about how the Alfresco Maven SDK
 works. If you aren't already familiar with it, you may want to read the
-[Getting Started with the Alfresco Maven SDK](http://ecmarchitect.com/alfresco-developer-series)
+[Getting Started with the Alfresco Maven SDK](https://ecmarchitect.com/alfresco-developer-series)
 tutorial on ecmarchitect.com first and then come back to this one.
 
 If you are planning on following along, go ahead and use the Alfresco Maven SDK
@@ -599,7 +599,7 @@ content:
     }
 
 The first thing to notice about the script is that it imports another script.
-The rating.js script was created as part of the [custom behaviors tutorial](http://ecmarchitect.com/alfresco-developer-series-tutorials/behaviors/tutorial/tutorial.html)
+The rating.js script was created as part of the [custom behaviors tutorial](https://ecmarchitect.com/alfresco-developer-series-tutorials/behaviors/tutorial/tutorial.html)
 to contain logic related to ratings.
 
 The next thing to notice is that the script queries the repository using
@@ -1586,7 +1586,7 @@ Where to Find More Information
 * Official documentation for both Enterprise Edition and Community Edition is
 available at [docs.alfresco.com](http://docs.alfresco.com/).
 * Ask questions about web scripts in the [community](http://community.alfresco.com).
-* If you are ready to cover new ground, try another [ecmarchitect.com](http://ecmarchitect.com)
-tutorial in the [Alfresco Developer Series](http://ecmarchitect.com/alfresco-developer-series).
+* If you are ready to cover new ground, try another [ecmarchitect.com](https://ecmarchitect.com)
+tutorial in the [Alfresco Developer Series](https://ecmarchitect.com/alfresco-developer-series).
 * Learn more about FreeMarker at [freemarker.sourceforge.net](http://freemarker.sourceforge.net/).
 * Learn more about JSON at [json.org](http://www.json.org/)

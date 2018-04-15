@@ -29,7 +29,7 @@ Architect | Alfresco Developer Tutorials</title>
 					<div class="entry-content">
 <div id="header">
 <h1 class="entry-title">Introduction to the Web Script Framework</h1>
-<h2 class="author">Jeff Potts, <a href="http://www.metaversant.com">Metaversant Group</a></h2>
+<h2 class="author">Jeff Potts, <a href="https://www.metaversant.com">Metaversant Group</a></h2>
 <h3 class="date">April, 2018</h3>
 </div>
 <div id="TOC">
@@ -217,7 +217,7 @@ Foo: bar</code></pre>
 <p>An IDE is optional. Most people working with Alfresco use IntelliJ, Eclipse or something similar.</p>
 <h2 id="project-organization">Project Organization</h2>
 <p>You just saw that web scripts can be created by creating or uploading files to the Alfresco repository. For the rest of these examples, though, you'll create a project that will package the web scripts as an AMP (Alfresco Module Package). This is the recommended way to distribute your Alfresco customizations. It's a lot less error-prone than handing a bunch of files to someone and asking them to upload them to the proper place in the repository.</p>
-<p>I am not going to spend much time talking about how the Alfresco Maven SDK works. If you aren't already familiar with it, you may want to read the <a href="http://ecmarchitect.com/alfresco-developer-series">Getting Started with the Alfresco Maven SDK</a> tutorial on ecmarchitect.com first and then come back to this one.</p>
+<p>I am not going to spend much time talking about how the Alfresco Maven SDK works. If you aren't already familiar with it, you may want to read the <a href="https://ecmarchitect.com/alfresco-developer-series">Getting Started with the Alfresco Maven SDK</a> tutorial on ecmarchitect.com first and then come back to this one.</p>
 <p>If you are planning on following along, go ahead and use the Alfresco Maven SDK to bootstrap your project using the &quot;alfresco-allinone-archetype&quot; archetype. Use a <code>groupId</code> of &quot;com.someco&quot; and an <code>artifactId</code> of &quot;webscripts-tutorial&quot;.</p>
 <p>I'll refer to the directory where you created the project directory as $TUTORIAL_HOME.</p>
 <p>One small change is necessary before continuing. Starting with SDK 3.0.0, the default is to output a JAR. But we always want to output AMPs. To configure the project to generate AMPs, edit the pom.xml and uncomment the maven-assembly-plugin.</p>
@@ -393,7 +393,7 @@ function whitepaperEntry(whitepaper, rating) {
     this.whitepaper = whitepaper;
     this.rating = rating;
 }</code></pre>
-<p>The first thing to notice about the script is that it imports another script. The rating.js script was created as part of the <a href="http://ecmarchitect.com/alfresco-developer-series-tutorials/behaviors/tutorial/tutorial.html">custom behaviors tutorial</a> to contain logic related to ratings.</p>
+<p>The first thing to notice about the script is that it imports another script. The rating.js script was created as part of the <a href="https://ecmarchitect.com/alfresco-developer-series-tutorials/behaviors/tutorial/tutorial.html">custom behaviors tutorial</a> to contain logic related to ratings.</p>
 <p>The next thing to notice is that the script queries the repository using Lucene to get a list of whitepapers. Look at what happens if there are no whitepapers found. The response code gets set to 404, which is the standard HTTP response code for “File not found”. Alfresco has standard response templates for error codes but you can override them with your own by creating FreeMarker templates that follow a specific naming convention. For example, you could have a custom 404 response template for whitepapers by creating a file called &quot;whitepapers.get.html.404.ftl&quot;. See the official Alfresco documentation on <a href="http://docs.alfresco.com/4.2/topic/com.alfresco.enterprise.doc/concepts/ws-component-name.html">response status code templates</a> for more information.</p>
 <p>The last thing that happens is that the web script builds a new Array for the results. The <code>model.whitepapers</code> variable could just be set to the <code>whitepapers</code> variable that contains the query results but I want to add some data to the result set, so I'm building a new Array and setting that to the model.</p>
 <p>The <code>getRating()</code> function that is getting called resides in rating.js, which is part of the AMP you created in the custom behaviors tutorial. Just for reference, that function looks like this:</p>
@@ -921,7 +921,7 @@ function handleRatingPosted() {
 <li>The complete source code for these examples is available on <a href="https://github.com/jpotts/alfresco-developer-series">GitHub</a>.</li>
 <li>Official documentation for both Enterprise Edition and Community Edition is available at <a href="http://docs.alfresco.com/">docs.alfresco.com</a>.</li>
 <li>Ask questions about web scripts in the <a href="http://community.alfresco.com">community</a>.</li>
-<li>If you are ready to cover new ground, try another <a href="http://ecmarchitect.com">ecmarchitect.com</a> tutorial in the <a href="http://ecmarchitect.com/alfresco-developer-series">Alfresco Developer Series</a>.</li>
+<li>If you are ready to cover new ground, try another <a href="https://ecmarchitect.com">ecmarchitect.com</a> tutorial in the <a href="https://ecmarchitect.com/alfresco-developer-series">Alfresco Developer Series</a>.</li>
 <li>Learn more about FreeMarker at <a href="http://freemarker.sourceforge.net/">freemarker.sourceforge.net</a>.</li>
 <li>Learn more about JSON at <a href="http://www.json.org/">json.org</a></li>
 </ul>
@@ -933,11 +933,11 @@ function handleRatingPosted() {
 	<div id="footer" role="contentinfo">
 		<div id="colophon">
 			<div id="site-info">
-				<p><a href="http://ecmarchitect.com/"
+				<p><a href="https://ecmarchitect.com/"
 		title="ECM Architect" rel="home">ECM
 		Architect</a></p>
-			  
-<a rel="license" href="http://creativecommons.org/licenses/by-sa/3.0/"><img alt="Creative Commons License" style="border-width:0" src="http://i.creativecommons.org/l/by-sa/3.0/88x31.png" /></a><br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/3.0/">Creative Commons Attribution-ShareAlike 3.0 Unported License</a>.			  
+
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/3.0/"><img alt="Creative Commons License" style="border-width:0" src="./images/cc-by-sa-88x31.png" /></a><br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/3.0/">Creative Commons Attribution-ShareAlike 3.0 Unported License</a>.
 			</div><!-- #site-info -->
 		</div><!-- #colophon -->
 	</div><!-- #footer -->

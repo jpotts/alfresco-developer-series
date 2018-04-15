@@ -1,5 +1,5 @@
 % Implementing Custom Behaviors in Alfresco
-% Jeff Potts, [Metaversant Group](http://www.metaversant.com)
+% Jeff Potts, [Metaversant Group](https://www.metaversant.com)
 % April, 2018
 
 License
@@ -16,8 +16,8 @@ Introduction
 This tutorial discusses how to write your own custom behavior code in
 Java or JavaScript and then bind that code to node events or “policies”.
 
-In previous tutorials I've discussed how to create [custom content models](http://ecmarchitect.com/alfresco-developer-series-tutorials/content/tutorial/tutorial.html)
-and how to write [custom actions](http://ecmarchitect.com/alfresco-developer-series-tutorials/actions/tutorial/tutorial.html).
+In previous tutorials I've discussed how to create [custom content models](https://ecmarchitect.com/alfresco-developer-series-tutorials/content/tutorial/tutorial.html)
+and how to write [custom actions](https://ecmarchitect.com/alfresco-developer-series-tutorials/actions/tutorial/tutorial.html).
 In both cases, you've seen how to write
 code that works with custom content types, properties, aspects, and
 associations, but the code wasn't tightly coupled to the objects on
@@ -60,7 +60,7 @@ tutorial completely ignores what's available out-of-the-box.
 You should already be familiar with general Alfresco concepts. If you want to
 follow along, you should
 also know how to write basic Java code. You may want to work through the
-[custom content models tutorial](http://ecmarchitect.com/alfresco-developer-series-tutorials/content/tutorial/tutorial.html)
+[custom content models tutorial](https://ecmarchitect.com/alfresco-developer-series-tutorials/content/tutorial/tutorial.html)
 if you aren't already familiar with how to extend Alfresco's content model.
 
 All of the source code that accompanies this tutorial is available on [GitHub](https://github.com/jpotts/alfresco-developer-series).
@@ -228,7 +228,7 @@ Packages): One AMP for the "repo" tier and one AMP for the "share" tier.
 
 I am not going to spend much time talking about how the Alfresco Maven SDK
 works. If you aren't already familiar with it, you may want to read the [Getting
-Started with the Alfresco Maven SDK](http://ecmarchitect.com/alfresco-developer-series)
+Started with the Alfresco Maven SDK](https://ecmarchitect.com/alfresco-developer-series)
 tutorial on ecmarchitect.com first and then come back to this one.
 
 If you are planning on following along, go ahead and use the Alfresco Maven SDK
@@ -1185,4 +1185,4 @@ Where to Find More Information
 * Official documentation for both Enterprise Edition and Community Edition is
 available at [docs.alfresco.com](http://docs.alfresco.com/).
 * Get help from the [community](http://community.alfresco.com).
-* If you are ready to cover new ground, try another [ecmarchitect.com](http://ecmarchitect.com) tutorial in the [Alfresco Developer Series](http://ecmarchitect.com/alfresco-developer-series).
+* If you are ready to cover new ground, try another [ecmarchitect.com](https://ecmarchitect.com) tutorial in the [Alfresco Developer Series](https://ecmarchitect.com/alfresco-developer-series).

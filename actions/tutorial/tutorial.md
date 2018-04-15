@@ -1,5 +1,5 @@
 % Creating Custom Actions in Alfresco
-% Jeff Potts, [Metaversant Group](http://www.metaversant.com)
+% Jeff Potts, [Metaversant Group](https://www.metaversant.com)
 % April, 2018
 
 License
@@ -26,8 +26,8 @@ Deciding whether to go with the out-of-the-box web client, a customized
 web client, or building your own user interface from scratch requires
 careful thought and analysis that is beyond the scope of this document.
 
-This tutorial is part of a [series of tutorials](http://ecmarchitect.com/alfresco-developer-series) that cover Alfresco from a
-configuration and customization perspective. The [previous tutorial](http://ecmarchitect.com/alfresco-developer-series-tutorials/content/tutorial/tutorial.html) discussed
+This tutorial is part of a [series of tutorials](https://ecmarchitect.com/alfresco-developer-series) that cover Alfresco from a
+configuration and customization perspective. The [previous tutorial](https://ecmarchitect.com/alfresco-developer-series-tutorials/content/tutorial/tutorial.html) discussed
 how to create custom content types and then expose those to the Alfresco Share
 user interface. The focus in this tutorial is on developing custom
 actions and configuring the user interface to show those custom actions.
@@ -71,9 +71,8 @@ Here is what I am using on my machine:
 * Java 1.8.0_77
 * Apache Maven 3.5.3 (installed using Macports)
 * Alfresco Maven SDK 3.0.1 (No download necessary)
-* IntelliJ IDEA 2017.3.5
 
-By default, when you create an Alfresco project using version the Alfresco Maven SDK the project will be configured to depend on the latest stable Alfresco Community Edition build.
+By default, when you create an Alfresco project using the Alfresco Maven SDK the project will be configured to depend on the latest stable Alfresco Community Edition build.
 
 An IDE is optional. Most people working with Alfresco use IntelliJ, Eclipse, or something similar.
 
@@ -84,9 +83,9 @@ up my customizations in two AMPs (Alfresco Module Packages). One AMP is for the
 Alfresco web application (the "repo" tier) and the other is for the Alfresco
 Share web application (the "Share" tier).
 
-I am not going to spend much time talking about how the Alfresco Maven SDK works. If you aren't already familiar with it, you may want to read the [Getting Started with the Alfresco Maven SDK](http://ecmarchitect.com/alfresco-developer-series) tutorial on ecmarchitect.com first and then come back to this one.
+I am not going to spend much time talking about how the Alfresco Maven SDK works. If you aren't already familiar with it, you may want to read the [Getting Started with the Alfresco Maven SDK](https://ecmarchitect.com/alfresco-developer-series) tutorial on ecmarchitect.com first and then come back to this one.
 
-This tutorial relies on code from the [Custom Content Types](http://ecmarchitect.com/alfresco-developer-series-tutorials/content/tutorial/tutorial.html) tutorial. The tutorial assumes that the repo tier AMP and Share tier AMP created during that tutorial have been installed into your local Maven repository by running `mvn install` from the
+This tutorial relies on code from the [Custom Content Types](https://ecmarchitect.com/alfresco-developer-series-tutorials/content/tutorial/tutorial.html) tutorial. The tutorial assumes that the repo tier AMP and Share tier AMP created during that tutorial have been installed into your local Maven repository by running `mvn install` from the
 root of the content-tutorial project.
 
 If, rather than launching your project using the embedded Tomcat server, you are
@@ -139,6 +138,7 @@ tutorial actually has a compile-time dependency on that project. So, go into the
                 <groupId>com.someco</groupId>
                 <artifactId>content-tutorial-platform-jar</artifactId>
                 <version>1.0-SNAPSHOT</version>
+                <scope>provided</scope>
             </dependency>
         </dependencies>
 
@@ -943,7 +943,7 @@ site action and web enable:
     <config evaluator="string-compare" condition="DocLibActions">
         <actions>
             <action id="someco-web-site" type="link" label="actions.someco.web-site" icon="someco-website">
-                <param name="href">http://ecmarchitect.com</param>
+                <param name="href">https://ecmarchitect.com</param>
                 <param name="target">_blank</param>
             </action>
             <action id="someco-web-enable" type="javascript" label="actions.someco.web-enable" icon="someco-create-website">
@@ -1240,4 +1240,4 @@ Where to Find More Information
 * The complete source code for these examples is available on [GitHub](https://github.com/jpotts/alfresco-developer-series).
 * Official documentation for both Enterprise Edition and Community Edition is available at [docs.alfresco.com](http://docs.alfresco.com/).
 * Check the [Alfresco Community](https://community.alfresco.com) site for blog posts from Mike Hatfield and David Draper, two Alfresco engineers that write about customizing Share.
-* If you are ready to cover new ground, try another [ecmarchitect.com](http://ecmarchitect.com) tutorial in the [Alfresco Developer Series](http://ecmarchitect.com/alfresco-developer-series).
+* If you are ready to cover new ground, try another [ecmarchitect.com](https://ecmarchitect.com) tutorial in the [Alfresco Developer Series](https://ecmarchitect.com/alfresco-developer-series).

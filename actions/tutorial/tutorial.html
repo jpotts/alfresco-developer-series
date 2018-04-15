@@ -29,7 +29,7 @@ Architect | Alfresco Developer Tutorials</title>
 					<div class="entry-content">
 <div id="header">
 <h1 class="entry-title">Creating Custom Actions in Alfresco</h1>
-<h2 class="author">Jeff Potts, <a href="http://www.metaversant.com">Metaversant Group</a></h2>
+<h2 class="author">Jeff Potts, <a href="https://www.metaversant.com">Metaversant Group</a></h2>
 <h3 class="date">April, 2018</h3>
 </div>
 <div id="TOC">
@@ -92,7 +92,7 @@ Architect | Alfresco Developer Tutorials</title>
 <p>Alfresco is a flexible platform for developing content management applications. Clients have several options to consider when selecting a user interface approach. Alfresco comes with a web client, Alfresco Share, that can be used as-is or customized. Alternatively, developers can create custom applications using the Content Management Interoperability Services (CMIS) API, web scripts, or the Alfresco Application Development Framework (ADF).</p>
 <p>Many times, the out-of-the-box web client is sufficient, even if it has to be customized slightly to fit your requirements. This is particularly true when your requirements closely resemble the all-purpose document management use case.</p>
 <p>Deciding whether to go with the out-of-the-box web client, a customized web client, or building your own user interface from scratch requires careful thought and analysis that is beyond the scope of this document.</p>
-<p>This tutorial is part of a <a href="http://ecmarchitect.com/alfresco-developer-series">series of tutorials</a> that cover Alfresco from a configuration and customization perspective. The <a href="http://ecmarchitect.com/alfresco-developer-series-tutorials/content/tutorial/tutorial.html">previous tutorial</a> discussed how to create custom content types and then expose those to the Alfresco Share user interface. The focus in this tutorial is on developing custom actions and configuring the user interface to show those custom actions.</p>
+<p>This tutorial is part of a <a href="https://ecmarchitect.com/alfresco-developer-series">series of tutorials</a> that cover Alfresco from a configuration and customization perspective. The <a href="https://ecmarchitect.com/alfresco-developer-series-tutorials/content/tutorial/tutorial.html">previous tutorial</a> discussed how to create custom content types and then expose those to the Alfresco Share user interface. The focus in this tutorial is on developing custom actions and configuring the user interface to show those custom actions.</p>
 <p>It is important to note that if you are looking for quick-and-dirty ways to operate against documents in the repository, you may not need a custom action. For example, you could:</p>
 <ul>
 <li>Write some Java, Groovy, Python, PHP, or .NET code that leverages an Apache Chemistry library to work with content stored in Alfresco</li>
@@ -118,14 +118,13 @@ Architect | Alfresco Developer Tutorials</title>
 <li>Java 1.8.0_77</li>
 <li>Apache Maven 3.5.3 (installed using Macports)</li>
 <li>Alfresco Maven SDK 3.0.1 (No download necessary)</li>
-<li>IntelliJ IDEA 2017.3.5</li>
 </ul>
-<p>By default, when you create an Alfresco project using version the Alfresco Maven SDK the project will be configured to depend on the latest stable Alfresco Community Edition build.</p>
+<p>By default, when you create an Alfresco project using the Alfresco Maven SDK the project will be configured to depend on the latest stable Alfresco Community Edition build.</p>
 <p>An IDE is optional. Most people working with Alfresco use IntelliJ, Eclipse, or something similar.</p>
 <h2 id="project-organization">Project Organization</h2>
 <p>I am going to use the Alfresco Maven SDK to create a project that will package up my customizations in two AMPs (Alfresco Module Packages). One AMP is for the Alfresco web application (the &quot;repo&quot; tier) and the other is for the Alfresco Share web application (the &quot;Share&quot; tier).</p>
-<p>I am not going to spend much time talking about how the Alfresco Maven SDK works. If you aren't already familiar with it, you may want to read the <a href="http://ecmarchitect.com/alfresco-developer-series">Getting Started with the Alfresco Maven SDK</a> tutorial on ecmarchitect.com first and then come back to this one.</p>
-<p>This tutorial relies on code from the <a href="http://ecmarchitect.com/alfresco-developer-series-tutorials/content/tutorial/tutorial.html">Custom Content Types</a> tutorial. The tutorial assumes that the repo tier AMP and Share tier AMP created during that tutorial have been installed into your local Maven repository by running <code>mvn install</code> from the root of the content-tutorial project.</p>
+<p>I am not going to spend much time talking about how the Alfresco Maven SDK works. If you aren't already familiar with it, you may want to read the <a href="https://ecmarchitect.com/alfresco-developer-series">Getting Started with the Alfresco Maven SDK</a> tutorial on ecmarchitect.com first and then come back to this one.</p>
+<p>This tutorial relies on code from the <a href="https://ecmarchitect.com/alfresco-developer-series-tutorials/content/tutorial/tutorial.html">Custom Content Types</a> tutorial. The tutorial assumes that the repo tier AMP and Share tier AMP created during that tutorial have been installed into your local Maven repository by running <code>mvn install</code> from the root of the content-tutorial project.</p>
 <p>If, rather than launching your project using the embedded Tomcat server, you are deploying to a separately installed Alfresco server, you must first deploy the content-tutorial repo tier and Share tier AMPs before deploying the AMPs you will create in this tutorial.</p>
 <p>If you are planning on following along, go ahead and use the Alfresco Maven SDK to create a new project from the &quot;all-in-one&quot; archetype. Use a <code>groupId</code> of &quot;com.someco&quot; and an <code>artifactId</code> of &quot;actions-tutorial&quot;.</p>
 <p>I'm going to make three quick changes to the initial project files the SDK created:</p>
@@ -158,6 +157,7 @@ Architect | Alfresco Developer Tutorials</title>
         &lt;groupId&gt;com.someco&lt;/groupId&gt;
         &lt;artifactId&gt;content-tutorial-platform-jar&lt;/artifactId&gt;
         &lt;version&gt;1.0-SNAPSHOT&lt;/version&gt;
+        &lt;scope&gt;provided&lt;/scope&gt;
     &lt;/dependency&gt;
 &lt;/dependencies&gt;</code></pre></li>
 </ol>
@@ -578,7 +578,7 @@ assoc.cm_replaces=Replaces</code></pre>
 &lt;config evaluator=&quot;string-compare&quot; condition=&quot;DocLibActions&quot;&gt;
     &lt;actions&gt;
         &lt;action id=&quot;someco-web-site&quot; type=&quot;link&quot; label=&quot;actions.someco.web-site&quot; icon=&quot;someco-website&quot;&gt;
-            &lt;param name=&quot;href&quot;&gt;http://ecmarchitect.com&lt;/param&gt;
+            &lt;param name=&quot;href&quot;&gt;https://ecmarchitect.com&lt;/param&gt;
             &lt;param name=&quot;target&quot;&gt;_blank&lt;/param&gt;
         &lt;/action&gt;
         &lt;action id=&quot;someco-web-enable&quot; type=&quot;javascript&quot; label=&quot;actions.someco.web-enable&quot; icon=&quot;someco-create-website&quot;&gt;
@@ -733,7 +733,7 @@ mvn alfresco:install -Dmaven.alfresco.warLocation=$TOMCAT_HOME/webapps/[alfresco
 <li>The complete source code for these examples is available on <a href="https://github.com/jpotts/alfresco-developer-series">GitHub</a>.</li>
 <li>Official documentation for both Enterprise Edition and Community Edition is available at <a href="http://docs.alfresco.com/">docs.alfresco.com</a>.</li>
 <li>Check the <a href="https://community.alfresco.com">Alfresco Community</a> site for blog posts from Mike Hatfield and David Draper, two Alfresco engineers that write about customizing Share.</li>
-<li>If you are ready to cover new ground, try another <a href="http://ecmarchitect.com">ecmarchitect.com</a> tutorial in the <a href="http://ecmarchitect.com/alfresco-developer-series">Alfresco Developer Series</a>.</li>
+<li>If you are ready to cover new ground, try another <a href="https://ecmarchitect.com">ecmarchitect.com</a> tutorial in the <a href="https://ecmarchitect.com/alfresco-developer-series">Alfresco Developer Series</a>.</li>
 </ul>
 					</div><!-- .entry-content -->
 				</div><!-- #post-## -->
@@ -743,11 +743,11 @@ mvn alfresco:install -Dmaven.alfresco.warLocation=$TOMCAT_HOME/webapps/[alfresco
 	<div id="footer" role="contentinfo">
 		<div id="colophon">
 			<div id="site-info">
-				<p><a href="http://ecmarchitect.com/"
+				<p><a href="https://ecmarchitect.com/"
 		title="ECM Architect" rel="home">ECM
 		Architect</a></p>
-			  
-<a rel="license" href="http://creativecommons.org/licenses/by-sa/3.0/"><img alt="Creative Commons License" style="border-width:0" src="http://i.creativecommons.org/l/by-sa/3.0/88x31.png" /></a><br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/3.0/">Creative Commons Attribution-ShareAlike 3.0 Unported License</a>.			  
+
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/3.0/"><img alt="Creative Commons License" style="border-width:0" src="./images/cc-by-sa-88x31.png" /></a><br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/3.0/">Creative Commons Attribution-ShareAlike 3.0 Unported License</a>.
 			</div><!-- #site-info -->
 		</div><!-- #colophon -->
 	</div><!-- #footer -->

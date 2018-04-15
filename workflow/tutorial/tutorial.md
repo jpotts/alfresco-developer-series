@@ -1,5 +1,5 @@
 % Creating Custom Advanced Workflows in Alfresco
-% Jeff Potts, [Metaversant Group](http://www.ecmarchitect.com/)
+% Jeff Potts, [Metaversant Group](https://www.ecmarchitect.com/)
 % April, 2018
 
 Introduction
@@ -68,7 +68,7 @@ Basic workflows are a nice end-user tool. You should know how they work and what
 
 For example, suppose SomeCo has a simple submit-review-approve process in which content is submitted, then reviewed, then approved or rejected. One way to implement this with basic workflows is to use three folders—let's say they are called "Draft", "In Review", and "Approved"—each of which have a rule set that applies a basic workflow. The workflow for content in the Draft folder would have a single forward step labeled "Submit" and its action would move content to the "In Review" folder and send an email to the approver group. The "In Review" folder would have a workflow in which the forward step would be labeled "Approve" and it would copy the content to an "Approved" folder. The backward step would be labeled "Reject" and its action would move the content back to the "Drafts" folder.
 
-In the ["Creating Custom Actions"](http://ecmarchitect.com/alfresco-developer-series-tutorials/actions/tutorial/tutorial.html) tutorial, you created a custom rule action called "Move Replaced" that could be used in conjunction with this basic workflow to move old content out of the Approved folder and into an Archived folder, for example.
+In the ["Creating Custom Actions"](https://ecmarchitect.com/alfresco-developer-series-tutorials/actions/tutorial/tutorial.html) tutorial, you created a custom rule action called "Move Replaced" that could be used in conjunction with this basic workflow to move old content out of the Approved folder and into an Archived folder, for example.
 
 You can see that basic workflows are useful, and when combined with rules and actions, you can automate simple business processes. But basic workflows are limited with regard to the complexity of the business processes they can handle.
 
@@ -169,9 +169,9 @@ archetype that will package up my customizations in two AMPs (Alfresco Module
 Packages). One AMP is for the Alfresco web application (the "repo" tier) and the
 other is for the Alfresco Share web application (the "Share" tier).
 
-I am not going to spend much time talking about how the Alfresco Maven SDK works. If you aren't already familiar with it, you may want to read the [Getting Started with the Alfresco Maven SDK](http://ecmarchitect.com/alfresco-developer-series) tutorial on ecmarchitect.com first and then come back to this one.
+I am not going to spend much time talking about how the Alfresco Maven SDK works. If you aren't already familiar with it, you may want to read the [Getting Started with the Alfresco Maven SDK](https://ecmarchitect.com/alfresco-developer-series) tutorial on ecmarchitect.com first and then come back to this one.
 
-This tutorial relies on code from the [Custom Content Types](http://ecmarchitect.com/alfresco-developer-series-tutorials/content/tutorial/tutorial.html) tutorial. The tutorial assumes that the repo tier AMP and Share tier AMP created during that tutorial have been installed into your local Maven repository. Or, if you are deploying to an
+This tutorial relies on code from the [Custom Content Types](https://ecmarchitect.com/alfresco-developer-series-tutorials/content/tutorial/tutorial.html) tutorial. The tutorial assumes that the repo tier AMP and Share tier AMP created during that tutorial have been installed into your local Maven repository. Or, if you are deploying to an
 Alfresco server instead of running the embedded Tomcat server, those AMPs need to
 be deployed to the Alfresco server. More details on that will be discussed later
 in the document.
@@ -867,7 +867,7 @@ At this point you know enough about advanced workflows to be dangerous. Let's wo
 SomeCo Whitepaper submission example
 ====================================
 
-This example continues the SomeCo example from the past several [Alfresco Developer Series](http://ecmarchitect.com/alfresco-developer-series) tutorials. SomeCo is going to use Advanced Workflows to route Whitepapers for approval before being flagged for publication on the web site. The next section describes the process.
+This example continues the SomeCo example from the past several [Alfresco Developer Series](https://ecmarchitect.com/alfresco-developer-series) tutorials. SomeCo is going to use Advanced Workflows to route Whitepapers for approval before being flagged for publication on the web site. The next section describes the process.
 
 Business requirements
 ---------------------
@@ -1317,7 +1317,7 @@ Now that the base process is running and it's hooked in to the Alfresco UI, it's
 
 ### Call the set-web-action on approved documents
 
-When a whitepaper is approved it needs to show up on the web site. Recall from the "[Custom Actions](http://ecmarchitect.com/alfresco-developer-series-tutorials/actions/tutorial/tutorial.html)" tutorial that there is already an action that will add the `sc:webable` aspect to a document and set the `sc:isActive` and `sc:publishedFlag` properties. So all you have to do is tell the process to execute it against the approved whitepaper.
+When a whitepaper is approved it needs to show up on the web site. Recall from the "[Custom Actions](https://ecmarchitect.com/alfresco-developer-series-tutorials/actions/tutorial/tutorial.html)" tutorial that there is already an action that will add the `sc:webable` aspect to a document and set the `sc:isActive` and `sc:publishedFlag` properties. So all you have to do is tell the process to execute it against the approved whitepaper.
 
 To do that, edit the business process and search for the `userTask` element named "Approved Notification". Add the following extension element:
 
@@ -1352,7 +1352,7 @@ This may seem backwards, but let's build the web script that handles the links f
 
 #### Implement the Web Script
 
-The "[Introduction to Web Scripts](http://ecmarchitect.com/alfresco-developer-series-tutorials/webscripts/tutorial/tutorial.html)" tutorial showed you how to create custom web scripts, so I am only going to show you the Java class that acts as the web script controller. See the source for the other files that make up the web script.
+The "[Introduction to Web Scripts](https://ecmarchitect.com/alfresco-developer-series-tutorials/webscripts/tutorial/tutorial.html)" tutorial showed you how to create custom web scripts, so I am only going to show you the Java class that acts as the web script controller. See the source for the other files that make up the web script.
 
 This web script is going to leverage classes created in a previous tutorial. So the first thing to do is to edit [pom.xml](https://github.com/jpotts/alfresco-developer-series/blob/master/workflow/workflow-tutorial/workflow-tutorial-platform-jar/pom.xml) to add this dependency:
 
@@ -1583,7 +1583,7 @@ Where to find more information
 * The complete source code for these examples is available on [GitHub](https://github.com/jpotts/alfresco-developer-series).
 * Official documentation for both Enterprise Edition and Community Edition is available at [docs.alfresco.com](http://docs.alfresco.com/).
 * Ask questions about Activiti embedded within Alfresco in the [Alfresco Community](http://community.alfresco.com).
-* If you are ready to cover new ground, try another [ecmarchitect.com](http://ecmarchitect.com) tutorial in the [Alfresco Developer Series](http://ecmarchitect.com/alfresco-developer-series).
+* If you are ready to cover new ground, try another [ecmarchitect.com](https://ecmarchitect.com) tutorial in the [Alfresco Developer Series](https://ecmarchitect.com/alfresco-developer-series).
 * Activiti and BPMN
     * The [Activiti home page](http://activiti.org/) has documentation and tutorials.
     * OMG hosts [bpmn.org](http://www.bpmn.org/), which is where the [BPMN 2.0 spec](http://www.omg.org/spec/BPMN/2.0/) lives as well as the [BPMN by Example](http://www.omg.org/cgi-bin/doc?dtc/10-06-02) document.

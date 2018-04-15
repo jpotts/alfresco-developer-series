@@ -29,7 +29,7 @@ Architect | Alfresco Developer Tutorials</title>
 					<div class="entry-content">
 <div id="header">
 <h1 class="entry-title">Implementing Custom Behaviors in Alfresco</h1>
-<h2 class="author">Jeff Potts, <a href="http://www.metaversant.com">Metaversant Group</a></h2>
+<h2 class="author">Jeff Potts, <a href="https://www.metaversant.com">Metaversant Group</a></h2>
 <h3 class="date">April, 2018</h3>
 </div>
 <div id="TOC">
@@ -74,7 +74,7 @@ Architect | Alfresco Developer Tutorials</title>
 <p>This work is licensed under the Creative Commons Attribution-ShareAlike 3.0 Unported License. To view a copy of this license, visit http://creativecommons.org/licenses/by-sa/3.0/ or send a letter to Creative Commons, 444 Castro Street, Suite 900, Mountain View, California, 94041, USA.</p>
 <h1 id="introduction">Introduction</h1>
 <p>This tutorial discusses how to write your own custom behavior code in Java or JavaScript and then bind that code to node events or “policies”.</p>
-<p>In previous tutorials I've discussed how to create <a href="http://ecmarchitect.com/alfresco-developer-series-tutorials/content/tutorial/tutorial.html">custom content models</a> and how to write <a href="http://ecmarchitect.com/alfresco-developer-series-tutorials/actions/tutorial/tutorial.html">custom actions</a>. In both cases, you've seen how to write code that works with custom content types, properties, aspects, and associations, but the code wasn't tightly coupled to the objects on which it operated. For example, with an action, the business logic is triggered by something—a rule, a clicked link in the user interface, a schedule, or a workflow—rather than being <em>bound</em> to the content type or aspect.</p>
+<p>In previous tutorials I've discussed how to create <a href="https://ecmarchitect.com/alfresco-developer-series-tutorials/content/tutorial/tutorial.html">custom content models</a> and how to write <a href="https://ecmarchitect.com/alfresco-developer-series-tutorials/actions/tutorial/tutorial.html">custom actions</a>. In both cases, you've seen how to write code that works with custom content types, properties, aspects, and associations, but the code wasn't tightly coupled to the objects on which it operated. For example, with an action, the business logic is triggered by something—a rule, a clicked link in the user interface, a schedule, or a workflow—rather than being <em>bound</em> to the content type or aspect.</p>
 <p>Actions are very useful when the business logic the action carries out is generic enough to be applied to many types of objects. The out-of-the-box &quot;copy&quot;, &quot;move&quot;, or &quot;add aspect&quot; actions are obvious examples.</p>
 <p>There are times, though, when you want code to be tightly-coupled to a content type because you need to be sure it gets executed every time something happens to that object rather than leaving it up to a rule on a folder or some other trigger. Fortunately, Alfresco provides just such a mechanism—it's called <em>behavior</em>.</p>
 <p>Behaviors are used throughout Alfresco. Auditing and versioning are examples where behaviors are involved. Here are a couple of other real world examples where behaviors might be useful:</p>
@@ -84,7 +84,7 @@ Architect | Alfresco Developer Tutorials</title>
 </ul>
 <p>In this tutorial you'll see a simple example also based on a real-world implementation: Using a custom behavior to compute the average user rating (based on a five star scale) for a piece of content.</p>
 <p>As a side-note, Alfresco has rating functionality built-in. Out-of-the-box it uses a simple &quot;like&quot; model but the underlying model supports other schemes. This tutorial completely ignores what's available out-of-the-box.</p>
-<p>You should already be familiar with general Alfresco concepts. If you want to follow along, you should also know how to write basic Java code. You may want to work through the <a href="http://ecmarchitect.com/alfresco-developer-series-tutorials/content/tutorial/tutorial.html">custom content models tutorial</a> if you aren't already familiar with how to extend Alfresco's content model.</p>
+<p>You should already be familiar with general Alfresco concepts. If you want to follow along, you should also know how to write basic Java code. You may want to work through the <a href="https://ecmarchitect.com/alfresco-developer-series-tutorials/content/tutorial/tutorial.html">custom content models tutorial</a> if you aren't already familiar with how to extend Alfresco's content model.</p>
 <p>All of the source code that accompanies this tutorial is available on <a href="https://github.com/jpotts/alfresco-developer-series">GitHub</a>.</p>
 <h1 id="introducing-the-user-ratings-example">Introducing the user ratings example</h1>
 <p>Recall that the custom content types tutorial created a custom type called &quot;whitepaper&quot; for a fictitious company called SomeCo. The custom model also included an aspect called “webable” that gets attached to content objects SomeCo wants to show on the web. So, for example, SomeCo might use Alfresco to manage all of its whitepapers, but show only a subset on the web. Whitepapers that need to be shown on the web get the webable aspect attached and the <code>sc:isActive</code> flag set to <code>true</code>. The front-end can then query for whitepapers based on that flag.</p>
@@ -157,7 +157,7 @@ Architect | Alfresco Developer Tutorials</title>
 <p>An IDE is optional. Most people working with Alfresco use IntelliJ, Eclipse, or something similar.</p>
 <h2 id="project-organization">Project Organization</h2>
 <p>I am going to use the Alfresco Maven SDK to create a project using the &quot;all-in-one&quot; archetype. The project will package up my customizations in two AMPs (Alfresco Module Packages): One AMP for the &quot;repo&quot; tier and one AMP for the &quot;share&quot; tier.</p>
-<p>I am not going to spend much time talking about how the Alfresco Maven SDK works. If you aren't already familiar with it, you may want to read the <a href="http://ecmarchitect.com/alfresco-developer-series">Getting Started with the Alfresco Maven SDK</a> tutorial on ecmarchitect.com first and then come back to this one.</p>
+<p>I am not going to spend much time talking about how the Alfresco Maven SDK works. If you aren't already familiar with it, you may want to read the <a href="https://ecmarchitect.com/alfresco-developer-series">Getting Started with the Alfresco Maven SDK</a> tutorial on ecmarchitect.com first and then come back to this one.</p>
 <p>If you are planning on following along, go ahead and use the Alfresco Maven SDK to create a new project. Use a <code>groupId</code> of &quot;com.someco&quot; and an <code>artifactId</code> of &quot;behavior-tutorial&quot;.</p>
 <p>I'm going to make a couple of quick changes to the generated project.</p>
 <p>First, we always want to generate AMP files for our projects. Starting with SDK 3.0.0, the default is to generate JAR files. That's easily fixed by uncommenting the &quot;maven-assembly-plugin&quot; in the list of plugins in the pom.xml file.</p>
@@ -783,7 +783,7 @@ mvn alfresco:install -Dmaven.alfresco.warLocation=$TOMCAT_HOME/webapps/[alfresco
 <li>The complete source code for these examples is available on <a href="https://github.com/jpotts/alfresco-developer-series">GitHub</a>.</li>
 <li>Official documentation for both Enterprise Edition and Community Edition is available at <a href="http://docs.alfresco.com/">docs.alfresco.com</a>.</li>
 <li>Get help from the <a href="http://community.alfresco.com">community</a>.</li>
-<li>If you are ready to cover new ground, try another <a href="http://ecmarchitect.com">ecmarchitect.com</a> tutorial in the <a href="http://ecmarchitect.com/alfresco-developer-series">Alfresco Developer Series</a>.</li>
+<li>If you are ready to cover new ground, try another <a href="https://ecmarchitect.com">ecmarchitect.com</a> tutorial in the <a href="https://ecmarchitect.com/alfresco-developer-series">Alfresco Developer Series</a>.</li>
 </ul>
 					</div><!-- .entry-content -->
 				</div><!-- #post-## -->
@@ -793,11 +793,11 @@ mvn alfresco:install -Dmaven.alfresco.warLocation=$TOMCAT_HOME/webapps/[alfresco
 	<div id="footer" role="contentinfo">
 		<div id="colophon">
 			<div id="site-info">
-				<p><a href="http://ecmarchitect.com/"
+				<p><a href="https://ecmarchitect.com/"
 		title="ECM Architect" rel="home">ECM
 		Architect</a></p>
-			  
-<a rel="license" href="http://creativecommons.org/licenses/by-sa/3.0/"><img alt="Creative Commons License" style="border-width:0" src="./images/cc-by-sa-88x31.png" /></a><br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/3.0/">Creative Commons Attribution-ShareAlike 3.0 Unported License</a>.			  
+
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/3.0/"><img alt="Creative Commons License" style="border-width:0" src="./images/cc-by-sa-88x31.png" /></a><br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/3.0/">Creative Commons Attribution-ShareAlike 3.0 Unported License</a>.
 			</div><!-- #site-info -->
 		</div><!-- #colophon -->
 	</div><!-- #footer -->

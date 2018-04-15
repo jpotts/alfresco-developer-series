@@ -29,7 +29,7 @@ Architect | Alfresco Developer Tutorials</title>
 					<div class="entry-content">
 <div id="header">
 <h1 class="entry-title">Working With Custom Content Types in Alfresco</h1>
-<h2 class="author">Jeff Potts, <a href="http://www.metaversant.com">Metaversant Group</a></h2>
+<h2 class="author">Jeff Potts, <a href="https://www.metaversant.com">Metaversant Group</a></h2>
 <h3 class="date">April, 2018</h3>
 </div>
 <div id="TOC">
@@ -130,7 +130,7 @@ Architect | Alfresco Developer Tutorials</title>
 <p>As you have probably figured out by now, there is a third option that addresses these issues: Aspects. Aspects “cross-cut” the content model with properties and associations by attaching them to content types (or even specific instances of content) when and where they are needed.</p>
 <p>Going back to the portal example, a “Portal Displayable” aspect could be defined with a publish date property. The aspect would then be added to any piece of content, regardless of type, that needed to be displayed in the portal.</p>
 <h3 id="custom-behavior">Custom Behavior</h3>
-<p>You may find that your custom aspect or custom type needs to have behavior or business logic associated with it. For example, every time an Expense Report is checked in you want to recalculate the total by iterating through the associated Expenses. One option would be to incorporate this logic into rules or actions in the Alfresco web client or your custom web application. But some behavior is so fundamental to the aspect or type that it should really be “bound” to the aspect or type and invoked any time Alfresco works with those objects. If you are curious how this works, read the <a href="http://ecmarchitect.com/alfresco-developer-series">Custom Behaviors tutorial</a> on ecmarchitect.com. For now, just know that associating business logic with your custom aspects and types (or overriding out-of-the-box behavior) is possible.</p>
+<p>You may find that your custom aspect or custom type needs to have behavior or business logic associated with it. For example, every time an Expense Report is checked in you want to recalculate the total by iterating through the associated Expenses. One option would be to incorporate this logic into rules or actions in the Alfresco web client or your custom web application. But some behavior is so fundamental to the aspect or type that it should really be “bound” to the aspect or type and invoked any time Alfresco works with those objects. If you are curious how this works, read the <a href="https://ecmarchitect.com/alfresco-developer-series">Custom Behaviors tutorial</a> on ecmarchitect.com. For now, just know that associating business logic with your custom aspects and types (or overriding out-of-the-box behavior) is possible.</p>
 <h3 id="content-modeling-best-practices">Content Modeling Best Practices</h3>
 <p>Now that you know the building blocks of a content model, it makes sense to consider some best practices. Here are the top ten:</p>
 <ol style="list-style-type: decimal">
@@ -278,7 +278,7 @@ Architect | Alfresco Developer Tutorials</title>
 <li><strong>content-tutorial-cmis</strong>: This project contains runnable Java classes that show how to use the CMIS API to perform CRUD functions against content that leverages your custom content model. You'll create this project in Part 3 of this tutorial.</li>
 </ul>
 <p>From an Apache Maven perspective, each of these two projects as well as each of the content-tutorial project's modules will have their own pom.xml.</p>
-<p>Speaking of Apache Maven, I am not going to spend much time talking about how the Alfresco Maven SDK works. If you aren't already familiar with it, you may want to read the <a href="http://ecmarchitect.com/alfresco-developer-series">Getting Started with the Alfresco Maven SDK</a> tutorial on ecmarchitect.com first and then come back to this one.</p>
+<p>Speaking of Apache Maven, I am not going to spend much time talking about how the Alfresco Maven SDK works. If you aren't already familiar with it, you may want to read the <a href="https://ecmarchitect.com/alfresco-developer-series">Getting Started with the Alfresco Maven SDK</a> tutorial on ecmarchitect.com first and then come back to this one.</p>
 <h3 id="implementing-and-deploying-the-model">Implementing and Deploying the Model</h3>
 <p>Here are the steps to follow when configuring a custom content model:</p>
 <ol style="list-style-type: decimal">
@@ -806,7 +806,7 @@ prop.sc_version=Version</code></pre></li>
 </tbody>
 </table>
 <p>The best way to make remote calls to the Alfresco repository is to leverage Alfresco’s support for the Content Management Interoperability Services (CMIS) <a href="https://www.oasis-open.org/committees/cmis">standard</a>. So let’s look at CMIS examples for creating, updating, querying, and deleting content. The client API’s available from the <a href="http://chemistry.apache.org">Apache Chemistry</a> project offer a variety of languages to choose from. This tutorial focuses on Java.</p>
-<p>If you need to learn how to make these other styles of customizations, consult <a href="http://ecmarchitect.com">ecmarchitect.com</a> and the <a href="http://docs.alfresco.com">Alfresco Documentation</a>.</p>
+<p>If you need to learn how to make these other styles of customizations, consult <a href="https://ecmarchitect.com">ecmarchitect.com</a> and the <a href="http://docs.alfresco.com">Alfresco Documentation</a>.</p>
 <h2 id="setup">Setup</h2>
 <p>Let's run through some examples that leverage OpenCMIS to work with instances of the custom types defined in the model. To facilitate this, I'm going to create a new Maven project as a sibling to the content-tutorial project. Because the new project doesn't produce AMPs it does not make sense to use the Alfresco Maven SDK to create it.</p>
 <p>To create the CMIS project, do this:</p>
@@ -1178,8 +1178,8 @@ Done!</code></pre>
 <li>Official documentation for both Enterprise Edition and Community Edition is available at <a href="http://docs.alfresco.com/">docs.alfresco.com</a>.</li>
 <li><a href="http://share-extras.github.io/">Share Extras</a> has many examples of deeper Share customization.</li>
 <li>The <a href="http://chemistry.apache.org/">Apache Chemistry Home Page</a> has examples and source code that works with CMIS.</li>
-<li>See <a href="http://ecmarchitect.com/archives/2009/11/23/1094">“Getting Started with CMIS”</a> on <a href="http://ecmarchitect.com">ecmarchitect.com</a> for a brief introduction to CMIS. The <a href="http://cmis.alfresco.com/">Alfresco CMIS</a> page is also a great resource. And there is now a <a href="http://www.manning.com/mueller/">CMIS book</a> availaible.</li>
-<li>If you are ready to cover new ground, try another <a href="http://ecmarchitect.com">ecmarchitect.com</a> tutorial in the <a href="http://ecmarchitect.com/alfresco-developer-series">Alfresco Developer Series</a>.</li>
+<li>See <a href="https://ecmarchitect.com/archives/2009/11/23/1094">“Getting Started with CMIS”</a> on <a href="https://ecmarchitect.com">ecmarchitect.com</a> for a brief introduction to CMIS. The <a href="http://cmis.alfresco.com/">Alfresco CMIS</a> page is also a great resource. And there is now a <a href="http://www.manning.com/mueller/">CMIS book</a> availaible.</li>
+<li>If you are ready to cover new ground, try another <a href="https://ecmarchitect.com">ecmarchitect.com</a> tutorial in the <a href="https://ecmarchitect.com/alfresco-developer-series">Alfresco Developer Series</a>.</li>
 </ul>
 					</div><!-- .entry-content -->
 				</div><!-- #post-## -->
@@ -1189,11 +1189,11 @@ Done!</code></pre>
 	<div id="footer" role="contentinfo">
 		<div id="colophon">
 			<div id="site-info">
-				<p><a href="http://ecmarchitect.com/"
+				<p><a href="https://ecmarchitect.com/"
 		title="ECM Architect" rel="home">ECM
 		Architect</a></p>
-			  
-<a rel="license" href="http://creativecommons.org/licenses/by-sa/3.0/"><img alt="Creative Commons License" style="border-width:0" src="./images/cc-by-sa-88x31.png" /></a><br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/3.0/">Creative Commons Attribution-ShareAlike 3.0 Unported License</a>.			  
+
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/3.0/"><img alt="Creative Commons License" style="border-width:0" src="./images/cc-by-sa-88x31.png" /></a><br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/3.0/">Creative Commons Attribution-ShareAlike 3.0 Unported License</a>.
 			</div><!-- #site-info -->
 		</div><!-- #colophon -->
 	</div><!-- #footer -->

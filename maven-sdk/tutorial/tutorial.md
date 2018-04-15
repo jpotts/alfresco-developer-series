@@ -1,5 +1,5 @@
 % Getting Started with the Alfresco Maven SDK
-% Jeff Potts, [Metaversant Group](http://www.metaversant.com)
+% Jeff Potts, [Metaversant Group](https://www.metaversant.com)
 % April, 2018
 
 License
@@ -254,7 +254,7 @@ Inside the project directory, you'll see:
 
 Now look at "maven-sdk-tutorial-platform-jar". In it, you'll find:
 
-* *src/main/java* This is where you should create your own packages to organize your Java code. Things like custom action executer classes, custom behaviors, Java-based controllers for web scripts go here. If you don't know what those are, don't worry, there are tutorials available [here](http://ecmarchitect.com/alfresco-developer-series). These files will ultimately be placed in a JAR. When the AMP is installed into the Alfresco WAR, the JAR will be placed under WEB-INF/lib.
+* *src/main/java* This is where you should create your own packages to organize your Java code. Things like custom action executer classes, custom behaviors, Java-based controllers for web scripts go here. If you don't know what those are, don't worry, there are tutorials available [here](https://ecmarchitect.com/alfresco-developer-series). These files will ultimately be placed in a JAR. When the AMP is installed into the Alfresco WAR, the JAR will be placed under WEB-INF/lib.
 
 * *src/test* Everything under src/test is about running unit tests. The unit tests themselves go in src/test/java. Any resources those classes need go in src/test/resources. In src/test/properties/local you'll see an alfresco-global.properties file. If you are already know something about Alfresco you know that this is used to configure Alfresco. In this case, it is only used when running the embedded Alfresco server for testing purposes.
 
@@ -326,4 +326,4 @@ There are many topics that weren't covered in this tutorial. I'll leave you to e
 Where to Find More Information
 ==============================
  - The [official documentation](https://docs.alfresco.com/5.2/concepts/sdk-intro.html) on the Alfresco Maven SDK is on <https://docs.alfresco.com>.
- - The [Alfresco Developer Series](http://ecmarchitect.com/alfresco-developer-series) on [ECM Architect](http://ecmarchitect.com) has free tutorials on custom content models, actions, behaviors, workflows, and web scripts.
+ - The [Alfresco Developer Series](https://ecmarchitect.com/alfresco-developer-series) on [ECM Architect](https://ecmarchitect.com) has free tutorials on custom content models, actions, behaviors, workflows, and web scripts.

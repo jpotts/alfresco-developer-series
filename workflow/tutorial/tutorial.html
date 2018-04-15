@@ -29,7 +29,7 @@ Architect | Alfresco Developer Tutorials</title>
 					<div class="entry-content">
 <div id="header">
 <h1 class="entry-title">Creating Custom Advanced Workflows in Alfresco</h1>
-<h2 class="author">Jeff Potts, <a href="http://www.ecmarchitect.com/">Metaversant Group</a></h2>
+<h2 class="author">Jeff Potts, <a href="https://www.ecmarchitect.com/">Metaversant Group</a></h2>
 <h3 class="date">April, 2018</h3>
 </div>
 <div id="TOC">
@@ -142,7 +142,7 @@ Architect | Alfresco Developer Tutorials</title>
 <h3 id="basic-workflows">Basic workflows</h3>
 <p>Basic workflows are a nice end-user tool. You should know how they work and what the features and limitations are so you can make good decisions about when to use them. Basic workflows use folders and a &quot;forward step/backward step&quot; model to implement serial processes. When a piece of content is dropped in a folder, a rule is triggered that associates a &quot;forward step&quot; and a &quot;backward step&quot; (one or the other or both) with the content. These steps are tied to Alfresco actions such as &quot;Set a property&quot; or &quot;Move the content to a specified folder&quot;. End users can then click on the appropriate step for a given piece of content.</p>
 <p>For example, suppose SomeCo has a simple submit-review-approve process in which content is submitted, then reviewed, then approved or rejected. One way to implement this with basic workflows is to use three folders—let's say they are called &quot;Draft&quot;, &quot;In Review&quot;, and &quot;Approved&quot;—each of which have a rule set that applies a basic workflow. The workflow for content in the Draft folder would have a single forward step labeled &quot;Submit&quot; and its action would move content to the &quot;In Review&quot; folder and send an email to the approver group. The &quot;In Review&quot; folder would have a workflow in which the forward step would be labeled &quot;Approve&quot; and it would copy the content to an &quot;Approved&quot; folder. The backward step would be labeled &quot;Reject&quot; and its action would move the content back to the &quot;Drafts&quot; folder.</p>
-<p>In the <a href="http://ecmarchitect.com/alfresco-developer-series-tutorials/actions/tutorial/tutorial.html">&quot;Creating Custom Actions&quot;</a> tutorial, you created a custom rule action called &quot;Move Replaced&quot; that could be used in conjunction with this basic workflow to move old content out of the Approved folder and into an Archived folder, for example.</p>
+<p>In the <a href="https://ecmarchitect.com/alfresco-developer-series-tutorials/actions/tutorial/tutorial.html">&quot;Creating Custom Actions&quot;</a> tutorial, you created a custom rule action called &quot;Move Replaced&quot; that could be used in conjunction with this basic workflow to move old content out of the Approved folder and into an Archived folder, for example.</p>
 <p>You can see that basic workflows are useful, and when combined with rules and actions, you can automate simple business processes. But basic workflows are limited with regard to the complexity of the business processes they can handle.</p>
 <h3 id="advanced-workflows">Advanced workflows</h3>
 <p>Advanced workflows are useful when you need much more control over the business process. Typical requirements that require the use of the advanced workflow engine are things like:</p>
@@ -230,8 +230,8 @@ Architect | Alfresco Developer Tutorials</title>
 <p>By default, when you create an Alfresco project using the Alfresco Maven SDK the project will be configured to depend on the latest stable Alfresco Community Edition.</p>
 <h2 id="project-organization">Project Organization</h2>
 <p>I am going to use the Alfresco Maven SDK to create a project from the &quot;all-in-one&quot; archetype that will package up my customizations in two AMPs (Alfresco Module Packages). One AMP is for the Alfresco web application (the &quot;repo&quot; tier) and the other is for the Alfresco Share web application (the &quot;Share&quot; tier).</p>
-<p>I am not going to spend much time talking about how the Alfresco Maven SDK works. If you aren't already familiar with it, you may want to read the <a href="http://ecmarchitect.com/alfresco-developer-series">Getting Started with the Alfresco Maven SDK</a> tutorial on ecmarchitect.com first and then come back to this one.</p>
-<p>This tutorial relies on code from the <a href="http://ecmarchitect.com/alfresco-developer-series-tutorials/content/tutorial/tutorial.html">Custom Content Types</a> tutorial. The tutorial assumes that the repo tier AMP and Share tier AMP created during that tutorial have been installed into your local Maven repository. Or, if you are deploying to an Alfresco server instead of running the embedded Tomcat server, those AMPs need to be deployed to the Alfresco server. More details on that will be discussed later in the document.</p>
+<p>I am not going to spend much time talking about how the Alfresco Maven SDK works. If you aren't already familiar with it, you may want to read the <a href="https://ecmarchitect.com/alfresco-developer-series">Getting Started with the Alfresco Maven SDK</a> tutorial on ecmarchitect.com first and then come back to this one.</p>
+<p>This tutorial relies on code from the <a href="https://ecmarchitect.com/alfresco-developer-series-tutorials/content/tutorial/tutorial.html">Custom Content Types</a> tutorial. The tutorial assumes that the repo tier AMP and Share tier AMP created during that tutorial have been installed into your local Maven repository. Or, if you are deploying to an Alfresco server instead of running the embedded Tomcat server, those AMPs need to be deployed to the Alfresco server. More details on that will be discussed later in the document.</p>
 <p>If you are planning on following along, go ahead and use the Alfresco Maven SDK to create a new project from the &quot;all-in-one&quot; archetype. Use a <code>groupId</code> of &quot;com.someco&quot; and an <code>artifactId</code> of &quot;workflow-tutorial&quot;.</p>
 <p>Starting with 3.0.0, the SDK will generate JAR files by default. We always want to generate AMPs, not JARs, so edit the pom.xml file to uncomment the maven-assembly-plugin.</p>
 <p>We'll be running the project using an embedded Tomcat server. We can configure the project to install AMPs from the earlier tutorials automatically. Edit the pom.xml file in the &quot;workflow-tutorial&quot; directory to add the following &quot;platformModule&quot; dependencies:</p>
@@ -776,7 +776,7 @@ workflow.scwf_helloWorldUI=Hello World UI</code></pre>
 </ol>
 <p>At this point you know enough about advanced workflows to be dangerous. Let's work through an example for the fictitious company, SomeCo, to put some of this new knowledge to work.</p>
 <h1 id="someco-whitepaper-submission-example">SomeCo Whitepaper submission example</h1>
-<p>This example continues the SomeCo example from the past several <a href="http://ecmarchitect.com/alfresco-developer-series">Alfresco Developer Series</a> tutorials. SomeCo is going to use Advanced Workflows to route Whitepapers for approval before being flagged for publication on the web site. The next section describes the process.</p>
+<p>This example continues the SomeCo example from the past several <a href="https://ecmarchitect.com/alfresco-developer-series">Alfresco Developer Series</a> tutorials. SomeCo is going to use Advanced Workflows to route Whitepapers for approval before being flagged for publication on the web site. The next section describes the process.</p>
 <h2 id="business-requirements">Business requirements</h2>
 <p>Anyone that can log in to Alfresco can submit a whitepaper for publication on the SomeCo web site. The only information the submitter needs to specify is the email address of an external third-party reviewer, if applicable. More on that shortly.</p>
 <p>The whitepaper needs to be reviewed by the Engineering team as well as the Marketing team. It doesn't matter who on the team does the review—SomeCo wants to notify each team and then let one representative from each team &quot;own&quot; the review task. Either team can reject the whitepaper. If rejected, the person who submitted the whitepaper can make revisions and resubmit. If both teams approve, the whitepaper moves on to the next step.</p>
@@ -1189,7 +1189,7 @@ prop.scwf_reviewerEmail=Reviewer Email</code></pre>
 <h2 id="step-2-implement-web-scripts-and-actions">Step 2: Implement web scripts and actions</h2>
 <p>Now that the base process is running and it's hooked in to the Alfresco UI, it's time to make the process smarter by adding some business logic.</p>
 <h3 id="call-the-set-web-action-on-approved-documents">Call the set-web-action on approved documents</h3>
-<p>When a whitepaper is approved it needs to show up on the web site. Recall from the &quot;<a href="http://ecmarchitect.com/alfresco-developer-series-tutorials/actions/tutorial/tutorial.html">Custom Actions</a>&quot; tutorial that there is already an action that will add the <code>sc:webable</code> aspect to a document and set the <code>sc:isActive</code> and <code>sc:publishedFlag</code> properties. So all you have to do is tell the process to execute it against the approved whitepaper.</p>
+<p>When a whitepaper is approved it needs to show up on the web site. Recall from the &quot;<a href="https://ecmarchitect.com/alfresco-developer-series-tutorials/actions/tutorial/tutorial.html">Custom Actions</a>&quot; tutorial that there is already an action that will add the <code>sc:webable</code> aspect to a document and set the <code>sc:isActive</code> and <code>sc:publishedFlag</code> properties. So all you have to do is tell the process to execute it against the approved whitepaper.</p>
 <p>To do that, edit the business process and search for the <code>userTask</code> element named &quot;Approved Notification&quot;. Add the following extension element:</p>
 <pre><code>&lt;userTask id=&quot;usertask4&quot; name=&quot;Approved Notification&quot; activiti:assignee=&quot;${initiator.properties.userName}&quot; activiti:formKey=&quot;scwf:activitiApprovedNotification&quot;&gt;
     &lt;extensionElements&gt;
@@ -1214,7 +1214,7 @@ prop.scwf_reviewerEmail=Reviewer Email</code></pre>
 <p>All of the business logic you've seen so far has been written in server-side JavaScript. Let's change it up a little bit. There are two pieces required to make this work. The first piece is some Java code that will send the email with the &quot;approve&quot; and &quot;reject&quot; links in the email body. The recipient will open their email and click on either the approve link or the reject link. This won't require logging in to Alfresco at all. The second part is a web script that gets called when the recipient clicks the links. The web script will get a handle to the workflow task and set the outcome appropriately.</p>
 <p>This may seem backwards, but let's build the web script that handles the links first, then you'll see how to build an Activiti task listener class that sends the email notification.</p>
 <h4 id="implement-the-web-script">Implement the Web Script</h4>
-<p>The &quot;<a href="http://ecmarchitect.com/alfresco-developer-series-tutorials/webscripts/tutorial/tutorial.html">Introduction to Web Scripts</a>&quot; tutorial showed you how to create custom web scripts, so I am only going to show you the Java class that acts as the web script controller. See the source for the other files that make up the web script.</p>
+<p>The &quot;<a href="https://ecmarchitect.com/alfresco-developer-series-tutorials/webscripts/tutorial/tutorial.html">Introduction to Web Scripts</a>&quot; tutorial showed you how to create custom web scripts, so I am only going to show you the Java class that acts as the web script controller. See the source for the other files that make up the web script.</p>
 <p>This web script is going to leverage classes created in a previous tutorial. So the first thing to do is to edit <a href="https://github.com/jpotts/alfresco-developer-series/blob/master/workflow/workflow-tutorial/workflow-tutorial-platform-jar/pom.xml">pom.xml</a> to add this dependency:</p>
 <pre><code>&lt;dependency&gt;
     &lt;groupId&gt;com.someco&lt;/groupId&gt;
@@ -1369,7 +1369,7 @@ prop.scwf_reviewerEmail=Reviewer Email</code></pre>
 <li>The complete source code for these examples is available on <a href="https://github.com/jpotts/alfresco-developer-series">GitHub</a>.</li>
 <li>Official documentation for both Enterprise Edition and Community Edition is available at <a href="http://docs.alfresco.com/">docs.alfresco.com</a>.</li>
 <li>Ask questions about Activiti embedded within Alfresco in the <a href="http://community.alfresco.com">Alfresco Community</a>.</li>
-<li>If you are ready to cover new ground, try another <a href="http://ecmarchitect.com">ecmarchitect.com</a> tutorial in the <a href="http://ecmarchitect.com/alfresco-developer-series">Alfresco Developer Series</a>.</li>
+<li>If you are ready to cover new ground, try another <a href="https://ecmarchitect.com">ecmarchitect.com</a> tutorial in the <a href="https://ecmarchitect.com/alfresco-developer-series">Alfresco Developer Series</a>.</li>
 <li>Activiti and BPMN
 <ul>
 <li>The <a href="http://activiti.org/">Activiti home page</a> has documentation and tutorials.</li>
@@ -1384,11 +1384,11 @@ prop.scwf_reviewerEmail=Reviewer Email</code></pre>
 	<div id="footer" role="contentinfo">
 		<div id="colophon">
 			<div id="site-info">
-				<p><a href="http://ecmarchitect.com/"
+				<p><a href="https://ecmarchitect.com/"
 		title="ECM Architect" rel="home">ECM
 		Architect</a></p>
-			  
-<a rel="license" href="http://creativecommons.org/licenses/by-sa/3.0/"><img alt="Creative Commons License" style="border-width:0" src="http://i.creativecommons.org/l/by-sa/3.0/88x31.png" /></a><br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/3.0/">Creative Commons Attribution-ShareAlike 3.0 Unported License</a>.			  
+
+<a rel="license" href="http://creativecommons.org/licenses/by-sa/3.0/"><img alt="Creative Commons License" style="border-width:0" src="./images/cc-by-sa-88x31.png" /></a><br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/3.0/">Creative Commons Attribution-ShareAlike 3.0 Unported License</a>.
 			</div><!-- #site-info -->
 		</div><!-- #colophon -->
 	</div><!-- #footer -->
