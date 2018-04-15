@@ -1223,14 +1223,6 @@ prop.scwf_reviewerEmail=Reviewer Email</code></pre>
 <p>This may seem backwards, but let's build the web script that handles the links first, then you'll see how to build an Activiti task listener class that sends the email notification.</p>
 <h4 id="implement-the-web-script">Implement the Web Script</h4>
 <p>The &quot;<a href="https://ecmarchitect.com/alfresco-developer-series-tutorials/webscripts/tutorial/tutorial.html">Introduction to Web Scripts</a>&quot; tutorial showed you how to create custom web scripts, so I am only going to show you the Java class that acts as the web script controller. See the source for the other files that make up the web script.</p>
-<p>This web script is going to leverage classes created in a previous tutorial. So the first thing to do is to edit <a href="https://github.com/jpotts/alfresco-developer-series/blob/master/workflow/workflow-tutorial/workflow-tutorial-platform-jar/pom.xml">pom.xml</a> to add this dependency:</p>
-<pre><code>&lt;dependency&gt;
-    &lt;groupId&gt;com.someco&lt;/groupId&gt;
-    &lt;artifactId&gt;content-tutorial-common&lt;/artifactId&gt;
-    &lt;version&gt;1.0-SNAPSHOT&lt;/version&gt;
-    &lt;scope&gt;provided&lt;/scope&gt;
-&lt;/dependency&gt;</code></pre>
-<p>Now the controller will be able to resolve SomeCo related imports.</p>
 <p>The source for the web script's controller resides in:</p>
 <pre><code>$TUTORIAL_HOME/workflow-tutorial-platform-jar/src/main/java</code></pre>
 <p>First, create a package folder structure called &quot;com/someco/scripts&quot;.</p>

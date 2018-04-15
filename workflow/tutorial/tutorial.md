@@ -1362,17 +1362,6 @@ This may seem backwards, but let's build the web script that handles the links f
 
 The "[Introduction to Web Scripts](https://ecmarchitect.com/alfresco-developer-series-tutorials/webscripts/tutorial/tutorial.html)" tutorial showed you how to create custom web scripts, so I am only going to show you the Java class that acts as the web script controller. See the source for the other files that make up the web script.
 
-This web script is going to leverage classes created in a previous tutorial. So the first thing to do is to edit [pom.xml](https://github.com/jpotts/alfresco-developer-series/blob/master/workflow/workflow-tutorial/workflow-tutorial-platform-jar/pom.xml) to add this dependency:
-
-    <dependency>
-        <groupId>com.someco</groupId>
-        <artifactId>content-tutorial-common</artifactId>
-        <version>1.0-SNAPSHOT</version>
-        <scope>provided</scope>
-    </dependency>
-
-Now the controller will be able to resolve SomeCo related imports.
-
 The source for the web script's controller resides in:
 
     $TUTORIAL_HOME/workflow-tutorial-platform-jar/src/main/java
