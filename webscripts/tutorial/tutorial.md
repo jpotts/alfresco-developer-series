@@ -160,7 +160,7 @@ Do the following:
     <webscript>
     <shortname>Hello World</shortname>
     <description>Hello world web script</description>
-    <url>/helloworld?name={nameArgument}</url>
+    <url>/someco/helloworld?name={nameArgument}</url>
     </webscript>
     ```
 
@@ -178,7 +178,7 @@ Do the following:
 5.  Go to <http://localhost:8080/alfresco/service/index> and press the
     "Refresh Web Scripts" button. If you then click the “List Web Scripts” link
     you should be able to find the web script you just defined.
-6.  Now go to <http://localhost:8080/alfresco/service/helloworld?name=Jeff>. You
+6.  Now go to <http://localhost:8080/alfresco/service/someco/helloworld?name=Jeff>. You
     should see:
 
     ```
@@ -186,7 +186,7 @@ Do the following:
     ```
 
     Notice that the URL starts with "/alfresco/service" but the descriptor you
-    created in step 3 defines the URL to be "/helloworld". When you are invoking
+    created in step 3 defines the URL to be "/someco/helloworld". When you are invoking
     web scripts running in Alfresco over HTTP/S, the URL will always start with
     "/[alfresco web context]/service". You may also see the "service" part
     shortened to "s".
@@ -202,11 +202,11 @@ You can have as many as you want. Just remember that descriptors must be valid
 XML which means ampersands must be escaped. So the proper way to define a URL
 with multiple arguments is:
 
-    <url>/helloworld?name={nameArgument}&amp;secondArg={anotherArg}</url>
+    <url>/someco/helloworld?name={nameArgument}&amp;secondArg={anotherArg}</url>
 
 You can also signify optional parameters by adding a question mark, like this:
 
-    <url>/helloworld?name={nameArgument}&amp;secondArg={anotherArg?}</url>
+    <url>/someco/helloworld?name={nameArgument}&amp;secondArg={anotherArg?}</url>
 
 Third, notice that this web script consists only of a descriptor and a
 FreeMarker template. It's got a view but not a controller. The web script still
@@ -321,7 +321,6 @@ Here is what I am using on my machine:
 * Java 1.8.0_77
 * Apache Maven 3.5.3 (installed using Macports)
 * Alfresco Maven SDK 3.0.1 (No download necessary)
-* IntelliJ IDEA 2018.3.5
 
 By default, when you create an Alfresco project using the Alfresco Maven
 SDK the project will be configured to depend on the latest stable Alfresco
@@ -363,56 +362,64 @@ deployed. Specifically, the content tutorial, behaviors tutorial, and actions
 tutorial. To make this happen, edit the pom.xml in the "webscripts-tutorial"
 directory and add the following platform dependencies:
 
-    <!-- Bring in the content tutorial repo AMP so we can run embedded. -->
-    <moduleDependency>
-        <groupId>com.someco</groupId>
-        <artifactId>content-tutorial-platform-jar</artifactId>
-        <version>1.0-SNAPSHOT</version>
-        <type>amp</type>
-    </moduleDependency>
+    <platformModules>
+        ...SNIP...
+        <!-- Bring in the content tutorial repo AMP so we can run embedded. -->
+        <moduleDependency>
+            <groupId>com.someco</groupId>
+            <artifactId>content-tutorial-platform-jar</artifactId>
+            <version>1.0-SNAPSHOT</version>
+            <type>amp</type>
+        </moduleDependency>
 
-    <!-- Bring in the behavior tutorial repo AMP so we can run embedded. -->
-    <moduleDependency>
-        <groupId>com.someco</groupId>
-        <artifactId>behavior-tutorial-platform-jar</artifactId>
-        <version>1.0-SNAPSHOT</version>
-        <type>amp</type>
-    </moduleDependency>
+        <!-- Bring in the behavior tutorial repo AMP so we can run embedded. -->
+        <moduleDependency>
+            <groupId>com.someco</groupId>
+            <artifactId>behavior-tutorial-platform-jar</artifactId>
+            <version>1.0-SNAPSHOT</version>
+            <type>amp</type>
+        </moduleDependency>
 
-    <!-- Bring in the actions tutorial repo AMP so we can run embedded. -->
-    <moduleDependency>
-        <groupId>com.someco</groupId>
-        <artifactId>actions-tutorial-platform-jar</artifactId>
-        <version>1.0-SNAPSHOT</version>
-        <type>amp</type>
-    </moduleDependency>
+        <!-- Bring in the actions tutorial repo AMP so we can run embedded. -->
+        <moduleDependency>
+            <groupId>com.someco</groupId>
+            <artifactId>actions-tutorial-platform-jar</artifactId>
+            <version>1.0-SNAPSHOT</version>
+            <type>amp</type>
+        </moduleDependency>
+        ...SNIP...
+    </platform-modules>
 
 We also want the Share AMPs from those same projects to be installed, so a little
 further down in the same file add the following Share dependencies:
 
-    <!-- Bring in the content tutorial share AMP so we can run embedded. -->
-    <moduleDependency>
-        <groupId>com.someco</groupId>
-        <artifactId>content-tutorial-share-jar</artifactId>
-        <version>1.0-SNAPSHOT</version>
-        <type>amp</type>
-    </moduleDependency>
+    <shareModules>
+        ...SNIP...
+        <!-- Bring in the content tutorial share AMP so we can run embedded. -->
+        <moduleDependency>
+            <groupId>com.someco</groupId>
+            <artifactId>content-tutorial-share-jar</artifactId>
+            <version>1.0-SNAPSHOT</version>
+            <type>amp</type>
+        </moduleDependency>
 
-    <!-- Bring in the behavior tutorial share AMP so we can run embedded. -->
-    <moduleDependency>
-        <groupId>com.someco</groupId>
-        <artifactId>behavior-tutorial-share-jar</artifactId>
-        <version>1.0-SNAPSHOT</version>
-        <type>amp</type>
-    </moduleDependency>
+        <!-- Bring in the behavior tutorial share AMP so we can run embedded. -->
+        <moduleDependency>
+            <groupId>com.someco</groupId>
+            <artifactId>behavior-tutorial-share-jar</artifactId>
+            <version>1.0-SNAPSHOT</version>
+            <type>amp</type>
+        </moduleDependency>
 
-    <!-- Bring in the actions tutorial share AMP so we can run embedded. -->
-    <moduleDependency>
-        <groupId>com.someco</groupId>
-        <artifactId>actions-tutorial-share-jar</artifactId>
-        <version>1.0-SNAPSHOT</version>
-        <type>amp</type>
-    </moduleDependency>
+        <!-- Bring in the actions tutorial share AMP so we can run embedded. -->
+        <moduleDependency>
+            <groupId>com.someco</groupId>
+            <artifactId>actions-tutorial-share-jar</artifactId>
+            <version>1.0-SNAPSHOT</version>
+            <type>amp</type>
+        </moduleDependency>
+        ...SNIP...
+    </shareModules>
 
 Finally, the tutorial will have a compile-time dependency on the behavior-tutorial.
 To address that, edit the pom.xml under "webscripts-tutorial-platform-jar" and
@@ -654,7 +661,7 @@ following content:
                     </tr>
                     <tr>
                         <td><b>Title</b></td>
-			<td>${child.whitepaper.properties["cm:title"]}</td>
+			<td>${child.whitepaper.properties["cm:title"]!""}</td>
                     </tr>
                     <tr>
                         <td><b>Link</b></td>
