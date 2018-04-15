@@ -1,18 +1,18 @@
 Alfresco Developer Series Tutorials
 ===================================
 
-Source code from the [ecmarchitect.com Alfresco Developer Series](http://ecmarchitect.com/alfresco-developer-series) tutorials.
+Source code from the [ecmarchitect.com Alfresco Developer Series](https://ecmarchitect.com/alfresco-developer-series) tutorials.
 
-These tutorials are written for Alfresco Community Edition 5.2.f and Alfresco Enterprise 5.1. They leverage the Alfresco SDK 3.0.0. That version of the SDK should work with older versions of Alfresco, but certain releases may require modification.
+These tutorials are written for Alfresco Community Edition 5.2.f and Alfresco Enterprise 5.1. They leverage the Alfresco SDK 3.0.1. That version of the SDK should work with older versions of Alfresco, but certain releases may require modification.
 
 The tutorials build upon each other. The recommended order of progression is:
 
-* [Alfresco Maven SDK](http://ecmarchitect.com/alfresco-developer-series-tutorials/maven-sdk/tutorial/tutorial.html)
-* [Custom Content Types & CMIS](http://ecmarchitect.com/alfresco-developer-series-tutorials/content/tutorial/tutorial.html)
-* [Actions](http://ecmarchitect.com/alfresco-developer-series-tutorials/actions/tutorial/tutorial.html)
-* [Behaviors](http://ecmarchitect.com/alfresco-developer-series-tutorials/behaviors/tutorial/tutorial.html)
-* [Webscripts](http://ecmarchitect.com/alfresco-developer-series-tutorials/webscripts/tutorial/tutorial.html)
-* [Workflows](http://ecmarchitect.com/alfresco-developer-series-tutorials/workflow/tutorial/tutorial.html)
+* [Alfresco Maven SDK](https://ecmarchitect.com/alfresco-developer-series-tutorials/maven-sdk/tutorial/tutorial.html)
+* [Custom Content Types & CMIS](https://ecmarchitect.com/alfresco-developer-series-tutorials/content/tutorial/tutorial.html)
+* [Actions](https://ecmarchitect.com/alfresco-developer-series-tutorials/actions/tutorial/tutorial.html)
+* [Behaviors](https://ecmarchitect.com/alfresco-developer-series-tutorials/behaviors/tutorial/tutorial.html)
+* [Webscripts](https://ecmarchitect.com/alfresco-developer-series-tutorials/webscripts/tutorial/tutorial.html)
+* [Workflows](https://ecmarchitect.com/alfresco-developer-series-tutorials/workflow/tutorial/tutorial.html)
 
 Repository Structure
 --------------------
