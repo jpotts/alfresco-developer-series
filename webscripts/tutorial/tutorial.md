@@ -1054,7 +1054,7 @@ Let's take a look.
 
 At some point there might be other Java classes that need to create ratings. So
 the logic that does that should be generic. This class has a dependency on the
-"behavior-tutorial-common" project created in an earlier tutorial, so the first
+"behavior-tutorial-platform-jar" project created in an earlier tutorial, so the first
 thing to do is to edit this project's [pom.xml](https://github.com/jpotts/alfresco-developer-series/blob/master/webscripts/webscripts-tutorial/webscripts-tutorial-platform-jar/pom.xml) file, which lives in:
 
     $TUTORIAL_HOME/webscripts-tutorial-platform-jar
@@ -1063,7 +1063,7 @@ And add the dependency, which looks like this:
 
     <dependency>
         <groupId>com.someco</groupId>
-        <artifactId>behavior-tutorial-common</artifactId>
+        <artifactId>behavior-tutorial-platform-jar</artifactId>
         <version>1.0-SNAPSHOT</version>
         <scope>provided</scope>
     </dependency>

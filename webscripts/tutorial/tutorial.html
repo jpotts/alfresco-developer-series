@@ -639,12 +639,12 @@ if (args.id == null || args.id.length == 0) {
 </ol>
 <p>Let's take a look.</p>
 <h4 id="step-2a-write-the-business-logic-for-creating-the-rating">Step 2a: Write the business logic for creating the rating</h4>
-<p>At some point there might be other Java classes that need to create ratings. So the logic that does that should be generic. This class has a dependency on the &quot;behavior-tutorial-common&quot; project created in an earlier tutorial, so the first thing to do is to edit this project's <a href="https://github.com/jpotts/alfresco-developer-series/blob/master/webscripts/webscripts-tutorial/webscripts-tutorial-platform-jar/pom.xml">pom.xml</a> file, which lives in:</p>
+<p>At some point there might be other Java classes that need to create ratings. So the logic that does that should be generic. This class has a dependency on the &quot;behavior-tutorial-platform-jar&quot; project created in an earlier tutorial, so the first thing to do is to edit this project's <a href="https://github.com/jpotts/alfresco-developer-series/blob/master/webscripts/webscripts-tutorial/webscripts-tutorial-platform-jar/pom.xml">pom.xml</a> file, which lives in:</p>
 <pre><code>$TUTORIAL_HOME/webscripts-tutorial-platform-jar</code></pre>
 <p>And add the dependency, which looks like this:</p>
 <pre><code>&lt;dependency&gt;
     &lt;groupId&gt;com.someco&lt;/groupId&gt;
-    &lt;artifactId&gt;behavior-tutorial-common&lt;/artifactId&gt;
+    &lt;artifactId&gt;behavior-tutorial-platform-jar&lt;/artifactId&gt;
     &lt;version&gt;1.0-SNAPSHOT&lt;/version&gt;
     &lt;scope&gt;provided&lt;/scope&gt;
 &lt;/dependency&gt;</code></pre>
