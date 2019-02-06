@@ -906,38 +906,27 @@ files are virtually identical. They just need to do some basic error checking
 and then call the `computeAverage()` function. Here is what onCreateRating.js
 looks like:
 
-    <import resource="classpath:alfresco/extension/scripts/rating.js">
-    var scriptFailed = false;
-
-    // Have a look at the behaviour object that should have been passed
-    if (behaviour == null) {
-        logger.log("The behaviour object has not been set.");
-        scriptFailed = true;
-    }
-
-    // Check the name of the behaviour
-    if (behaviour.name == null && behaviour.name != "onCreateNode") {
-        logger.log("The behaviour name has not been set correctly.");
-        scriptFailed = true;
+    <import resource="classpath:alfresco/module/behavior-tutorial-platform-jar/scripts/rating.js">
+    
+    // Check behaviour is set and the name of the behaviour
+    if (!behaviour || (behaviour.name == null || behaviour.name != "onCreateNode")) {
+        logger.log("The behaviour behaviour object or name has not been set correctly.");
     } else {
         logger.log("Behaviour name: " + behaviour.name);
-    }
-
-    // Check the arguments
-    if (behaviour.args == null) {
-        logger.log("The args have not been set.");
-        scriptFailed = true;
-    } else {
-        if (behaviour.args.length == 1) {
-            var childAssoc = behaviour.args[0];
-            logger.log("Calling compute average");
-            computeAverage(childAssoc);
+    
+        // Check the arguments
+        if (behaviour.args == null) {
+            logger.log("The args have not been set.");
         } else {
-            logger.log("The number of arguments is incorrect.");
-            scriptFailed = true;
-        }    
+            if (behaviour.args.length == 1) {
+                var childAssoc = behaviour.args[0];
+                logger.log("Calling compute average");
+                computeAverage(childAssoc);
+            } else {
+                logger.log("The number of arguments is incorrect.");
+            }
+        }
     }
-
 The code for onDeleteRating.js is identical with the exception of the
 behavior name and the number of arguments expected (2 instead of 1) so I
 won't duplicate the listing here.
@@ -952,9 +941,7 @@ obviously in JavaScript:
         var parentRef = childAssocRef.parent;
 
         // check the parent to make sure it has the right aspect
-        if (parentRef.hasAspect("{http://www.someco.com/model/ratings/1.0}rateable")) {
-            // continue, this is what we want
-        } else {
+        if (!parentRef.hasAspect("{http://www.someco.com/model/ratings/1.0}rateable")) {
             logger.log("Rating's parent ref did not have rateable aspect.");
             return;
         }
@@ -986,9 +973,6 @@ obviously in JavaScript:
         parentRef.save();
 
         logger.log("Property set");
-
-        return;
-
     }
 
 As you can see, this is the same logic used in the Java example
