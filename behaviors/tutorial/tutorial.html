@@ -607,36 +607,26 @@ public class RatingBehaviorIT extends BaseIT {
 <pre><code>$TUTORIAL_HOME/behavior-tutorial-platform-jar/src/main/resources/alfresco/module/behavior-tutorial-platform-jar/scripts</code></pre>
 <p>If you are following along, you'll need to create the scripts directory.</p>
 <p>The <a href="https://github.com/jpotts/alfresco-developer-series/blob/master/behaviors/behavior-tutorial/behavior-tutorial-platform-jar/src/main/resources/alfresco/module/behavior-tutorial-platform-jar/scripts/onCreateRating.js">onCreateRating.js</a> and <a href="https://github.com/jpotts/alfresco-developer-series/blob/master/behaviors/behavior-tutorial/behavior-tutorial-platform-jar/src/main/resources/alfresco/module/behavior-tutorial-platform-jar/scripts/onDeleteRating.js">onDeleteRating.js</a> files are virtually identical. They just need to do some basic error checking and then call the <code>computeAverage()</code> function. Here is what onCreateRating.js looks like:</p>
-<pre><code>&lt;import resource=&quot;classpath:alfresco/extension/scripts/rating.js&quot;&gt;
-var scriptFailed = false;
+<pre><code>&lt;import resource=&quot;classpath:alfresco/module/behavior-tutorial-platform-jar/scripts/rating.js&quot;&gt;
 
-// Have a look at the behaviour object that should have been passed
-if (behaviour == null) {
-    logger.log(&quot;The behaviour object has not been set.&quot;);
-    scriptFailed = true;
-}
-
-// Check the name of the behaviour
-if (behaviour.name == null &amp;&amp; behaviour.name != &quot;onCreateNode&quot;) {
-    logger.log(&quot;The behaviour name has not been set correctly.&quot;);
-    scriptFailed = true;
+// Check behaviour is set and the name of the behaviour
+if (!behaviour || (behaviour.name == null || behaviour.name != &quot;onCreateNode&quot;)) {
+    logger.log(&quot;The behaviour behaviour object or name has not been set correctly.&quot;);
 } else {
     logger.log(&quot;Behaviour name: &quot; + behaviour.name);
-}
 
-// Check the arguments
-if (behaviour.args == null) {
-    logger.log(&quot;The args have not been set.&quot;);
-    scriptFailed = true;
-} else {
-    if (behaviour.args.length == 1) {
-        var childAssoc = behaviour.args[0];
-        logger.log(&quot;Calling compute average&quot;);
-        computeAverage(childAssoc);
+    // Check the arguments
+    if (behaviour.args == null) {
+        logger.log(&quot;The args have not been set.&quot;);
     } else {
-        logger.log(&quot;The number of arguments is incorrect.&quot;);
-        scriptFailed = true;
-    }    
+        if (behaviour.args.length == 1) {
+            var childAssoc = behaviour.args[0];
+            logger.log(&quot;Calling compute average&quot;);
+            computeAverage(childAssoc);
+        } else {
+            logger.log(&quot;The number of arguments is incorrect.&quot;);
+        }
+    }
 }</code></pre>
 <p>The code for onDeleteRating.js is identical with the exception of the behavior name and the number of arguments expected (2 instead of 1) so I won't duplicate the listing here.</p>
 <p>The <code>computeAverage()</code> function lives in <a href="https://github.com/jpotts/alfresco-developer-series/blob/master/behaviors/behavior-tutorial/behavior-tutorial-platform-jar/src/main/resources/alfresco/module/behavior-tutorial-platform-jar/scripts/rating.js">rating.js</a>. It does pretty much the same thing as the <code>computeAverage()</code> method in the Java example, but obviously in JavaScript:</p>
@@ -646,9 +636,7 @@ function computeAverage(childAssocRef) {
     var parentRef = childAssocRef.parent;
 
     // check the parent to make sure it has the right aspect
-    if (parentRef.hasAspect(&quot;{http://www.someco.com/model/ratings/1.0}rateable&quot;)) {
-        // continue, this is what we want
-    } else {
+    if (!parentRef.hasAspect(&quot;{http://www.someco.com/model/ratings/1.0}rateable&quot;)) {
         logger.log(&quot;Rating&#39;s parent ref did not have rateable aspect.&quot;);
         return;
     }
@@ -680,9 +668,6 @@ function computeAverage(childAssocRef) {
     parentRef.save();
 
     logger.log(&quot;Property set&quot;);
-
-    return;
-
 }</code></pre>
 <p>As you can see, this is the same logic used in the Java example modified to follow the Alfresco JavaScript API syntax.</p>
 <h2 id="step-2-configure-a-spring-bean-to-bind-the-script-to-the-appropriate-policies">Step 2: Configure a Spring bean to bind the script to the appropriate policies</h2>
