@@ -5,7 +5,7 @@
     <artifactId>maven-sdk-tutorial-share-jar</artifactId>
     <name>Alfresco Share JAR Module</name>
     <packaging>jar</packaging>
-    <description>Sample Share JAR Module (to be included in the share.war) - part of AIO - SDK 3</description>
+    <description>Sample Share JAR Module (to be included in the share.war) - part of AIO - SDK 4.0</description>
 
     <parent>
         <groupId>com.someco</groupId>
@@ -25,11 +25,7 @@
             <artifactId>share</artifactId>
             <classifier>classes</classifier>
         </dependency>
-
-        <dependency>
-            <groupId>org.alfresco.surf</groupId>
-            <artifactId>spring-surf-api</artifactId>
-        </dependency>
+        <!-- Add here any JAR or AMP dependency that needs to be deployed to share -->
     </dependencies>
 
     <build>
