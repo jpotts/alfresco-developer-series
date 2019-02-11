@@ -1,6 +1,6 @@
 % Working With Custom Content Types in Alfresco
 % Jeff Potts, [Metaversant Group](https://www.metaversant.com)
-% April, 2018
+% February, 2019
 
 License
 =======
@@ -172,16 +172,16 @@ Before starting, let's get a local development environment set up. First I'll gi
 
 Here is what I am using on my machine:
 
-* Mac OS X 10.12.6
-* Java 1.8.0_77
-* Apache Maven 3.5.3 (installed using Macports)
-* Alfresco Maven SDK 3.0.1 (No download necessary)
+* Ubuntu 16.04.5 LTS
+* Java 1.8.0_201
+* Apache Maven 3.3.9
+* Alfresco Maven SDK 4.0 (No download necessary)
 
 By default, when you create an Alfresco project using the Alfresco Maven SDK the project will be configured to depend on the latest stable Alfresco Community Edition build.
 
-Note that version 3.0.x of the Alfresco Maven SDK works with Alfresco 4.2.7 and higher. This tutorial assumes you are using SDK 3.0.x.
+Note that version 3.0.x of the Alfresco Maven SDK works with Alfresco 4.2.7 through and including Alfresco 5.2.x. Version 4.0 of the SDK works with Alfresco 6.0 and higher. This tutorial assumes you are using SDK 4.0.x.
 
-Projects created using the Alfresco Maven SDK have the ability to run Alfresco on an embedded Tomcat server. This makes [downloading](http://www.alfresco.com/products/community) and installing Alfresco optional. But if you want to run a full Alfresco server locally, you are welcome to do that.
+Projects created using the Alfresco Maven SDK are runnable. Version 3.0.x of the SDK uses an embedded Tomcat server and an H2 in-memory database while version 4.0.x of the SDK uses Docker and Docker Compose. This makes [downloading](http://www.alfresco.com/products/community) and installing Alfresco optional. But if you want to run a full Alfresco server locally, you are welcome to do that.
 
 An IDE is also optional. Most people working with Alfresco use IntelliJ, Eclipse, or something similar.
 
@@ -220,8 +220,8 @@ The first step is to **create a new project** using the Alfresco Maven SDK. Foll
     mvn archetype:generate -Dfilter=org.alfresco:
     ```
 
-3. Choose the "alfresco-allinone-archetype" archetype (option 2).
-4. Choose version 3.0.1 of the archetype if prompted.
+3. Choose the "alfresco-allinone-archetype" archetype.
+4. Choose version 4.0 of the archetype if prompted.
 5. Specify "com.someco" for the `groupId`.
 6. Specify "content-tutorial" for the `artifactId`.
 7. If your IDE isn't running, start it up and import the content-tutorial project you just created.
@@ -394,25 +394,19 @@ The last step is to test your changes. The Alfresco Maven SDK makes that easy. D
 2. Run:
 
     ```
-    mvn install
+    mvn install -DskipTests
     ```
 
-The first time you do this it may take quite a while. Maven is downloading everything it needs to run Alfresco in an embedded Tomcat server along with your custom content model.
-
-In this version of the SDK you may see some stack traces. That's because Maven is running integration tests using the embedded Tomcat server and there are some known issues with the Tomcat shutdown hooks. If you scroll up a bit you should see that the integration tests passed.
-
-If you want to run without the tests, run:
-
-    mvn install -DskipTests=true
+The first time you do this it may take quite a while. Maven is downloading everything it needs to compile and package the project.
 
 If everything goes as expected you should see:
 
     [INFO] ------------------------------------------------------------------------
     [INFO] BUILD SUCCESS
     [INFO] ------------------------------------------------------------------------
-    [INFO] Total time: 1:38.455s
-    [INFO] Finished at: Wed Jan 22 12:55:48 CST 2014
-    [INFO] Final Memory: 38M/203M
+    [INFO] Total time: 1.465 s
+    [INFO] Finished at: 2019-02-11T13:22:29-06:00
+    [INFO] Final Memory: 25M/501M
     [INFO] ------------------------------------------------------------------------
 
 If you get a build failure, it is time to debug. Make sure that:
@@ -536,14 +530,14 @@ You need two things to test this: An Alfresco repository that is running the rep
 3. Run:
 
     ```
-    ./run.sh
+    ./run.sh build_start
     ```
 
     If you get a permissions problem you may have to run `chmod u+x run.sh` first.
 
-    This will start up a Tomcat server with the Alfresco WAR and Share WARS deployed along with your repository tier AMP and your Share tier AMP.
+    This script will download images from Docker Hub (or quay.io if you are using Enterprise Edition), copy your AMPs to the containers, then use Docker Compose to start up several containers.
 
-Now open your browser and point it to http://localhost:8080/share. Log in using admin/admin and let’s see what’s different.
+Now open your browser and point it to http://localhost:8180/share. Log in using admin/admin and let’s see what’s different.
 
 What’s different is that the “is sub-type” dropdown in the rule configuration panel now has our custom types and the “has aspect” dropdown now has our custom aspects.
 
@@ -602,12 +596,13 @@ Suppose whitepapers need to have the same metadata displayed as instances of `cm
 
 To test this change:
 
-1. Go to the terminal window currently running your project.
-2. Click ctrl+c to stop the Tomcat server.
-3. Re-run the server using:
+1. Go to the terminal window currently tailing the logs of the running containers.
+2. Click ctrl+c to interrupt the tail.
+3. Re-build the AMPs by running `mvn install -DskipTests`
+4. Re-build and re-run the Share container using:
 
     ```
-    ./run.sh
+    ./run.sh reload_share
     ```
 
 Now when you log in to Alfresco Share, you’ll see that the property sets match for `sc:whitepaper` and `cm:content` across all forms, as shown below:
@@ -664,7 +659,7 @@ Then, add a new `field` element just before the closing `appearance` tag:
 
 Now do the same thing for the `doclib-simple-metadata` form.
 
-After restarting the embedded Tomcat server, you should see all four custom properties and the related documents association in the document details page, like this:
+To see your changes, re-build the AMPs using `mvn install -DskipTests` then re-build and re-run the Share container using `./run.sh reload_share`. You should see all four custom properties and the related documents association in the document details page, like this:
 
 ![Custom properties now show up in document details](./images/configured-doc-details.png)
 
@@ -753,7 +748,7 @@ The search form for whitepapers should be the same as the one for plain content,
 
 It is important to note that the field elements in the appearance section require the form control to be specified. If it is not specified, the field will not show up on the search form.
 
-After deploying this configuration and restarting the embedded Tomcat for your Alfresco Share project, the SomeCo Whitepaper type is included in the advanced search dropdown, and four fields for the aspect properties are shown in the search form.
+After re-building the AMP and reloading the Share container, the SomeCo Whitepaper type is included in the advanced search dropdown, and four fields for the aspect properties are shown in the search form.
 
 ![Search by Type](./images/adv-search-type.png)
 
@@ -806,7 +801,7 @@ We’ve put off localizing the form labels until now. To fix this, first create 
     </beans>
     ```
 
-Now restart the embedded Tomcat server and you should see that the types, aspects, and properties have the localized labels.
+Now re-build the AMPs and reload the Share container and you should see that the types, aspects, and properties have the localized labels.
 
 Share Configuration Summary
 ---------------------------
@@ -896,7 +891,7 @@ As well as the repository where the OpenCMIS Extension Library resides:
 Start Your Repository
 ---------------------
 
-To run the examples in Part 3 you need to have an Alfresco repository running with the repo tier AMP you created in Part 1. Using the embedded Tomcat server as shown in that part of the tutorial works fine. If it isn't running already, go ahead and start it up.
+To run the examples in Part 3 you need to have an Alfresco repository running with the repo tier AMP you created in Part 1. Using the `/run.sh build_start` script to fire up your SDK-created Docker containers as shown in that part of the tutorial works fine. If it isn't running already, go ahead and start it up.
 
 Now you are ready to write some code.
 
@@ -1299,7 +1294,6 @@ Where to Find More Information
 ==============================
 * The complete source code for these examples is available on [GitHub](https://github.com/jpotts/alfresco-developer-series).
 * Official documentation for both Enterprise Edition and Community Edition is available at [docs.alfresco.com](http://docs.alfresco.com/).
-* [Share Extras](http://share-extras.github.io/) has many examples of deeper Share customization.
 * The [Apache Chemistry Home Page](http://chemistry.apache.org/) has examples and source code that works with CMIS.
 * See [“Getting Started with CMIS”](https://ecmarchitect.com/archives/2009/11/23/1094) on [ecmarchitect.com](https://ecmarchitect.com) for a brief introduction to CMIS. The [Alfresco CMIS](http://cmis.alfresco.com/) page is also a great resource. And there is now a [CMIS book](http://www.manning.com/mueller/) availaible.
-* If you are ready to cover new ground, try another [ecmarchitect.com](https://ecmarchitect.com) tutorial in the [Alfresco Developer Series](https://ecmarchitect.com/alfresco-developer-series).
+* If you are ready to cover new ground, try another [ecmarchitect.com](https://ecmarchitect.com) tutorial in the [Alfresco Developer Series](https://ecmarchitect.com/alfresco-developer-series). The most logical next step is the [Developing Custom Actions](https://ecmarchitect.com/alfresco-developer-series-tutorials/actions/tutorial/tutorial.html) tutorial.
