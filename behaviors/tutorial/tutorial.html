@@ -30,7 +30,7 @@ Architect | Alfresco Developer Tutorials</title>
 <div id="header">
 <h1 class="entry-title">Implementing Custom Behaviors in Alfresco</h1>
 <h2 class="author">Jeff Potts, <a href="https://www.metaversant.com">Metaversant Group</a></h2>
-<h3 class="date">April, 2018</h3>
+<h3 class="date">February, 2019</h3>
 </div>
 <div id="TOC">
 <ul>
@@ -70,6 +70,7 @@ Architect | Alfresco Developer Tutorials</title>
 <h1 id="license">License</h1>
 <div class="figure">
 <img src="./images/cc-by-sa-88x31.png" />
+
 </div>
 <p>This work is licensed under the Creative Commons Attribution-ShareAlike 3.0 Unported License. To view a copy of this license, visit http://creativecommons.org/licenses/by-sa/3.0/ or send a letter to Creative Commons, 444 Castro Street, Suite 900, Mountain View, California, 94041, USA.</p>
 <h1 id="introduction">Introduction</h1>
@@ -92,7 +93,8 @@ Architect | Alfresco Developer Tutorials</title>
 <p>Assuming SomeCo wants to store the ratings in Alfresco instead of some other repository, like a relational or NoSQL database, one way to do this is to create a custom “rating” type that is related to a whitepaper through a child association. A custom “rateable” aspect can be used to define the association as well as a property to store the average rating for that whitepaper. Any object in the repository will get all of the metadata it needs to become &quot;rateable&quot; simply by adding the aspect to the object.</p>
 <p>The image below shows the original custom content model with these enhancements.</p>
 <div class="figure">
-<img src="./images/someco-model-with-ratings.png" alt="SomeCo&#39;s content model modified to support ratings" /><p class="caption">SomeCo's content model modified to support ratings</p>
+<img src="./images/someco-model-with-ratings.png" alt="SomeCo&#39;s content model modified to support ratings" />
+<p class="caption">SomeCo's content model modified to support ratings</p>
 </div>
 <p>That takes care of the data model, but what about the code that computes the average? There are a few options to consider:</p>
 <ol style="list-style-type: decimal">
@@ -113,8 +115,12 @@ Architect | Alfresco Developer Tutorials</title>
 </ul>
 <p>Each of those interfaces contains inner interfaces that represent the policies you can hook into. Check the Javadocs or source code for specifics—I'm listing the methods in the table below so you can see an example of what's available.</p>
 <p>Note: To make it easier to read, I'm omitting the inner interface which follows the pattern of <code>&lt;method-name&gt;Policy</code>. For example, the <code>onContentUpdate</code> method is a method of the inner interface <code>OnContentUpdatePolicy</code>.</p>
-<table>
+<table style="width:24%;">
 <caption>Policies available for behavior binding</caption>
+<colgroup>
+<col width="13%" />
+<col width="9%" />
+</colgroup>
 <thead>
 <tr class="header">
 <th align="left">Interface</th>
@@ -124,19 +130,49 @@ Architect | Alfresco Developer Tutorials</title>
 <tbody>
 <tr class="odd">
 <td align="left">org.alfresco.repo.content.ContentServicePolicies</td>
-<td align="left">onContentPropertyUpdate<br />onContentRead<br />onContentUpdate</td>
+<td align="left">onContentPropertyUpdate<br />
+onContentRead<br />
+onContentUpdate</td>
 </tr>
 <tr class="even">
 <td align="left">org.alfresco.repo.copy.CopyServicePolicies</td>
-<td align="left">beforeCopy<br />onCopyComplete<br />onCopyNode</td>
+<td align="left">beforeCopy<br />
+onCopyComplete<br />
+onCopyNode</td>
 </tr>
 <tr class="odd">
 <td align="left">org.alfresco.repo.node.NodeServicePolicies</td>
-<td align="left">beforeAddAspect<br />beforeArchiveNode<br />beforeCreateNode<br />beforeCreateStore<br />beforeDeleteAssociation<br />beforeDeleteChildAssociation<br />beforeDeleteNode<br />beforeMoveNode<br />beforeRemoveAspect<br />beforeSetNodeType<br />beforeUpdateNode<br />onAddAspect<br />onCreateAssociation<br />onCreateChildAssociation<br />onCreateNode<br />onCreateStore<br />onDeleteAssociation<br />onDeleteChildAssociation<br />onDeleteNode<br />onMoveNode<br />onRemoveAspect<br />onSetNodeType<br />onUpdateNode<br />onUpdateProperties</td>
+<td align="left">beforeAddAspect<br />
+beforeArchiveNode<br />
+beforeCreateNode<br />
+beforeCreateStore<br />
+beforeDeleteAssociation<br />
+beforeDeleteChildAssociation<br />
+beforeDeleteNode<br />
+beforeMoveNode<br />
+beforeRemoveAspect<br />
+beforeSetNodeType<br />
+beforeUpdateNode<br />
+onAddAspect<br />
+onCreateAssociation<br />
+onCreateChildAssociation<br />
+onCreateNode<br />
+onCreateStore<br />
+onDeleteAssociation<br />
+onDeleteChildAssociation<br />
+onDeleteNode<br />
+onMoveNode<br />
+onRemoveAspect<br />
+onSetNodeType<br />
+onUpdateNode<br />
+onUpdateProperties</td>
 </tr>
 <tr class="even">
 <td align="left">org.alfresco.repo.version.VersionServicePolicies</td>
-<td align="left">beforeCreateVersion<br />afterCreateVersion<br />onCreateVersion<br />calculateVersionLabel</td>
+<td align="left">beforeCreateVersion<br />
+afterCreateVersion<br />
+onCreateVersion<br />
+calculateVersionLabel</td>
 </tr>
 </tbody>
 </table>
@@ -148,10 +184,10 @@ Architect | Alfresco Developer Tutorials</title>
 <h2 id="tools">Tools</h2>
 <p>Here is what I am using on my machine:</p>
 <ul>
-<li>Mac OS X 10.12.6</li>
-<li>Java 1.8.0_77</li>
-<li>Apache Maven 3.5.3 (installed using Macports)</li>
-<li>Alfresco Maven SDK 3.0.1 (No download necessary)</li>
+<li>Ubuntu 16.04.5 LTS</li>
+<li>Java 1.8.0_201</li>
+<li>Apache Maven 3.3.9</li>
+<li>Alfresco Maven SDK 4.0 (No download necessary)</li>
 </ul>
 <p>By default, when you create an Alfresco project using the Alfresco Maven SDK the project will be configured to depend on the latest stable Alfresco Community Edition build.</p>
 <p>An IDE is optional. Most people working with Alfresco use IntelliJ, Eclipse, or something similar.</p>
@@ -200,7 +236,7 @@ Architect | Alfresco Developer Tutorials</title>
         &lt;!-- Import Alfresco Content Domain Model Definitions --&gt;
         &lt;import uri=&quot;http://www.alfresco.org/model/content/1.0&quot; prefix=&quot;cm&quot; /&gt;
         &lt;import uri=&quot;http://www.alfresco.org/model/system/1.0&quot; prefix=&quot;sys&quot; /&gt;
-    &lt;/imports&gt;
+      &lt;/imports&gt;
 
     &lt;!-- Introduction of new namespaces defined by this model --&gt;
     &lt;namespaces&gt;
@@ -325,7 +361,8 @@ scr_somecoratingsmodel.association.scr_ratings.title=Ratings</code></pre>
 }</code></pre>
 <p>These are just constants that will be used by the behavior class and other classes in other tutorials when they need to refer to the rating type, rateable aspect, or any of the properties by name.</p>
 <h3 id="write-integration-tests">Write integration tests</h3>
-<p>The Alfresco Maven SDK will automatically run integration tests when <code>mvn install</code> runs. If you're a TDD (Test-Driven Development) kind of person you could add a test for the to-be-developed behavior. For now, I'll just create a test to make sure I can successfully add the <code>scr:rateable</code> aspect to a piece of content. The rating type will get tested shortly.</p>
+<p>The old 3.0.1 version of the Alfresco Maven SDK will automatically run integration tests when <code>mvn install</code> runs. In SDK 4.0 you must first start up the Docker containers, then run <code>./run.sh test</code>.</p>
+<p>If you're a TDD (Test-Driven Development) kind of person you could add a test for the to-be-developed behavior. For now, I'll just create a test to make sure I can successfully add the <code>scr:rateable</code> aspect to a piece of content. The rating type will get tested shortly.</p>
 <p>The test class goes in:</p>
 <pre><code>$TUTORIAL_HOME/integration-tests/src/test/java/com/someco/test</code></pre>
 <p>Here is the <a href="https://github.com/jpotts/alfresco-developer-series/blob/master/behaviors/behavior-tutorial/integration-tests/src/test/java/com/someco/test/SomecoRatingModelIT.java">SomecoRatingModelIT</a> test class:</p>
@@ -364,8 +401,8 @@ public class SomecoRatingModelIT extends BaseIT {
 
 }</code></pre>
 <p>The test creates a new content node in Company Home and then adds the <code>scr:rateable</code> aspect to it, simultaneously setting the aspect-based properties to test values. It then makes sure it can get those same test values back.</p>
-<p>To run the test, you have a few options. If you've already launched the embedded Tomcat with <code>run.sh</code> or <code>mvn alfresco:run</code> then you can just run the test from your IDE, for example.</p>
-<p>If the embedded Tomcat server is not running, you can switch to the root of your project directory and run <code>mvn install</code> from the command line.</p>
+<p>To run the test, first start the Docker containers by running <code>./run.sh build_start</code>. Once everything comes up, run <code>./run.sh test</code>.</p>
+<p>In SDK 3.0.1 the embedded Tomcat server is started and tests are run automatically when you run <code>mvn install</code>. Or, if the Tomcat server is already running you can run <code>mvn test</code>.</p>
 <p>In SDK 3.0.1 you may see a stack trace after running <code>mvn install</code>. Scroll up a bit and you should see that the test ran successfully.</p>
 <p>Assuming everything went okay, you now have your model in place and tested and you are ready to write the behavior.</p>
 <h2 id="step-2-implement-the-custom-behavior">Step 2: Implement the custom behavior</h2>
@@ -571,22 +608,21 @@ public class RatingBehaviorIT extends BaseIT {
         return association.getChildRef();
     }
 }</code></pre>
-<p>To run the test, switch to the $TUTORIAL_HOME directory and run <code>run.sh</code> or <code>run.bat</code> depending on your operating system. Apache Maven will start up an embedded instance of Alfresco with your repo AMP deployed and will then run the tests. If you see something like this:</p>
+<p>To run the test, first, check to see if your containers are running by doing a <code>docker ps</code>. If any are running, do <code>./run.sh stop</code>. Next, run <code>mvn install -DskipTests</code> to re-build everything. Now start fresh containers by doing <code>./run.sh build_start</code>.</p>
+<p>Once everything is up-and-running, run <code>./run.sh test</code>. If you see something like this:</p>
 <pre><code>[INFO] ------------------------------------------------------------------------
 [INFO] BUILD SUCCESS
 [INFO] ------------------------------------------------------------------------
-[INFO] Total time: 48.090s
-[INFO] Finished at: Wed Jan 29 18:19:01 CST 2014
-[INFO] Final Memory: 13M/122M
+[INFO] Total time: 4.554 s
+[INFO] Finished at: 2019-02-11T16:19:16-06:00
+[INFO] Final Memory: 32M/489M
 [INFO] ------------------------------------------------------------------------</code></pre>
 <p>...it means your behavior is working.</p>
 <p>If something is broken, try changing <a href="https://github.com/jpotts/alfresco-developer-series/blob/master/behaviors/behavior-tutorial/behavior-tutorial-platform-jar/src/main/resources/alfresco/module/behavior-tutorial-platform-jar/log4j.properties">log4j.properties</a> in:</p>
 <pre><code>$TUTORIAL_HOME/behavior-tutorial-platform-jar/src/main/resources/alfresco/module</code></pre>
 <p>To:</p>
-<pre><code>log4j.logger.com.someco=${module.log.level}</code></pre>
-<p>And then run:</p>
-<pre><code>mvn install -Dmodule.log.level=DEBUG</code></pre>
-<p>You can then look for the debug messages in the log.</p>
+<pre><code>log4j.logger.com.someco=DEBUG</code></pre>
+<p>And then re-build the AMPs by running <code>mvn install -DskipTests</code>. Once the build is complete, stop and start the Alfresco container by doing <code>./run.sh reload_acs</code>. You can then look for the debug messages in the log.</p>
 <h1 id="re-implementing-the-behavior-in-javascript">Re-implementing the behavior in JavaScript</h1>
 <p>You've seen how to implement the average rating calculation behavior in Java, but what if you wanted to implement the behavior using JavaScript instead? Behaviors can be implemented in server-side JavaScript and bound to policies through Spring. Let's re-implement the Rating bean using JavaScript.</p>
 <p>The high-level steps are:</p>
@@ -720,13 +756,13 @@ parent=&quot;policyRegistration&quot;&gt;
 <p>Now Alfresco will use the two server-side JavaScript files as the behavior implementation instead of the Java-based behavior created earlier.</p>
 <h2 id="step-3-test-the-javascript-based-behavior">Step 3: Test the JavaScript-based behavior</h2>
 <p>If you are following along and you already did the Java-based behavior, this step is easy. The integration test doesn't have to change at all because all that is different is that the underlying behavior logic is written in JavaScript instead of Java.</p>
-<p>So, switch to the $TUTORIAL_HOME directory and run <code>run.sh</code> or <code>run.bat</code>. Just like the Java example, you should see something like this:</p>
+<p>So, switch to the $TUTORIAL_HOME directory and run <code>mvn install -DskipTests</code> to rebuild the AMPs, then <code>./run.sh reload_acs</code> to re-build and re-start the Alfresco image. Once it is back up, run <code>./run.sh test</code>. Just like the Java example, you should see something like this:</p>
 <pre><code>[INFO] ------------------------------------------------------------------------
 [INFO] BUILD SUCCESS
 [INFO] ------------------------------------------------------------------------
-[INFO] Total time: 55.326s
-[INFO] Finished at: Thu Jan 30 17:04:55 CST 2014
-[INFO] Final Memory: 14M/122M
+[INFO] Total time: 3.887 s
+[INFO] Finished at: 2019-02-11T17:26:19-06:00
+[INFO] Final Memory: 32M/488M
 [INFO] ------------------------------------------------------------------------</code></pre>
 <p>Successful tests are certainly comforting, but they are not very satisfying. Wouldn't you like to actually see this behavior working in the user interface? In the web scripts tutorial I'll show you how to create a little web page that lets you click on stars and post ratings for whitepapers. For now, if you'd like to run a simple web script that creates test rating objects on specified content, follow these steps:</p>
 <ol style="list-style-type: decimal">
@@ -735,8 +771,9 @@ parent=&quot;policyRegistration&quot;&gt;
 <p>to:</p>
 <pre><code>$TUTORIAL_HOME/behavior-tutorial-platform-jar/src/main/resources/alfresco/extension/templates/webscripts</code></pre>
 <p>The directory contains the files that make up a quick-and-dirty web script that will create random ratings on a specified piece of content.</p></li>
-<li><p>Switch to $TUTORIAL_HOME and run <code>run.sh</code> or <code>run.bat</code>.</p></li>
-<li><p>Once the server comes up, log in to http://localhost:8080/share as admin, password admin.</p></li>
+<li><p>Switch to $TUTORIAL_HOME and run <code>mvn install -DskipTests</code> to re-build the AMPs.</p></li>
+<li><p>Run <code>./run.sh reload_acs</code> to stop and start the Alfresco container.</p></li>
+<li><p>Once the server comes up, log in to http://localhost:8180/share as admin, password admin.</p></li>
 <li><p>Create a piece of test content somewhere in the repository. It doesn't matter what it is or what it is named.</p></li>
 <li><p>Grab the test content's nodeRef. The easiest way to do this is to copy it from the URL that is displayed when you view the content's details page. For example, when you look at the details for your test content, the URL should look something like this:</p>
 <pre><code>http://localhost:8080/share/page/document-details?nodeRef=workspace://SpacesStore/00408a65-1e9e-42ad-b02c-aa3546624d07</code></pre>
@@ -747,20 +784,18 @@ parent=&quot;policyRegistration&quot;&gt;
 <li><p>Go back into Share and look at the test document's details. You should see its average rating and the total number of ratings displayed in the property list, like this:</p></li>
 </ol>
 <div class="figure">
-<img src="./images/content-with-test-ratings.png" alt="This piece of content has 20 ratings with an average of 3" /><p class="caption">This piece of content has 20 ratings with an average of 3</p>
+<img src="./images/content-with-test-ratings.png" alt="This piece of content has 20 ratings with an average of 3" />
+<p class="caption">This piece of content has 20 ratings with an average of 3</p>
 </div>
 <p>This shouldn't be too surprising--you are using a web script to exercise the same behavior as the integration test, but at least this way you can log in to Share and see for yourself that the behavior works.</p>
 <h1 id="deploying-the-amps-to-your-alfresco-server">Deploying the AMPs to your Alfresco server</h1>
-<p>When you are ready, you can deploy these AMPs to any Alfresco server. Both the platform-jar module and the share-jar module directories should have a directory called target. Maven puts the AMP there when you run <code>mvn install</code>. You can install those AMPs as you normally would. For example, if you installed Alfresco with the binary installer, you would:</p>
+<p>When you are ready, you can deploy these AMPs to any Alfresco server. Both the platform-jar module and the share-jar module directories should have a directory called target. Maven puts the AMP there when you run <code>mvn install</code>. You can install those AMPs as you normally would. For example, if you installed Alfresco in your own manually set up Tomcat server, you would:</p>
 <ol style="list-style-type: decimal">
 <li>Copy the repo tier AMP to $ALFRESCO_HOME/amps</li>
 <li>Copy the share tier AMP to $ALFRESCO_HOME/amps_share</li>
 <li>Install the AMPs by running $ALFRESCO_HOME/bin/apply_amps.sh</li>
 </ol>
-<p>Alternatively, you can use the Alfresco Maven SDK to install the AMPs by changing into each of the two project directories and doing:</p>
-<pre><code>mvn install
-mvn alfresco:install -Dmaven.alfresco.warLocation=$TOMCAT_HOME/webapps/[alfresco or share]</code></pre>
-<p>In my case, I run the alfresco.war and share.war files exploded under $TOMCAT_HOME/webapps, so I would specify $TOMCAT_HOME/webapps/alfresco or $TOMCAT_HOME/webapps/share for my <code>warLocation</code> depending on which AMPs I am installing. If you are running the WAR files unexploded you can specify the file path of each WAR.</p>
+<p>If you deployed Alfresco using Docker Compose or Kubernetes you'll need to build new images that copy the AMPs to the containers and then invoke the Alfresco MMT to install them into the Alfresco and Share WARs.</p>
 <h1 id="conclusion">Conclusion</h1>
 <p>This tutorial has shown how to bind custom behavior to Alfresco policies. Specifically, the tutorial showed how to implement a custom &quot;rateable&quot; aspect and a custom &quot;rating&quot; type that can be used to persist user ratings of content stored in the repository. The custom behavior is responsible for calculating the average rating for a piece of content any time a rating is created or deleted. The tutorial showed how to implement the average rating calculation behavior in Java as well as JavaScript.</p>
 <h1 id="where-to-find-more-information">Where to Find More Information</h1>
@@ -768,7 +803,7 @@ mvn alfresco:install -Dmaven.alfresco.warLocation=$TOMCAT_HOME/webapps/[alfresco
 <li>The complete source code for these examples is available on <a href="https://github.com/jpotts/alfresco-developer-series">GitHub</a>.</li>
 <li>Official documentation for both Enterprise Edition and Community Edition is available at <a href="http://docs.alfresco.com/">docs.alfresco.com</a>.</li>
 <li>Get help from the <a href="http://community.alfresco.com">community</a>.</li>
-<li>If you are ready to cover new ground, try another <a href="https://ecmarchitect.com">ecmarchitect.com</a> tutorial in the <a href="https://ecmarchitect.com/alfresco-developer-series">Alfresco Developer Series</a>.</li>
+<li>If you are ready to cover new ground, try another <a href="https://ecmarchitect.com">ecmarchitect.com</a> tutorial in the <a href="https://ecmarchitect.com/alfresco-developer-series">Alfresco Developer Series</a>. The most logical next step is the <a href="https://ecmarchitect.com/alfresco-developer-series-tutorials/webscripts/tutorial/tutorial.html">Intro to the Web Script Framework</a> tutorial.</li>
 </ul>
 					</div><!-- .entry-content -->
 				</div><!-- #post-## -->
