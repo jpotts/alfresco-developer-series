@@ -30,7 +30,7 @@ Architect | Alfresco Developer Tutorials</title>
 <div id="header">
 <h1 class="entry-title">Creating Custom Actions in Alfresco</h1>
 <h2 class="author">Jeff Potts, <a href="https://www.metaversant.com">Metaversant Group</a></h2>
-<h3 class="date">April, 2018</h3>
+<h3 class="date">February, 2019</h3>
 </div>
 <div id="TOC">
 <ul>
@@ -86,6 +86,7 @@ Architect | Alfresco Developer Tutorials</title>
 <h1 id="license">License</h1>
 <div class="figure">
 <img src="./images/cc-by-sa-88x31.png" />
+
 </div>
 <p>This work is licensed under the Creative Commons Attribution-ShareAlike 3.0 Unported License. To view a copy of this license, visit http://creativecommons.org/licenses/by-sa/3.0/ or send a letter to Creative Commons, 444 Castro Street, Suite 900, Mountain View, California, 94041, USA.</p>
 <h1 id="introduction">Introduction</h1>
@@ -114,10 +115,10 @@ Architect | Alfresco Developer Tutorials</title>
 <h2 id="tools">Tools</h2>
 <p>Here is what I am using on my machine:</p>
 <ul>
-<li>Mac OS X 10.12.6</li>
-<li>Java 1.8.0_77</li>
-<li>Apache Maven 3.5.3 (installed using Macports)</li>
-<li>Alfresco Maven SDK 3.0.1 (No download necessary)</li>
+<li>Ubuntu 16.04.5 LTS</li>
+<li>Java 1.8.0_201</li>
+<li>Apache Maven 3.3.9 (installed using Macports)</li>
+<li>Alfresco Maven SDK 4.0 (No download necessary)</li>
 </ul>
 <p>By default, when you create an Alfresco project using the Alfresco Maven SDK the project will be configured to depend on the latest stable Alfresco Community Edition build.</p>
 <p>An IDE is optional. Most people working with Alfresco use IntelliJ, Eclipse, or something similar.</p>
@@ -130,28 +131,33 @@ Architect | Alfresco Developer Tutorials</title>
 <p>I'm going to make three quick changes to the initial project files the SDK created:</p>
 <ol style="list-style-type: decimal">
 <li>First, we always want to generate AMP files. Starting with SDK 3.0.0, the default is to generate only a JAR file. That's easily fixed by uncommenting the &quot;maven-assembly-plugin&quot; in the list of plugins in the pom.xml file.</li>
-<li><p>Second, as I just mentioned, the actions tutorial project depends on the content tutorial project. When we launch the actions-tutorial project in the embedded Tomcat server we want the AMPs from the content tutorial to be installed, so those need to go into the pom.xml file as module dependencies:</p>
-<pre><code>&lt;platformModules&gt;
-...SNIP...
-&lt;moduleDependency&gt;
-    &lt;groupId&gt;com.someco&lt;/groupId&gt;
-    &lt;artifactId&gt;content-tutorial-platform-jar&lt;/artifactId&gt;
-    &lt;version&gt;1.0.0-SNAPSHOT&lt;/version&gt;
-    &lt;type&gt;amp&lt;/type&gt;
-&lt;/moduleDependency&gt;
-...SNIP...
-&lt;/platformModules&gt;
-&lt;shareModules&gt;
-...SNIP...
-    &lt;moduleDependency&gt;
+<li><p>Second, as I just mentioned, the actions tutorial project depends on the content tutorial project. When we launch the actions-tutorial project's Docker containers, we want the AMPs from the content tutorial to be installed, so those need to be set up as dependencies in the pom.xml of the platform docker module:</p>
+<pre><code>&lt;dependencies&gt;
+    &lt;dependency&gt;
+        &lt;groupId&gt;com.someco&lt;/groupId&gt;
+        &lt;artifactId&gt;actions-tutorial-platform-jar&lt;/artifactId&gt;
+        &lt;version&gt;1.0-SNAPSHOT&lt;/version&gt;
+    &lt;/dependency&gt;
+    &lt;dependency&gt;
+        &lt;groupId&gt;com.someco&lt;/groupId&gt;
+        &lt;artifactId&gt;content-tutorial-platform-jar&lt;/artifactId&gt;
+        &lt;version&gt;1.0-SNAPSHOT&lt;/version&gt;
+    &lt;/dependency&gt;
+&lt;/dependencies&gt;</code></pre>
+<p>And also in the pom.xml of the share docker module:</p>
+<pre><code>&lt;dependencies&gt;
+    &lt;dependency&gt;
+        &lt;groupId&gt;com.someco&lt;/groupId&gt;
+        &lt;artifactId&gt;actions-tutorial-share-jar&lt;/artifactId&gt;
+        &lt;version&gt;1.0-SNAPSHOT&lt;/version&gt;
+    &lt;/dependency&gt;    
+    &lt;dependency&gt;
         &lt;groupId&gt;com.someco&lt;/groupId&gt;
         &lt;artifactId&gt;content-tutorial-share-jar&lt;/artifactId&gt;
-        &lt;version&gt;1.0-SNAPSHOT&lt;/version&gt;
-        &lt;type&gt;amp&lt;/type&gt;
-    &lt;/moduleDependency&gt;
-...SNIP...
-&lt;/shareModules&gt;</code></pre></li>
-<li><p>Third, not only do we want the content tutorial AMPs installed, but the actions tutorial actually has a compile-time dependency on that project. So, go into the &quot;actions-tutorial-platform-jar&quot; directory and add the dependency to the pom.xml:</p>
+        &lt;version&gt;1.0-SNAPSHOT&lt;/version&gt;      
+    &lt;/dependency&gt;        
+&lt;/dependencies&gt;</code></pre></li>
+<li><p>Third, not only do we want the content tutorial AMPs installed, but the actions tutorial actually has a compile-time dependency on that pject. So, go into the &quot;actions-tutorial-platform-jar&quot; directory and add the dependency to the pom.xml:</p>
 <pre><code>&lt;dependencies&gt;
     &lt;dependency&gt;
         &lt;groupId&gt;com.someco&lt;/groupId&gt;
@@ -169,15 +175,18 @@ Architect | Alfresco Developer Tutorials</title>
 <p>Sometimes, the term “rule action” is used to describe this type of action. That's because actions are frequently used when configuring a rule on a folder. For example, suppose that there is a requirement to always create a PNG version of GIFs checked in to a specific folder. This is easily done by creating a rule that watches for new or updated GIFs and then runs the “Transform and Copy Image” action when it finds an object that meets the criteria.</p>
 <p>The screenshots below show some of the out-of-the-box actions available when configuring a rule in Alfresco Share:</p>
 <div class="figure">
-<img src="./images/rule-actions-share.png" alt="Actions in Share rule config" /><p class="caption">Actions in Share rule config</p>
+<img src="./images/rule-actions-share.png" alt="Actions in Share rule config" />
+<p class="caption">Actions in Share rule config</p>
 </div>
 <p>But actions aren't limited to running as part of a rule. Actions can be called from menu items in the Alfresco Share user interface. These are often called “UI actions” to distinguish the actual menu item, the UI action, from the thing that actually does the work, the “rule action” or simply, the “action”.</p>
 <p>These screenshots show the UI actions available in Alfresco Share's document library's document list as well as the document details page:</p>
 <div class="figure">
-<img src="./images/ui-actions-browse-share.png" alt="Browse UI actions in Share" /><p class="caption">Browse UI actions in Share</p>
+<img src="./images/ui-actions-browse-share.png" alt="Browse UI actions in Share" />
+<p class="caption">Browse UI actions in Share</p>
 </div>
 <div class="figure">
-<img src="./images/ui-actions-details-share.png" alt="Details UI actions in Share" /><p class="caption">Details UI actions in Share</p>
+<img src="./images/ui-actions-details-share.png" alt="Details UI actions in Share" />
+<p class="caption">Details UI actions in Share</p>
 </div>
 <p>So actions can be invoked from a rule and can be triggered from a menu item. Actions can also be called from code which means they can be invoked from server-side JavaScript, workflows, web scripts, or any other piece of code that can get to the Action Service.</p>
 <p>Because the same action can be invoked from all of these places, actions are a powerful way to write content operations once and then leverage them in many places.</p>
@@ -259,8 +268,8 @@ Architect | Alfresco Developer Tutorials</title>
 <p>In the source code that accompanies this tutorial, I've included some integration tests. The integration tests just attempt to use the <code>ActionService</code> to get the action. For the Move Replaced action, I also execute the action.</p>
 <p>If you are following along, you can copy the <code>MoveReplacedActionIT</code> class into:</p>
 <pre><code>$TUTORIAL_HOME/actions-tutorial-platform-jar/src/test/java/com/someco/action/test</code></pre>
-<p>Once you do that (or if you have simply checked out the tutorial source from GitHub) you can then run <code>mvn install</code>. When you do that, Maven will compile your action and run the tests against Alfresco running on an embedded Tomcat server.</p>
-<p>In SDK 3.0.1 you may see some stack traces when running <code>mvn install</code>. If you scroll up a little bit you should see that the tests ran successfully. The stack traces are a known issue with the SDK.</p>
+<p>Once you do that (or if you have simply checked out the tutorial source from GitHub) you can then run <code>./run.sh build_start</code> to start up the Alfresco Docker containers with your extensions installed. Once everything is up, run <code>./run.sh test</code> to compile and run the integration tests.</p>
+<p>In SDK 3.0.1 you can run Alfresco in the embedded Tomcat server and execute the integration tests in a single step by running <code>mvn install</code>. You may see some stack traces that make it seem like something didn't work. If you scroll up a little bit you should see that the tests ran successfully. The stack traces are a known issue with version 3.0.1 of the SDK.</p>
 <p>So at this point, you've got one new custom action, but it isn't configured in the Alfresco Share user interface. Before doing that, let's look at another Action Executer example, then we'll configure them both in the UI.</p>
 <h2 id="implementing-the-set-web-flag-action">Implementing the Set Web Flag action</h2>
 <p>This action will be used to set the flag on content which should be shown in the SomeCo portal. Recall from the content types tutorial that the property that controls whether or not content should show up in the portal is a boolean named <code>sc:isActive</code> which is defined as part of an aspect named <code>sc:webable</code>. Also in that aspect is a date property named <code>sc:published</code> that keeps track of when the content was last published to the portal.</p>
@@ -324,7 +333,7 @@ protected void executeImpl(Action action, NodeRef actionedUponNodeRef) {
         &lt;ref bean=&quot;NodeService&quot; /&gt;
     &lt;/property&gt;
 &lt;/bean&gt;</code></pre>
-<p>The action can now be invoked by the Action Service. If you want, you can test it using <code>mvn install</code> just like you did for the Move Replaced action.</p>
+<p>The action can now be invoked by the Action Service. If you want, you can test it by starting up the Docker containers and then running <code>./run.sh test</code> just like you did for the Move Replaced action.</p>
 <h2 id="localizing-the-actions">Localizing the actions</h2>
 <p>This step isn't strictly necessary at this point, but it will save a step later. There are some places in the Alfresco Share user interface that get localized values from the repository tier. So a user-friendly title and description for each of these actions needs to be set.</p>
 <p>Following the same pattern as the content tutorial, I created a &quot;messages&quot; folder in:</p>
@@ -414,7 +423,8 @@ assoc.cm_replaces=Replaces</code></pre>
 <h2 id="configuring-the-move-replaced-rule-action-in-share">Configuring the Move Replaced Rule Action in Share</h2>
 <p>Share is pretty smart. If you deploy the Move Replaced action as-is it will automatically get added to the list of actions users can select when configuring a rule. So for simple actions, you won't have to do anything further. But in this example, the action takes an argument. By default, Share will try to render a plain text field for the argument, like this:</p>
 <div class="figure">
-<img src="./images/unconfigured-move-replaced-param.png" alt="By default, Share renders a plain text field for the action&#39;s parameter" /><p class="caption">By default, Share renders a plain text field for the action's parameter</p>
+<img src="./images/unconfigured-move-replaced-param.png" alt="By default, Share renders a plain text field for the action&#39;s parameter" />
+<p class="caption">By default, Share renders a plain text field for the action's parameter</p>
 </div>
 <p>A plain text field for the parameter might work in some cases, but this action takes a node reference as an argument and making an end-user provide a node reference for the target folder would be a very bad thing. Instead, Share needs to render a folder picker dialog for the target folder argument. Luckily, Alfresco has already developed such a dialog—Share just has to be told to use it.</p>
 <p>Unfortunately, at the moment, getting a folder picker to show up for this action takes a bit more work than it ought to. Here is what is involved:</p>
@@ -531,12 +541,13 @@ assoc.cm_replaces=Replaces</code></pre>
 <p>With this final step in place, end-users can configure a rule that invokes the Move Replaced action. The rule editor will use the custom handler for the action so that a folder picker dialog is used to select the target folder.</p>
 <p>You can see this happening in the screenshot below. You can see the dialog that gets launched when the Select button is clicked as well as the little folder icon and folder path that are rendered once a selection is made.</p>
 <div class="figure">
-<img src="./images/move-replaced-config-share.png" alt="Configuring the Move Replaced action in Share" /><p class="caption">Configuring the Move Replaced action in Share</p>
+<img src="./images/move-replaced-config-share.png" alt="Configuring the Move Replaced action in Share" />
+<p class="caption">Configuring the Move Replaced action in Share</p>
 </div>
 <h3 id="testing-your-share-configuration">Testing Your Share Configuration</h3>
-<p>You can use the Alfresco Maven SDK to run the actions-tutorial project on an embedded Tomcat server. Doing so will start up Tomcat with both the Alfresco WAR and the Share WAR. The WARs will have the content-tutorial AMPs installed because we added them to the pom.xml and, of course, will also have the actions-tutorial AMPs installed.</p>
-<p>To start it up, open a terminal window, switch to the actions-tutorial project root directory, and run <code>run.sh</code> (if you are on Windows, use <code>run.bat</code> instead).</p>
-<p>That starts Alfresco Share on an embedded Tomcat server on port 8080.</p>
+<p>You can use the Alfresco Maven SDK to run the actions-tutorial project using Docker and Docker Compose. The Alfresco and Share WARs installed in the Tomcat servers in the Docker containers will have the content-tutorial AMPs installed because we added them to the Docker modules' pom.xml and, of course, will also have the actions-tutorial AMPs installed.</p>
+<p>To start it up, open a terminal window, switch to the actions-tutorial project root directory, and run <code>./run.sh build_start</code> (if you are on Windows, use <code>run.bat</code> instead).</p>
+<p>That starts Alfresco in a container that is listening on port 8080 and Share in a container that is listening on port 8180.</p>
 <h2 id="configuring-the-set-web-flag-ui-action-in-share">Configuring the Set Web Flag UI Action in Share</h2>
 <p>Now it is time to shift focus from rule actions to UI actions. SomeCo wants end-users to be able to click an item in the menu that either enables or disables the web flag. Alfresco has a framework that allows you to easily add new UI actions to the menu. You can configure:</p>
 <ul>
@@ -621,10 +632,12 @@ actions.someco.web-disable=SC Disable Web
 message.web-flag.enabled=Successfully enabled the SomeCo active flag
 message.web-flag.disabled=Successfully disabled the SomeCo active flag
 message.web-flag.failure=Error setting the SomeCo active flag</code></pre>
-<p>With icons and localized strings in place, you can deploy and run and everything should work. If your server is still running from earlier, do a ctrl-c to stop it, then launch it again by running <code>run.sh</code> or <code>run.bat</code>.</p>
-<p>But, what you'll notice is that both the Enable and Disable UI actions show up at the same time, which is lame. Check it out:</p>
+<p>With icons and localized strings in place, you can deploy and run and everything should work. If your server is still running from earlier, do a <code>./run.sh stop</code> to stop it, then launch it again by running <code>./run.sh build_start</code> (or <code>run.bat</code> for Windows).</p>
+<p>If you don't know whether or not your containers are still running, do a <code>docker ps</code> to list the running containers.</p>
+<p>Once you are able to log in to Share you'll notice that both the Enable and Disable UI actions show up at the same time, which is lame. Check it out:</p>
 <div class="figure">
-<img src="./images/enable-disable-same-time.png" alt="Yuck, SC Enable and SC Disable show up simultaneously" /><p class="caption">Yuck, SC Enable and SC Disable show up simultaneously</p>
+<img src="./images/enable-disable-same-time.png" alt="Yuck, SC Enable and SC Disable show up simultaneously" />
+<p class="caption">Yuck, SC Enable and SC Disable show up simultaneously</p>
 </div>
 <p>The enable should only show up when the active flag is not set to <code>true</code>. The disable should only show up when the active flag is set to <code>true</code>. That's easy to fix with an evaluator and that's covered in the next section.</p>
 <h2 id="finishing-touches-evaluators-indicators">Finishing Touches: Evaluators &amp; Indicators</h2>
@@ -699,23 +712,23 @@ message.web-flag.failure=Error setting the SomeCo active flag</code></pre>
 <pre><code>$TUTORIAL_HOME/actions-tutorial-share-jar/src/main/resources/META-INF/resources/components/documentlibrary/indicators</code></pre>
 <p>for this purpose.</p>
 <p>Now you have seen that evaluators can be used to show UI actions and indicators. If the evaluator returns <code>true</code> the UI action or indicator is shown. If it returns <code>false</code> the UI action or indicator is hidden. In the UI actions, you saw that the <code>negate</code> attribute can be used to invert what the evaluator returns. That was used to hide the <code>someco-web-enable</code> UI action when the <code>isActive</code> flag was already <code>true</code>.</p>
-<p>That's it. You can now restart the embedded Tomcat server and test your changes.</p>
+<p>That's it. You can now either do a <code>./run.sh stop</code> followed by a <code>./run.sh build_start</code> to stop and start all of the containers or you can do a <code>mvn install -DskipTests</code> to build the AMPs then do a <code>./run.sh reload_share</code> to just restart the Share container. You may find the second option to be a lot faster.</p>
 <h1 id="deploying-to-a-real-server">Deploying to a Real Server</h1>
-<p>So far, you've been running everything using the embedded Tomcat server and that works really well while you are developing.</p>
-<p>If you want to deploy to a standalone Alfresco server, you can either manually copy the AMP files to the &quot;amps&quot; and &quot;amps_share&quot; directories, then run the MMT (Module Management Tool) to install the AMPs into your WAR files or you can use the &quot;alfresco:install&quot; goal to do it with Maven from your project directories.</p>
-<p>Regardless of the method you choose, you'll need to deploy a total of four AMPs (two repository tier AMPs and two Share tier AMPs) for this to work because the action tutorial AMPs depend on the content tutorial AMPs. From the root of any of these projects you can run:</p>
-<pre><code>mvn install
-mvn alfresco:install -Dmaven.alfresco.warLocation=$TOMCAT_HOME/webapps/[alfresco or share]</code></pre>
-<p>In my case, I run the alfresco.war and share.war files exploded under $TOMCAT_HOME/webapps, so I would specify $TOMCAT_HOME/webapps/alfresco or $TOMCAT_HOME/webapps/share for my <code>warLocation</code> depending on which AMPs I am installing. If you are running the WAR files unexploded you can specify the file path of each WAR.</p>
+<p>So far, you've been running everything using SDK-generated Docker containers and that works really well while you are developing.</p>
+<p>If you want to deploy to a standalone Alfresco server, you can either manually copy the AMP files to the &quot;amps&quot; and &quot;amps_share&quot; directories, then run the MMT (Module Management Tool) to install the AMPs into your WAR files or you can use the <a href="https://github.com/Alfresco/acs-community-packaging">ACS Community Packaging</a> project to create your own Docker images, then start those images up using Docker Compose, or Kubernetes, depending on how your servers are deployed.</p>
+<p>Regardless of the method you choose, you'll need to deploy a total of four AMPs (two repository tier AMPs and two Share tier AMPs) for this to work because the action tutorial AMPs depend on the content tutorial AMPs.</p>
 <p>If everything is working correctly, you should see the SomeCo web site link and either the SC Web Enable or the SC Web Disable menu items from both the browse menu and the details page as shown below.</p>
 <div class="figure">
-<img src="./images/indicators-browse-share.png" alt="Indicators show which content has the active flag set in Share" /><p class="caption">Indicators show which content has the active flag set in Share</p>
+<img src="./images/indicators-browse-share.png" alt="Indicators show which content has the active flag set in Share" />
+<p class="caption">Indicators show which content has the active flag set in Share</p>
 </div>
 <div class="figure">
-<img src="./images/ui-actions-disable-details-share.png" alt="Custom UI actions in the document details page" /><p class="caption">Custom UI actions in the document details page</p>
+<img src="./images/ui-actions-disable-details-share.png" alt="Custom UI actions in the document details page" />
+<p class="caption">Custom UI actions in the document details page</p>
 </div>
 <div class="figure">
-<img src="./images/ui-actions-disable-browse-share.png" alt="Custom UI actions in the document list" /><p class="caption">Custom UI actions in the document list</p>
+<img src="./images/ui-actions-disable-browse-share.png" alt="Custom UI actions in the document list" />
+<p class="caption">Custom UI actions in the document list</p>
 </div>
 <p>Clicking the “SomeCo” menu item will open a browser window to the URL specified in the configuration. Clicking the “SC Disable Web” should invoke the action on the repository tier and then refresh the metadata and the action list.</p>
 <h1 id="topics-to-explore-on-your-own">Topics to Explore On Your Own</h1>
@@ -733,7 +746,7 @@ mvn alfresco:install -Dmaven.alfresco.warLocation=$TOMCAT_HOME/webapps/[alfresco
 <li>The complete source code for these examples is available on <a href="https://github.com/jpotts/alfresco-developer-series">GitHub</a>.</li>
 <li>Official documentation for both Enterprise Edition and Community Edition is available at <a href="http://docs.alfresco.com/">docs.alfresco.com</a>.</li>
 <li>Check the <a href="https://community.alfresco.com">Alfresco Community</a> site for blog posts from Mike Hatfield and David Draper, two Alfresco engineers that write about customizing Share.</li>
-<li>If you are ready to cover new ground, try another <a href="https://ecmarchitect.com">ecmarchitect.com</a> tutorial in the <a href="https://ecmarchitect.com/alfresco-developer-series">Alfresco Developer Series</a>.</li>
+<li>If you are ready to cover new ground, try another <a href="https://ecmarchitect.com">ecmarchitect.com</a> tutorial in the <a href="https://ecmarchitect.com/alfresco-developer-series">Alfresco Developer Series</a>. The most logical next step is the <a href="https://ecmarchitect.com/alfresco-developer-series-tutorials/behaviors/tutorial/tutorial.html">Implementing Custom Behaviors</a> tutorial.</li>
 </ul>
 					</div><!-- .entry-content -->
 				</div><!-- #post-## -->
