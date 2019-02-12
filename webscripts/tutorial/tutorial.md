@@ -1,6 +1,6 @@
 % Introduction to the Web Script Framework
 % Jeff Potts, [Metaversant Group](https://www.metaversant.com)
-% April, 2018
+% February, 2019
 
 License
 =======
@@ -62,7 +62,8 @@ a black-box component. Other systems, both producers and consumers of content,
 need to interact with the CMS and other components via REST.
 
 Alfresco provides an industry-standard, RESTful API for working with the
-repository called CMIS. But there are times when this API doesn't do everything
+repository called CMIS. Starting in release 5.2, they added a new proprietary
+RESTful API. But there are times when these APIs don't do everything
 you need to do. In that case, a great alternative is to create your own API
 using the web script framework.
 
@@ -89,14 +90,13 @@ of expense reports to return. The point is that the structure of the URL and how
 The response the URL returns is also up to you. Your response might return HTML,
 XML, JSON, or even a JSR-168 Portlet.
 
-The web script framework makes it easy to follow the
-Model-View-Controller (MVC) pattern, although it isn't required. The
-**controller** is server-side JavaScript, a Java class, or both. The controller
-handles the request, performs any business logic that is needed, populates the
-model with data, and then forwards the request to the **view**. The view is a
-FreeMarker template responsible for constructing a response in the appropriate
-format. The **model** is a data structure passed between the controller and the
-view.
+The web script framework makes it easy to follow the Model-View-Controller (MVC)
+pattern, although it isn't required. The **controller** is server-side
+JavaScript, a Java class, or both. The controller handles the request, performs
+any business logic that is needed, populates the model with data, and then
+forwards the request to the **view**. The view is a FreeMarker template
+responsible for constructing a response in the appropriate format. The **model**
+is a data structure passed between the controller and the view.
 
 The mapping of URL to controller is done through an XML *descriptor* which is
 responsible for declaring the URL pattern, whether the script requires a
@@ -186,10 +186,10 @@ Do the following:
     ```
 
     Notice that the URL starts with "/alfresco/service" but the descriptor you
-    created in step 3 defines the URL to be "/someco/helloworld". When you are invoking
-    web scripts running in Alfresco over HTTP/S, the URL will always start with
-    "/[alfresco web context]/service". You may also see the "service" part
-    shortened to "s".
+    created in step 3 defines the URL to be "/someco/helloworld". When you are
+    invoking web scripts running in Alfresco over HTTP/S, the URL will always
+    start with "/[alfresco web context]/service". You may also see the "service"
+    part shortened to "s".
 
 A few things to note. First, notice the file names include “get”. That's the
 HTTP method used to call the URL. In later examples you'll see how to use POST
@@ -317,10 +317,10 @@ Tools
 -----
 Here is what I am using on my machine:
 
-* Mac OS X 10.12.6
-* Java 1.8.0_77
-* Apache Maven 3.5.3 (installed using Macports)
-* Alfresco Maven SDK 3.0.1 (No download necessary)
+* Ubuntu 16.04.5 LTS
+* Java 1.8.0_201
+* Apache Maven 3.3.9
+* Alfresco Maven SDK 4.0 (No download necessary)
 
 By default, when you create an Alfresco project using the Alfresco Maven
 SDK the project will be configured to depend on the latest stable Alfresco
@@ -356,70 +356,67 @@ project to generate AMPs, edit the pom.xml and uncomment the
 maven-assembly-plugin.
 
 Next, there are a few dependencies we need to take care of. First, when running
-the project with the embedded Tomcat server, we want the webscripts-tutorial AMPs
-to be deployed, but we also want some of the AMPs from previous tutorials to be
-deployed. Specifically, the content tutorial, behaviors tutorial, and actions
-tutorial. To make this happen, edit the pom.xml in the "webscripts-tutorial"
+the project, we want the webscripts-tutorial AMPs to be deployed, but we also
+want some of the AMPs from previous tutorials to be deployed as well.
+Specifically, the content tutorial, behaviors tutorial, and actions tutorial. To
+make this happen, edit the pom.xml in the "webscripts-tutorial-platform-docker"
 directory and add the following platform dependencies:
 
-    <platformModules>
-        ...SNIP...
+    <dependencies>
+        <dependency>
+            <groupId>com.someco</groupId>
+            <artifactId>webscripts-tutorial-platform-jar</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
         <!-- Bring in the content tutorial repo AMP so we can run embedded. -->
-        <moduleDependency>
+        <dependency>
             <groupId>com.someco</groupId>
             <artifactId>content-tutorial-platform-jar</artifactId>
             <version>1.0-SNAPSHOT</version>
-            <type>amp</type>
-        </moduleDependency>
-
-        <!-- Bring in the behavior tutorial repo AMP so we can run embedded. -->
-        <moduleDependency>
-            <groupId>com.someco</groupId>
-            <artifactId>behavior-tutorial-platform-jar</artifactId>
-            <version>1.0-SNAPSHOT</version>
-            <type>amp</type>
-        </moduleDependency>
-
+        </dependency>
         <!-- Bring in the actions tutorial repo AMP so we can run embedded. -->
-        <moduleDependency>
+        <dependency>
             <groupId>com.someco</groupId>
             <artifactId>actions-tutorial-platform-jar</artifactId>
             <version>1.0-SNAPSHOT</version>
-            <type>amp</type>
-        </moduleDependency>
-        ...SNIP...
-    </platform-modules>
+        </dependency>
+        <!-- Bring in the behavior tutorial repo AMP so we can run embedded. -->
+        <dependency>
+            <groupId>com.someco</groupId>
+            <artifactId>behavior-tutorial-platform-jar</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+    </dependencies>
 
-We also want the Share AMPs from those same projects to be installed, so a little
-further down in the same file add the following Share dependencies:
+We also want the Share AMPs from those same projects to be installed, so edit
+the pom.xml file in the "webscripts-tutorial-share-docker" directory to add the
+following Share dependencies:
 
-    <shareModules>
-        ...SNIP...
+    <dependencies>
+        <dependency>
+            <groupId>com.someco</groupId>
+            <artifactId>webscripts-tutorial-share-jar</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
         <!-- Bring in the content tutorial share AMP so we can run embedded. -->
-        <moduleDependency>
+        <dependency>
             <groupId>com.someco</groupId>
             <artifactId>content-tutorial-share-jar</artifactId>
             <version>1.0-SNAPSHOT</version>
-            <type>amp</type>
-        </moduleDependency>
-
-        <!-- Bring in the behavior tutorial share AMP so we can run embedded. -->
-        <moduleDependency>
-            <groupId>com.someco</groupId>
-            <artifactId>behavior-tutorial-share-jar</artifactId>
-            <version>1.0-SNAPSHOT</version>
-            <type>amp</type>
-        </moduleDependency>
-
+        </dependency>
         <!-- Bring in the actions tutorial share AMP so we can run embedded. -->
-        <moduleDependency>
+        <dependency>
             <groupId>com.someco</groupId>
             <artifactId>actions-tutorial-share-jar</artifactId>
             <version>1.0-SNAPSHOT</version>
-            <type>amp</type>
-        </moduleDependency>
-        ...SNIP...
-    </shareModules>
+        </dependency>
+        <!-- Bring in the behavior tutorial share AMP so we can run embedded. -->
+        <dependency>
+            <groupId>com.someco</groupId>
+            <artifactId>behavior-tutorial-share-jar</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+    </dependencies>
 
 Finally, the tutorial will have a compile-time dependency on the behavior-tutorial.
 To address that, edit the pom.xml under "webscripts-tutorial-platform-jar" and
@@ -538,12 +535,12 @@ Edit the file to have the following content:
         <transaction>none</transaction>
     </webscript>
 
-There are a few elements in this descriptor you didn't see in the Hello
-World example. First, notice that there are multiple `url` elements. There
-is one `url` element for each format plus one without a format. This shows how
-to request a different output format from the same base URL. Because the
-URLs differ only in format, it isn't strictly required that they be
-listed in the descriptor, but it is a good practice.
+There are a few elements in this descriptor you didn't see in the Hello World
+example. First, notice that there are multiple `url` elements. There is one
+`url` element for each format plus one without a format. This shows how to
+request a different output format from the same base URL. Because the URLs
+differ only in format, it isn't strictly required that they be listed in the
+descriptor, but it is a good practice.
 
 The `format` element declares the which extension syntax the web script uses and
 defines a default output format. In this case, the web script uses the
@@ -565,9 +562,9 @@ The `authentication` element declares the minimum level of authentication
 required for this script. If your web script access the repository this must be
 set to "guest" or higher. Other options are "none", "user", and "admin".
 
-The `transaction` element specifies the level of transaction required by
-the script. Listing whitepapers doesn't need a transaction, so in this example
-it is set to "none". Other possible values are:
+The `transaction` element specifies the level of transaction required by the
+script. Listing whitepapers doesn't need a transaction, so in this example it is
+set to "none". Other possible values are:
 
 * **required**: the web script requires a transaction and can be part of an
 existing transaction if one has already been started
@@ -582,28 +579,30 @@ a file called "[whitepapers.get.js](https://github.com/jpotts/alfresco-developer
 in the same directory as the controller. Edit the file with the following
 content:
 
-    <import resource="classpath:alfresco/extension/scripts/rating.js">
+```
+<import resource="classpath:alfresco/extension/scripts/rating.js">
 
-    var whitepapers = search.luceneSearch("PATH:\"/app:company_home/cm:Someco/cm:Whitepapers/*\" +TYPE:\"{http://www.someco.com/model/content/1.0}whitepaper\"");
+var whitepapers = search.luceneSearch("PATH:\"/app:company_home/cm:Someco/cm:Whitepapers/*\" +TYPE:\"{http://www.someco.com/model/content/1.0}whitepaper\"");
 
-    if (whitepapers == null || whitepapers.length == 0) {
-        status.code = 404;
-        status.message = "No whitepapers found";
-        status.redirect = true;
-    } else {
-        var whitepaperInfo = new Array();
-        for (i = 0; i < whitepapers.length; i++) {
-            var whitepaper = new whitepaperEntry(whitepapers[i],
-            getRating(whitepapers[i]));
-            whitepaperInfo[i] = whitepaper;
-        }
-        model.whitepapers = whitepaperInfo;
+if (whitepapers == null || whitepapers.length == 0) {
+    status.code = 404;
+    status.message = "No whitepapers found";
+    status.redirect = true;
+} else {
+    var whitepaperInfo = new Array();
+    for (i = 0; i < whitepapers.length; i++) {
+        var whitepaper = new whitepaperEntry(whitepapers[i],
+        getRating(whitepapers[i]));
+        whitepaperInfo[i] = whitepaper;
     }
+    model.whitepapers = whitepaperInfo;
+}
 
-    function whitepaperEntry(whitepaper, rating) {
-        this.whitepaper = whitepaper;
-        this.rating = rating;
-    }
+function whitepaperEntry(whitepaper, rating) {
+    this.whitepaper = whitepaper;
+    this.rating = rating;
+}
+```
 
 The first thing to notice about the script is that it imports another script.
 The rating.js script was created as part of the [custom behaviors tutorial](https://ecmarchitect.com/alfresco-developer-series-tutorials/behaviors/tutorial/tutorial.html)
@@ -747,8 +746,8 @@ with the following content:
         ]
     }
 
-Again, just like the HTML response template, the script iterates through
-the result set, but this one outputs JSON instead of HTML. The JSON structure is
+Again, just like the HTML response template, the script iterates through the
+result set, but this one outputs JSON instead of HTML. The JSON structure is
 completely arbitrary. In the real world, you would work this out with the
 front-end development team.
 
@@ -757,52 +756,35 @@ front-end development team.
 Recall that after you bootstrapped this project from the "all-in-one" archetype,
 you edited the pom.xml file to add the content, behavior, and actions AMPs as
 dependencies. That means you can easily test your web script by firing up the
-embedded Tomcat server and your webscripts will have the dependencies they expect.
-Plus, you'll be able to log in to Share and create test content, run the custom
-actions from the actions tutorial, and so on.
+Docker containers and your webscripts will have the dependencies they expect.
+Plus, you'll be able to log in to Share and create test content, run the
+custom actions from the actions tutorial, and so on.
 
 The dependencies from the earlier tutorials do the following:
 
-* **content-tutorial-platform-jar**. This is required because the web script looks for
-content with the `sc:isActive` flag set and that's defined in the SomeCo
-Content Model that is part of that project.
-* **behavior-tutorial-platform-jar**. This is required because it contains a behavior
-that calculates the average rating for a piece of content and because it has the
-rating.js server-side JavaScript file that the controllers in this tutorial
-import.
-* **actions-tutorial-platform-jar**. This one is optional. It contains a UI action that
-is used to set the `sc:isActive` flag from within the Alfresco Share user
-interface.
+* **content-tutorial-platform-jar**. This is required because the web script
+looks for content with the `sc:isActive` flag set and that's defined in the
+SomeCo Content Model that is part of that project.
+* **behavior-tutorial-platform-jar**. This is required because it contains a
+behavior that calculates the average rating for a piece of content and because
+it has the rating.js server-side JavaScript file that the controllers in this
+tutorial import.
+* **actions-tutorial-platform-jar**. This one is optional. It contains a UI
+action that is used to set the `sc:isActive` flag from within the Alfresco Share
+user interface.
 
-Running the embedded Tomcat server with these dependencies installed automatically
-for you is really convenient. At some point, you'll want to deploy to an actual
-Alfresco installation.
+Running the SDK-generated Docker containers with these dependencies installed
+automatically for you is really convenient. At some point, you'll want to deploy
+to an actual Alfresco installation, which you can do either by manually
+deploying the AMPs for this project and the ones listed above or by building
+your own Docker images.
 
-You can deploy these AMPs to your Alfresco installation using the
-"apply_amps.sh" script. Alternatively, you can use the "alfresco:install" plugin
-that is part of the Alfresco Maven SDK to install each one.
+For now, it's easiest just to use the SDK-generated Docker containers. To start
+those up using Docker Compose, switch to the "webscripts-tutorial" directory and
+run `./run.sh build_start` or `run.bat build_start` depending on your platform.
 
-For example, on my machine, I have all three of those projects checked out from
-source as well as the webscripts-tutorial-platform-jar project. And, I have Alfresco
-running in $TOMCAT_HOME with an exploded Alfresco WAR. So, for each project I
-can do this:
-
-1. Switch to \$TUTORIAL\_HOME/\$PROJECT_DIRECTORY
-2. Run `mvn install` to build the AMP. Use `mvn install -DskipTests=true` to
-skip the unit tests some of those projects may have.
-3. Run `mvn alfresco:install -Dmaven.alfresco.warLocation=$TOMCAT_HOME/webapps/alfresco`
-to install the AMP to the exploded Alfresco web application. If you are running
-the alfresco.war unexploded you can specify the path to the WAR file instead.
-
-After doing that for all four projects (the three dependencies and the
-webscripts-tutorial-platform-jar project) start Tomcat and test.
-
-While you are developing, and for the rest of the tutorial, it's easiest to just
-use the embedded Tomcat server. You can do that by switching to the "webscripts-tutorial"
-directory and running `run.sh` or `run.bat` depending on your platform.
-
-Now that your Alfresco server is running the webscripts-tutorial-platform-jar AMP and
-its dependencies, you are ready to test out the whitepapers web script.
+Now that your Alfresco server is running the webscripts-tutorial-platform-jar
+AMP and its dependencies, you are ready to test out the whitepapers web script.
 
 ### Testing
 
@@ -941,8 +923,9 @@ Now you can deploy and test the rating web script.
 
 ### Deploying and testing the rating web script
 
-If you are following along, build the AMP, install it, and start up the embedded
-Tomcat server by running `run.sh` or `run.bat`.
+If you are following along, build the AMPs by running `mvn install -DskipTests`
+from the $TUTORIAL_HOME directory. Once it builds successfully, you can restart
+the Alfresco container by running `./run.sh reload_acs`.
 
 Now invoke the whitepaper web script you created earlier:
 
@@ -1467,15 +1450,15 @@ The file is called [rating.get.html.ftl](https://github.com/jpotts/alfresco-deve
 
     <p><a href="${url.serviceContext}/someco/whitepapers.html?guest=true">Back to the list</a> of whitepapers</p>
     <p>Node: ${args.id}</p>
-    <p>Average: ${rating.average}</p>
-    <p># of Ratings: ${rating.count}</p>
+    <p>Average: ${rating.average!''}</p>
+    <p># of Ratings: ${rating.count!''}</p>
     <#if (rating.user > 0)>
-        <p>User rating: ${rating.user}</p>
+        <p>User rating: ${rating.user!''}</p>
     </#if>
     <form name="login">
         Rater:<input name="userId"></input>
     </form>
-    Rating: <div class="rating" id="rating_${args.id}" style="display:inline">${rating.average}</div>
+    Rating: <div class="rating" id="rating_${args.id}" style="display:inline">${rating.average!'0'}</div>
     <p><a href="#" onclick=deleteRatings("${args.id}")>Delete ratings</a> for this node</p>
 
 This is all basic HTML/FreeMarker stuff you've seen before. The last line sets
@@ -1595,5 +1578,6 @@ available at [docs.alfresco.com](http://docs.alfresco.com/).
 * Ask questions about web scripts in the [community](http://community.alfresco.com).
 * If you are ready to cover new ground, try another [ecmarchitect.com](https://ecmarchitect.com)
 tutorial in the [Alfresco Developer Series](https://ecmarchitect.com/alfresco-developer-series).
+The most logical next step is the [Custom Advanced Workflows](https://ecmarchitect.com/alfresco-developer-series-tutorials/workflow/tutorial/tutorial.html) tutorial.
 * Learn more about FreeMarker at [freemarker.sourceforge.net](http://freemarker.sourceforge.net/).
 * Learn more about JSON at [json.org](http://www.json.org/)
