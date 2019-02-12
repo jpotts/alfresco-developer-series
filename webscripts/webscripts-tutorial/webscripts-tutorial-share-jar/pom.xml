@@ -2,12 +2,10 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>com.someco</groupId>
     <artifactId>webscripts-tutorial-share-jar</artifactId>
-    <version>1.0-SNAPSHOT</version>
-    <name>webscripts-tutorial share tier AMP project</name>
+    <name>Alfresco Share JAR Module</name>
     <packaging>jar</packaging>
-    <description>Sample Share JAR Module (to be included in the share.war) - part of AIO - SDK 3</description>
+    <description>Sample Share JAR Module (to be included in the share.war) - part of AIO - SDK 4.0</description>
 
     <parent>
         <groupId>com.someco</groupId>
@@ -27,11 +25,7 @@
             <artifactId>share</artifactId>
             <classifier>classes</classifier>
         </dependency>
-
-        <dependency>
-            <groupId>org.alfresco.surf</groupId>
-            <artifactId>spring-surf-api</artifactId>
-        </dependency>
+        <!-- Add here any JAR or AMP dependency that needs to be deployed to share -->
     </dependencies>
 
     <build>

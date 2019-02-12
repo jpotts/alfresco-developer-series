@@ -24,7 +24,7 @@
                     curUser = "jpotts";
                 }
                 postRating(widgetId, starNbr, curUser);
-            }           
+            }
 
             function getXmlHttpRequestObject() {
                 if (window.XMLHttpRequest) {
@@ -44,14 +44,14 @@
                     receiveReq.onreadystatechange = handleRatingPosted;
                     receiveReq.send(null);
                 }
-            }       
-        
+            }
+
             function handleRatingPosted() {
                 if (receiveReq.readyState == 4) {
                     window.location.reload(true);
                 }
             }
-            
+
             function deleteRatings(id) {
                 if (receiveReq.readyState == 4 || receiveReq.readyState == 0) {
                     receiveReq.open("DELETE", "${url.serviceContext}/someco/rating/delete.html?id=" + id);
@@ -65,22 +65,22 @@
                     window.location.reload(true);
                 }
             }
-            
-            var receiveReq = getXmlHttpRequestObject();         
+
+            var receiveReq = getXmlHttpRequestObject();
             Event.observe(window, 'load', initEvents);
         </script>
 
         <p><a href="${url.serviceContext}/someco/whitepapers.html?guest=true">Back to the list</a> of whitepapers</p>
         <p>Node: ${args.id}</p>
-        <p>Average: ${rating.average}</p>
-        <p># of Ratings: ${rating.count}</p>
+        <p>Average: ${rating.average!''}</p>
+        <p># of Ratings: ${rating.count!''}</p>
         <#if (rating.user > 0)>
-            <p>User rating: ${rating.user}</p>
+            <p>User rating: ${rating.user!''}</p>
         </#if>
         <form name="login">
             Rater:<input name="userId"></input>
         </form>
-        Rating: <div class="rating" id="rating_${args.id}" style="display:inline">${rating.average}</div>
+        Rating: <div class="rating" id="rating_${args.id}" style="display:inline">${rating.average!'0'}</div>
         <p><a href="#" onclick=deleteRatings("${args.id}")>Delete ratings</a> for this node</p>
     </body>
 </html>
