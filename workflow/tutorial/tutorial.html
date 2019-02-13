@@ -30,10 +30,11 @@ Architect | Alfresco Developer Tutorials</title>
 <div id="header">
 <h1 class="entry-title">Creating Custom Advanced Workflows in Alfresco</h1>
 <h2 class="author">Jeff Potts, <a href="https://www.ecmarchitect.com/">Metaversant Group</a></h2>
-<h3 class="date">April, 2018</h3>
+<h3 class="date">February, 2019</h3>
 </div>
 <div id="TOC">
 <ul>
+<li><a href="#license">License</a></li>
 <li><a href="#introduction">Introduction</a></li>
 <li><a href="#what-is-a-workflow">What is a workflow?</a><ul>
 <li><a href="#options-for-implementing-workflow-in-your-apps">Options for implementing workflow in your apps</a><ul>
@@ -104,6 +105,12 @@ Architect | Alfresco Developer Tutorials</title>
 <li><a href="#where-to-find-more-information">Where to find more information</a></li>
 </ul>
 </div>
+<h1 id="license">License</h1>
+<div class="figure">
+<img src="./images/cc-by-sa-88x31.png" />
+
+</div>
+<p>This work is licensed under the Creative Commons Attribution-ShareAlike 3.0 Unported License. To view a copy of this license, visit http://creativecommons.org/licenses/by-sa/3.0/ or send a letter to Creative Commons, 444 Castro Street, Suite 900, Mountain View, California, 94041, USA.</p>
 <h1 id="introduction">Introduction</h1>
 <p>This tutorial is about the advanced workflow functionality available in Alfresco through its embedded Activiti workflow engine. First, because &quot;workflow&quot; can mean different things to different people, I'll talk about my definition of the term. Then, I'll introduce some Activiti concepts that will help you understand how processes are defined and how the workflow engine actually works. Once that foundation is in place, I'll walk through some examples that feature many of the different concepts.</p>
 <p>This tutorial builds upon the &quot;SomeCo&quot; examples covered in earlier tutorials. In it, I'll implement a business process that helps SomeCo route whitepapers for review and approval by internal as well as external parties.</p>
@@ -155,8 +162,12 @@ Architect | Alfresco Developer Tutorials</title>
 </ul>
 <p>All of these (and more) are features of the embedded Activiti workflow engine which is what is used to implement advanced workflows in Alfresco.</p>
 <p>Although I haven't yet covered the detailed capabilities of Alfresco advanced workflows, I thought it would be a good idea to compare basic and advanced workflows at a high level now so I can leave the topic of basic workflows behind and spend the rest of the tutorial on advanced workflows:</p>
-<table>
+<table style="width:82%;">
 <caption>Difference between basic and advanced workflows</caption>
+<colgroup>
+<col width="38%" />
+<col width="43%" />
+</colgroup>
 <thead>
 <tr class="header">
 <th align="left">Alfresco basic workflows...</th>
@@ -211,7 +222,8 @@ Architect | Alfresco Developer Tutorials</title>
 <p>A business process can be described as a graph of connected nodes. In Activiti (and really, in BPMN) these nodes are essentially events (start, stop, timer), tasks, and gateways. These nodes are connected by &quot;sequence flows&quot;. You can model just about any business process you can think of by organizing events, tasks, gateways, and sequence flows on a diagram.</p>
 <p>The OMG has a great document called, &quot;BPMN 2.0 by Example&quot; that shows several examples of business process diagrams and then walks you through each. There's a link to it at the end of this document. The diagrams include features that may not be included in the current release of Activiti, but they do illustrate the kinds of things you can do with BPMN 2.0. For example, here's a diagram from that document called &quot;The Pizza Collaboration&quot;:</p>
 <div class="figure">
-<img src="images/omg-pizza-example.png" alt="OMG&#39;s Pizza Collaboration Example" /><p class="caption">OMG's Pizza Collaboration Example</p>
+<img src="images/omg-pizza-example.png" alt="OMG&#39;s Pizza Collaboration Example" />
+<p class="caption">OMG's Pizza Collaboration Example</p>
 </div>
 <p>A process, then, is a collection of events, tasks (some automated, some performed by humans), and gateways, connected by sequence flows.</p>
 <h1 id="setup">Setup</h1>
@@ -219,10 +231,10 @@ Architect | Alfresco Developer Tutorials</title>
 <h2 id="tools">Tools</h2>
 <p>Here is what I am using on my machine:</p>
 <ul>
-<li>Mac OS X 10.12.6</li>
-<li>Java 1.8.0_77</li>
-<li>Apache Maven 3.5.3 (installed using Macports)</li>
-<li>Alfresco Maven SDK 3.0.1 (No download necessary)</li>
+<li>Ubuntu 16.04.5 LTS</li>
+<li>Java 1.8.0_201</li>
+<li>Apache Maven 3.3.9</li>
+<li>Alfresco Maven SDK 4.0 (No download necessary)</li>
 <li>Eclipse Java EE IDE for Web Developers, Neon</li>
 <li>Activiti Eclipse BPMN 2.0 Designer 5.18 (<a href="http://www.activiti.org/designer/update/">Eclipse Update Site</a>)</li>
 <li>Apache James 2.3.1 (for testing third-party notification via SMTP)</li>
@@ -231,67 +243,63 @@ Architect | Alfresco Developer Tutorials</title>
 <h2 id="project-organization">Project Organization</h2>
 <p>I am going to use the Alfresco Maven SDK to create a project from the &quot;all-in-one&quot; archetype that will package up my customizations in two AMPs (Alfresco Module Packages). One AMP is for the Alfresco web application (the &quot;repo&quot; tier) and the other is for the Alfresco Share web application (the &quot;Share&quot; tier).</p>
 <p>I am not going to spend much time talking about how the Alfresco Maven SDK works. If you aren't already familiar with it, you may want to read the <a href="https://ecmarchitect.com/alfresco-developer-series">Getting Started with the Alfresco Maven SDK</a> tutorial on ecmarchitect.com first and then come back to this one.</p>
-<p>This tutorial relies on code from the <a href="https://ecmarchitect.com/alfresco-developer-series-tutorials/content/tutorial/tutorial.html">Custom Content Types</a> tutorial. The tutorial assumes that the repo tier AMP and Share tier AMP created during that tutorial have been installed into your local Maven repository. Or, if you are deploying to an Alfresco server instead of running the embedded Tomcat server, those AMPs need to be deployed to the Alfresco server. More details on that will be discussed later in the document.</p>
+<p>This tutorial relies on code from the <a href="https://ecmarchitect.com/alfresco-developer-series-tutorials/content/tutorial/tutorial.html">Custom Content Types</a> tutorial. The tutorial assumes that the repo tier AMP and Share tier AMP created during that tutorial have been installed into your local Maven repository. Or, if you are deploying to an Alfresco server instead of running the Docker images generated by the SDK, those AMPs need to be deployed to the Alfresco server. More details on that will be discussed later in the document.</p>
 <p>If you are planning on following along, go ahead and use the Alfresco Maven SDK to create a new project from the &quot;all-in-one&quot; archetype. Use a <code>groupId</code> of &quot;com.someco&quot; and an <code>artifactId</code> of &quot;workflow-tutorial&quot;.</p>
 <p>Starting with 3.0.0, the SDK will generate JAR files by default. We always want to generate AMPs, not JARs, so edit the pom.xml file to uncomment the maven-assembly-plugin.</p>
-<p>We'll be running the project using an embedded Tomcat server. We can configure the project to install AMPs from the earlier tutorials automatically. Edit the pom.xml file in the &quot;workflow-tutorial&quot; directory to add the following &quot;platformModule&quot; dependencies:</p>
-<pre><code>&lt;platformModules&gt;
-    ...SNIP...
+<p>We'll be running the project using Docker and Docker Compose. We can configure the project to install AMPs from the earlier tutorials into the Docker containers automatically. Edit the pom.xml file in the &quot;workflow-tutorial-platform-docker&quot; directory to add the following dependencies:</p>
+<pre><code>&lt;dependencies&gt;
+    &lt;dependency&gt;
+        &lt;groupId&gt;com.someco&lt;/groupId&gt;
+        &lt;artifactId&gt;workflow-tutorial-platform-jar&lt;/artifactId&gt;
+        &lt;version&gt;1.0-SNAPSHOT&lt;/version&gt;
+    &lt;/dependency&gt;
     &lt;!-- Bring in the content tutorial repo AMP so we can run embedded. --&gt;
-    &lt;moduleDependency&gt;
+    &lt;dependency&gt;
         &lt;groupId&gt;com.someco&lt;/groupId&gt;
         &lt;artifactId&gt;content-tutorial-platform-jar&lt;/artifactId&gt;
         &lt;version&gt;1.0-SNAPSHOT&lt;/version&gt;
-        &lt;type&gt;amp&lt;/type&gt;
-    &lt;/moduleDependency&gt;
-
+    &lt;/dependency&gt;
     &lt;!-- Bring in the behavior tutorial repo AMP so we can run embedded. --&gt;
-    &lt;moduleDependency&gt;
+    &lt;dependency&gt;
         &lt;groupId&gt;com.someco&lt;/groupId&gt;
         &lt;artifactId&gt;behavior-tutorial-platform-jar&lt;/artifactId&gt;
         &lt;version&gt;1.0-SNAPSHOT&lt;/version&gt;
-        &lt;type&gt;amp&lt;/type&gt;
-    &lt;/moduleDependency&gt;
-
+    &lt;/dependency&gt;
     &lt;!-- Bring in the actions tutorial repo AMP so we can run embedded. --&gt;
-    &lt;moduleDependency&gt;
+    &lt;dependency&gt;
         &lt;groupId&gt;com.someco&lt;/groupId&gt;
         &lt;artifactId&gt;actions-tutorial-platform-jar&lt;/artifactId&gt;
         &lt;version&gt;1.0-SNAPSHOT&lt;/version&gt;
-        &lt;type&gt;amp&lt;/type&gt;
-    &lt;/moduleDependency&gt;
-    ...SNIP...
-&lt;/platformModules&gt;</code></pre>
-<p>Those all have corresponding Share tier modules so add those as &quot;shareModule&quot; dependencies:</p>
-<pre><code>&lt;shareModules&gt;
-    ...SNIP...
+    &lt;/dependency&gt;
+&lt;/dependencies&gt;</code></pre>
+<p>Those all have corresponding Share tier modules so edit the pom.xml file in the &quot;workflow-tutorial-share-docker&quot; directory to add the following dependencies:</p>
+<pre><code>&lt;dependencies&gt;
+    &lt;dependency&gt;
+        &lt;groupId&gt;com.someco&lt;/groupId&gt;
+        &lt;artifactId&gt;workflow-tutorial-share-jar&lt;/artifactId&gt;
+        &lt;version&gt;1.0-SNAPSHOT&lt;/version&gt;
+    &lt;/dependency&gt;
     &lt;!-- Bring in the content tutorial share AMP so we can run embedded. --&gt;
-    &lt;moduleDependency&gt;
+    &lt;dependency&gt;
         &lt;groupId&gt;com.someco&lt;/groupId&gt;
         &lt;artifactId&gt;content-tutorial-share-jar&lt;/artifactId&gt;
         &lt;version&gt;1.0-SNAPSHOT&lt;/version&gt;
-        &lt;type&gt;amp&lt;/type&gt;
-    &lt;/moduleDependency&gt;
-
+    &lt;/dependency&gt;
     &lt;!-- Bring in the behavior tutorial share AMP so we can run embedded. --&gt;
-    &lt;moduleDependency&gt;
+    &lt;dependency&gt;
         &lt;groupId&gt;com.someco&lt;/groupId&gt;
         &lt;artifactId&gt;behavior-tutorial-share-jar&lt;/artifactId&gt;
         &lt;version&gt;1.0-SNAPSHOT&lt;/version&gt;
-        &lt;type&gt;amp&lt;/type&gt;
-    &lt;/moduleDependency&gt;
-
+    &lt;/dependency&gt;
     &lt;!-- Bring in the actions tutorial share AMP so we can run embedded. --&gt;
-    &lt;moduleDependency&gt;
+    &lt;dependency&gt;
         &lt;groupId&gt;com.someco&lt;/groupId&gt;
         &lt;artifactId&gt;actions-tutorial-share-jar&lt;/artifactId&gt;
         &lt;version&gt;1.0-SNAPSHOT&lt;/version&gt;
-        &lt;type&gt;amp&lt;/type&gt;
-    &lt;/moduleDependency&gt;
-    ...SNIP...
-&lt;/shareModules&gt;</code></pre>
-<p>Now when we fire up the embedded Tomcat server the workflow AMPs will be installed as well as the AMPs from the earlier content, behavior, and actions tutorials.</p>
-<p>If you have not installed those artifacts into your local Maven repository, switch to the root of each of those earlier tutorial projects and run <code>mvn install</code> to do so now.</p>
+    &lt;/dependency&gt;
+&lt;/dependencies&gt;</code></pre>
+<p>Now when we fire up the Docker containers the workflow AMPs will be installed as well as the AMPs from the earlier content, behavior, and actions tutorials.</p>
+<p>If you have not installed those artifacts into your local Maven repository, switch to the root of each of those earlier tutorial projects and run <code>mvn install -DskipTests</code> to do so now.</p>
 <h1 id="hello-world-examples">Hello World Examples</h1>
 <p>Let's create a couple of super simple Hello World processes using the Activiti Process Designer. These processes will not be wired into the Alfresco web client user interface. Instead, I'll use the workflow console to start them. Once I've run through the basic steps of diagramming and deploying workflows, I'll show you examples that are fully integrated into the user interface.</p>
 <h2 id="the-helloworld-process">The helloWorld process</h2>
@@ -306,7 +314,8 @@ Architect | Alfresco Developer Tutorials</title>
 <li>Connect the start event to the user task and the user task to the end event using sequence flows from the palette. When you are done, the diagram should look like this:</li>
 </ol>
 <div class="figure">
-<img src="images/hello-world-bpmn.png" alt="Hello World BPMN Diagram" /><p class="caption">Hello World BPMN Diagram</p>
+<img src="images/hello-world-bpmn.png" alt="Hello World BPMN Diagram" />
+<p class="caption">Hello World BPMN Diagram</p>
 </div>
 <ol start="4" style="list-style-type: decimal">
 <li>If it isn't open already, open the &quot;Properties&quot; view by going to Window, Show View, Other, General, Properties.</li>
@@ -314,13 +323,15 @@ Architect | Alfresco Developer Tutorials</title>
 <li>Specify &quot;${initiator.properties.userName}&quot; as the assignee, as shown below:</li>
 </ol>
 <div class="figure">
-<img src="images/hello-world-properties.png" alt="Hello World user task properties" /><p class="caption">Hello World user task properties</p>
+<img src="images/hello-world-properties.png" alt="Hello World user task properties" />
+<p class="caption">Hello World user task properties</p>
 </div>
 <ol start="6" style="list-style-type: decimal">
 <li>Click somewhere on the canvas. This should display the &quot;Process&quot; tab in the Properties viewer. Specify &quot;helloWorld&quot; as the ID and &quot;Hello World&quot; as the Name.</li>
 </ol>
 <div class="figure">
-<img src="images/hello-world-process-properties.png" alt="Hello World user task properties" /><p class="caption">Hello World user task properties</p>
+<img src="images/hello-world-process-properties.png" alt="Hello World user task properties" />
+<p class="caption">Hello World user task properties</p>
 </div>
 <ol start="7" style="list-style-type: decimal">
 <li>Save and close the diagram.</li>
@@ -352,7 +363,8 @@ Architect | Alfresco Developer Tutorials</title>
 <li>Click &quot;Sequence Flow&quot; in the palette and connect the nodes in the diagram so it looks like this:</li>
 </ol>
 <div class="figure">
-<img src="images/hello-world-fork.png" alt="Hello World Fork BPMN Diagram" /><p class="caption">Hello World Fork BPMN Diagram</p>
+<img src="images/hello-world-fork.png" alt="Hello World Fork BPMN Diagram" />
+<p class="caption">Hello World Fork BPMN Diagram</p>
 </div>
 <ol start="5" style="list-style-type: decimal">
 <li>Click somewhere on the canvas. This should display the &quot;Process&quot; tab in the Properties viewer. Specify &quot;helloWorldFork&quot; as the ID and &quot;Hello World Fork&quot; as the Name.</li>
@@ -414,45 +426,53 @@ Architect | Alfresco Developer Tutorials</title>
     &lt;/property&gt;
 &lt;/bean&gt;</code></pre>
 <p>Setting &quot;redeploy&quot; to false prevents the workflows from being redeployed every time Alfresco restarts.</p>
-<p>The JavaScript in these business processes contain &quot;logger&quot; statements. To get those to show up in the log, edit the <a href="https://github.com/jpotts/alfresco-developer-series/blob/master/workflow/workflow-tutorial/workflow-tutorial-platform-jar/src/test/resources/alfresco/extension/dev-log4j.properties">dev-log4j.properties</a> file that is in the workflow-tutorial-platform-jar module. It resides in:</p>
-<pre><code>$TUTORIAL_HOME/workflow-tutorial-platform-jar/src/test/resources/alfresco/extension</code></pre>
+<p>The JavaScript in these business processes contain &quot;logger&quot; statements. To get those to show up in the log, edit the <a href="https://github.com/jpotts/alfresco-developer-series/blob/master/workflow/workflow-tutorial/workflow-tutorial-platform-docker/src/main/docker/dev-log4j.properties">dev-log4j.properties</a> file that is in the workflow-tutorial-platform-docker module. It resides in:</p>
+<pre><code>$TUTORIAL_HOME/workflow-tutorial-platform-docker/src/main/docker</code></pre>
 <p>Change the <code>ScriptLogger</code> to debug by changing this line:</p>
 <pre><code>log4j.logger.org.alfresco.repo.jscript.ScriptLogger=DEBUG</code></pre>
-<p>Now everything is ready to go. For this test, you can leverage the embedded Alfresco server that the Alfresco Maven SDK sets up for you. To run your AMP in the embedded Alfresco server, open a command-line window, switch to $TUTORIAL_HOME, and run <code>run.sh</code> (or <code>run.bat</code> depending on your operating system).</p>
-<p>Apache Maven will download some dependencies, build your AMPs, merge them with the Alfresco WAR file and Share WAR file, then start up an embedded Tomcat server.</p>
+<p>Now everything is ready to go. For this test, you can leverage the SDK-generated Docker images that the Alfresco Maven SDK sets up for you. To run your AMPs in Docker, open a command-line window, switch to $TUTORIAL_HOME, and run <code>./run.sh build_start</code> (or <code>run.bat</code> depending on your operating system).</p>
+<p>Apache Maven will download some dependencies, build your AMPs, merge them with the Alfresco WAR file and Share WAR file, then use Docker Compose to start up containers for Alfresco, Share, PostgreSQL, and SOLR.</p>
 <p>Next you'll see how to use the Alfresco Workflow Console to test the two hello world process definitions.</p>
 <h2 id="using-the-workflow-console">Using the workflow console</h2>
 <p>Your Alfresco server is running and the hello world process definitions should have been deployed when the server started up. The Alfresco Workflow Console can be used to verify that they were deployed successfully. And you can use it to start instances of those workflows to test them out. It can also be a handy workflow debugging tool.</p>
-<p>In Alfresco Enterprise, the Workflow Console link is: <a href="http://localhost:8080/alfresco/s/enterprise/admin/admin-workflowconsole">http://localhost:8080/alfresco/s/enterprise/admin/admin-workflowconsole</a></p>
-<p>In Alfresco Community, the Workflow Console link is: <a href="http://localhost:8080/alfresco/s/admin/admin-workflowconsole">http://localhost:8080/alfresco/s/admin/admin-workflowconsole</a></p>
+<p>In Alfresco Enterprise, the Workflow Console link is: <a href="http://localhost:8080/alfresco/s/enterprise/admin/admin-workflowconsole" class="uri">http://localhost:8080/alfresco/s/enterprise/admin/admin-workflowconsole</a></p>
+<p>In Alfresco Community, the Workflow Console link is: <a href="http://localhost:8080/alfresco/s/admin/admin-workflowconsole" class="uri">http://localhost:8080/alfresco/s/admin/admin-workflowconsole</a></p>
 <p>If you haven't already authenticated as an administrator you will be asked to do so when you go to that URL.</p>
 <p>In the workflow console do this:</p>
 <ol style="list-style-type: decimal">
 <li><p>Type &quot;show definitions all&quot; then click Execute to see what process definitions have been deployed:</p>
 <div class="figure">
-<img src="images/workflow-console.png" alt="Workflow console: Show definitions all" /><p class="caption">Workflow console: Show definitions all</p>
+<img src="images/workflow-console.png" alt="Workflow console: Show definitions all" />
+<p class="caption">Workflow console: Show definitions all</p>
 </div></li>
 </ol>
-<p>You should see entries for helloWorld and helloWorldFork. Note that the ID for helloWorld is &quot;activiti<span class="math">$helloWorld:1:104&quot; and the ID for helloWorldFork is &quot;activiti$</span>helloWorldFork:1:108&quot;. Your IDs may be different.</p>
+<p>You should see entries for helloWorld and helloWorldFork. Note that the ID for helloWorld is &quot;activiti<span class="math inline">$helloWorld:1:104&quot; and the ID for helloWorldFork is &quot;activiti$</span>helloWorldFork:1:108&quot;. Your IDs may be different.</p>
 <ol start="2" style="list-style-type: decimal">
 <li>Type &quot;use definition activiti$helloWorld:1:104&quot; and click Execute. Subsequent commands having to do with a workflow definition will now use that one by default.</li>
 <li><p>Start an instance of the helloWorld workflow by typing &quot;start&quot; and clicking Execute. You should see something like this:</p>
 <div class="figure">
-<img src="images/workflow-console-start-workflow.png" alt="Workflow console: Start workflow" /><p class="caption">Workflow console: Start workflow</p>
+<img src="images/workflow-console-start-workflow.png" alt="Workflow console: Start workflow" />
+<p class="caption">Workflow console: Start workflow</p>
 </div></li>
 </ol>
 <p>And in the server log, the logger output appears:</p>
 <div class="figure">
-<img src="images/hello-world-log-output.png" alt="Hello World log output" /><p class="caption">Hello World log output</p>
+<img src="images/hello-world-log-output.png" alt="Hello World log output" />
+<p class="caption">Hello World log output</p>
 </div>
 <p>Now follow the same steps to start an instance of the <code>helloWorldFork</code> process. You should see log messages from both tasks.</p>
 <div class="figure">
-<img src="images/hello-world-fork-log-output.png" alt="Hello World log output" /><p class="caption">Hello World log output</p>
+<img src="images/hello-world-fork-log-output.png" alt="Hello World log output" />
+<p class="caption">Hello World log output</p>
 </div>
 <p>After running helloWorldFork go back to the workflow console and type &quot;show workflows all&quot; and click Execute. That command shows the running workflow instances. You'll notice that the helloWorldFork workflow is still running. The easiest way to get rid of it is to use the &quot;delete workflow [workflow ID]&quot; command (you'll need the workflow's ID from the &quot;show workflows all&quot; command you just completed).</p>
 <p>You've seen how to start workflows and how to list and delete running workflows using the workflow console. The table below shows some other common commands and what they do.</p>
 <table>
 <caption>Partial list of workflow console commands</caption>
+<colgroup>
+<col width="40%" />
+<col width="60%" />
+</colgroup>
 <thead>
 <tr class="header">
 <th align="left">Command</th>
@@ -513,16 +533,19 @@ Architect | Alfresco Developer Tutorials</title>
 <li>From the palette, drag a start event, an end event, an Alfresco User Task, and an Alfresco Script task onto the canvas. You'll see the benefit of using the Alfresco-specific User Task and Script Task shortly.</li>
 <li><p>Click &quot;Sequence Flow&quot; in the palette and then connect the nodes in the process to look like this:</p>
 <div class="figure">
-<img src="images/hello-world-ui-bpmn.png" alt="Hello World UI BPMN Diagram" /><p class="caption">Hello World UI BPMN Diagram</p>
+<img src="images/hello-world-ui-bpmn.png" alt="Hello World UI BPMN Diagram" />
+<p class="caption">Hello World UI BPMN Diagram</p>
 </div></li>
 <li>Now set the properties on the Alfresco User Task. Set the performer type to &quot;Assignee&quot; and the expression to &quot;${initiator.properties.userName}&quot;. This is the equivalent to what you've done in the first two hello world examples, it's just that this panel uses two separate fields for the performer type and the expression.</li>
 <li><p>Now set the form key. In Alfresco, a form key is the name of a type in a workflow-specific content model. Because this is an Alfresco User Task instead of a generic User Task, it already knows the possible values for the out-of-the-box form keys. Set the form key to &quot;wf:activitiReviewTask&quot;. The out-of-the-box workflow content model has a type by that name and the out-of-the-box form configuration is already set up to create a form for the properties defined as part of that type.</p>
 <div class="figure">
-<img src="images/user-task-properties.png" alt="Alfresco User Task properties" /><p class="caption">Alfresco User Task properties</p>
+<img src="images/user-task-properties.png" alt="Alfresco User Task properties" />
+<p class="caption">Alfresco User Task properties</p>
 </div></li>
 <li><p>The requirement is to let the workflow initiator specify a name that the logger will use in a greeting. So the start event needs to point to a custom form key (which represents a custom content type you'll create shortly). Single-click the start event, then set the form key to &quot;scwf:submitHelloWorldTask&quot;.</p>
 <div class="figure">
-<img src="images/start-event-properties.png" alt="Start event properties" /><p class="caption">Start event properties</p>
+<img src="images/start-event-properties.png" alt="Start event properties" />
+<p class="caption">Start event properties</p>
 </div></li>
 <li>Single-click the canvas to open the properties editor for the process. Set the ID to &quot;helloWorldUI&quot; and the name to &quot;Hello World UI&quot;.</li>
 <li><p>Save and close the diagram.</p></li>
@@ -530,7 +553,8 @@ Architect | Alfresco Developer Tutorials</title>
 <h3 id="tasks">Tasks</h3>
 <p>You saw in the steps above that tasks can be assigned to human performers. Activiti maintains a list of tasks assigned to each participant. How users interact with the task list is up to each application. In Alfresco, a dashlet displays a to-do list for the currently logged in user. As users complete their tasks the tasks are removed from the to-do list. An empty to do list is shown below.</p>
 <div class="figure">
-<img src="images/my-tasks-dashlet-empty.png" alt="An empty task list in Alfresco Share" /><p class="caption">An empty task list in Alfresco Share</p>
+<img src="images/my-tasks-dashlet-empty.png" alt="An empty task list in Alfresco Share" />
+<p class="caption">An empty task list in Alfresco Share</p>
 </div>
 <h3 id="task-assignment">Task Assignment</h3>
 <p>If tasks are steps a human performs, how do tasks get assigned to the people who need to perform them? Activiti has extended BPMN with their own attribute called &quot;activiti:assignee&quot;. The value of the attribute can be a literal username or group name, or it can be an expression. In this case you assigned the user task to ${initiator.properties.userName}. Initiator is a special object that will always contain the object representing the person who started the workflow.</p>
@@ -635,7 +659,7 @@ Architect | Alfresco Developer Tutorials</title>
 <p>The user interface configuration for Alfresco Share resides in a directory called:</p>
 <pre><code>$TUTORIAL_HOME/workflow-tutorial-share-jar/src/main/resources/META-INF</code></pre>
 <p>The SDK probably already created this directory structure as well as a sample share-config-custom.xml file.</p>
-<p>In the META-INF directory, edit the file called &quot;<a href="https://github.com/jpotts/alfresco-developer-series/blob/master/workflow/workflow-tutorial/workflow-tutorial-share-jar/src/main/resources/META-INF/share-config-custom.xml">share-config-custom.xml</a>&quot;. Replace the sample content with the following content:</p>
+<p>In the META-INF directory, edit the file called &quot;<a href="https://github.com/jpotts/alfresco-developer-series/blob/master/workflow/workflow-tutorial/workflow-tutorial-share-jar/src/main/resources/META-INF/share-config-custom.xml">share-config-custom.xml</a>&quot; . Replace the sample content with the following content:</p>
 <pre><code>&lt;alfresco-config&gt;
     &lt;config evaluator=&quot;string-compare&quot; condition=&quot;activiti$helloWorldUI&quot;&gt;
       &lt;forms&gt;
@@ -729,7 +753,7 @@ workflow.scwf_helloWorldUI=Hello World UI</code></pre>
 <h4 id="share-tier-spring-configuration">Share tier Spring configuration</h4>
 <p>The Spring configuration for the workflow-tutorial-share-jar module resides in:</p>
 <pre><code>$TUTORIAL_HOME/workflow-tutorial-share-jar/src/main/resources/alfresco/web-extension</code></pre>
-<p>In the web-extension directory, the SDK has created file called &quot;<a href="https://github.com/jpotts/alfresco-developer-series/blob/master/workflow/workflow-tutorial/workflow-tutorial-share-jar/src/main/resources/alfresco/web-extension/workflow-tutorial-share-slingshot-application-context.xml">workflow-tutorial-share-slingshot-application-context.xml</a>&quot;. Replace the content of that file with the following content:</p>
+<p>In the web-extension directory, the SDK has created file called &quot;<a href="https://github.com/jpotts/alfresco-developer-series/blob/master/workflow/workflow-tutorial/workflow-tutorial-share-jar/src/main/resources/alfresco/web-extension/workflow-tutorial-share-slingshot-application-context.xml">workflow-tutorial-share-slingshot-application-context.xml</a>&quot; . Replace the content of that file with the following content:</p>
 <pre><code>&lt;?xml version=&#39;1.0&#39; encoding=&#39;UTF-8&#39;?&gt;
 &lt;!DOCTYPE beans PUBLIC &#39;-//SPRING//DTD BEAN//EN&#39; &#39;http://www.springframework.org/dtd/spring-beans.dtd&#39;&gt;
 &lt;beans&gt;
@@ -745,34 +769,44 @@ workflow.scwf_helloWorldUI=Hello World UI</code></pre>
 <p>Save and close the file.</p>
 <p>The helloWorldUI example is now ready to deploy.</p>
 <h2 id="deploy-test">Deploy &amp; Test</h2>
-<p>The hello world UI example can be tested using the embedded Tomcat server that is part of the Alfresco Maven SDK.</p>
+<p>The hello world UI example can be tested using the SDK-generated Docker images. You probably already have containers running from earlier. To find out:</p>
 <ol style="list-style-type: decimal">
-<li>Open a command-line window and switch to $TUTORIAL_HOME.</li>
-<li>Run <code>run.sh</code> (or <code>run.bat</code>).</li>
+<li>Open a command-line window.</li>
+<li>Run <code>docker ps</code>.</li>
+<li>If anything comes back there are containers running. To stop them, switch to $TUTORIAL_HOME then do <code>./run.sh stop</code>.</li>
 </ol>
-<p>Your repo tier AMP and Share tier AMP will be built, installed into their respective WARs, and started on Tomcat running on port 8080.</p>
+<p>Now you are ready to re-build the AMPs and start up fresh containers. To do that:</p>
+<ol style="list-style-type: decimal">
+<li>Switch to $TUTORIAL_HOME.</li>
+<li>Run <code>./run.sh build_start</code> (or <code>run.bat</code>).</li>
+</ol>
+<p>Your repo tier AMP and Share tier AMPs will be built, installed into their respective WARs in Docker images, and then Docker Compose will start up containers based on those images. Alfresco is running on port 8080 and Share is running on port 8180.</p>
 <p>When everything starts up:</p>
 <ol style="list-style-type: decimal">
-<li>Go to http://localhost:8080/share and log in as admin (password: admin).</li>
+<li>Go to http://localhost:8180/share and log in as admin (password: admin).</li>
 <li><p>In the &quot;My Tasks&quot; dashlet, click &quot;Start Workflow&quot; to start a workflow. You should see the Hello World UI workflow in the list of workflows:</p>
 <div class="figure">
-<img src="images/start-workflow-list.png" alt="Share workflow list shows custom workflows" /><p class="caption">Share workflow list shows custom workflows</p>
+<img src="images/start-workflow-list.png" alt="Share workflow list shows custom workflows" />
+<p class="caption">Share workflow list shows custom workflows</p>
 </div></li>
 <li><p>Select the Hello World UI workflow. Alfresco Share should display a form that includes the greeting field:</p>
 <div class="figure">
-<img src="images/start-workflow-form.png" alt="Hello World UI: Start workflow form" /><p class="caption">Hello World UI: Start workflow form</p>
+<img src="images/start-workflow-form.png" alt="Hello World UI: Start workflow form" />
+<p class="caption">Hello World UI: Start workflow form</p>
 </div></li>
 <li>Specify a name in the name field then click &quot;Start Workflow&quot; to start the workflow.</li>
 <li><p>After the workflow starts, you should see the greeting in the log:</p>
 <div class="figure">
-<img src="images/greeting-in-the-log.png" alt="Hello World UI greeting in the log" /><p class="caption">Hello World UI greeting in the log</p>
+<img src="images/greeting-in-the-log.png" alt="Hello World UI greeting in the log" />
+<p class="caption">Hello World UI greeting in the log</p>
 </div></li>
 <li>The &quot;My Tasks&quot; dashlet should now have a task waiting on you. Click the task description to edit the task.</li>
 <li>Add a comment if you want, then click either &quot;Approve&quot; or &quot;Reject&quot;.</li>
 <li><p>Check the log again. You should see a log message showing which one you selected:</p></li>
 </ol>
 <div class="figure">
-<img src="images/approval-result-in-log.png" alt="Hello World UI approval result in the log" /><p class="caption">Hello World UI approval result in the log</p>
+<img src="images/approval-result-in-log.png" alt="Hello World UI approval result in the log" />
+<p class="caption">Hello World UI approval result in the log</p>
 </div>
 <p>If all goes well, congratulations, you've successfully deployed a custom workflow with custom metadata that can be started and managed in Alfresco Share.</p>
 <h2 id="implementation-summary">Implementation summary</h2>
@@ -824,15 +858,22 @@ workflow.scwf_helloWorldUI=Hello World UI</code></pre>
 <li>Click on the canvas to open the properties editor for the entire process. Set the ID to &quot;publishWhitepaper&quot; and the name to &quot;Publish Whitepaper&quot;.</li>
 <li><p>Drag-and-drop nodes from the palette and connect them with sequence flows to make your diagram look like this:</p>
 <div class="figure">
-<img src="images/publish-whitepaper-bpmn.png" alt="Publish Whitepaper BPMN Diagram" /><p class="caption">Publish Whitepaper BPMN Diagram</p>
+<img src="images/publish-whitepaper-bpmn.png" alt="Publish Whitepaper BPMN Diagram" />
+<p class="caption">Publish Whitepaper BPMN Diagram</p>
 </div></li>
 </ol>
 <p>Submit is a Service Task. The rest are User Tasks. This example does not use the Alfresco-specific events or tasks, but feel free to do so in your own diagrams.</p>
 <p>Now that the diagram is in place, continue to the next section to see how to set the task properties.</p>
 <h3 id="configure-user-tasks-with-assignments">Configure user tasks with assignments</h3>
 <p>This table tells you how to set the performer type, expression, and form key on each task:</p>
-<table>
+<table style="width:56%;">
 <caption>Settings for performer, expression, &amp; form key</caption>
+<colgroup>
+<col width="6%" />
+<col width="20%" />
+<col width="15%" />
+<col width="12%" />
+</colgroup>
 <thead>
 <tr class="header">
 <th align="left">Task</th>
@@ -898,7 +939,7 @@ workflow.scwf_helloWorldUI=Hello World UI</code></pre>
   &lt;/extensionElements&gt;
 &lt;/serviceTask&gt;</code></pre>
 <p>This initializes two variables that will be used as part of the approval check. The <code>scwf_approveCount</code> variable will get incremented when the process follows the &quot;approve&quot; sequence flow. If the counter is equal to 2, the package received both approvals. It is important to initialize the counter to 0 and the approved variable to false in the &quot;Submit&quot; script task because it is possible that a whitepaper may go through several review cycles. Every time a new cycle starts the counters need to be reset.</p>
-<p>You may be wondering why this is a service task instead of a script task. In 5.0.d, the underlying JavaScript engine in Activiti switched from Rhino to Nashorn. This caused a problem related to setting execution variables. The work around is to use a service task.</p>
+<p>You may be wondering why this is a service task instead of a script task. In 5.0.d, the underlying JavaScript engine in Activiti switched from Rhino to Nashorn. This caused a problem related to setting execution variables. The workaround is to use a service task.</p>
 <p>Now add code to increment the counter when the execution follows the approve sequence flow. Find the <code>userTask</code> named &quot;Operations Review&quot; and add this extension element:</p>
 <pre><code>&lt;userTask id=&quot;usertask1&quot; name=&quot;Operations Review&quot; activiti:candidateGroups=&quot;GROUP_Operations&quot; activiti:formKey=&quot;scwf:activitiOperationsReview&quot;&gt;
     &lt;extensionElements&gt;
@@ -1103,8 +1144,12 @@ workflow.scwf_helloWorldUI=Hello World UI</code></pre>
     &lt;/forms&gt;
 &lt;/config&gt;</code></pre>
 <p>Something that isn't immediately obvious without looking closely at the accompanying Share form configuration is that there are multiple workflow form configurations needed for a given workflow. This table explains what configuration does what:</p>
-<table>
+<table style="width:96%;">
 <caption>What does the config do?</caption>
+<colgroup>
+<col width="48%" />
+<col width="47%" />
+</colgroup>
 <thead>
 <tr class="header">
 <th align="left">For example, this configuration...</th>
@@ -1180,14 +1225,15 @@ prop.scwf_reviewerEmail=Reviewer Email</code></pre>
     &lt;prop key=&quot;mimetype&quot;&gt;text/xml&lt;/prop&gt;
     &lt;prop key=&quot;redeploy&quot;&gt;false&lt;/prop&gt;
 &lt;/props&gt;</code></pre>
-<p>At this stage you can continue to test using Alfresco on the embedded Tomcat server configured by the Alfresco Maven SDK. Here are the steps necessary to start up that you used earlier:</p>
+<p>At this stage you can continue to test using Alfresco on the SDK-generated Docker containers configured by the Alfresco Maven SDK. Here are the steps necessary to start up that you used earlier:</p>
 <ol style="list-style-type: decimal">
 <li>Open a command-line window and switch to $TUTORIAL_HOME.</li>
-<li>Run <code>run.sh</code> (or <code>run.bat</code>). Your AMPs will be installed and started on Tomcat running on port 8080.</li>
+<li>Stop the running containers with <code>./run.sh stop</code> (or <code>run.bat</code>).</li>
+<li>Run <code>./run.sh build_start</code> (or <code>run.bat</code>). Your AMPs will be installed into Docker containers running on 8080 (Alfresco) and 8180 (Share).</li>
 </ol>
 <p>When everything starts up:</p>
 <ol style="list-style-type: decimal">
-<li>Go to http://localhost:8080/share and log in as admin (password: admin).</li>
+<li>Go to http://localhost:8180/share and log in as admin (password: admin).</li>
 <li>If you haven't done so already, create a group called &quot;Operations&quot; and a group called &quot;Marketing&quot; and place one or more test users in each group.</li>
 <li>Create a piece of test content. It doesn't matter what it is.</li>
 <li>Now start a workflow for that piece of content.</li>
@@ -1226,7 +1272,7 @@ prop.scwf_reviewerEmail=Reviewer Email</code></pre>
 <p>The source for the web script's controller resides in:</p>
 <pre><code>$TUTORIAL_HOME/workflow-tutorial-platform-jar/src/main/java</code></pre>
 <p>First, create a package folder structure called &quot;com/someco/scripts&quot;.</p>
-<p>Now create a new class called &quot;<a href="https://github.com/jpotts/alfresco-developer-series/blob/master/workflow/workflow-tutorial/workflow-tutorial-platform-jar/src/main/java/com/someco/scripts/GetReview.java">GetReview</a>&quot;. Here's the class, without the imports or the getter/setter methods:</p>
+<p>Now create a new class called &quot;<a href="https://github.com/jpotts/alfresco-developer-series/blob/master/workflow/workflow-tutorial/workflow-tutorial-platform-jar/src/main/java/com/someco/scripts/GetReview.java">GetReview</a>&quot; . Here's the class, without the imports or the getter/setter methods:</p>
 <pre><code>public class GetReview extends DeclarativeWebScript {
 
     Log logger = LogFactory.getLog(GetReview.class);
@@ -1268,7 +1314,7 @@ prop.scwf_reviewerEmail=Reviewer Email</code></pre>
 <h4 id="create-a-custom-task-listener">Create a custom task listener</h4>
 <p>The second piece to the Third Party Review is sending the email to the third-party. There is an out-of-the-box mail action, and you've already seen how to call an action from a workflow using Alfresco JavaScript, but there are a few things to take care of other than simply sending an email, so let's write a custom task listener class to handle it.</p>
 <p>First, create a new package called &quot;com.someco.bpm&quot;.</p>
-<p>Then, create a new class called &quot;<a href="https://github.com/jpotts/alfresco-developer-series/blob/master/workflow/workflow-tutorial/workflow-tutorial-platform-jar/src/main/java/com/someco/bpm/ExternalReviewNotification.java">ExternalReviewNotification</a>&quot;. The goal is to send an email that has two links—one for approve and one for reject—that represent the two possible outcomes of the Third Party Review user task. The links need to include the task ID and the desired outcome as arguments.</p>
+<p>Then, create a new class called &quot;<a href="https://github.com/jpotts/alfresco-developer-series/blob/master/workflow/workflow-tutorial/workflow-tutorial-platform-jar/src/main/java/com/someco/bpm/ExternalReviewNotification.java">ExternalReviewNotification</a>&quot; . The goal is to send an email that has two links—one for approve and one for reject—that represent the two possible outcomes of the Third Party Review user task. The links need to include the task ID and the desired outcome as arguments.</p>
 <p>The task listener's notify method will be called by Activiti. Here is what the method looks like:</p>
 <pre><code>public void notify(DelegateTask task) {
 
@@ -1308,18 +1354,18 @@ prop.scwf_reviewerEmail=Reviewer Email</code></pre>
         ...</code></pre>
 <p>Now the process will send an email to a third-party reviewer if an email address is specified, the third-party reviewer can click on the appropriate outcome link which will trigger a web script causing the workflow to continue along the right path, and if the whitepaper is ultimately approved, the workflow will invoke the &quot;set web flag&quot; action to set its properties so it can be searched for and displayed on a web site.</p>
 <h3 id="deploy-and-test-1">Deploy and test</h3>
-<p>It's time to deploy and test. If you want to try out the notification piece, you'll need access to an SMTP server. For developing and testing locally, <a href="http://james.apache.org/">Apache James</a> works great. Remember to edit alfresco-global.properties to set your outgoing email settings to match your environment.</p>
+<p>It's time to deploy and test. If you want to try out the notification piece, you'll need access to an SMTP server. For developing and testing locally, <a href="http://james.apache.org/">Apache James</a> works great.</p>
+<p>Remember to edit alfresco-global.properties to set your outgoing email settings to match your environment. The alfresco-global.properties file that is copied to the Docker container resides in &quot;workflow-tutorial-platform-docker&quot; under src/main/docker. For example, I have Apache James running on a little test server, so I've added the following to the alfresco-global.properties file:</p>
+<pre><code>## Outbound email settings
+mail.host=192.168.0.30
+mail.port=25
+mail.protocol=smtp</code></pre>
+<p>I often use my local /etc/hosts file to resolve IP addresses, but because Alfresco is running in a Docker container, that won't work, so I'm using the IP address instead of the hostname.</p>
 <p>Two critical dependencies to your test are the content-tutorial and actions-tutorial AMPs. These must be deployed to the same repository your workflow-tutorial AMP is deployed to because your business process leverages an action and some Java code that exists in those AMPs.</p>
-<p>That's why, in the very beginning of the tutorial, you edited your pom.xml to add those projects as &quot;module dependencies&quot;. That way, when you run the embedded Tomcat server those AMPs will be installed automatically.</p>
-<p>If you are deploying the workflow tutorial AMPs to a standalone Alfresco installation, you can deploy the AMPs to your Alfresco installation as you normally would using the &quot;apply_amps.sh&quot; script. Alternatively, you can use the &quot;alfresco:install&quot; plugin that is part of the Alfresco Maven SDK to install each one.</p>
-<p>For example, on my machine, I have all of these projects checked out from source. I have Alfresco running in $TOMCAT_HOME with an exploded Alfresco WAR. So, for each project I can do this:</p>
-<ol style="list-style-type: decimal">
-<li>Switch to $TUTORIAL_HOME/$PROJECT_DIRECTORY</li>
-<li>Run <code>mvn install</code> to build the AMP. Use <code>mvn install -DskipTests=true</code> to skip the unit tests some of those projects may have.</li>
-<li>Run <code>mvn alfresco:install -Dmaven.alfresco.warLocation=$TOMCAT_HOME/webapps/alfresco</code> to install the AMP to the exploded Alfresco web application. If you are running the alfresco.war unexploded you can specify the path to the WAR file instead.</li>
-</ol>
-<p>Deploying to a standalone Alfresco is fine, but while you are developing (and working through these tutorials) it is easiest to use the embedded Tomcat server.</p>
-<p>Start it up by doing <code>run.sh</code> or <code>run.bat</code> depending on your platform. When it comes up, you'll be ready to test.</p>
+<p>That's why, in the very beginning of the tutorial, you edited the Docker module pom.xml to add those projects as dependencies. That way, when you run the containers those AMPs will be installed automatically.</p>
+<p>If you are deploying the workflow tutorial AMPs to a standalone Alfresco installation, you can deploy the AMPs to your Alfresco installation as you normally would using the &quot;apply_amps.sh&quot; script.</p>
+<p>Deploying to a standalone Alfresco is fine, but while you are developing (and working through these tutorials) it is easiest to use the Docker containers.</p>
+<p>Start it up by doing <code>./run.sh build_start</code> or <code>run.bat</code> depending on your platform. When it comes up, you'll be ready to test.</p>
 <p>At a minimum, you'll need to run several workflows:</p>
 <ol style="list-style-type: decimal">
 <li>The whitepaper receives all of its approvals but does not have a third-party reviewer.</li>
@@ -1328,7 +1374,8 @@ prop.scwf_reviewerEmail=Reviewer Email</code></pre>
 </ol>
 <p>When you test using the third-party reviewer email you should get an email that looks like this:</p>
 <div class="figure">
-<img src="images/reviewer-email-notification.png" alt="Third Party Reviewer notification email" /><p class="caption">Third Party Reviewer notification email</p>
+<img src="images/reviewer-email-notification.png" alt="Third Party Reviewer notification email" />
+<p class="caption">Third Party Reviewer notification email</p>
 </div>
 <p>Clicking on a link causes the workflow to proceed along the specified path.</p>
 <p><strong>Warning: The Third Party example is <em>not</em> production-ready</strong></p>
@@ -1356,12 +1403,11 @@ prop.scwf_reviewerEmail=Reviewer Email</code></pre>
 <p>This sets the timer for 5 minutes—that's what the &quot;PT5M&quot; expression means--but you could obviously set it for as long or as short as you wish. That expression is part of the <a href="http://en.wikipedia.org/wiki/ISO_8601">ISO 8601</a> standard for durations.</p>
 <p>Setting an absolute date works as well. The due date could also be the result of an expression. To use a specific date instead of a duration, use a <code>timeDate</code> element instead of a <code>timeDuration</code> element.</p>
 <h3 id="deploy-and-test-2">Deploy and test</h3>
-<p>If you only make changes to the process definition, you can just build the project. You don't have to restart.</p>
-<p>If you are deploying to a separate, standalone Alfresco server, use <code>mvn install</code> to create the AMP, then <code>mvn alfresco:install</code> to deploy the AMP to your Alfresco installation without restarting.</p>
-<p>Regardless of how you are deploying, remember to use the Alfresco workflow console to redeploy the process definition.</p>
+<p>If you only make changes to the process definition, you can just build the project and restart the Alfresco container. You don't have to restart all of the containers. To do that, run <code>mvn install -DskipTests</code> and then <code>./run.sh reload_acs</code> to rebuild and reload the Alfresco container.</p>
+<p>Remember to use the Alfresco workflow console to redeploy the process definition.</p>
 <p>Now test the third-party reviewer path but instead of clicking the approve or reject link that is included in the email, ignore it for five minutes. You should see the workflow continue along the approved path when the timer expires.</p>
 <h1 id="conclusion">Conclusion</h1>
-<p>You now know the ins and outs of implementing advanced workflows using the Activiti engine embedded within Alfresco. You know when Alfresco's basic workflows will suffice and when advanced workflows are more appropriate. You learned that process definitions are collections of events, tasks, and gateways joined by sequence flows. The representation of a process definition, both as a diagram, and as XML, is standardized through BPMN. And, you now know how to add business logic to workflows using expressions, Alfresco JavaScript and Java.</p>
+<p>You now know the ins and outs of implementing advanced workflows using the Activiti engine embedded within Alfresco. You know when Alfresco's basic workflows will suffice and when advanced workflows are more appropriate. You learned that process definitions are collections of events, tasks, and gateways joined by sequence flows. The representation of a process definition, both as a diagram, and as XML, is standardized through BPMN. And, you now know how to add business logic to workflows using expressions, Alfresco JavaScript, and Java.</p>
 <p>I also walked you through the overall process of implementing advanced workflows in Alfresco by walking through some simple Hello World examples and then a more complex example that used many different node types and business logic options. I even spiced things up a bit by exposing the business process to a third-party via SMTP and HTTP with the help of the web script framework.</p>
 <p>Hopefully, this has sparked some ideas about how you can leverage Alfresco and Activiti in your own projects and has given you some concrete examples you can leverage in your own projects going forward.</p>
 <h1 id="where-to-find-more-information">Where to find more information</h1>

@@ -68,6 +68,11 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-failsafe-plugin</artifactId>
                 <version>2.19.1</version>
+                <configuration>
+                    <systemPropertyVariables>
+                        <acs.endpoint.path>${test.acs.endpoint.path}</acs.endpoint.path>
+                    </systemPropertyVariables>
+                </configuration>
                 <executions>
                     <execution>
                         <id>integration-test</id>
@@ -91,22 +96,6 @@
                         <version>2.19.1</version>
                     </dependency>
                 </dependencies>
-            </plugin>
-
-            <!-- Run Alfresco Tomcat embedded -->
-            <plugin>
-                <groupId>org.alfresco.maven.plugin</groupId>
-                <artifactId>alfresco-maven-plugin</artifactId>
-                <version>${alfresco.sdk.version}</version>
-                <executions>
-                    <execution>
-                        <id>start-alfresco</id>
-                        <goals>
-                            <goal>it</goal>
-                        </goals>
-                        <phase>pre-integration-test</phase>
-                    </execution>
-                </executions>
             </plugin>
         </plugins>
     </build>
