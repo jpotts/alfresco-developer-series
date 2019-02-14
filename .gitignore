@@ -14,6 +14,7 @@ solr.log
 maven-sdk/someco-mvn-tutorial-repo/.idea
 maven-sdk/someco-mvn-tutorial-share/.idea
 share.log
+target
 content/content-tutorial-repo/.idea
 content/content-tutorial-share/.idea
 content/content-tutorial-cmis/.idea
