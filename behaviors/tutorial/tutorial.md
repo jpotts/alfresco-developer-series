@@ -205,6 +205,8 @@ Here is what I am using on my machine:
 * Java 1.8.0_201
 * Apache Maven 3.3.9
 * Alfresco Maven SDK 4.0 (No download necessary)
+* Docker 18.09.2
+* Docker Compose 1.23.2
 
 By default, when you create an Alfresco project using the Alfresco Maven
 SDK the project will be configured to depend on the latest stable Alfresco
@@ -239,12 +241,14 @@ Next, the Java code we are about to write has a compile-time dependency on the
 content tutorial repo tier project. To satisfy that, edit the "pom.xml" file in
 the behavior-tutorial-platform-jar folder to add the following dependency:
 
-        <dependency>
-            <groupId>com.someco</groupId>
-            <artifactId>content-tutorial-platform-jar</artifactId>
-            <version>1.0-SNAPSHOT</version>
-            <scope>provided</scope>
-        </dependency>
+```xml
+<dependency>
+    <groupId>com.someco</groupId>
+    <artifactId>content-tutorial-platform-jar</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <scope>provided</scope>
+</dependency>
+```
 
 Now we're ready to begin.
 
@@ -284,49 +288,53 @@ are not needed.
 Now, create a new model XML file called "[scRatingsModel.xml](https://github.com/jpotts/alfresco-developer-series/blob/master/behaviors/behavior-tutorial/behavior-tutorial-platform-jar/src/main/resources/alfresco/module/behavior-tutorial-platform-jar/model/scRatingsModel.xml)"
 with the following content:
 
-    <?xml version="1.0" encoding="UTF-8"?>
-    <!-- Definition of new Model -->
-    <model name="scr:somecoratingsmodel" xmlns="http://www.alfresco.org/model/dictionary/1.0">
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Definition of new Model -->
+<model name="scr:somecoratingsmodel" xmlns="http://www.alfresco.org/model/dictionary/1.0">
 
-        <!-- Optional meta-data about the model -->
-        <description>Someco Ratings Model</description>
-        <author>Jeff Potts</author>
-        <version>1.0</version>
+    <!-- Optional meta-data about the model -->
+    <description>Someco Ratings Model</description>
+    <author>Jeff Potts</author>
+    <version>1.0</version>
 
-        <!-- Imports are required to allow references to definitions in other models -->
-        <imports>
-            <!-- Import Alfresco Dictionary Definitions -->
-            <import uri="http://www.alfresco.org/model/dictionary/1.0" prefix="d" />
-            <!-- Import Alfresco Content Domain Model Definitions -->
-            <import uri="http://www.alfresco.org/model/content/1.0" prefix="cm" />
-            <import uri="http://www.alfresco.org/model/system/1.0" prefix="sys" />
-    	  </imports>
+    <!-- Imports are required to allow references to definitions in other models -->
+    <imports>
+        <!-- Import Alfresco Dictionary Definitions -->
+        <import uri="http://www.alfresco.org/model/dictionary/1.0" prefix="d" />
+        <!-- Import Alfresco Content Domain Model Definitions -->
+        <import uri="http://www.alfresco.org/model/content/1.0" prefix="cm" />
+        <import uri="http://www.alfresco.org/model/system/1.0" prefix="sys" />
+	  </imports>
 
-        <!-- Introduction of new namespaces defined by this model -->
-        <namespaces>
-            <namespace uri="http://www.someco.com/model/ratings/1.0" prefix="scr" />
-        </namespaces>
-    </model>
+    <!-- Introduction of new namespaces defined by this model -->
+    <namespaces>
+        <namespace uri="http://www.someco.com/model/ratings/1.0" prefix="scr" />
+    </namespaces>
+</model>
+```
 
 The model needs a type and an aspect. The chunk of XML below adds the type.
 Insert it after the closing `namespaces` element:
 
-    <types>
-        <type name="scr:rating">
-            <title>Someco Rating</title>
-            <parent>sys:base</parent>
-            <properties>
-                <property name="scr:rating">
-                    <type>d:int</type>
-                    <mandatory>true</mandatory>
-                </property>
-                <property name="scr:rater">
-                    <type>d:text</type>
-                    <mandatory>true</mandatory>
-                </property>
-            </properties>
-        </type>
-    </types>
+```xml
+<types>
+    <type name="scr:rating">
+        <title>Someco Rating</title>
+        <parent>sys:base</parent>
+        <properties>
+            <property name="scr:rating">
+                <type>d:int</type>
+                <mandatory>true</mandatory>
+            </property>
+            <property name="scr:rater">
+                <type>d:text</type>
+                <mandatory>true</mandatory>
+            </property>
+        </properties>
+    </type>
+</types>
+```
 
 Note that `scr:rating` inherits from `sys:base`. That's because rating objects
 aren't going to store any content, they will only store properties.
@@ -334,39 +342,41 @@ aren't going to store any content, they will only store properties.
 Now add the `scr:rateable` aspect. The `aspects` element goes after the closing
 `types` element:
 
-    <aspects>
-        <aspect name="scr:rateable">
-            <title>Someco Rateable</title>
-            <properties>
-                <property name="scr:averageRating">
-                    <type>d:double</type>
+```xml
+<aspects>
+    <aspect name="scr:rateable">
+        <title>Someco Rateable</title>
+        <properties>
+            <property name="scr:averageRating">
+                <type>d:double</type>
+                <mandatory>false</mandatory>
+            </property>
+            <property name="scr:totalRating">
+                <type>d:int</type>
+                <mandatory>false</mandatory>
+            </property>
+            <property name="scr:ratingCount">
+                <type>d:int</type>
+                <mandatory>false</mandatory>
+            </property>				
+        </properties>
+        <associations>
+            <child-association name="scr:ratings">
+                <title>Rating</title>
+                <source>
                     <mandatory>false</mandatory>
-                </property>
-                <property name="scr:totalRating">
-                    <type>d:int</type>
+                    <many>true</many>
+                </source>
+                <target>
+                    <class>scr:rating</class>
                     <mandatory>false</mandatory>
-                </property>
-                <property name="scr:ratingCount">
-                    <type>d:int</type>
-                    <mandatory>false</mandatory>
-                </property>				
-            </properties>
-            <associations>
-                <child-association name="scr:ratings">
-                    <title>Rating</title>
-                    <source>
-                        <mandatory>false</mandatory>
-                        <many>true</many>
-                    </source>
-                    <target>
-                        <class>scr:rating</class>
-                        <mandatory>false</mandatory>
-                        <many>true</many>
-                    </target>
-                </child-association>
-            </associations>
-        </aspect>
-    </aspects>
+                    <many>true</many>
+                </target>
+            </child-association>
+        </associations>
+    </aspect>
+</aspects>
+```
 
 The `scr:rateable` aspect has three properties used to store the average rating,
 total rating, and rating count. It also defines the child association between a
@@ -391,18 +401,20 @@ used to wire in sample models and labels. Replace whatever is there with the
 bean below. It refers to the model XML file created earlier as well as a
 properties file that doesn't exist yet:
 
-    <bean id="${project.artifactId}_dictionaryBootstrap" parent="dictionaryModelBootstrap" depends-on="dictionaryBootstrap">
-        <property name="models">
-            <list>                
-                <value>alfresco/module/${project.artifactId}/model/scRatingsModel.xml</value>                
-            </list>
-        </property>
-        <property name="labels">
-            <list>
-                <value>alfresco/module/${project.artifactId}/messages/scRatingsModel</value>
-            </list>        
-        </property>        
-    </bean>
+```xml
+<bean id="${project.artifactId}_dictionaryBootstrap" parent="dictionaryModelBootstrap" depends-on="dictionaryBootstrap">
+    <property name="models">
+        <list>                
+            <value>alfresco/module/${project.artifactId}/model/scRatingsModel.xml</value>                
+        </list>
+    </property>
+    <property name="labels">
+        <list>
+            <value>alfresco/module/${project.artifactId}/messages/scRatingsModel</value>
+        </list>        
+    </property>        
+</bean>
+```
 
 With that, the model is set up and ready to go.
 
@@ -422,15 +434,17 @@ That file lives in:
 
 The content of that file looks like this:
 
-    #scr:rating
-    scr_somecoratingsmodel.type.scr_rating.title=Rating
-    scr_somecoratingsmodel.property.scr_rating.title=Rating
-    scr_somecoratingsmodel.property.scr_rater.title=Rater
+```
+#scr:rating
+scr_somecoratingsmodel.type.scr_rating.title=Rating
+scr_somecoratingsmodel.property.scr_rating.title=Rating
+scr_somecoratingsmodel.property.scr_rater.title=Rater
 
-    #scr:rateable
-    scr_somecoratingsmodel.aspect.scr_rateable.title=SomeCo Rateable
-    scr_somecoratingsmodel.property.scr_averageRating=Average Rating
-    scr_somecoratingsmodel.association.scr_ratings.title=Ratings
+#scr:rateable
+scr_somecoratingsmodel.aspect.scr_rateable.title=SomeCo Rateable
+scr_somecoratingsmodel.property.scr_averageRating=Average Rating
+scr_somecoratingsmodel.association.scr_ratings.title=Ratings
+```
 
 You can delete the example properties file that may already be in the messages
 directory.
@@ -464,27 +478,29 @@ aspect is displayed.
 It is often convenient to put model-related constants in a class. In this case,
 that class is called SomeCoRatingsModel and it looks like this:
 
-    public interface SomeCoRatingsModel {
+```java
+public interface SomeCoRatingsModel {
 
-        // Namespaces
-        public static final String NAMESPACE_SOMECO_RATINGS_CONTENT_MODEL  = "http://www.someco.com/model/ratings/1.0";
+    // Namespaces
+    public static final String NAMESPACE_SOMECO_RATINGS_CONTENT_MODEL  = "http://www.someco.com/model/ratings/1.0";
 
-        // Types
-        public static final String TYPE_SCR_RATING = "rating";
+    // Types
+    public static final String TYPE_SCR_RATING = "rating";
 
-        // Aspects
-        public static final String ASPECT_SCR_RATEABLE = "rateable";
+    // Aspects
+    public static final String ASPECT_SCR_RATEABLE = "rateable";
 
-        // Properties
-        public static final String PROP_RATING = "rating";
-        public static final String PROP_RATER = "rater";
-        public static final String PROP_AVERAGE_RATING= "averageRating";
-        public static final String PROP_TOTAL_RATING= "totalRating";
-        public static final String PROP_RATING_COUNT= "ratingCount";
+    // Properties
+    public static final String PROP_RATING = "rating";
+    public static final String PROP_RATER = "rater";
+    public static final String PROP_AVERAGE_RATING= "averageRating";
+    public static final String PROP_TOTAL_RATING= "totalRating";
+    public static final String PROP_RATING_COUNT= "ratingCount";
 
-        // Associations
-        public static final String ASSN_SCR_RATINGS = "ratings";
-    }
+    // Associations
+    public static final String ASSN_SCR_RATINGS = "ratings";
+}
+```
 
 These are just constants that will be used by the behavior class and other
 classes in other tutorials when they need to refer to the rating type, rateable
@@ -508,40 +524,41 @@ The test class goes in:
 Here is the [SomecoRatingModelIT](https://github.com/jpotts/alfresco-developer-series/blob/master/behaviors/behavior-tutorial/integration-tests/src/test/java/com/someco/test/SomecoRatingModelIT.java)
 test class:
 
-    @RunWith(value = AlfrescoTestRunner.class)
-    public class SomecoRatingModelIT extends BaseIT {
+```java
+@RunWith(value = AlfrescoTestRunner.class)
+public class SomecoRatingModelIT extends BaseIT {
 
-        @Test
-        public void testRateableAspect() {
-            final double AVG_RATING = 1.0;
-            final int RATING_COUNT = 1;
-            final int TOTAL = 1;
+    @Test
+    public void testRateableAspect() {
+        final double AVG_RATING = 1.0;
+        final int RATING_COUNT = 1;
+        final int TOTAL = 1;
 
-            NodeService nodeService = getServiceRegistry().getNodeService();
+        NodeService nodeService = getServiceRegistry().getNodeService();
 
-            Map<QName, Serializable> nodeProperties = new HashMap<>();
-            this.nodeRef = createNode(getFilename(), ContentModel.TYPE_CONTENT, nodeProperties);
+        Map<QName, Serializable> nodeProperties = new HashMap<>();
+        this.nodeRef = createNode(getFilename(), ContentModel.TYPE_CONTENT, nodeProperties);
 
-            QName aspectQName = createQName(SomeCoRatingsModel.NAMESPACE_SOMECO_RATINGS_CONTENT_MODEL, SomeCoRatingsModel.ASPECT_SCR_RATEABLE);
+        QName aspectQName = createQName(SomeCoRatingsModel.NAMESPACE_SOMECO_RATINGS_CONTENT_MODEL, SomeCoRatingsModel.ASPECT_SCR_RATEABLE);
 
-            // set up some aspect-based properties
-            Map<QName, Serializable> aspectProps = new HashMap<QName, Serializable>();
+        // set up some aspect-based properties
+        Map<QName, Serializable> aspectProps = new HashMap<QName, Serializable>();
 
-            aspectProps.put(PROP_AVG_RATING_QNAME, AVG_RATING);
-            aspectProps.put(PROP_TOTAL_QNAME, TOTAL);
-            aspectProps.put(PROP_COUNT_QNAME, RATING_COUNT);
+        aspectProps.put(PROP_AVG_RATING_QNAME, AVG_RATING);
+        aspectProps.put(PROP_TOTAL_QNAME, TOTAL);
+        aspectProps.put(PROP_COUNT_QNAME, RATING_COUNT);
 
-            nodeService.addAspect(nodeRef, aspectQName, aspectProps);
+        nodeService.addAspect(nodeRef, aspectQName, aspectProps);
 
-            assertEquals(AVG_RATING, nodeService.getProperty(this.nodeRef, PROP_AVG_RATING_QNAME));
-            assertEquals(TOTAL, nodeService.getProperty(this.nodeRef, PROP_TOTAL_QNAME));
-            assertEquals(RATING_COUNT, nodeService.getProperty(this.nodeRef, PROP_COUNT_QNAME));
+        assertEquals(AVG_RATING, nodeService.getProperty(this.nodeRef, PROP_AVG_RATING_QNAME));
+        assertEquals(TOTAL, nodeService.getProperty(this.nodeRef, PROP_TOTAL_QNAME));
+        assertEquals(RATING_COUNT, nodeService.getProperty(this.nodeRef, PROP_COUNT_QNAME));
 
-            assertTrue("Missing aspect",
-                    getServiceRegistry().getNodeService().hasAspect(nodeRef, aspectQName));
-        }
-
+        assertTrue("Missing aspect",
+                getServiceRegistry().getNodeService().hasAspect(nodeRef, aspectQName));
     }
+}
+```
 
 The test creates a new content node in Company Home and then adds the
 `scr:rateable` aspect to it, simultaneously setting the aspect-based properties
@@ -574,47 +591,55 @@ needs to bind to. In this example, the two policy interfaces are:
 `NodeServicePolicies.OnDeleteNodePolicy` and
 `NodeServicePolicies.OnCreateNodePolicy` so the class declaration is:
 
-    public class Rating
-    implements NodeServicePolicies.OnDeleteNodePolicy,
-    NodeServicePolicies.OnCreateNodePolicy {
+```java
+public class Rating
+implements NodeServicePolicies.OnDeleteNodePolicy,
+NodeServicePolicies.OnCreateNodePolicy {
+  // SNIP
+}
+```
 
 The class has two dependencies that Spring will handle for us. One is the
 `NodeService` which will be used in the average calculation logic and the other
 is the `PolicyComponent` which is used to bind the behavior to the policies.
 
-    // Dependencies
-    private NodeService nodeService;
-    private PolicyComponent policyComponent;
+```java
+// Dependencies
+private NodeService nodeService;
+private PolicyComponent policyComponent;
 
-    // Behaviours
-    private Behaviour onCreateNode;
-    private Behaviour onDeleteNode;
+// Behaviours
+private Behaviour onCreateNode;
+private Behaviour onDeleteNode;
+```
 
 At some point Alfresco has to know that the behavior needs to be bound to a
 policy. A method called `init()` will handle the binding. It will get called
 when Spring loads the bean.
 
-    public void init() {
+```java
+public void init() {
 
-        // Create behaviours
-        this.onCreateNode = new JavaBehaviour(this, "onCreateNode", NotificationFrequency.EVERY_EVENT);
+    // Create behaviours
+    this.onCreateNode = new JavaBehaviour(this, "onCreateNode", NotificationFrequency.EVERY_EVENT);
 
-        this.onDeleteNode = new JavaBehaviour(this, "onDeleteNode", NotificationFrequency.EVERY_EVENT);
+    this.onDeleteNode = new JavaBehaviour(this, "onDeleteNode", NotificationFrequency.EVERY_EVENT);
 
-        // Bind behaviours to node policies
-        this.policyComponent.bindClassBehaviour(
-            Qname.createQName(NamespaceService.ALFRESCO_URI, "onCreateNode"),
-            Qname.createQName(SomeCoModel.NAMESPACE_SOMECO_CONTENT_MODEL, SomeCoModel.TYPE_SC_RATING),
-            this.onCreateNode
-        );
+    // Bind behaviours to node policies
+    this.policyComponent.bindClassBehaviour(
+        Qname.createQName(NamespaceService.ALFRESCO_URI, "onCreateNode"),
+        Qname.createQName(SomeCoModel.NAMESPACE_SOMECO_CONTENT_MODEL, SomeCoModel.TYPE_SC_RATING),
+        this.onCreateNode
+    );
 
-        this.policyComponent.bindClassBehaviour(
-            QName.createQName(NamespaceService.ALFRESCO_URI, "onDeleteNode"),
-            Qname.createQName(SomeCoModel.NAMESPACE_SOMECO_CONTENT_MODEL, SomeCoModel.TYPE_SC_RATING),
-            this.onDeleteNode
-        );
+    this.policyComponent.bindClassBehaviour(
+        QName.createQName(NamespaceService.ALFRESCO_URI, "onDeleteNode"),
+        Qname.createQName(SomeCoModel.NAMESPACE_SOMECO_CONTENT_MODEL, SomeCoModel.TYPE_SC_RATING),
+        this.onDeleteNode
+    );
 
-    }
+}
+```
 
 The first thing to notice here is that you can decide when the behavior should
 be invoked by specifying the appropriate `NotificationFrequency`. Besides
@@ -639,80 +664,84 @@ whether a ratings node is created or deleted, the average needs to be
 recalculated. So the `onCreateNode` and `onDeleteNode` methods call
 `computeAverage` and pass in the rating node reference.
 
-    public void onCreateNode(ChildAssociationRef childAssocRef) {
+```java
+public void onCreateNode(ChildAssociationRef childAssocRef) {
 
-        computeAverage(childAssocRef);
+    computeAverage(childAssocRef);
 
-    }
+}
 
-    public void onDeleteNode(ChildAssociationRef childAssocRef, boolean isNodeArchived) {
+public void onDeleteNode(ChildAssociationRef childAssocRef, boolean isNodeArchived) {
 
-        computeAverage(childAssocRef);
+    computeAverage(childAssocRef);
 
-    }
+}
+```
 
 The `computeAverage` method asks the child (the rating object) for its parent
 node reference (the rateable object) and asks the parent for a list of its
 children. It iterates over the children, computes an average, and sets the
 average property on the content.
 
-    public void computeAverage(ChildAssociationRef childAssocRef) {
+```java
+public void computeAverage(ChildAssociationRef childAssocRef) {
 
-        // get the parent node
-        NodeRef parentRef = childAssocRef.getParentRef();
+    // get the parent node
+    NodeRef parentRef = childAssocRef.getParentRef();
 
-        // check the parent to make sure it has the right aspect
-        if (nodeService.exists(parentRef) && nodeService.hasAspect(parentRef, Qname.createQName(SomeCoModel.NAMESPACE_SOMECO_CONTENT_MODEL, SomeCoModel.ASPECT_SC_RATEABLE))) {
+    // check the parent to make sure it has the right aspect
+    if (nodeService.exists(parentRef) && nodeService.hasAspect(parentRef, Qname.createQName(SomeCoModel.NAMESPACE_SOMECO_CONTENT_MODEL, SomeCoModel.ASPECT_SC_RATEABLE))) {
 
-            // continue, this is what we want
+        // continue, this is what we want
 
-        } else {
-
-            return;
-
-        }
-
-        // get the parent node's children
-        List<ChildAssociationRef> children = nodeService.getChildAssocs(parentRef);
-
-        // iterate through the children to compute the total
-        Double average = 0d;
-        int total = 0;
-        for (ChildAssociationRef child : children) {
-            int rating = (Integer)nodeService.getProperty(
-            child.getChildRef(),
-            Qname.createQName(SomeCoModel.NAMESPACE_SOMECO_CONTENT_MODEL, SomeCoModel.PROP_RATING));
-            total += rating;
-        }
-
-        // compute the average
-        average = total / (children.size() / 1.0d);
-
-        // store the average, total, count on the parent node
-        nodeService.setProperty(
-            parentRef,
-            QName.createQName(
-                SomeCoRatingsModel.NAMESPACE_SOMECO_RATINGS_CONTENT_MODEL,
-                SomeCoRatingsModel.PROP_AVERAGE_RATING),
-            average);
-
-        nodeService.setProperty(
-            parentRef,
-            QName.createQName(
-                SomeCoRatingsModel.NAMESPACE_SOMECO_RATINGS_CONTENT_MODEL,
-                SomeCoRatingsModel.PROP_TOTAL_RATING),
-            total);
-
-        nodeService.setProperty(
-            parentRef,
-            QName.createQName(
-                SomeCoRatingsModel.NAMESPACE_SOMECO_RATINGS_CONTENT_MODEL,
-                SomeCoRatingsModel.PROP_RATING_COUNT),
-            count);		
+    } else {
 
         return;
 
     }
+
+    // get the parent node's children
+    List<ChildAssociationRef> children = nodeService.getChildAssocs(parentRef);
+
+    // iterate through the children to compute the total
+    Double average = 0d;
+    int total = 0;
+    for (ChildAssociationRef child : children) {
+        int rating = (Integer)nodeService.getProperty(
+        child.getChildRef(),
+        Qname.createQName(SomeCoModel.NAMESPACE_SOMECO_CONTENT_MODEL, SomeCoModel.PROP_RATING));
+        total += rating;
+    }
+
+    // compute the average
+    average = total / (children.size() / 1.0d);
+
+    // store the average, total, count on the parent node
+    nodeService.setProperty(
+        parentRef,
+        QName.createQName(
+            SomeCoRatingsModel.NAMESPACE_SOMECO_RATINGS_CONTENT_MODEL,
+            SomeCoRatingsModel.PROP_AVERAGE_RATING),
+        average);
+
+    nodeService.setProperty(
+        parentRef,
+        QName.createQName(
+            SomeCoRatingsModel.NAMESPACE_SOMECO_RATINGS_CONTENT_MODEL,
+            SomeCoRatingsModel.PROP_TOTAL_RATING),
+        total);
+
+    nodeService.setProperty(
+        parentRef,
+        QName.createQName(
+            SomeCoRatingsModel.NAMESPACE_SOMECO_RATINGS_CONTENT_MODEL,
+            SomeCoRatingsModel.PROP_RATING_COUNT),
+        count);		
+
+    return;
+
+}
+```
 
 The class stores the total rating and rating count, so it could actually compute
 the average without iterating over the rating objects. All it really needs to
@@ -732,15 +761,17 @@ You can delete any demo or sample beans that may already be in this file.
 
 Add the following before the closing `beans` element:
 
-    <bean id="ratingBehavior" class="com.someco.behavior.Rating"
-    init-method="init">
-        <property name="nodeService">
-            <ref bean="NodeService" />
-        </property>
-        <property name="policyComponent">
-            <ref bean="policyComponent" />
-        </property>
-    </bean>
+```xml
+<bean id="ratingBehavior" class="com.someco.behavior.Rating"
+init-method="init">
+    <property name="nodeService">
+        <ref bean="NodeService" />
+    </property>
+    <property name="policyComponent">
+        <ref bean="policyComponent" />
+    </property>
+</bean>
+```
 
 This bean declares the `init` method and injects the dependencies the behavior
 needs.
@@ -763,74 +794,76 @@ delete was handled appropriately.
 
 Here's the code:
 
-    @RunWith(value = AlfrescoTestRunner.class)
-    public class RatingBehaviorIT extends BaseIT {
+```java
+@RunWith(value = AlfrescoTestRunner.class)
+public class RatingBehaviorIT extends BaseIT {
 
-        static Logger log = Logger.getLogger(RatingBehaviorIT.class);
+    static Logger log = Logger.getLogger(RatingBehaviorIT.class);
 
-        @Test
-        public void ratingTypeTest() {
-            final String RATER = "jpotts";
+    @Test
+    public void ratingTypeTest() {
+        final String RATER = "jpotts";
 
-            NodeService nodeService = getServiceRegistry().getNodeService();
+        NodeService nodeService = getServiceRegistry().getNodeService();
 
-            Map<QName, Serializable> nodeProperties = new HashMap<>();
-            this.nodeRef = createNode(getFilename(), ContentModel.TYPE_CONTENT, nodeProperties);
+        Map<QName, Serializable> nodeProperties = new HashMap<>();
+        this.nodeRef = createNode(getFilename(), ContentModel.TYPE_CONTENT, nodeProperties);
 
-            QName aspectQName = createQName(SomeCoRatingsModel.NAMESPACE_SOMECO_RATINGS_CONTENT_MODEL, SomeCoRatingsModel.ASPECT_SCR_RATEABLE);
-            nodeService.addAspect(nodeRef, aspectQName, null);
+        QName aspectQName = createQName(SomeCoRatingsModel.NAMESPACE_SOMECO_RATINGS_CONTENT_MODEL, SomeCoRatingsModel.ASPECT_SCR_RATEABLE);
+        nodeService.addAspect(nodeRef, aspectQName, null);
 
-            createRating(this.nodeRef, 1, RATER);
+        createRating(this.nodeRef, 1, RATER);
 
-            assertEquals(1.0, nodeService.getProperty(this.nodeRef, PROP_AVG_RATING_QNAME));
-            assertEquals(1, nodeService.getProperty(this.nodeRef, PROP_TOTAL_QNAME));
-            assertEquals(1, nodeService.getProperty(this.nodeRef, PROP_COUNT_QNAME));
+        assertEquals(1.0, nodeService.getProperty(this.nodeRef, PROP_AVG_RATING_QNAME));
+        assertEquals(1, nodeService.getProperty(this.nodeRef, PROP_TOTAL_QNAME));
+        assertEquals(1, nodeService.getProperty(this.nodeRef, PROP_COUNT_QNAME));
 
-            NodeRef rating2 = createRating(this.nodeRef, 2, RATER);
+        NodeRef rating2 = createRating(this.nodeRef, 2, RATER);
 
-            assertEquals(1.5, nodeService.getProperty(this.nodeRef, PROP_AVG_RATING_QNAME));
-            assertEquals(3, nodeService.getProperty(this.nodeRef, PROP_TOTAL_QNAME));
-            assertEquals(2, nodeService.getProperty(this.nodeRef, PROP_COUNT_QNAME));
+        assertEquals(1.5, nodeService.getProperty(this.nodeRef, PROP_AVG_RATING_QNAME));
+        assertEquals(3, nodeService.getProperty(this.nodeRef, PROP_TOTAL_QNAME));
+        assertEquals(2, nodeService.getProperty(this.nodeRef, PROP_COUNT_QNAME));
 
-            createRating(this.nodeRef, 3, RATER);
+        createRating(this.nodeRef, 3, RATER);
 
-            assertEquals(2.0, nodeService.getProperty(this.nodeRef, PROP_AVG_RATING_QNAME));
-            assertEquals(6, nodeService.getProperty(this.nodeRef, PROP_TOTAL_QNAME));
-            assertEquals(3, nodeService.getProperty(this.nodeRef, PROP_COUNT_QNAME));
+        assertEquals(2.0, nodeService.getProperty(this.nodeRef, PROP_AVG_RATING_QNAME));
+        assertEquals(6, nodeService.getProperty(this.nodeRef, PROP_TOTAL_QNAME));
+        assertEquals(3, nodeService.getProperty(this.nodeRef, PROP_COUNT_QNAME));
 
-            nodeService.deleteNode(rating2);
+        nodeService.deleteNode(rating2);
 
-            assertEquals(nodeService.getProperty(this.nodeRef, PROP_AVG_RATING_QNAME), 2.0);
-            assertEquals(nodeService.getProperty(this.nodeRef, PROP_TOTAL_QNAME), 4);
-            assertEquals(nodeService.getProperty(this.nodeRef, PROP_COUNT_QNAME), 2);
-        }
-
-        public NodeRef createRating(NodeRef nodeRef, int rating, String rater) {
-            NodeService nodeService = getServiceRegistry().getNodeService();
-
-            // assign name
-    	    String name = "Rating (" + System.currentTimeMillis() + ")";
-    	    Map<QName, Serializable> contentProps = new HashMap<QName, Serializable>();
-    	    contentProps.put(ContentModel.PROP_NAME, name);
-    	    contentProps.put(PROP_RATING_QNAME, rating);
-    	    contentProps.put(PROP_RATER_QNAME, rater);
-
-    	    // create rating as a child of the content node using the scr:ratings child association
-    	    ChildAssociationRef association = nodeService.createNode(
-    	    				nodeRef,
-    	                    QName.createQName(
-    	                    		SomeCoRatingsModel.NAMESPACE_SOMECO_RATINGS_CONTENT_MODEL,
-    	                    		SomeCoRatingsModel.ASSN_SCR_RATINGS),
-    	                    QName.createQName(NamespaceService.CONTENT_MODEL_PREFIX, name),
-    	                    QName.createQName(
-    	                    		SomeCoRatingsModel.NAMESPACE_SOMECO_RATINGS_CONTENT_MODEL,
-    	                    		SomeCoRatingsModel.TYPE_SCR_RATING),
-    	                    contentProps
-    	                    );
-
-    	    return association.getChildRef();
-        }
+        assertEquals(nodeService.getProperty(this.nodeRef, PROP_AVG_RATING_QNAME), 2.0);
+        assertEquals(nodeService.getProperty(this.nodeRef, PROP_TOTAL_QNAME), 4);
+        assertEquals(nodeService.getProperty(this.nodeRef, PROP_COUNT_QNAME), 2);
     }
+
+    public NodeRef createRating(NodeRef nodeRef, int rating, String rater) {
+        NodeService nodeService = getServiceRegistry().getNodeService();
+
+        // assign name
+	    String name = "Rating (" + System.currentTimeMillis() + ")";
+	    Map<QName, Serializable> contentProps = new HashMap<QName, Serializable>();
+	    contentProps.put(ContentModel.PROP_NAME, name);
+	    contentProps.put(PROP_RATING_QNAME, rating);
+	    contentProps.put(PROP_RATER_QNAME, rater);
+
+	    // create rating as a child of the content node using the scr:ratings child association
+	    ChildAssociationRef association = nodeService.createNode(
+	    				nodeRef,
+	                    QName.createQName(
+	                    		SomeCoRatingsModel.NAMESPACE_SOMECO_RATINGS_CONTENT_MODEL,
+	                    		SomeCoRatingsModel.ASSN_SCR_RATINGS),
+	                    QName.createQName(NamespaceService.CONTENT_MODEL_PREFIX, name),
+	                    QName.createQName(
+	                    		SomeCoRatingsModel.NAMESPACE_SOMECO_RATINGS_CONTENT_MODEL,
+	                    		SomeCoRatingsModel.TYPE_SCR_RATING),
+	                    contentProps
+	                    );
+
+	    return association.getChildRef();
+    }
+}
+```
 
 To run the test, first, check to see if your containers are running by doing a
 `docker ps`. If any are running, do `./run.sh stop`. Next, run `mvn install -DskipTests`
@@ -906,27 +939,30 @@ files are virtually identical. They just need to do some basic error checking
 and then call the `computeAverage()` function. Here is what onCreateRating.js
 looks like:
 
-    <import resource="classpath:alfresco/module/behavior-tutorial-platform-jar/scripts/rating.js">
+```javascript
+<import resource="classpath:alfresco/module/behavior-tutorial-platform-jar/scripts/rating.js">
 
-    // Check behaviour is set and the name of the behaviour
-    if (!behaviour || (behaviour.name == null || behaviour.name != "onCreateNode")) {
-        logger.log("The behaviour behaviour object or name has not been set correctly.");
+// Check behaviour is set and the name of the behaviour
+if (!behaviour || (behaviour.name == null || behaviour.name != "onCreateNode")) {
+    logger.log("The behaviour behaviour object or name has not been set correctly.");
+} else {
+    logger.log("Behaviour name: " + behaviour.name);
+
+    // Check the arguments
+    if (behaviour.args == null) {
+        logger.log("The args have not been set.");
     } else {
-        logger.log("Behaviour name: " + behaviour.name);
-
-        // Check the arguments
-        if (behaviour.args == null) {
-            logger.log("The args have not been set.");
+        if (behaviour.args.length == 1) {
+            var childAssoc = behaviour.args[0];
+            logger.log("Calling compute average");
+            computeAverage(childAssoc);
         } else {
-            if (behaviour.args.length == 1) {
-                var childAssoc = behaviour.args[0];
-                logger.log("Calling compute average");
-                computeAverage(childAssoc);
-            } else {
-                logger.log("The number of arguments is incorrect.");
-            }
+            logger.log("The number of arguments is incorrect.");
         }
     }
+}
+```
+
 The code for onDeleteRating.js is identical with the exception of the
 behavior name and the number of arguments expected (2 instead of 1) so I
 won't duplicate the listing here.
@@ -935,45 +971,47 @@ The `computeAverage()` function lives in [rating.js](https://github.com/jpotts/a
 much the same thing as the `computeAverage()` method in the Java example, but
 obviously in JavaScript:
 
-    //calculate rating
-    function computeAverage(childAssocRef) {
+```javascript
+//calculate rating
+function computeAverage(childAssocRef) {
 
-        var parentRef = childAssocRef.parent;
+    var parentRef = childAssocRef.parent;
 
-        // check the parent to make sure it has the right aspect
-        if (!parentRef.hasAspect("{http://www.someco.com/model/ratings/1.0}rateable")) {
-            logger.log("Rating's parent ref did not have rateable aspect.");
-            return;
-        }
-
-        // get the parent node's children
-        var children = parentRef.children;
-
-        // iterate through the children to compute the total
-        var average = 0.0;
-        var total = 0;
-
-        if (children != null && children.length > 0) {
-            for (i in children) {
-                var child = children[i];
-                var rating = child.properties["{http://www.someco.com/model/content/1.0}rating"];
-                total += rating;
-            }
-
-            // compute the average
-            average = total / children.length;
-        }
-
-        logger.log("Computed average:" + average);
-
-        // store the average, total, count on the parent node
-        parentRef.properties["{http://www.someco.com/model/ratings/1.0}averageRating"] = average;
-        parentRef.properties["{http://www.someco.com/model/ratings/1.0}totalRating"] = total;
-        parentRef.properties["{http://www.someco.com/model/ratings/1.0}ratingCount"] = children.length;
-        parentRef.save();
-
-        logger.log("Property set");
+    // check the parent to make sure it has the right aspect
+    if (!parentRef.hasAspect("{http://www.someco.com/model/ratings/1.0}rateable")) {
+        logger.log("Rating's parent ref did not have rateable aspect.");
+        return;
     }
+
+    // get the parent node's children
+    var children = parentRef.children;
+
+    // iterate through the children to compute the total
+    var average = 0.0;
+    var total = 0;
+
+    if (children != null && children.length > 0) {
+        for (i in children) {
+            var child = children[i];
+            var rating = child.properties["{http://www.someco.com/model/content/1.0}rating"];
+            total += rating;
+        }
+
+        // compute the average
+        average = total / children.length;
+    }
+
+    logger.log("Computed average:" + average);
+
+    // store the average, total, count on the parent node
+    parentRef.properties["{http://www.someco.com/model/ratings/1.0}averageRating"] = average;
+    parentRef.properties["{http://www.someco.com/model/ratings/1.0}totalRating"] = total;
+    parentRef.properties["{http://www.someco.com/model/ratings/1.0}ratingCount"] = children.length;
+    parentRef.save();
+
+    logger.log("Property set");
+}
+```
 
 As you can see, this is the same logic used in the Java example modified to
 follow the Alfresco JavaScript API syntax.
@@ -995,48 +1033,50 @@ Edit the file. Comment out the `ratingBehavior` bean element used for the Java
 example and add two new bean configs below it for the JavaScript behavior
 code—one for the create and one for the delete:
 
-    <bean id="onCreateRatingNode"
-    class="org.alfresco.repo.policy.registration.ClassPolicyRegistration"
-    parent="policyRegistration">
-        <property name="policyName">
-            <value>{http://www.alfresco.org}onCreateNode</value>
-        </property>
-        <property name="className">
-            <value>{http://www.someco.com/model/ratings/1.0}rating</value>
-        </property>
-        <property name="behaviour">
-            <bean class="org.alfresco.repo.jscript.ScriptBehaviour" parent="scriptBehaviour">
-                <property name="location">
-                    <bean class="org.alfresco.repo.jscript.ClasspathScriptLocation">
-                        <constructor-arg>
-                            <value>alfresco/module/${project.artifactId}/scripts/onCreateRating.js</value>
-                        </constructor-arg>
-                    </bean>
-                </property>
-            </bean>
-        </property>
-    </bean>
-    <bean id="onDeleteRatingNode"
-    class="org.alfresco.repo.policy.registration.ClassPolicyRegistration"
-    parent="policyRegistration">
-        <property name="policyName">
-            <value>{http://www.alfresco.org}onDeleteNode</value>
-        </property>
-        <property name="className">
-            <value>{http://www.someco.com/model/ratings/1.0}rating</value>
-        </property>
-        <property name="behaviour">
-            <bean class="org.alfresco.repo.jscript.ScriptBehaviour" parent="scriptBehaviour">
-                <property name="location">
-                    <bean class="org.alfresco.repo.jscript.ClasspathScriptLocation">
-                        <constructor-arg>
-                            <value>alfresco/module/${project.artifactId}/scripts/onDeleteRating.js</value>
-                        </constructor-arg>
-                    </bean>
-                </property>
-            </bean>
-        </property>
-    </bean>
+```xml
+<bean id="onCreateRatingNode"
+class="org.alfresco.repo.policy.registration.ClassPolicyRegistration"
+parent="policyRegistration">
+    <property name="policyName">
+        <value>{http://www.alfresco.org}onCreateNode</value>
+    </property>
+    <property name="className">
+        <value>{http://www.someco.com/model/ratings/1.0}rating</value>
+    </property>
+    <property name="behaviour">
+        <bean class="org.alfresco.repo.jscript.ScriptBehaviour" parent="scriptBehaviour">
+            <property name="location">
+                <bean class="org.alfresco.repo.jscript.ClasspathScriptLocation">
+                    <constructor-arg>
+                        <value>alfresco/module/${project.artifactId}/scripts/onCreateRating.js</value>
+                    </constructor-arg>
+                </bean>
+            </property>
+        </bean>
+    </property>
+</bean>
+<bean id="onDeleteRatingNode"
+class="org.alfresco.repo.policy.registration.ClassPolicyRegistration"
+parent="policyRegistration">
+    <property name="policyName">
+        <value>{http://www.alfresco.org}onDeleteNode</value>
+    </property>
+    <property name="className">
+        <value>{http://www.someco.com/model/ratings/1.0}rating</value>
+    </property>
+    <property name="behaviour">
+        <bean class="org.alfresco.repo.jscript.ScriptBehaviour" parent="scriptBehaviour">
+            <property name="location">
+                <bean class="org.alfresco.repo.jscript.ClasspathScriptLocation">
+                    <constructor-arg>
+                        <value>alfresco/module/${project.artifactId}/scripts/onDeleteRating.js</value>
+                    </constructor-arg>
+                </bean>
+            </property>
+        </bean>
+    </property>
+</bean>
+```
 
 Now Alfresco will use the two server-side JavaScript files as the behavior
 implementation instead of the Java-based behavior created earlier.

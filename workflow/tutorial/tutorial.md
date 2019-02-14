@@ -216,7 +216,7 @@ workflows at a high level now so I can leave the topic of basic workflows behind
 and spend the rest of the tutorial on advanced workflows:
 
 | Alfresco basic workflows... | Alfresco advanced workflows... |
-| --------------------------- | ------------------------------ |
+| ----------------------------------- | -------------------------------------- |
 | Are configurable by non-technical end-users via Alfresco Share | Are defined by business analysts and developers using a graphical tool or by writing XML |
 | Leverage rules, folders, and actions | Leverage the power of the embedded Activiti workflow engine |
 | Can only handle processes with single-step, forward and/or backward, serial flows | Can model any business process including decisions, splits, joins, parallel flows, sub-processes, wait states, and timers |
@@ -317,6 +317,8 @@ Here is what I am using on my machine:
 * Java 1.8.0_201
 * Apache Maven 3.3.9
 * Alfresco Maven SDK 4.0 (No download necessary)
+* Docker 18.09.2
+* Docker Compose 1.23.2
 * Eclipse Java EE IDE for Web Developers, Neon
 * Activiti Eclipse BPMN 2.0 Designer 5.18 ([Eclipse Update Site](http://www.activiti.org/designer/update/))
 * Apache James 2.3.1 (for testing third-party notification via SMTP)
@@ -357,60 +359,64 @@ the project to install AMPs from the earlier tutorials into the Docker
 containers automatically. Edit the pom.xml file in the
 "workflow-tutorial-platform-docker" directory to add the following dependencies:
 
-    <dependencies>
-        <dependency>
-            <groupId>com.someco</groupId>
-            <artifactId>workflow-tutorial-platform-jar</artifactId>
-            <version>1.0-SNAPSHOT</version>
-        </dependency>
-        <!-- Bring in the content tutorial repo AMP so we can run embedded. -->
-        <dependency>
-            <groupId>com.someco</groupId>
-            <artifactId>content-tutorial-platform-jar</artifactId>
-            <version>1.0-SNAPSHOT</version>
-        </dependency>
-        <!-- Bring in the behavior tutorial repo AMP so we can run embedded. -->
-        <dependency>
-            <groupId>com.someco</groupId>
-            <artifactId>behavior-tutorial-platform-jar</artifactId>
-            <version>1.0-SNAPSHOT</version>
-        </dependency>
-        <!-- Bring in the actions tutorial repo AMP so we can run embedded. -->
-        <dependency>
-            <groupId>com.someco</groupId>
-            <artifactId>actions-tutorial-platform-jar</artifactId>
-            <version>1.0-SNAPSHOT</version>
-        </dependency>
-    </dependencies>
+```xml
+<dependencies>
+    <dependency>
+        <groupId>com.someco</groupId>
+        <artifactId>workflow-tutorial-platform-jar</artifactId>
+        <version>1.0-SNAPSHOT</version>
+    </dependency>
+    <!-- Bring in the content tutorial repo AMP so we can run embedded. -->
+    <dependency>
+        <groupId>com.someco</groupId>
+        <artifactId>content-tutorial-platform-jar</artifactId>
+        <version>1.0-SNAPSHOT</version>
+    </dependency>
+    <!-- Bring in the behavior tutorial repo AMP so we can run embedded. -->
+    <dependency>
+        <groupId>com.someco</groupId>
+        <artifactId>behavior-tutorial-platform-jar</artifactId>
+        <version>1.0-SNAPSHOT</version>
+    </dependency>
+    <!-- Bring in the actions tutorial repo AMP so we can run embedded. -->
+    <dependency>
+        <groupId>com.someco</groupId>
+        <artifactId>actions-tutorial-platform-jar</artifactId>
+        <version>1.0-SNAPSHOT</version>
+    </dependency>
+</dependencies>
+```
 
 Those all have corresponding Share tier modules so edit the pom.xml file in the
 "workflow-tutorial-share-docker" directory to add the following dependencies:
 
-    <dependencies>
-        <dependency>
-            <groupId>com.someco</groupId>
-            <artifactId>workflow-tutorial-share-jar</artifactId>
-            <version>1.0-SNAPSHOT</version>
-        </dependency>
-        <!-- Bring in the content tutorial share AMP so we can run embedded. -->
-        <dependency>
-            <groupId>com.someco</groupId>
-            <artifactId>content-tutorial-share-jar</artifactId>
-            <version>1.0-SNAPSHOT</version>
-        </dependency>
-        <!-- Bring in the behavior tutorial share AMP so we can run embedded. -->
-        <dependency>
-            <groupId>com.someco</groupId>
-            <artifactId>behavior-tutorial-share-jar</artifactId>
-            <version>1.0-SNAPSHOT</version>
-        </dependency>
-        <!-- Bring in the actions tutorial share AMP so we can run embedded. -->
-        <dependency>
-            <groupId>com.someco</groupId>
-            <artifactId>actions-tutorial-share-jar</artifactId>
-            <version>1.0-SNAPSHOT</version>
-        </dependency>
-    </dependencies>
+```xml
+<dependencies>
+    <dependency>
+        <groupId>com.someco</groupId>
+        <artifactId>workflow-tutorial-share-jar</artifactId>
+        <version>1.0-SNAPSHOT</version>
+    </dependency>
+    <!-- Bring in the content tutorial share AMP so we can run embedded. -->
+    <dependency>
+        <groupId>com.someco</groupId>
+        <artifactId>content-tutorial-share-jar</artifactId>
+        <version>1.0-SNAPSHOT</version>
+    </dependency>
+    <!-- Bring in the behavior tutorial share AMP so we can run embedded. -->
+    <dependency>
+        <groupId>com.someco</groupId>
+        <artifactId>behavior-tutorial-share-jar</artifactId>
+        <version>1.0-SNAPSHOT</version>
+    </dependency>
+    <!-- Bring in the actions tutorial share AMP so we can run embedded. -->
+    <dependency>
+        <groupId>com.someco</groupId>
+        <artifactId>actions-tutorial-share-jar</artifactId>
+        <version>1.0-SNAPSHOT</version>
+    </dependency>
+</dependencies>
+```
 
 Now when we fire up the Docker containers the workflow AMPs will be installed
 as well as the AMPs from the earlier content, behavior, and actions tutorials.
@@ -481,7 +487,9 @@ To add code to the process, re-open the "helloWorld.bpmn" file in the XML editor
 instead of the diagram editor and look for the sequence flow that connects the
 start event to the user task. It should look something like this:
 
-    <sequenceFlow id="flow1" sourceRef="startevent1" targetRef="usertask1"></sequenceFlow>
+```xml
+<sequenceFlow id="flow1" sourceRef="startevent1" targetRef="usertask1"></sequenceFlow>
+```
 
 Note that your `id` attribute value may be different than mine depending on what
 order you created the sequence flow.
@@ -489,15 +497,17 @@ order you created the sequence flow.
 Activiti has all kinds of hook points for custom code. To log a message when
 this sequence flow starts, add an execution listener on the flow, like this:
 
-    <sequenceFlow id="flow1" sourceRef="startevent1" targetRef="usertask1">
-        <extensionElements>
-            <activiti:executionListener event="start" class="org.alfresco.repo.workflow.activiti.listener.ScriptExecutionListener">
-                <activiti:field name="script">
-                    <activiti:string>logger.log("Hello, World!");</activiti:string>
-                </activiti:field>
-            </activiti:executionListener>
-        </extensionElements>
-    </sequenceFlow>
+```xml
+<sequenceFlow id="flow1" sourceRef="startevent1" targetRef="usertask1">
+    <extensionElements>
+        <activiti:executionListener event="start" class="org.alfresco.repo.workflow.activiti.listener.ScriptExecutionListener">
+            <activiti:field name="script">
+                <activiti:string>logger.log("Hello, World!");</activiti:string>
+            </activiti:field>
+        </activiti:executionListener>
+    </extensionElements>
+</sequenceFlow>
+```
 
 Now save the diagram.
 
@@ -544,28 +554,30 @@ leading to the two user tasks. Open helloWorldFork.bpmn in the XML editor and
 add two new `extensionElements` elements, one in each of the `sequenceFlow`
 elements that lead to "usertask1" and "usertask2":
 
-    <sequenceFlow id="flow2" sourceRef="parallelgateway1" targetRef="usertask1">
-        <extensionElements>
-            <activiti:executionListener event="start" class="org.alfresco.repo.workflow.activiti.listener.ScriptExecutionListener">
-                <activiti:field name="script">
-                    <activiti:string>
-                        logger.log("Hello, World, from transition to User Task A!");
-                    </activiti:string>
-                </activiti:field>
-            </activiti:executionListener>
-        </extensionElements>
-    </sequenceFlow>
-    <sequenceFlow id="flow3" sourceRef="parallelgateway1" targetRef="usertask2">
-        <extensionElements>
-            <activiti:executionListener event="start" class="org.alfresco.repo.workflow.activiti.listener.ScriptExecutionListener">
-                <activiti:field name="script">
-                    <activiti:string>
-                        logger.log("Hello, World, from transition to User Task B!");
-                    </activiti:string>
-                </activiti:field>
-            </activiti:executionListener>
-        </extensionElements>
-    </sequenceFlow>
+```xml
+<sequenceFlow id="flow2" sourceRef="parallelgateway1" targetRef="usertask1">
+    <extensionElements>
+        <activiti:executionListener event="start" class="org.alfresco.repo.workflow.activiti.listener.ScriptExecutionListener">
+            <activiti:field name="script">
+                <activiti:string>
+                    logger.log("Hello, World, from transition to User Task A!");
+                </activiti:string>
+            </activiti:field>
+        </activiti:executionListener>
+    </extensionElements>
+</sequenceFlow>
+<sequenceFlow id="flow3" sourceRef="parallelgateway1" targetRef="usertask2">
+    <extensionElements>
+        <activiti:executionListener event="start" class="org.alfresco.repo.workflow.activiti.listener.ScriptExecutionListener">
+            <activiti:field name="script">
+                <activiti:string>
+                    logger.log("Hello, World, from transition to User Task B!");
+                </activiti:string>
+            </activiti:field>
+        </activiti:executionListener>
+    </extensionElements>
+</sequenceFlow>
+```
 
 Remember to save the diagram.
 
@@ -594,24 +606,26 @@ Maven SDK already has a Spring context file. It is named "[bootstrap-context.xml
 Edit that file and delete any existing bean elements that the SDK might have
 added for you. Then, add a workflow deployer bean, like this:
 
-    <bean id="${project.artifactId}.workflowBootstrap" parent="workflowDeployer">
-        <property name="workflowDefinitions">
-            <list>
-                <props>
-                    <prop key="engineId">activiti</prop>
-                    <prop key="location">alfresco/module/${project.artifactId}/workflow/helloWorld.bpmn</prop>
-                    <prop key="mimetype">text/xml</prop>
-                    <prop key="redeploy">false</prop>
-                </props>
-                <props>
-                    <prop key="engineId">activiti</prop>
-                    <prop key="location">alfresco/module/${project.artifactId}/workflow/helloWorldFork.bpmn</prop>
-                    <prop key="mimetype">text/xml</prop>
-                    <prop key="redeploy">false</prop>
-                </props>
-            </list>
-        </property>
-    </bean>
+```xml
+<bean id="${project.artifactId}.workflowBootstrap" parent="workflowDeployer">
+    <property name="workflowDefinitions">
+        <list>
+            <props>
+                <prop key="engineId">activiti</prop>
+                <prop key="location">alfresco/module/${project.artifactId}/workflow/helloWorld.bpmn</prop>
+                <prop key="mimetype">text/xml</prop>
+                <prop key="redeploy">false</prop>
+            </props>
+            <props>
+                <prop key="engineId">activiti</prop>
+                <prop key="location">alfresco/module/${project.artifactId}/workflow/helloWorldFork.bpmn</prop>
+                <prop key="mimetype">text/xml</prop>
+                <prop key="redeploy">false</prop>
+            </props>
+        </list>
+    </property>
+</bean>
+```
 
 Setting "redeploy" to false prevents the workflows from being redeployed every
 time Alfresco restarts.
@@ -845,15 +859,17 @@ Open helloWorldUI.bpmn in the XML editor.
 Find the `sequenceFlow` element that goes from the start event to the user task
 and add the following `extensionElements` element:
 
-    <sequenceFlow id="flow1" sourceRef="startevent1" targetRef="alfrescoUsertask1">
-        <extensionElements>
-            <activiti:executionListener event="start" class="org.alfresco.repo.workflow.activiti.listener.ScriptExecutionListener">
-                <activiti:field name="script">
-                    <activiti:string>logger.log("Hello, " + scwf_helloName + "!");</activiti:string>
-                </activiti:field>
-            </activiti:executionListener>
-        </extensionElements>
-    </sequenceFlow>
+```xml
+<sequenceFlow id="flow1" sourceRef="startevent1" targetRef="alfrescoUsertask1">
+    <extensionElements>
+        <activiti:executionListener event="start" class="org.alfresco.repo.workflow.activiti.listener.ScriptExecutionListener">
+            <activiti:field name="script">
+                <activiti:string>logger.log("Hello, " + scwf_helloName + "!");</activiti:string>
+            </activiti:field>
+        </activiti:executionListener>
+    </extensionElements>
+</sequenceFlow>
+```
 
 The `scwf_helloName` variable maps to a property defined in the
 `scwf:submitHelloWorldTask` type. You'll define that later.
@@ -862,27 +878,31 @@ The review task lets the user select "approve" or "reject". The execution of the
 workflow needs the value of that selection. Add the logic needed to make that
 happen:
 
-    <userTask id="alfrescoUsertask1" name="Alfresco User Task" activiti:assignee="${initiator.properties.userName}" activiti:formKey="wf:activitiReviewTask">
-        <extensionElements>
-            <activiti:taskListener event="complete" class="org.alfresco.repo.workflow.activiti.tasklistener.ScriptTaskListener">
-                <activiti:field name="script">
-                    <activiti:string>execution.setVariable('wf_reviewOutcome', task.getVariable('wf_reviewOutcome'));</activiti:string>
-                </activiti:field>
-            </activiti:taskListener>
-        </extensionElements>
-    </userTask>
+```xml
+<userTask id="alfrescoUsertask1" name="Alfresco User Task" activiti:assignee="${initiator.properties.userName}" activiti:formKey="wf:activitiReviewTask">
+    <extensionElements>
+        <activiti:taskListener event="complete" class="org.alfresco.repo.workflow.activiti.tasklistener.ScriptTaskListener">
+            <activiti:field name="script">
+                <activiti:string>execution.setVariable('wf_reviewOutcome', task.getVariable('wf_reviewOutcome'));</activiti:string>
+            </activiti:field>
+        </activiti:taskListener>
+    </extensionElements>
+</userTask>
+```
 
 And, finally, just to show that a value can be set in one task and read in
 another, let's log the value of the approve/reject selection from within the
 Alfresco Script service task:
 
-    <serviceTask id="alfrescoScripttask1" name="Alfresco Script Task" activiti:class="org.alfresco.repo.workflow.activiti.script.AlfrescoScriptDelegate">
-        <extensionElements>
-            <activiti:field name="script">
-                <activiti:string>logger.log("The outcome of the review task is: " + wf_reviewOutcome);</activiti:string>
-            </activiti:field>
-        </extensionElements>
-    </serviceTask>
+```xml
+<serviceTask id="alfrescoScripttask1" name="Alfresco Script Task" activiti:class="org.alfresco.repo.workflow.activiti.script.AlfrescoScriptDelegate">
+    <extensionElements>
+        <activiti:field name="script">
+            <activiti:string>logger.log("The outcome of the review task is: " + wf_reviewOutcome);</activiti:string>
+        </activiti:field>
+    </extensionElements>
+</serviceTask>
+```
 
 Now the process is ready to go. The next step is to get the workflow content
 model squared away.
@@ -944,7 +964,9 @@ given a form key that corresponds to the name of a workflow content type.**
 
 In the helloWorldUI example, you defined the following start event:
 
-    <startEvent id="startevent1" name="Start" activiti:formKey="scwf:submitHelloWorldTask"></startEvent>
+```xml
+<startEvent id="startevent1" name="Start" activiti:formKey="scwf:submitHelloWorldTask"></startEvent>
+```
 
 Now you need to create a content model with a custom type that corresponds to
 the form key value. From previous tutorials you know that models are defined in
@@ -959,44 +981,46 @@ be needed.
 In the model folder, create a new content model XML file called "[scWorkflowModel.xml](https://github.com/jpotts/alfresco-developer-series/blob/master/workflow/workflow-tutorial/workflow-tutorial-platform-jar/src/main/resources/alfresco/module/workflow-tutorial-platform-jar/model/scWorkflowModel.xml)"
 with the following content:
 
-    <?xml version="1.0" encoding="UTF-8"?>
-    <!-- Definition of new Model -->
-    <model name="scwf:workflowmodel"
-        xmlns="http://www.alfresco.org/model/dictionary/1.0">
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Definition of new Model -->
+<model name="scwf:workflowmodel"
+    xmlns="http://www.alfresco.org/model/dictionary/1.0">
 
-        <!-- Optional meta-data about the model -->
-        <description>Someco Workflow Model</description>
-        <author>Jeff Potts</author>
-        <version>1.0</version>
+    <!-- Optional meta-data about the model -->
+    <description>Someco Workflow Model</description>
+    <author>Jeff Potts</author>
+    <version>1.0</version>
 
-        <!-- Imports are required to allow references to definitions in other models -->
-        <imports>
-            <import uri="http://www.alfresco.org/model/dictionary/1.0"
-                prefix="d" />
-            <import uri="http://www.alfresco.org/model/bpm/1.0"
-                prefix="bpm" />
-        </imports>
+    <!-- Imports are required to allow references to definitions in other models -->
+    <imports>
+        <import uri="http://www.alfresco.org/model/dictionary/1.0"
+            prefix="d" />
+        <import uri="http://www.alfresco.org/model/bpm/1.0"
+            prefix="bpm" />
+    </imports>
 
-        <!-- Introduction of new namespaces defined by this model -->
-        <namespaces>
-            <namespace uri="http://www.someco.com/model/workflow/1.0"
-                prefix="scwf" />
-        </namespaces>
+    <!-- Introduction of new namespaces defined by this model -->
+    <namespaces>
+        <namespace uri="http://www.someco.com/model/workflow/1.0"
+            prefix="scwf" />
+    </namespaces>
 
-        <types>
-            <type name="scwf:submitHelloWorldTask">
-                <parent>bpm:startTask</parent>
-                <properties>
-                    <property name="scwf:helloName">
-                        <type>d:text</type>
-                        <mandatory>true</mandatory>
-                        <multiple>false</multiple>
-                    </property>
-                </properties>
-            </type>
-        </types>
+    <types>
+        <type name="scwf:submitHelloWorldTask">
+            <parent>bpm:startTask</parent>
+            <properties>
+                <property name="scwf:helloName">
+                    <type>d:text</type>
+                    <mandatory>true</mandatory>
+                    <multiple>false</multiple>
+                </property>
+            </properties>
+        </type>
+    </types>
 
-    </model>
+</model>
+```
 
 The `scwf:submitHelloWorldTask` type is a child of `bpm:startTask` and declares
 a property called `scwf:helloName`. That's a text property that will be
@@ -1028,35 +1052,37 @@ share-config-custom.xml file.
 In the META-INF directory, edit the file called "[share-config-custom.xml](https://github.com/jpotts/alfresco-developer-series/blob/master/workflow/workflow-tutorial/workflow-tutorial-share-jar/src/main/resources/META-INF/share-config-custom.xml)"
 . Replace the sample content with the following content:
 
-    <alfresco-config>
-        <config evaluator="string-compare" condition="activiti$helloWorldUI">
-          <forms>
-             <form>
-                <field-visibility>
-                   <show id="bpm:workflowDescription" />
-                   <show id="packageItems" />
-                   <show id="scwf:helloName" />
-                   <show id="transitions" />
-                   <show id="bpm:status" />
-                </field-visibility>
-                <appearance>
-                   <set id="" appearance="title" label-id="workflow.set.general" />
-                   <set id="items" appearance="title" label-id="workflow.set.items" />
-     			   <set id="progress" appearance="title" label-id="workflow.set.task.progress" />
-                   <set id="other" appearance="title" label-id="workflow.set.other" />
-                   <field id="bpm:workflowDescription" label-id="workflow.field.message">
-                      <control template="/org/alfresco/components/form/controls/textarea.ftl">
-                         <control-param name="style">width: 95%</control-param>
-                      </control>
-                   </field>
-                   <field id="packageItems" set="items" />
-                   <field id="scwf:helloName" set="other" />
-                   <field id="bpm:status" set="progress" />
-                </appearance>
-             </form>
-          </forms>
-        </config>
-    </alfresco-config>
+```xml
+<alfresco-config>
+    <config evaluator="string-compare" condition="activiti$helloWorldUI">
+      <forms>
+         <form>
+            <field-visibility>
+               <show id="bpm:workflowDescription" />
+               <show id="packageItems" />
+               <show id="scwf:helloName" />
+               <show id="transitions" />
+               <show id="bpm:status" />
+            </field-visibility>
+            <appearance>
+               <set id="" appearance="title" label-id="workflow.set.general" />
+               <set id="items" appearance="title" label-id="workflow.set.items" />
+ 			   <set id="progress" appearance="title" label-id="workflow.set.task.progress" />
+               <set id="other" appearance="title" label-id="workflow.set.other" />
+               <field id="bpm:workflowDescription" label-id="workflow.field.message">
+                  <control template="/org/alfresco/components/form/controls/textarea.ftl">
+                     <control-param name="style">width: 95%</control-param>
+                  </control>
+               </field>
+               <field id="packageItems" set="items" />
+               <field id="scwf:helloName" set="other" />
+               <field id="bpm:status" set="progress" />
+            </appearance>
+         </form>
+      </forms>
+    </config>
+</alfresco-config>
+```
 
 This form tells Alfresco Share that when someone starts a process named
 "activiti$helloWorldUI" it should show the user this form. The form definition
@@ -1082,15 +1108,17 @@ file, which you can delete.
 
 In the messages folder, create a new file called "[scWorkflow.properties](https://github.com/jpotts/alfresco-developer-series/blob/master/workflow/workflow-tutorial/workflow-tutorial-platform-jar/src/main/resources/alfresco/module/workflow-tutorial-platform-jar/messages/scWorkflow.properties)" with the following content:
 
-    # Workflow related strings
-    helloWorldUI.workflow.title=Hello World UI (Activiti)
-    helloWorldUI.workflow.description=A simple hello world process using Activiti
+```
+# Workflow related strings
+helloWorldUI.workflow.title=Hello World UI (Activiti)
+helloWorldUI.workflow.description=A simple hello world process using Activiti
 
-    # Workflow Model related strings
-    scwf_workflowmodel.type.scwf_submitHelloWorldTask.title=Start Hello World UI Workflow
-    scwf_workflowmodel.type.scwf_submitHelloWorldTask.description=Submit a workflow that says hello in the log
-    scwf_workflowmodel.property.scwf_helloName.title=Name
-    scwf_workflowmodel.property.scwf_helloName.description=Say hello to this person
+# Workflow Model related strings
+scwf_workflowmodel.type.scwf_submitHelloWorldTask.title=Start Hello World UI Workflow
+scwf_workflowmodel.type.scwf_submitHelloWorldTask.description=Submit a workflow that says hello in the log
+scwf_workflowmodel.property.scwf_helloName.title=Name
+scwf_workflowmodel.property.scwf_helloName.description=Say hello to this person
+```
 
 I tend to think of these properties as belonging to two groups. One group is the
 set of model-related properties. These properties externalize the strings in the
@@ -1107,11 +1135,13 @@ which you can delete.
 
 In the messages folder, create a new file called "[scWorkflow.properties](https://github.com/jpotts/alfresco-developer-series/blob/master/workflow/workflow-tutorial/workflow-tutorial-share-jar/src/main/resources/alfresco/web-extension/messages/scWorkflow.properties)" with the following content:
 
-    #scwf:helloName
-    prop.scwf_helloName=Name
+```
+#scwf:helloName
+prop.scwf_helloName=Name
 
-    #workflow properties
-    workflow.scwf_helloWorldUI=Hello World UI
+#workflow properties
+workflow.scwf_helloWorldUI=Hello World UI
+```
 
 Both of these properties files have to be registered through Spring. You'll see
 that next.
@@ -1138,25 +1168,27 @@ You can add the workflow model, the new workflow, and the labels all in the same
 bean. Edit the bootstrap-context.xml file and append the following to the
 existing `bean` element:
 
-                <props>
-                    <prop key="engineId">activiti</prop>
-                    <prop key="location">alfresco/module/${project.artifactId}/workflow/helloWorldUI.bpmn</prop>
-                    <prop key="mimetype">text/xml</prop>
-                    <prop key="redeploy">false</prop>
-                </props>
-            </list>
-        </property>
-        <property name="models">
-            <list>
-                <value>alfresco/module/${project.artifactId}/model/scWorkflowModel.xml</value>
-            </list>
-        </property>
-        <property name="labels">
-            <list>
-                <value>alfresco.module.${project.artifactId}.messages.scWorkflow</value>
-            </list>
-        </property>
-    </bean>
+```xml
+            <props>
+                <prop key="engineId">activiti</prop>
+                <prop key="location">alfresco/module/${project.artifactId}/workflow/helloWorldUI.bpmn</prop>
+                <prop key="mimetype">text/xml</prop>
+                <prop key="redeploy">false</prop>
+            </props>
+        </list>
+    </property>
+    <property name="models">
+        <list>
+            <value>alfresco/module/${project.artifactId}/model/scWorkflowModel.xml</value>
+        </list>
+    </property>
+    <property name="labels">
+        <list>
+            <value>alfresco.module.${project.artifactId}.messages.scWorkflow</value>
+        </list>
+    </property>
+</bean>
+```
 
 Save and close the file.
 
@@ -1169,18 +1201,20 @@ The Spring configuration for the workflow-tutorial-share-jar module resides in:
 In the web-extension directory, the SDK has created file called "[workflow-tutorial-share-slingshot-application-context.xml](https://github.com/jpotts/alfresco-developer-series/blob/master/workflow/workflow-tutorial/workflow-tutorial-share-jar/src/main/resources/alfresco/web-extension/workflow-tutorial-share-slingshot-application-context.xml)"
 . Replace the content of that file with the following content:
 
-    <?xml version='1.0' encoding='UTF-8'?>
-    <!DOCTYPE beans PUBLIC '-//SPRING//DTD BEAN//EN' 'http://www.springframework.org/dtd/spring-beans.dtd'>
-    <beans>
-        <!-- Add Someco Workflow messages -->
-        <bean id="${project.artifactId}_resources" class="org.springframework.extensions.surf.util.ResourceBundleBootstrapComponent">
-            <property name="resourceBundles">
-                <list>
-                    <value>alfresco.web-extension.messages.scWorkflow</value>
-                </list>
-            </property>
-        </bean>
-    </beans>
+```xml
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE beans PUBLIC '-//SPRING//DTD BEAN//EN' 'http://www.springframework.org/dtd/spring-beans.dtd'>
+<beans>
+    <!-- Add Someco Workflow messages -->
+    <bean id="${project.artifactId}_resources" class="org.springframework.extensions.surf.util.ResourceBundleBootstrapComponent">
+        <property name="resourceBundles">
+            <list>
+                <value>alfresco.web-extension.messages.scWorkflow</value>
+            </list>
+        </property>
+    </bean>
+</beans>
+```
 
 Save and close the file.
 
@@ -1401,14 +1435,16 @@ These are pretty easy decisions to make based on process variables.
 In the business process XML, find the `serviceTask` element named "Submit" and
 add the following script:
 
-    <serviceTask id="scripttask1" name="Submit" activiti:class="org.alfresco.repo.workflow.activiti.script.AlfrescoScriptDelegate">
-      <extensionElements>
-        <activiti:field name="script">
-          <activiti:string><![CDATA[execution.setVariable('scwf_approveCount', 0);
-              execution.setVariable('scwf_tpApproved', false);]]></activiti:string>
-        </activiti:field>
-      </extensionElements>
-    </serviceTask>
+```xml
+<serviceTask id="scripttask1" name="Submit" activiti:class="org.alfresco.repo.workflow.activiti.script.AlfrescoScriptDelegate">
+  <extensionElements>
+    <activiti:field name="script">
+      <activiti:string><![CDATA[execution.setVariable('scwf_approveCount', 0);
+          execution.setVariable('scwf_tpApproved', false);]]></activiti:string>
+    </activiti:field>
+  </extensionElements>
+</serviceTask>
+```
 
 This initializes two variables that will be used as part of the approval check.
 The `scwf_approveCount` variable will get incremented when the process follows
@@ -1427,20 +1463,22 @@ Now add code to increment the counter when the execution follows the approve
 sequence flow. Find the `userTask` named "Operations Review" and add this
 extension element:
 
-    <userTask id="usertask1" name="Operations Review" activiti:candidateGroups="GROUP_Operations" activiti:formKey="scwf:activitiOperationsReview">
-        <extensionElements>
-            <activiti:taskListener event="complete" class="org.alfresco.repo.workflow.activiti.tasklistener.ScriptTaskListener">
-                <activiti:field name="script">
-                    <activiti:string>
-                        if(task.getVariableLocal('scwf_approveRejectOutcome') == 'Approve') {
-                            var newApprovedCount = scwf_approveCount + 1;
-                            execution.setVariable('scwf_approveCount', newApprovedCount);
-                        }
-                    </activiti:string>
-                </activiti:field>
-            </activiti:taskListener>
-        </extensionElements>
-    </userTask>
+```xml
+<userTask id="usertask1" name="Operations Review" activiti:candidateGroups="GROUP_Operations" activiti:formKey="scwf:activitiOperationsReview">
+    <extensionElements>
+        <activiti:taskListener event="complete" class="org.alfresco.repo.workflow.activiti.tasklistener.ScriptTaskListener">
+            <activiti:field name="script">
+                <activiti:string>
+                    if(task.getVariableLocal('scwf_approveRejectOutcome') == 'Approve') {
+                        var newApprovedCount = scwf_approveCount + 1;
+                        execution.setVariable('scwf_approveCount', newApprovedCount);
+                    }
+                </activiti:string>
+            </activiti:field>
+        </activiti:taskListener>
+    </extensionElements>
+</userTask>
+```
 
 The JavaScript inspects the value of `scwf_approveRejectOutcome` which will be
 set by the user when they manage the task in Alfresco Share. If it is equal to
@@ -1456,79 +1494,91 @@ To implement this, find the `sequenceFlow` elements that connect that exclusive
 gateway and add a `conditionExpression` element to each one that inspects the
 `scwf_approveCount` variable, like this:
 
-    <sequenceFlow id="flow8" sourceRef="exclusivegateway1" targetRef="exclusivegateway2">
-        <conditionExpression xsi:type="tFormalExpression"><![CDATA[${scwf_approveCount == 2}]]></conditionExpression>
-    </sequenceFlow>
-    <sequenceFlow id="flow9" sourceRef="exclusivegateway1" targetRef="usertask3">
-        <conditionExpression xsi:type="tFormalExpression"><![CDATA[${scwf_approveCount < 2}]]></conditionExpression>
-    </sequenceFlow>
+```xml
+<sequenceFlow id="flow8" sourceRef="exclusivegateway1" targetRef="exclusivegateway2">
+    <conditionExpression xsi:type="tFormalExpression"><![CDATA[${scwf_approveCount == 2}]]></conditionExpression>
+</sequenceFlow>
+<sequenceFlow id="flow9" sourceRef="exclusivegateway1" targetRef="usertask3">
+    <conditionExpression xsi:type="tFormalExpression"><![CDATA[${scwf_approveCount < 2}]]></conditionExpression>
+</sequenceFlow>
+```
 
 The "Third Party" decision is similar. In this case, if the person who started
 the workflow provided an email address for the third-party reviewer, the
 workflow should route to the "Third Party Review", otherwise, it should continue
 on. Here is what those conditions look like:
 
-    <sequenceFlow id="flow11" sourceRef="exclusivegateway2" targetRef="usertask2">
-        <conditionExpression xsi:type="tFormalExpression"><![CDATA[${scwf_reviewerEmail != ''}]]></conditionExpression>
-    </sequenceFlow>
-    <sequenceFlow id="flow14" sourceRef="exclusivegateway2" targetRef="usertask5">
-        <conditionExpression xsi:type="tFormalExpression"><![CDATA[${scwf_reviewerEmail == ''}]]></conditionExpression>
-    </sequenceFlow>
+```xml
+<sequenceFlow id="flow11" sourceRef="exclusivegateway2" targetRef="usertask2">
+    <conditionExpression xsi:type="tFormalExpression"><![CDATA[${scwf_reviewerEmail != ''}]]></conditionExpression>
+</sequenceFlow>
+<sequenceFlow id="flow14" sourceRef="exclusivegateway2" targetRef="usertask5">
+    <conditionExpression xsi:type="tFormalExpression"><![CDATA[${scwf_reviewerEmail == ''}]]></conditionExpression>
+</sequenceFlow>
+```
 
 There are two more places condition expressions are needed. One is on the two
 flows that leave Third Party Review. If the third-party approves their review,
 flow should go to the "Approved Notification", otherwise, it should go to
 "Revise":
 
-    <sequenceFlow id="flow12" sourceRef="usertask2" targetRef="usertask3">
-        <conditionExpression xsi:type="tFormalExpression"><![CDATA[${scwf_tpApproved == false}]]></conditionExpression>
-    </sequenceFlow>
-    <sequenceFlow id="flow17" sourceRef="usertask2" targetRef="usertask5">
-        <conditionExpression xsi:type="tFormalExpression"><![CDATA[${scwf_tpApproved == true}]]></conditionExpression>
-    </sequenceFlow>
+```xml
+<sequenceFlow id="flow12" sourceRef="usertask2" targetRef="usertask3">
+    <conditionExpression xsi:type="tFormalExpression"><![CDATA[${scwf_tpApproved == false}]]></conditionExpression>
+</sequenceFlow>
+<sequenceFlow id="flow17" sourceRef="usertask2" targetRef="usertask5">
+    <conditionExpression xsi:type="tFormalExpression"><![CDATA[${scwf_tpApproved == true}]]></conditionExpression>
+</sequenceFlow>
+```
 
 The other place for condition expressions is on the "Revise" user task. The flow
 should go to the "Submit" script task if the initiator re-submits and the "End"
 task if they decide to withdraw or abort their request:
 
-    <sequenceFlow id="flow16" sourceRef="usertask3" targetRef="endevent1">
-        <conditionExpression xsi:type="tFormalExpression"><![CDATA[${scwf_resubmit == false}]]></conditionExpression>
-    </sequenceFlow>
-    <sequenceFlow id="flow13" sourceRef="usertask3" targetRef="scripttask1">
-        <conditionExpression xsi:type="tFormalExpression"><![CDATA[${scwf_resubmit == true}]]></conditionExpression>
-    </sequenceFlow>
+```xml
+<sequenceFlow id="flow16" sourceRef="usertask3" targetRef="endevent1">
+    <conditionExpression xsi:type="tFormalExpression"><![CDATA[${scwf_resubmit == false}]]></conditionExpression>
+</sequenceFlow>
+<sequenceFlow id="flow13" sourceRef="usertask3" targetRef="scripttask1">
+    <conditionExpression xsi:type="tFormalExpression"><![CDATA[${scwf_resubmit == true}]]></conditionExpression>
+</sequenceFlow>
+```
 
 The "Third Party Review" user task needs some logic to capture the
 approve/reject outcome:
 
-    <extensionElements>
-        <activiti:taskListener event="complete" class="org.alfresco.repo.workflow.activiti.tasklistener.ScriptTaskListener">
-            <activiti:field name="script">
-                <activiti:string>if(task.getVariableLocal('scwf_approveRejectOutcome') == 'Approve') {
-                    execution.setVariable('scwf_tpApproved', true);
-                    } else {
-                    execution.setVariable('scwf_tpApproved', false);
-                    }
-                </activiti:string>
-            </activiti:field>
-        </activiti:taskListener>
-    </extensionElements>
+```xml
+<extensionElements>
+    <activiti:taskListener event="complete" class="org.alfresco.repo.workflow.activiti.tasklistener.ScriptTaskListener">
+        <activiti:field name="script">
+            <activiti:string>if(task.getVariableLocal('scwf_approveRejectOutcome') == 'Approve') {
+                execution.setVariable('scwf_tpApproved', true);
+                } else {
+                execution.setVariable('scwf_tpApproved', false);
+                }
+            </activiti:string>
+        </activiti:field>
+    </activiti:taskListener>
+</extensionElements>
+```
 
 Similarly, the Revise user task also needs to set a variable with the
 Abort/Re-Submit outcome:
 
-    <extensionElements>
-	<activiti:taskListener event="complete" class="org.alfresco.repo.workflow.activiti.tasklistener.ScriptTaskListener">
-            <activiti:field name="script">
-                <activiti:string>if(task.getVariableLocal('scwf_reviseOutcome') == 'Re-submit') {
-                    execution.setVariable('scwf_resubmit', true);
-                    } else {
-                    execution.setVariable('scwf_resubmit', false);
-                    }
-                </activiti:string>
-            </activiti:field>
-        </activiti:taskListener>
-    </extensionElements>
+```xml
+<extensionElements>
+  <activiti:taskListener event="complete" class="org.alfresco.repo.workflow.activiti.tasklistener.ScriptTaskListener">
+        <activiti:field name="script">
+            <activiti:string>if(task.getVariableLocal('scwf_reviseOutcome') == 'Re-submit') {
+                execution.setVariable('scwf_resubmit', true);
+                } else {
+                execution.setVariable('scwf_resubmit', false);
+                }
+            </activiti:string>
+        </activiti:field>
+  </activiti:taskListener>
+</extensionElements>
+```
 
 You may be thinking that my sequence flow ID's aren't very helpful. I agree.
 Unfortunately, when I went back in to the process definition to refactor those,
@@ -1551,83 +1601,85 @@ with types and aspects specific to the publish whitepaper process.
 
 Edit the file and add:
 
-    <type name="scwf:submitReviewTask">
-        <parent>bpm:startTask</parent>
-        <mandatory-aspects>
-            <aspect>scwf:thirdPartyReviewable</aspect>
-        </mandatory-aspects>
-    </type>
-    <type name="scwf:activitiMarketingReview">
-        <parent>scwf:activitiReviewTask</parent>
-    </type>
-    <type name="scwf:activitiOperationsReview">
-        <parent>scwf:activitiReviewTask</parent>
-    </type>
-    <type name="scwf:activitiThirdPartyReview">
-        <parent>scwf:activitiReviewTask</parent>
-    </type>
-    <type name="scwf:activitiRevise">
-        <parent>bpm:activitiOutcomeTask</parent>
-        <properties>
-            <property name="scwf:reviseOutcome">
-                <type>d:text</type>
-                <default>Abort</default>
-                <constraints>
-                    <constraint type="LIST">
-                        <parameter name="allowedValues">
-                            <list>
-                                <value>Re-submit</value>
-                                <value>Abort</value>
-                            </list>
-                        </parameter>
-                    </constraint>
-                </constraints>
-            </property>
-        </properties>
-        <overrides>
-            <property name="bpm:packageItemActionGroup">
-            <default>edit_package_item_actions</default>
-            </property>
-            <property name="bpm:outcomePropertyName">
-            <default>{http://www.someco.com/model/workflow/1.0}reviseOutcome</default>
-            </property>
-        </overrides>
-    </type>
-    <type name="scwf:activitiReviewTask">
-        <parent>bpm:activitiOutcomeTask</parent>
-        <properties>
-            <property name="scwf:approveRejectOutcome">
-                <type>d:text</type>
-                <default>Reject</default>
-                <constraints>
-                    <constraint type="LIST">
-                        <parameter name="allowedValues">
-                            <list>
-                                <value>Approve</value>
-                                <value>Reject</value>
-                            </list>
-                        </parameter>
-                    </constraint>
-                </constraints>
-            </property>
-        </properties>
-        <overrides>
-            <property name="bpm:packageItemActionGroup">
-                <default>read_package_item_actions</default>
-            </property>
-            <property name="bpm:outcomePropertyName">
-                <default>{http://www.someco.com/model/workflow/1.0}approveRejectOutcome</default>
-            </property>
-        </overrides>
-    </type>
-    <type name="scwf:activitiApprovedNotification">
-        <parent>bpm:workflowTask</parent>
-        <overrides>
-            <property name="bpm:packageItemActionGroup">
-                <default>read_package_item_actions</default>
-            </property>
-        </overrides>
-    </type>
+```xml
+<type name="scwf:submitReviewTask">
+    <parent>bpm:startTask</parent>
+    <mandatory-aspects>
+        <aspect>scwf:thirdPartyReviewable</aspect>
+    </mandatory-aspects>
+</type>
+<type name="scwf:activitiMarketingReview">
+    <parent>scwf:activitiReviewTask</parent>
+</type>
+<type name="scwf:activitiOperationsReview">
+    <parent>scwf:activitiReviewTask</parent>
+</type>
+<type name="scwf:activitiThirdPartyReview">
+    <parent>scwf:activitiReviewTask</parent>
+</type>
+<type name="scwf:activitiRevise">
+    <parent>bpm:activitiOutcomeTask</parent>
+    <properties>
+        <property name="scwf:reviseOutcome">
+            <type>d:text</type>
+            <default>Abort</default>
+            <constraints>
+                <constraint type="LIST">
+                    <parameter name="allowedValues">
+                        <list>
+                            <value>Re-submit</value>
+                            <value>Abort</value>
+                        </list>
+                    </parameter>
+                </constraint>
+            </constraints>
+        </property>
+    </properties>
+    <overrides>
+        <property name="bpm:packageItemActionGroup">
+        <default>edit_package_item_actions</default>
+        </property>
+        <property name="bpm:outcomePropertyName">
+        <default>{http://www.someco.com/model/workflow/1.0}reviseOutcome</default>
+        </property>
+    </overrides>
+</type>
+<type name="scwf:activitiReviewTask">
+    <parent>bpm:activitiOutcomeTask</parent>
+    <properties>
+        <property name="scwf:approveRejectOutcome">
+            <type>d:text</type>
+            <default>Reject</default>
+            <constraints>
+                <constraint type="LIST">
+                    <parameter name="allowedValues">
+                        <list>
+                            <value>Approve</value>
+                            <value>Reject</value>
+                        </list>
+                    </parameter>
+                </constraint>
+            </constraints>
+        </property>
+    </properties>
+    <overrides>
+        <property name="bpm:packageItemActionGroup">
+            <default>read_package_item_actions</default>
+        </property>
+        <property name="bpm:outcomePropertyName">
+            <default>{http://www.someco.com/model/workflow/1.0}approveRejectOutcome</default>
+        </property>
+    </overrides>
+</type>
+<type name="scwf:activitiApprovedNotification">
+    <parent>bpm:workflowTask</parent>
+    <overrides>
+        <property name="bpm:packageItemActionGroup">
+            <default>read_package_item_actions</default>
+        </property>
+    </overrides>
+</type>
+```
 
 There's one type for each task. The name of each type matches the form key of
 the user tasks in the publishWhitepaper.bpmn file.
@@ -1653,18 +1705,20 @@ workflow.
 The start task has a mandatory aspect called "scwf:thirdPartyReviewable". After
 the closing `types` element, add the following:
 
-    <aspects>
-        <aspect name="scwf:thirdPartyReviewable">
-            <title>Someco Third Party Reviewable</title>
-            <properties>
-                <property name="scwf:reviewerEmail">
-                    <type>d:text</type>
-                    <mandatory>false</mandatory>
-                    <multiple>false</multiple>
-                </property>
-            </properties>
-        </aspect>
-    </aspects>
+```xml
+<aspects>
+    <aspect name="scwf:thirdPartyReviewable">
+        <title>Someco Third Party Reviewable</title>
+        <properties>
+            <property name="scwf:reviewerEmail">
+                <type>d:text</type>
+                <mandatory>false</mandatory>
+                <multiple>false</multiple>
+            </property>
+        </properties>
+    </aspect>
+</aspects>
+```
 
 This defines an aspect used to define a property that will store the third-party
 reviewer's email address.
@@ -1679,33 +1733,35 @@ Because it is mostly repetitive, I'll just show the configuration for
 `scwf:activitiReviewTask` here and if you want to see the rest of the Share
 configuration, you can look at the source that accompanies this tutorial.
 
-    <config evaluator="task-type" condition="scwf:activitiReviewTask">
-        <forms>
-            <form>
-                <field-visibility>
-                    <show id="bpm:workflowDescription" />
-                    <show id="packageItems" />
-                    <show id="scwf:approveRejectOutcome" />
-                    <show id="transitions" />
-                </field-visibility>
-                <appearance>
-                    <set id="" appearance="title" label-id="workflow.set.general" />
-                    <set id="info" appearance="" template="/org/alfresco/components/form/2-column-set.ftl" />
-                    <set id="assignee" appearance="title" label-id="workflow.set.assignee" />
-                    <set id="items" appearance="title" label-id="workflow.set.items" />
-                    <set id="response" appearance="title" label-id="workflow.set.response" />
-                    <field id="bpm:workflowDescription" label-id="workflow.field.message">
-                        <control template="/org/alfresco/components/form/controls/textarea.ftl">
-                            <control-param name="style">width: 95%</control-param>
-                        </control>
-                    </field>
-                    <field id="packageItems" set="items" />
-                    <field id="scwf:approveRejectOutcome" set="response" />
-                    <field id="transitions" set="response" />
-                </appearance>
-            </form>
-        </forms>
-    </config>
+```xml
+<config evaluator="task-type" condition="scwf:activitiReviewTask">
+    <forms>
+        <form>
+            <field-visibility>
+                <show id="bpm:workflowDescription" />
+                <show id="packageItems" />
+                <show id="scwf:approveRejectOutcome" />
+                <show id="transitions" />
+            </field-visibility>
+            <appearance>
+                <set id="" appearance="title" label-id="workflow.set.general" />
+                <set id="info" appearance="" template="/org/alfresco/components/form/2-column-set.ftl" />
+                <set id="assignee" appearance="title" label-id="workflow.set.assignee" />
+                <set id="items" appearance="title" label-id="workflow.set.items" />
+                <set id="response" appearance="title" label-id="workflow.set.response" />
+                <field id="bpm:workflowDescription" label-id="workflow.field.message">
+                    <control template="/org/alfresco/components/form/controls/textarea.ftl">
+                        <control-param name="style">width: 95%</control-param>
+                    </control>
+                </field>
+                <field id="packageItems" set="items" />
+                <field id="scwf:approveRejectOutcome" set="response" />
+                <field id="transitions" set="response" />
+            </appearance>
+        </form>
+    </forms>
+</config>
+```
 
 Something that isn't immediately obvious without looking closely at the
 accompanying Share form configuration is that there are multiple workflow form
@@ -1733,8 +1789,10 @@ The one in the workflow-tutorial-platform-jar module resides in:
 
 Add the following to [scWorkflow.properties](https://github.com/jpotts/alfresco-developer-series/blob/master/workflow/workflow-tutorial/workflow-tutorial-platform-jar/src/main/resources/alfresco/module/workflow-tutorial-platform-jar/messages/scWorkflow.properties):
 
-    publishWhitepaper.workflow.title=Publish Whitepaper to Web (Activiti)
-    publishWhitepaper.workflow.description=Review and approve Someco Whitepaper content using Activiti
+```
+publishWhitepaper.workflow.title=Publish Whitepaper to Web (Activiti)
+publishWhitepaper.workflow.description=Review and approve Someco Whitepaper content using Activiti
+```
 
 Note that the first part of the property key matches the name you gave the
 process definition. The values for the workflow.title and workflow.description
@@ -1744,33 +1802,34 @@ Alfresco Share.
 Also add this set of properties, which are for the types and properties defined
 in the workflow model:
 
-    scwf_workflowmodel.type.scwf_submitReviewTask.title=Start Someco Web Review
-    scwf_workflowmodel.type.scwf_submitReviewTask.description=Submit Someco Web documents for review & approval to a group of people
+```
+scwf_workflowmodel.type.scwf_submitReviewTask.title=Start Someco Web Review
+scwf_workflowmodel.type.scwf_submitReviewTask.description=Submit Someco Web documents for review & approval to a group of people
 
-    scwf_workflowmodel.type.scwf_activitiMarketingReview.title=Marketing Review
-    scwf_workflowmodel.type.scwf_activitiMarketingReview.description=Review documents for impact on Someco marketing message
+scwf_workflowmodel.type.scwf_activitiMarketingReview.title=Marketing Review
+scwf_workflowmodel.type.scwf_activitiMarketingReview.description=Review documents for impact on Someco marketing message
 
-    scwf_workflowmodel.type.scwf_activitiOperationsReview.title=Operations Review
-    scwf_workflowmodel.type.scwf_activitiOperationsReview.description=Review documents for technical accuracy and best practices
+scwf_workflowmodel.type.scwf_activitiOperationsReview.title=Operations Review
+scwf_workflowmodel.type.scwf_activitiOperationsReview.description=Review documents for technical accuracy and best practices
 
-    scwf_workflowmodel.type.scwf_activitiThirdPartyReview.title=Third Party Review
-    scwf_workflowmodel.type.scwf_activitiThirdPartyReview.description=Obtain third party approval
+scwf_workflowmodel.type.scwf_activitiThirdPartyReview.title=Third Party Review
+scwf_workflowmodel.type.scwf_activitiThirdPartyReview.description=Obtain third party approval
 
-    scwf_workflowmodel.type.scwf_activitiRevise.title=Revise
-    scwf_workflowmodel.type.scwf_activitiRevise.description=Make changes then resubmit or abort
+scwf_workflowmodel.type.scwf_activitiRevise.title=Revise
+scwf_workflowmodel.type.scwf_activitiRevise.description=Make changes then resubmit or abort
 
-    scwf_workflowmodel.type.scwf_activitiReviewTask.title=Review
-    scwf_workflowmodel.type.scwf_activitiReviewTask.description=Approve or reject this change
+scwf_workflowmodel.type.scwf_activitiReviewTask.title=Review
+scwf_workflowmodel.type.scwf_activitiReviewTask.description=Approve or reject this change
 
-    scwf_workflowmodel.property.scwf_reviewerEmail.title=Reviewer email
-    scwf_workflowmodel.property.scwf_reviewerEmail.description=Third-party reviewer email address
+scwf_workflowmodel.property.scwf_reviewerEmail.title=Reviewer email
+scwf_workflowmodel.property.scwf_reviewerEmail.description=Third-party reviewer email address
 
-    scwf_workflowmodel.property.scwf_approveRejectOutcome.title=Outcome
-    scwf_workflowmodel.property.scwf_approveRejectOutcome.description=Reviewer outcome
+scwf_workflowmodel.property.scwf_approveRejectOutcome.title=Outcome
+scwf_workflowmodel.property.scwf_approveRejectOutcome.description=Reviewer outcome
 
-    scwf_workflowmodel.property.scwf_reviseOutcome.title=Outcome
-    scwf_workflowmodel.property.scwf_reviseOutcome.description=Reviewer outcome
-
+scwf_workflowmodel.property.scwf_reviseOutcome.title=Outcome
+scwf_workflowmodel.property.scwf_reviseOutcome.description=Reviewer outcome
+```
 The first part of the key is the name of the workflow model, then whether or not
 this key is for a type or a property, then the name of the type or property.
 These are the strings shown when someone manages a task.
@@ -1781,10 +1840,12 @@ Now edit [scWorkflow.properties](https://github.com/jpotts/alfresco-developer-se
 
 Add these properties to the file:
 
-    workflow.scwf_publishWhitepaper=SC Publish Whitepaper
+```
+workflow.scwf_publishWhitepaper=SC Publish Whitepaper
 
-    #scwf:publishWhitepaper
-    prop.scwf_reviewerEmail=Reviewer Email
+#scwf:publishWhitepaper
+prop.scwf_reviewerEmail=Reviewer Email
+```
 
 Save the file and you are ready to deploy and test what you have so far.
 
@@ -1796,12 +1857,14 @@ You created a new workflow so it needs to be deployed via Spring. Edit the "[boo
 
 Add the new workflow to the list of workflows:
 
-    <props>
-        <prop key="engineId">activiti</prop>
-        <prop key="location">alfresco/module/${project.artifactId}/workflow/publishWhitepaper.bpmn</prop>
-        <prop key="mimetype">text/xml</prop>
-        <prop key="redeploy">false</prop>
-    </props>
+```xml
+<props>
+    <prop key="engineId">activiti</prop>
+    <prop key="location">alfresco/module/${project.artifactId}/workflow/publishWhitepaper.bpmn</prop>
+    <prop key="mimetype">text/xml</prop>
+    <prop key="redeploy">false</prop>
+</props>
+```
 
 At this stage you can continue to test using Alfresco on the SDK-generated
 Docker containers configured by the Alfresco Maven SDK. Here are the steps
@@ -1845,22 +1908,24 @@ whitepaper.
 To do that, edit the business process and search for the `userTask` element
 named "Approved Notification". Add the following extension element:
 
-    <userTask id="usertask4" name="Approved Notification" activiti:assignee="${initiator.properties.userName}" activiti:formKey="scwf:activitiApprovedNotification">
-        <extensionElements>
-            <activiti:taskListener event="create" class="org.alfresco.repo.workflow.activiti.tasklistener.ScriptTaskListener">
-                <activiti:field name="script">
-                    <activiti:string>
-                        var setWebFlagAction = actions.create("set-web-flag");
-                        setWebFlagAction.parameters["active"] = true;
-                        for (var i = 0; i &lt; bpm_package.children.length; i++) {
-                            logger.log("Approving node:" + bpm_package.children[i].nodeRef);
-                            setWebFlagAction.execute(bpm_package.children[i]);
-                        }
-                    </activiti:string>
-                </activiti:field>
-            </activiti:taskListener>
-        </extensionElements>
-    </userTask>
+```xml
+<userTask id="usertask4" name="Approved Notification" activiti:assignee="${initiator.properties.userName}" activiti:formKey="scwf:activitiApprovedNotification">
+    <extensionElements>
+        <activiti:taskListener event="create" class="org.alfresco.repo.workflow.activiti.tasklistener.ScriptTaskListener">
+            <activiti:field name="script">
+                <activiti:string>
+                    var setWebFlagAction = actions.create("set-web-flag");
+                    setWebFlagAction.parameters["active"] = true;
+                    for (var i = 0; i &lt; bpm_package.children.length; i++) {
+                        logger.log("Approving node:" + bpm_package.children[i].nodeRef);
+                        setWebFlagAction.execute(bpm_package.children[i]);
+                    }
+                </activiti:string>
+            </activiti:field>
+        </activiti:taskListener>
+    </extensionElements>
+</userTask>
+```
 
 This is a straightforward piece of Alfresco JavaScript that executes the custom
 action called "set-web-flag" for every piece of content in the workflow package.
@@ -1904,36 +1969,38 @@ First, create a package folder structure called "com/someco/scripts".
 Now create a new class called "[GetReview](https://github.com/jpotts/alfresco-developer-series/blob/master/workflow/workflow-tutorial/workflow-tutorial-platform-jar/src/main/java/com/someco/scripts/GetReview.java)"
 . Here's the class, without the imports or the getter/setter methods:
 
-    public class GetReview extends DeclarativeWebScript {
+```java
+public class GetReview extends DeclarativeWebScript {
 
-        Log logger = LogFactory.getLog(GetReview.class);
+    Log logger = LogFactory.getLog(GetReview.class);
 
-        // Dependencies
-        private WorkflowService workflowService;
+    // Dependencies
+    private WorkflowService workflowService;
 
-        @Override
-        protected Map<String, Object> executeImpl(WebScriptRequest req, Status status) {
+    @Override
+    protected Map<String, Object> executeImpl(WebScriptRequest req, Status status) {
 
-            final String id = req.getParameter("id");
-            final String action = req.getParameter("action");
+        final String id = req.getParameter("id");
+        final String action = req.getParameter("action");
 
-            if (id == null || action == null) {
-                logger.debug("Email, ID, action, or secret not set");
-                status.setCode(400);
-                status.setMessage("Required data has not been provided");
-                status.setRedirect(true);
-            }
-
-            Map<String, Object> model = new HashMap<String, Object>();
-
-            Map<QName, Serializable> props = new HashMap<QName, Serializable>();
-            props.put(QName.createQName(SomeCoWorkflowModel.NAMESPACE_SOMECO_WORKFLOW_CONTENT_MODEL, SomeCoWorkflowModel.PROP_APPROVE_REJECT_OUTCOME), action);
-            workflowService.updateTask(id, props, null, null);
-            workflowService.endTask(id, action);
-
-            return model;
+        if (id == null || action == null) {
+            logger.debug("Email, ID, action, or secret not set");
+            status.setCode(400);
+            status.setMessage("Required data has not been provided");
+            status.setRedirect(true);
         }
+
+        Map<String, Object> model = new HashMap<String, Object>();
+
+        Map<QName, Serializable> props = new HashMap<QName, Serializable>();
+        props.put(QName.createQName(SomeCoWorkflowModel.NAMESPACE_SOMECO_WORKFLOW_CONTENT_MODEL, SomeCoWorkflowModel.PROP_APPROVE_REJECT_OUTCOME), action);
+        workflowService.updateTask(id, props, null, null);
+        workflowService.endTask(id, action);
+
+        return model;
     }
+}
+```
 
 The class grabs the task ID and the action to take (the outcome) and then uses
 the workflow service to update and end the task. So, for example, if someone
@@ -1977,30 +2044,32 @@ arguments.
 The task listener's notify method will be called by Activiti. Here is what the
 method looks like:
 
-    public void notify(DelegateTask task) {
+```java
+public void notify(DelegateTask task) {
 
-        String recipient = (String)
-        task.getVariable(ExternalReviewNotification.RECIP_PROCESS_VARIABLE);
+    String recipient = (String)
+    task.getVariable(ExternalReviewNotification.RECIP_PROCESS_VARIABLE);
 
-        StringBuffer sb = new StringBuffer();
-        sb.append("You have been assigned to a task named ");
-        sb.append(task.getName());
-        sb.append(". Take the appropriate action by clicking one of the links below:rnrn");
-        sb.append(getLink(task.getId(), "Approve"));
-        sb.append(getLink(task.getId(), "Reject"));
+    StringBuffer sb = new StringBuffer();
+    sb.append("You have been assigned to a task named ");
+    sb.append(task.getName());
+    sb.append(". Take the appropriate action by clicking one of the links below:rnrn");
+    sb.append(getLink(task.getId(), "Approve"));
+    sb.append(getLink(task.getId(), "Reject"));
 
-        ActionService actionService = getServiceRegistry().getActionService();
-        Action mailAction = actionService.createAction(MailActionExecuter.NAME);
+    ActionService actionService = getServiceRegistry().getActionService();
+    Action mailAction = actionService.createAction(MailActionExecuter.NAME);
 
-        mailAction.setParameterValue(MailActionExecuter.PARAM_SUBJECT, ExternalReviewNotification.SUBJECT);
-        mailAction.setParameterValue(MailActionExecuter.PARAM_TO, recipient);
-        mailAction.setParameterValue(MailActionExecuter.PARAM_FROM, ExternalReviewNotification.FROM_ADDRESS);
-        mailAction.setParameterValue(MailActionExecuter.PARAM_TEXT, sb.toString());
+    mailAction.setParameterValue(MailActionExecuter.PARAM_SUBJECT, ExternalReviewNotification.SUBJECT);
+    mailAction.setParameterValue(MailActionExecuter.PARAM_TO, recipient);
+    mailAction.setParameterValue(MailActionExecuter.PARAM_FROM, ExternalReviewNotification.FROM_ADDRESS);
+    mailAction.setParameterValue(MailActionExecuter.PARAM_TEXT, sb.toString());
 
-        actionService.executeAction(mailAction, null);
+    actionService.executeAction(mailAction, null);
 
-        return;
-    }
+    return;
+}
+```
 
 The first thing the method does is grab the recipient from a process variable.
 Next, it uses a string buffer to start building the message body. The
@@ -2027,12 +2096,14 @@ task listener on the "complete" event that you added earlier. Insert a new
 `activiti:taskListener` element that creates a task listener on the "create"
 event that invokes the ExternalReviewNotification class, like this:
 
-    <userTask id="usertask5" name="Third Party Review" activiti:assignee="${initiator.properties.userName}" activiti:formKey="scwf:activitiThirdPartyReview">
-        <extensionElements>
-            <activiti:taskListener event="create" class="com.someco.bpm.ExternalReviewNotification"></activiti:taskListener>
-            <activiti:taskListener event="complete" class="org.alfresco.repo.workflow.activiti.tasklistener.ScriptTaskListener">
-            <activiti:field name="script">
-            ...
+```xml
+<userTask id="usertask5" name="Third Party Review" activiti:assignee="${initiator.properties.userName}" activiti:formKey="scwf:activitiThirdPartyReview">
+    <extensionElements>
+        <activiti:taskListener event="create" class="com.someco.bpm.ExternalReviewNotification"></activiti:taskListener>
+        <activiti:taskListener event="complete" class="org.alfresco.repo.workflow.activiti.tasklistener.ScriptTaskListener">
+        <activiti:field name="script">
+        ...
+```
 
 Now the process will send an email to a third-party reviewer if an email address
 is specified, the third-party reviewer can click on the appropriate outcome link
@@ -2053,10 +2124,12 @@ the Docker container resides in "workflow-tutorial-platform-docker" under
 src/main/docker. For example, I have Apache James running on a little test
 server, so I've added the following to the alfresco-global.properties file:
 
-    ## Outbound email settings
-    mail.host=192.168.0.30
-    mail.port=25
-    mail.protocol=smtp
+```
+## Outbound email settings
+mail.host=192.168.0.30
+mail.port=25
+mail.protocol=smtp
+```
 
 I often use my local /etc/hosts file to resolve IP addresses, but because
 Alfresco is running in a Docker container, that won't work, so I'm using the IP
@@ -2140,7 +2213,7 @@ process definition file.
 "Approved Notification" task. In my diagram it is "usertask5". With those
 references updated to reflect the values in your diagram, add the following:
 
-    ```
+    ```xml
     <boundaryEvent id="boundarytimer1" cancelActivity="true" attachedToRef="usertask2">
         <timerEventDefinition>
             <timeDuration>PT5M</timeDuration>

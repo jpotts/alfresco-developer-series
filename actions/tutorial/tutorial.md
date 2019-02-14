@@ -74,8 +74,10 @@ Here is what I am using on my machine:
 
 * Ubuntu 16.04.5 LTS
 * Java 1.8.0_201
-* Apache Maven 3.3.9 (installed using Macports)
+* Apache Maven 3.3.9
 * Alfresco Maven SDK 4.0 (No download necessary)
+* Docker 18.09.2
+* Docker Compose 1.23.2
 
 By default, when you create an Alfresco project using the Alfresco Maven SDK the
 project will be configured to depend on the latest stable Alfresco Community
@@ -121,47 +123,53 @@ content tutorial project. When we launch the actions-tutorial project's Docker
 containers, we want the AMPs from the content tutorial to be installed, so those
 need to be set up as dependencies in the pom.xml of the platform docker module:
 
-        <dependencies>
-            <dependency>
-                <groupId>com.someco</groupId>
-                <artifactId>actions-tutorial-platform-jar</artifactId>
-                <version>1.0-SNAPSHOT</version>
-            </dependency>
-            <dependency>
-                <groupId>com.someco</groupId>
-                <artifactId>content-tutorial-platform-jar</artifactId>
-                <version>1.0-SNAPSHOT</version>
-            </dependency>
-        </dependencies>
+    ```xml
+    <dependencies>
+        <dependency>
+            <groupId>com.someco</groupId>
+            <artifactId>actions-tutorial-platform-jar</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>com.someco</groupId>
+            <artifactId>content-tutorial-platform-jar</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+    </dependencies>
+    ```
 
     And also in the pom.xml of the share docker module:
 
-        <dependencies>
-            <dependency>
-                <groupId>com.someco</groupId>
-                <artifactId>actions-tutorial-share-jar</artifactId>
-                <version>1.0-SNAPSHOT</version>
-            </dependency>    
-            <dependency>
-                <groupId>com.someco</groupId>
-                <artifactId>content-tutorial-share-jar</artifactId>
-                <version>1.0-SNAPSHOT</version>      
-            </dependency>        
-        </dependencies>
+    ```xml
+    <dependencies>
+        <dependency>
+            <groupId>com.someco</groupId>
+            <artifactId>actions-tutorial-share-jar</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>    
+        <dependency>
+            <groupId>com.someco</groupId>
+            <artifactId>content-tutorial-share-jar</artifactId>
+            <version>1.0-SNAPSHOT</version>      
+        </dependency>        
+    </dependencies>
+    ```
 
 3. Third, not only do we want the content tutorial AMPs installed, but the
 actions tutorial actually has a compile-time dependency on that pject. So, go
 into the "actions-tutorial-platform-jar" directory and add the dependency to the
 pom.xml:
 
-        <dependencies>
-            <dependency>
-                <groupId>com.someco</groupId>
-                <artifactId>content-tutorial-platform-jar</artifactId>
-                <version>1.0-SNAPSHOT</version>
-                <scope>provided</scope>
-            </dependency>
-        </dependencies>
+    ```xml
+    <dependencies>
+        <dependency>
+            <groupId>com.someco</groupId>
+            <artifactId>content-tutorial-platform-jar</artifactId>
+            <version>1.0-SNAPSHOT</version>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
+    ```
 
 Now we're ready to begin.
 
@@ -306,18 +314,20 @@ into my own repository project and call it "[MoveReplacedActionExecuter](https:/
 The out-of-the-box `executeImpl()` method is where the move logic is handled.
 It looks like this:
 
-    public void executeImpl(Action ruleAction, NodeRef actionedUponNodeRef)
+```java
+public void executeImpl(Action ruleAction, NodeRef actionedUponNodeRef)
+{
+    NodeRef destinationParent = (NodeRef)ruleAction.getParameterValue(PARAM_DESTINATION_FOLDER);
+    try
     {
-        NodeRef destinationParent = (NodeRef)ruleAction.getParameterValue(PARAM_DESTINATION_FOLDER);
-        try
-        {
-            fileFolderService.move(actionedUponNodeRef, destinationParent, null);
-        }
-        catch (FileNotFoundException e)
-        {
-            // Do nothing
-        }
+        fileFolderService.move(actionedUponNodeRef, destinationParent, null);
     }
+    catch (FileNotFoundException e)
+    {
+        // Do nothing
+    }
+}
+```    
 
 The code simply grabs the parameter value for the destination folder and
 then calls the `FileFolderService` to do the move. This is a good start
@@ -325,30 +335,32 @@ for Move Replaced. All I need to do is modify the `executeImpl()` method to
 find the nodes related to the current node by a "replaces" association,
 and then for each result, set up and perform a move.
 
-    public void executeImpl(Action ruleAction, NodeRef actionedUponNodeRef) {
-        // get the replaces associations for this node
-        List<AssociationRef> assocRefs = nodeService.getTargetAssocs(actionedUponNodeRef, ((QNamePattern) QName.createQName(NamespaceService.CONTENT_MODEL_1_0_URI, "replaces")) );
+```java
+public void executeImpl(Action ruleAction, NodeRef actionedUponNodeRef) {
+    // get the replaces associations for this node
+    List<AssociationRef> assocRefs = nodeService.getTargetAssocs(actionedUponNodeRef, ((QNamePattern) QName.createQName(NamespaceService.CONTENT_MODEL_1_0_URI, "replaces")) );
 
-        // if there are none, return
-        if (assocRefs.isEmpty()) {
-             // no work to do, return
-             return;
-        } else {
-            NodeRef destinationParent = (NodeRef)ruleAction.getParameterValue(PARAM_DESTINATION_FOLDER);
-            for (AssociationRef assocNode : assocRefs) {
-                // create a noderef for the replaces association
-                NodeRef targetNodeRef = assocNode.getTargetRef();
-                // if the node exists
-                if (this.nodeService.exists(targetNodeRef) == true) {
-                    try {
-                        fileFolderService.move(targetNodeRef, destinationParent, null);
-                    } catch (FileNotFoundException e) {
-                        // Do nothing
-                    }
+    // if there are none, return
+    if (assocRefs.isEmpty()) {
+         // no work to do, return
+         return;
+    } else {
+        NodeRef destinationParent = (NodeRef)ruleAction.getParameterValue(PARAM_DESTINATION_FOLDER);
+        for (AssociationRef assocNode : assocRefs) {
+            // create a noderef for the replaces association
+            NodeRef targetNodeRef = assocNode.getTargetRef();
+            // if the node exists
+            if (this.nodeService.exists(targetNodeRef) == true) {
+                try {
+                    fileFolderService.move(targetNodeRef, destinationParent, null);
+                } catch (FileNotFoundException e) {
+                    // Do nothing
                 }
-            } // next assocNode
-        } // end if isEmpty
-    }
+            }
+        } // next assocNode
+    } // end if isEmpty
+}
+```
 
 The only other change needed is to change the value of the constant NAME from
 "move" to "move-replaced". (Throughout this document I'll only include relevant
@@ -370,14 +382,16 @@ code that the SDK created, you must also delete the demo beans.
 
 Add the following `bean` element to the existing `beans` element:
 
-    <bean id="move-replaced" class="com.someco.action.executer.MoveReplacedActionExecuter" parent="action-executer">
-        <property name="fileFolderService">
-            <ref bean="FileFolderService" />
-        </property>
-        <property name="nodeService">
-            <ref bean="NodeService" />
-        </property>
-    </bean>
+```xml
+<bean id="move-replaced" class="com.someco.action.executer.MoveReplacedActionExecuter" parent="action-executer">
+    <property name="fileFolderService">
+        <ref bean="FileFolderService" />
+    </property>
+    <property name="nodeService">
+        <ref bean="NodeService" />
+    </property>
+</bean>
+```
 
 That's all there is to it. You can now invoke either of these two actions with
 the Action Service.
@@ -439,15 +453,17 @@ Like the `MoveReplacedAction`, this action class extends
 the value for the `sc:isActive` flag. Actions declare parameters by
 overriding the `addParameterDefinitions()` method, like this:
 
-    @Override
-    protected void addParameterDefinitions(List<ParameterDefinition> paramList) {
-        paramList.add(
-            new ParameterDefinitionImpl(
-                    PARAM_ACTIVE,
-                    DataTypeDefinition.BOOLEAN,
-                    false,
-                    getParamDisplayLabel(PARAM_ACTIVE)));
-    }
+```java
+@Override
+protected void addParameterDefinitions(List<ParameterDefinition> paramList) {
+    paramList.add(
+        new ParameterDefinitionImpl(
+                PARAM_ACTIVE,
+                DataTypeDefinition.BOOLEAN,
+                false,
+                getParamDisplayLabel(PARAM_ACTIVE)));
+}
+```
 
 The constructor for the `ParameterDefinitionImpl` takes the name of the
 parameter, the parameter's data type, whether or not the parameter is
@@ -456,37 +472,39 @@ this method would have one `paramList.add()` call for each parameter.
 
 The next step is to create the action's logic in the `executeImpl()` method:
 
-    @Override
-    protected void executeImpl(Action action, NodeRef actionedUponNodeRef) {    
-        Boolean activeFlag = (Boolean)action.getParameterValue(PARAM_ACTIVE);
+```java
+@Override
+protected void executeImpl(Action action, NodeRef actionedUponNodeRef) {    
+    Boolean activeFlag = (Boolean)action.getParameterValue(PARAM_ACTIVE);
 
-        if (activeFlag == null) activeFlag = true; // default
+    if (activeFlag == null) activeFlag = true; // default
 
-        // set the sc:isActive property to true
-        Map<QName, Serializable> properties = nodeService.getProperties(actionedUponNodeRef);
+    // set the sc:isActive property to true
+    Map<QName, Serializable> properties = nodeService.getProperties(actionedUponNodeRef);
+    properties.put(
+        QName.createQName(SomeCoModel.NAMESPACE_SOMECO_CONTENT_MODEL, SomeCoModel.PROP_IS_ACTIVE), activeFlag);
+
+    if (activeFlag) {
+        // set the sc:published property to now
         properties.put(
-            QName.createQName(SomeCoModel.NAMESPACE_SOMECO_CONTENT_MODEL, SomeCoModel.PROP_IS_ACTIVE), activeFlag);
-
-        if (activeFlag) {
-            // set the sc:published property to now
-            properties.put(
-                QName.createQName(SomeCoModel.NAMESPACE_SOMECO_CONTENT_MODEL, SomeCoModel.PROP_PUBLISHED), new Date());
-        }
-
-        // if the aspect has already been added, set the properties
-        if (nodeService.hasAspect(actionedUponNodeRef,
-                    QName.createQName(
-                        SomeCoModel.NAMESPACE_SOMECO_CONTENT_MODEL,
-                        SomeCoModel.ASPECT_SC_WEBABLE))) {
-            nodeService.setProperties(actionedUponNodeRef, properties);
-        } else {
-            // otherwise, add the aspect and set the properties
-            nodeService.addAspect(actionedUponNodeRef,
-                    Qname.createQName(
-                        SomeCoModel.NAMESPACE_SOMECO_CONTENT_MODEL,
-                        SomeCoModel.ASPECT_SC_WEBABLE), properties);
-        }                  
+            QName.createQName(SomeCoModel.NAMESPACE_SOMECO_CONTENT_MODEL, SomeCoModel.PROP_PUBLISHED), new Date());
     }
+
+    // if the aspect has already been added, set the properties
+    if (nodeService.hasAspect(actionedUponNodeRef,
+                QName.createQName(
+                    SomeCoModel.NAMESPACE_SOMECO_CONTENT_MODEL,
+                    SomeCoModel.ASPECT_SC_WEBABLE))) {
+        nodeService.setProperties(actionedUponNodeRef, properties);
+    } else {
+        // otherwise, add the aspect and set the properties
+        nodeService.addAspect(actionedUponNodeRef,
+                Qname.createQName(
+                    SomeCoModel.NAMESPACE_SOMECO_CONTENT_MODEL,
+                    SomeCoModel.ASPECT_SC_WEBABLE), properties);
+    }                  
+}
+```
 
 The logic should be pretty easy to follow. The code grabs the value of
 the `active` parameter. Then, it sets up a `Map` to hold properties. If the
@@ -500,11 +518,13 @@ set in a single call.
 The Spring configuration for this action goes in the same context file
 as the pervious action (service-context.xml):
 
-    <bean id="set-web-flag" class="com.someco.action.executer.SetWebFlag" parent="action-executer">
-        <property name="nodeService">
-            <ref bean="NodeService" />
-        </property>
-    </bean>
+```xml
+<bean id="set-web-flag" class="com.someco.action.executer.SetWebFlag" parent="action-executer">
+    <property name="nodeService">
+        <ref bean="NodeService" />
+    </property>
+</bean>
+```
 
 The action can now be invoked by the Action Service. If you want, you can test
 it by starting up the Docker containers and then running `./run.sh test` just
@@ -529,24 +549,28 @@ messages folder.
 In that folder I created a file called "somecoactions.properties" with the
 following content:
 
-    # Move Replaced action
-    move-replaced.title=Move replaced document to space
-    move-replaced.description=This will move the target node of a replaces association to a specified space.
+```
+# Move Replaced action
+move-replaced.title=Move replaced document to space
+move-replaced.description=This will move the target node of a replaces association to a specified space.
 
-    # Set web flag action
-    set-web-flag.title=Sets the SC Web Flag
-    set-web-flag.description=This will add the sc:webable aspect and set the isActive flag.
+# Set web flag action
+set-web-flag.title=Sets the SC Web Flag
+set-web-flag.description=This will add the sc:webable aspect and set the isActive flag.
+```
 
 Spring needs to know about this properties bundle, so I replaced the demo Spring
 beans in bootstrap-context.xml with this bean:
 
-    <bean id="${project.artifactId}_actionResourceBundles" parent="actionResourceBundles">
-        <property name="resourceBundles">
-            <list>
-                <value>alfresco.module.${project.artifactId}.messages.somecoactions</value>
-            </list>
-        </property>
-    </bean>
+```xml
+<bean id="${project.artifactId}_actionResourceBundles" parent="actionResourceBundles">
+    <property name="resourceBundles">
+        <list>
+            <value>alfresco.module.${project.artifactId}.messages.somecoactions</value>
+        </list>
+    </property>
+</bean>
+```
 
 Now when Alfresco Share asks for the title or description of these actions, it
 will get the appropriate values.
@@ -594,25 +618,27 @@ The `cm:replaceable` aspect can be added to the list of aspects a user can
 see by adding some document library configuation to share-config-custom.xml,
 like this:
 
-    <alfresco-config>
-        <!-- Document Library config section -->
-        <config evaluator="string-compare" condition="DocumentLibrary">
-            <aspects>
-                <!-- Aspects that a user can see -->
-                <visible>
-                    <aspect name="cm:replaceable" />
-                </visible>
+```xml
+<alfresco-config>
+    <!-- Document Library config section -->
+    <config evaluator="string-compare" condition="DocumentLibrary">
+        <aspects>
+            <!-- Aspects that a user can see -->
+            <visible>
+                <aspect name="cm:replaceable" />
+            </visible>
 
-                <!-- Aspects that a user can add. Same as "visible" if left empty -->
-                <addable>
-                </addable>
+            <!-- Aspects that a user can add. Same as "visible" if left empty -->
+            <addable>
+            </addable>
 
-                <!-- Aspects that a user can remove. Same as "visible" if left empty -->
-                <removeable>
-                </removeable>
-            </aspects>
-        </config>
-    </alfresco-config>
+            <!-- Aspects that a user can remove. Same as "visible" if left empty -->
+            <removeable>
+            </removeable>
+        </aspects>
+    </config>
+</alfresco-config>
+```
 
 Next, the `cm:replaces` association needs to show up when editing properties.
 In this example, SomeCo will use instances of `cm:content` for policies, but
@@ -623,20 +649,24 @@ the out-of-the-box form configuration into share-config-custom.xml.
 Just like in the content types tutorial, the association is configured by
 adding children to the `field-visibility` and `appearance` elements, like this:
 
-               <show id="surf:mid"/>
-               <show id="surf:label"/>
+```xml
+   <show id="surf:mid"/>
+   <show id="surf:label"/>
 
-               <!-- cm:replaceable -->
-               <show id="cm:replaces" />
+   <!-- cm:replaceable -->
+   <show id="cm:replaces" />
 
-            </field-visibility>
+</field-visibility>
+```
 
 and this:
 
-               <field id="cm:sentdate" read-only="true" />
-               <field id="cm:subjectline" read-only="true" />
-               <field id="cm:replaces" label-id="assoc.cm_replaces"/>
-            </appearance>
+```xml
+   <field id="cm:sentdate" read-only="true" />
+   <field id="cm:subjectline" read-only="true" />
+   <field id="cm:replaces" label-id="assoc.cm_replaces"/>
+</appearance>
+```
 
 ### Step 2: Localize the labels
 
@@ -651,9 +681,11 @@ The SDK probably created a demo properties file in that directory. Delete it.
 I'll create a new file for this module called scActions.properties. In it goes
 the following:
 
-    #cm:replaceable
-    aspect.cm_replaceable=Replaceable
-    assoc.cm_replaces=Replaces
+```
+#cm:replaceable
+aspect.cm_replaceable=Replaceable
+assoc.cm_replaces=Replaces
+```
 
 The custom properties file needs to be configured using Spring. So, again, just
 like the custom content types tutorial, I'll edit a context file called "actions-tutorial-slingshot-application-context.xml" in:
@@ -662,14 +694,16 @@ like the custom content types tutorial, I'll edit a context file called "actions
 
 Replace the demo bean that the SDK created for you with this:
 
-    <!-- Add Someco messages -->
-    <bean id="${project.artifactId}_resources" class="org.springframework.extensions.surf.util.ResourceBundleBootstrapComponent">
-        <property name="resourceBundles">
-            <list>
-                <value>alfresco.web-extension.messages.scActions</value>
-            </list>
-        </property>
-    </bean>
+```xml
+<!-- Add Someco messages -->
+<bean id="${project.artifactId}_resources" class="org.springframework.extensions.surf.util.ResourceBundleBootstrapComponent">
+    <property name="resourceBundles">
+        <list>
+            <value>alfresco.web-extension.messages.scActions</value>
+        </list>
+    </property>
+</bean>
+```
 
 Now the replaceable aspect can be added to and removed from documents using
 Alfresco Share. The next step is to configure the Move Replaced Rule Action in
@@ -724,9 +758,11 @@ tutorial, I copied the file into:
 The first change is to specify a custom client-side JavaScript
 component:
 
-    <rule-config type="action">
-       <component>SomeCo.RuleConfigActionCustom</component>
-       <config-definitions webscript="/api/actiondefinitions">
+```xml
+<rule-config type="action">
+   <component>SomeCo.RuleConfigActionCustom</component>
+   <config-definitions webscript="/api/actiondefinitions">
+```
 
 This will be a new client-side JavaScript component that will get
 created shortly.
@@ -735,26 +771,30 @@ Next, the action gets arranged in the list of actions. In this case, it
 makes sense to see it in the list right after “Move” so a new `action` element
 gets added accordingly:
 
-    <menu>
-        <group>
-            <item id="select"/>
-        </group>
-        <group>
-            <action name="script"/>
-        </group>
-        <group>
-            <action name="copy"/>
-            <action name="move"/>
-            <action name="move-replaced"/>
-        </group>
+```xml
+<menu>
+    <group>
+        <item id="select"/>
+    </group>
+    <group>
+        <action name="script"/>
+    </group>
+    <group>
+        <action name="copy"/>
+        <action name="move"/>
+        <action name="move-replaced"/>
+    </group>
+```
 
 Finally, the `move-replaced` action gets bound with a client-side JavaScript
 function called `MoveReplaced`:
 
-      <action name="copy">Copy</action>
-      <action name="move">Move</action>
-      <action name="move-replaced">MoveReplaced</action>      
-      <action name="simple-workflow">SimpleWorkflow</action>
+```xml
+<action name="copy">Copy</action>
+<action name="move">Move</action>
+<action name="move-replaced">MoveReplaced</action>      
+<action name="simple-workflow">SimpleWorkflow</action>
+```
 
 With this configuration in place, the custom Move Replaced action will show up
 in the list of actions that can be performed as part of a rule.
@@ -777,12 +817,14 @@ Into the tutorial project under:
 In both files, the new `script` element is added to the end of the JavaScript
 dependencies, like this:
 
-    <@markup id="js">
-        <#-- JavaScript Dependencies -->
-        ...SNIP...
-        <!--Custom javascript file include for detail mode -->
-        <@script type="text/javascript" src="${url.context}/res/components/someco/rules/config/rule-config-action-custom.js" group="rules_custom"></@script>
-    </@>
+```
+<@markup id="js">
+    <#-- JavaScript Dependencies -->
+    ...SNIP...
+    <!--Custom javascript file include for detail mode -->
+    <@script type="text/javascript" src="${url.context}/res/components/someco/rules/config/rule-config-action-custom.js" group="rules_custom"></@script>
+</@>
+```
 
 Okay, at this point, the rule form will be looking for a custom client-side
 JavaScript component called SomeCo.RuleConfigActionCustom, the action will show
@@ -806,29 +848,32 @@ The first thing the rule-config-action-custom.js file does is declare a SomeCo
 namespace. It is important that you namespace everything in Alfresco to avoid
 collisions with Alfresco's code or other add-ons you might install.
 
-    if (typeof SomeCo == "undefined" || !SomeCo)
-    {
-       var SomeCo = {};
-    }
+```javascript
+if (typeof SomeCo == "undefined" || !SomeCo)
+{
+   var SomeCo = {};
+}
+```
 
 Next, comes the constructor for the component (I've left out some boring stuff,
 check the [source](https://github.com/jpotts/alfresco-developer-series/blob/master/actions/actions-tutorial/actions-tutorial-share-jar/src/main/resources/META-INF/resources/components/someco/rules/config/rule-config-action-custom.js) for the full listing):
 
+```javascript
+SomeCo.RuleConfigActionCustom = function(htmlId)
+{
+   SomeCo.RuleConfigActionCustom.superclass.constructor.call(this, htmlId);
 
-    SomeCo.RuleConfigActionCustom = function(htmlId)
-    {
-       SomeCo.RuleConfigActionCustom.superclass.constructor.call(this, htmlId);
+   // Re-register with our own name
+   this.name = "SomeCo.RuleConfigActionCustom";
+   Alfresco.util.ComponentManager.reregister(this);
 
-       // Re-register with our own name
-       this.name = "SomeCo.RuleConfigActionCustom";
-       Alfresco.util.ComponentManager.reregister(this);
+   // Instance variables
+   this.customisations = YAHOO.lang.merge(this.customisations, SomeCo.RuleConfigActionCustom.superclass.customisations);
+   this.renderers = YAHOO.lang.merge(this.renderers, SomeCo.RuleConfigActionCustom.superclass.renderers);
 
-       // Instance variables
-       this.customisations = YAHOO.lang.merge(this.customisations, SomeCo.RuleConfigActionCustom.superclass.customisations);
-       this.renderers = YAHOO.lang.merge(this.renderers, SomeCo.RuleConfigActionCustom.superclass.renderers);
-
-       return this;
-    };
+   return this;
+};
+```
 
 What's going on here is that the constructor is calling its superclass
 constructor, then it is registering itself with the Alfresco component manager.
@@ -838,41 +883,43 @@ in the parent class.
 The final bit is where the extend actually happens, and the `MoveReplaced`
 handler is defined:
 
-    YAHOO.extend(SomeCo.RuleConfigActionCustom, Alfresco.RuleConfigAction,
-    {
+```javascript
+YAHOO.extend(SomeCo.RuleConfigActionCustom, Alfresco.RuleConfigAction,
+{
 
-       /**
-        * CUSTOMISATIONS
-        */
+   /**
+    * CUSTOMISATIONS
+    */
 
-       customisations:
-       {         
-          MoveReplaced:
-          {
-             text: function(configDef, ruleConfig, configEl)
-             {
-                  // Display as path
-                  this._getParamDef(configDef, "destination-folder")._type = "path";
-                  return configDef;
-             },
-             edit: function(configDef, ruleConfig, configEl)
-             {
-                 // Hide all parameters since we are using a cusotm ui but set default values
-                 this._hideParameters(configDef.parameterDefinitions);
+   customisations:
+   {         
+      MoveReplaced:
+      {
+         text: function(configDef, ruleConfig, configEl)
+         {
+              // Display as path
+              this._getParamDef(configDef, "destination-folder")._type = "path";
+              return configDef;
+         },
+         edit: function(configDef, ruleConfig, configEl)
+         {
+             // Hide all parameters since we are using a cusotm ui but set default values
+             this._hideParameters(configDef.parameterDefinitions);
 
-                 // Make parameter renderer create a "Destination" button that displays an destination folder browser
-                 configDef.parameterDefinitions.splice(0,0,{
-                    type: "arca:destination-dialog-button",
-                    displayLabel: this.msg("label.to"),
-                    _buttonLabel: this.msg("button.select-folder"),
-                    _destinationParam: "destination-folder"
-                 });
-                 return configDef;
-             }
-          },
-       },
+             // Make parameter renderer create a "Destination" button that displays an destination folder browser
+             configDef.parameterDefinitions.splice(0,0,{
+                type: "arca:destination-dialog-button",
+                displayLabel: this.msg("label.to"),
+                _buttonLabel: this.msg("button.select-folder"),
+                _destinationParam: "destination-folder"
+             });
+             return configDef;
+         }
+      },
+   },
 
-    });
+});
+```
 
 This part is a copy of the out-of-the-box handler for `Move` with the
 object renamed to `MoveReplaced`. The `MoveReplaced` object has two methods:
@@ -959,13 +1006,15 @@ for enabling the active flag and one for disabling it and neither should take a
 parameter. By sub-classing the existing `SetWebFlag` action, code can be kept to
 a minimum. Here's the `EnableWebFlag` action executer in its entirety:
 
-    public class EnableWebFlag extends SetWebFlag {
-        @Override
-        protected void executeImpl(Action action, NodeRef actionedUponNodeRef) {
-            action.setParameterValue(SetWebFlag.PARAM_ACTIVE, true);
-            super.executeImpl(action, actionedUponNodeRef);
-        }
+```java
+public class EnableWebFlag extends SetWebFlag {
+    @Override
+    protected void executeImpl(Action action, NodeRef actionedUponNodeRef) {
+        action.setParameterValue(SetWebFlag.PARAM_ACTIVE, true);
+        super.executeImpl(action, actionedUponNodeRef);
     }
+}
+```
 
 The `DisableWebFlag` action looks just like this but sets the `active` flag
 to `false`. I won't repeat it here.
@@ -973,11 +1022,13 @@ to `false`. I won't repeat it here.
 The Spring configuration for the action is similarly short. It goes in
 service-context.xml:
 
-    <bean id="enable-web-flag" class="com.someco.action.executer.EnableWebFlag" parent="set-web-flag">
-        <property name="publicAction">
-            <value>false</value>
-        </property>
-    </bean>
+```xml
+<bean id="enable-web-flag" class="com.someco.action.executer.EnableWebFlag" parent="set-web-flag">
+    <property name="publicAction">
+        <value>false</value>
+    </property>
+</bean>
+```
 
 Again, I'm leaving out the `disable-web-flag` bean but it looks just like
 this one with a different class. Setting the `publicAction` property to
@@ -1001,22 +1052,24 @@ Actions and action groups live in the `DocLibActions` config within
 share-config-custom.xml. Here are the action definitions for the web
 site action and web enable:
 
-    <!-- Actions -->
-    <config evaluator="string-compare" condition="DocLibActions">
-        <actions>
-            <action id="someco-web-site" type="link" label="actions.someco.web-site" icon="someco-website">
-                <param name="href">https://ecmarchitect.com</param>
-                <param name="target">_blank</param>
-            </action>
-            <action id="someco-web-enable" type="javascript" label="actions.someco.web-enable" icon="someco-create-website">
-                <param name="function">onActionSimpleRepoAction</param>
-                <permissions>
-                    <permission allow="true">Write</permission>
-                </permissions>
-                <param name="action">enable-web-flag</param>
-                <param name="successMessage">message.web-flag.enabled</param>
-                <param name="failureMessage">message.web-flag.failure</param>
-            </action>
+```xml
+<!-- Actions -->
+<config evaluator="string-compare" condition="DocLibActions">
+    <actions>
+        <action id="someco-web-site" type="link" label="actions.someco.web-site" icon="someco-website">
+            <param name="href">https://ecmarchitect.com</param>
+            <param name="target">_blank</param>
+        </action>
+        <action id="someco-web-enable" type="javascript" label="actions.someco.web-enable" icon="someco-create-website">
+            <param name="function">onActionSimpleRepoAction</param>
+            <permissions>
+                <permission allow="true">Write</permission>
+            </permissions>
+            <param name="action">enable-web-flag</param>
+            <param name="successMessage">message.web-flag.enabled</param>
+            <param name="failureMessage">message.web-flag.failure</param>
+        </action>
+```
 
 The `someco-web-site` action is really simple. It is a `link` type of an
 action, which means it is invoking a URL that is provided in a
@@ -1040,19 +1093,21 @@ look at the out-of-the-box `document-transform` action as an example.
 The last part of the config is the action definitions. This slots the
 actions into the appropriate groups:
 
-        <actionGroups>
-            <actionGroup id="document-browse">
-                <action index="500" id="someco-web-site" />
-                <action index="510" id="someco-web-enable" />
-                <action index="520" id="someco-web-disable" />                
-            </actionGroup>
-            <actionGroup id="document-details">
-                <action index="500" id="someco-web-site" />
-                <action index="510" id="someco-web-enable" />
-                <action index="520" id="someco-web-disable" />                
-            </actionGroup>
-        </actionGroups>
-    </config>
+```xml
+    <actionGroups>
+        <actionGroup id="document-browse">
+            <action index="500" id="someco-web-site" />
+            <action index="510" id="someco-web-enable" />
+            <action index="520" id="someco-web-disable" />                
+        </actionGroup>
+        <actionGroup id="document-details">
+            <action index="500" id="someco-web-site" />
+            <action index="510" id="someco-web-enable" />
+            <action index="520" id="someco-web-disable" />                
+        </actionGroup>
+    </actionGroups>
+</config>
+```
 
 There are a couple of things to note about the action configuration.
 First, you don't have to copy in the out-of-the-box actions and action
@@ -1077,13 +1132,15 @@ starting with “someco” so they would not be confused with others.
 The localized strings can go in the existing scActions.properties file.
 Here they are:
 
-    #actions
-    actions.someco.web-site=SomeCo
-    actions.someco.web-enable=SC Enable Web
-    actions.someco.web-disable=SC Disable Web
-    message.web-flag.enabled=Successfully enabled the SomeCo active flag
-    message.web-flag.disabled=Successfully disabled the SomeCo active flag
-    message.web-flag.failure=Error setting the SomeCo active flag
+```
+#actions
+actions.someco.web-site=SomeCo
+actions.someco.web-enable=SC Enable Web
+actions.someco.web-disable=SC Disable Web
+message.web-flag.enabled=Successfully enabled the SomeCo active flag
+message.web-flag.disabled=Successfully disabled the SomeCo active flag
+message.web-flag.failure=Error setting the SomeCo active flag
+```
 
 With icons and localized strings in place, you can deploy and run and
 everything should work. If your server is still running from earlier, do a
@@ -1153,14 +1210,16 @@ themselves based on that. Evaluators live in Spring config. This project already
 has “actions-tutorial-share-slingshot-application-context.xml” so I added the
 evaluator to that file:
 
-    <bean id="someco.evaluator.doclib.action.isActive" parent="evaluator.doclib.action.value">
-        <property name="accessor" value="node.properties.sc:isActive" />
-        <property name="comparator">
-            <bean class="org.alfresco.web.evaluator.StringEqualsComparator">
-                <property name="value" value="true" />
-            </bean>
-        </property>
-    </bean>
+```xml
+<bean id="someco.evaluator.doclib.action.isActive" parent="evaluator.doclib.action.value">
+    <property name="accessor" value="node.properties.sc:isActive" />
+    <property name="comparator">
+        <bean class="org.alfresco.web.evaluator.StringEqualsComparator">
+            <property name="value" value="true" />
+        </bean>
+    </property>
+</bean>
+```
 
 This bean extends the out-of-the-box “value” evaluator and provides
 properties specific to our needs. In this case, the `accessor` is the
@@ -1182,26 +1241,28 @@ the UI action. So, back over in share-config-custom.xml, I've added two new
 point to the `someco.evaluator.doclib.action.isActive` evaluator configured in
 the previous step:
 
-    <action id="someco-web-enable" type="javascript" label="actions.someco.web-enable" icon="someco-create-website">
-        <param name="function">onActionSimpleRepoAction</param>
-        <permissions>
-            <permission allow="true">Write</permission>
-        </permissions>
-        <param name="action">enable-web-flag</param>
-        <param name="successMessage">message.web-flag.enabled</param>
-        <param name="failureMessage">message.web-flag.failure</param>
-        <evaluator negate="true">someco.evaluator.doclib.action.isActive</evaluator>
-    </action>
-    <action id="someco-web-disable" type="javascript" label="actions.someco.web-disable" icon="someco-delete-website">
-        <param name="function">onActionSimpleRepoAction</param>
-        <permissions>
-            <permission allow="true">Write</permission>
-        </permissions>
-        <param name="action">disable-web-flag</param>
-        <param name="successMessage">message.web-flag.disabled</param>
-        <param name="failureMessage">message.web-flag.failure</param>
-        <evaluator>someco.evaluator.doclib.action.isActive</evaluator>
-    </action>
+```xml
+<action id="someco-web-enable" type="javascript" label="actions.someco.web-enable" icon="someco-create-website">
+    <param name="function">onActionSimpleRepoAction</param>
+    <permissions>
+        <permission allow="true">Write</permission>
+    </permissions>
+    <param name="action">enable-web-flag</param>
+    <param name="successMessage">message.web-flag.enabled</param>
+    <param name="failureMessage">message.web-flag.failure</param>
+    <evaluator negate="true">someco.evaluator.doclib.action.isActive</evaluator>
+</action>
+<action id="someco-web-disable" type="javascript" label="actions.someco.web-disable" icon="someco-delete-website">
+    <param name="function">onActionSimpleRepoAction</param>
+    <permissions>
+        <permission allow="true">Write</permission>
+    </permissions>
+    <param name="action">disable-web-flag</param>
+    <param name="successMessage">message.web-flag.disabled</param>
+    <param name="failureMessage">message.web-flag.failure</param>
+    <evaluator>someco.evaluator.doclib.action.isActive</evaluator>
+</action>
+```
 
 Both actions use the same evaluator. For the `someco-web-enable` action,
 the evaluator is negated. So if the evaluator returns true (i.e., the
@@ -1222,15 +1283,17 @@ Indicators are part of the “DocumentLibrary” config in
 share-config-custom.xml. All it needs is a pointer to an evaluator. In
 this case, the one created earlier can be reused:
 
-        </types>
+```xml
+    </types>
 
-        <!-- Custom Indicators -->
-        <indicators>
-            <indicator id="someco-website" index="10">
-                <evaluator>someco.evaluator.doclib.action.isActive</evaluator>
-            </indicator>
-        </indicators>
-    </config>
+    <!-- Custom Indicators -->
+    <indicators>
+        <indicator id="someco-website" index="10">
+            <evaluator>someco.evaluator.doclib.action.isActive</evaluator>
+        </indicator>
+    </indicators>
+</config>
+```
 
 Alfresco will use the indicator's id attribute appended with “-16.png”
 for the icon. I copied the same icon used for the “enable” action into:
