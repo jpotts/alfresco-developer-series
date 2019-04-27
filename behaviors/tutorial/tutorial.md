@@ -604,13 +604,13 @@ called when Spring loads the bean.
         // Bind behaviours to node policies
         this.policyComponent.bindClassBehaviour(
             Qname.createQName(NamespaceService.ALFRESCO_URI, "onCreateNode"),
-            Qname.createQName(SomeCoModel.NAMESPACE_SOMECO_CONTENT_MODEL, SomeCoModel.TYPE_SC_RATING),
+            Qname.createQName(SomeCoRatingsModel.NAMESPACE_SOMECO_RATINGS_CONTENT_MODEL, SomeCoRatingsModel.TYPE_SCR_RATING),
             this.onCreateNode
         );
 
         this.policyComponent.bindClassBehaviour(
             QName.createQName(NamespaceService.ALFRESCO_URI, "onDeleteNode"),
-            Qname.createQName(SomeCoModel.NAMESPACE_SOMECO_CONTENT_MODEL, SomeCoModel.TYPE_SC_RATING),
+            Qname.createQName(SomeCoRatingsModel.NAMESPACE_SOMECO_RATINGS_CONTENT_MODEL, SomeCoRatingsModel.TYPE_SCR_RATING),
             this.onDeleteNode
         );
 
@@ -663,7 +663,7 @@ average, and sets the average property on the content.
         NodeRef parentRef = childAssocRef.getParentRef();
 
         // check the parent to make sure it has the right aspect
-        if (nodeService.exists(parentRef) && nodeService.hasAspect(parentRef, Qname.createQName(SomeCoModel.NAMESPACE_SOMECO_CONTENT_MODEL, SomeCoModel.ASPECT_SC_RATEABLE))) {
+        if (nodeService.exists(parentRef) && nodeService.hasAspect(parentRef, Qname.createQName(SomeCoRatingsModel.NAMESPACE_SOMECO_RATINGS_CONTENT_MODEL, SomeCoRatingsModel.ASPECT_SCR_RATEABLE))) {
 
             // continue, this is what we want
 
@@ -682,7 +682,7 @@ average, and sets the average property on the content.
         for (ChildAssociationRef child : children) {
             int rating = (Integer)nodeService.getProperty(
             child.getChildRef(),
-            Qname.createQName(SomeCoModel.NAMESPACE_SOMECO_CONTENT_MODEL, SomeCoModel.PROP_RATING));
+            Qname.createQName(SomeCoRatingsModel.NAMESPACE_SOMECO_RATINGS_CONTENT_MODEL, SomeCoRatingsModel.PROP_RATING));
             total += rating;
         }
 
