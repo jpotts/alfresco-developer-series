@@ -70,6 +70,7 @@ Architect | Alfresco Developer Tutorials</title>
 <h1 id="license">License</h1>
 <div class="figure">
 <img src="./images/cc-by-sa-88x31.png" />
+
 </div>
 <p>This work is licensed under the Creative Commons Attribution-ShareAlike 3.0 Unported License. To view a copy of this license, visit http://creativecommons.org/licenses/by-sa/3.0/ or send a letter to Creative Commons, 444 Castro Street, Suite 900, Mountain View, California, 94041, USA.</p>
 <h1 id="introduction">Introduction</h1>
@@ -92,7 +93,8 @@ Architect | Alfresco Developer Tutorials</title>
 <p>Assuming SomeCo wants to store the ratings in Alfresco instead of some other repository, like a relational or NoSQL database, one way to do this is to create a custom “rating” type that is related to a whitepaper through a child association. A custom “rateable” aspect can be used to define the association as well as a property to store the average rating for that whitepaper. Any object in the repository will get all of the metadata it needs to become &quot;rateable&quot; simply by adding the aspect to the object.</p>
 <p>The image below shows the original custom content model with these enhancements.</p>
 <div class="figure">
-<img src="./images/someco-model-with-ratings.png" alt="SomeCo&#39;s content model modified to support ratings" /><p class="caption">SomeCo's content model modified to support ratings</p>
+<img src="./images/someco-model-with-ratings.png" alt="SomeCo&#39;s content model modified to support ratings" />
+<p class="caption">SomeCo's content model modified to support ratings</p>
 </div>
 <p>That takes care of the data model, but what about the code that computes the average? There are a few options to consider:</p>
 <ol style="list-style-type: decimal">
@@ -113,8 +115,12 @@ Architect | Alfresco Developer Tutorials</title>
 </ul>
 <p>Each of those interfaces contains inner interfaces that represent the policies you can hook into. Check the Javadocs or source code for specifics—I'm listing the methods in the table below so you can see an example of what's available.</p>
 <p>Note: To make it easier to read, I'm omitting the inner interface which follows the pattern of <code>&lt;method-name&gt;Policy</code>. For example, the <code>onContentUpdate</code> method is a method of the inner interface <code>OnContentUpdatePolicy</code>.</p>
-<table>
+<table style="width:24%;">
 <caption>Policies available for behavior binding</caption>
+<colgroup>
+<col width="13%" />
+<col width="9%" />
+</colgroup>
 <thead>
 <tr class="header">
 <th align="left">Interface</th>
@@ -124,19 +130,49 @@ Architect | Alfresco Developer Tutorials</title>
 <tbody>
 <tr class="odd">
 <td align="left">org.alfresco.repo.content.ContentServicePolicies</td>
-<td align="left">onContentPropertyUpdate<br />onContentRead<br />onContentUpdate</td>
+<td align="left">onContentPropertyUpdate<br />
+onContentRead<br />
+onContentUpdate</td>
 </tr>
 <tr class="even">
 <td align="left">org.alfresco.repo.copy.CopyServicePolicies</td>
-<td align="left">beforeCopy<br />onCopyComplete<br />onCopyNode</td>
+<td align="left">beforeCopy<br />
+onCopyComplete<br />
+onCopyNode</td>
 </tr>
 <tr class="odd">
 <td align="left">org.alfresco.repo.node.NodeServicePolicies</td>
-<td align="left">beforeAddAspect<br />beforeArchiveNode<br />beforeCreateNode<br />beforeCreateStore<br />beforeDeleteAssociation<br />beforeDeleteChildAssociation<br />beforeDeleteNode<br />beforeMoveNode<br />beforeRemoveAspect<br />beforeSetNodeType<br />beforeUpdateNode<br />onAddAspect<br />onCreateAssociation<br />onCreateChildAssociation<br />onCreateNode<br />onCreateStore<br />onDeleteAssociation<br />onDeleteChildAssociation<br />onDeleteNode<br />onMoveNode<br />onRemoveAspect<br />onSetNodeType<br />onUpdateNode<br />onUpdateProperties</td>
+<td align="left">beforeAddAspect<br />
+beforeArchiveNode<br />
+beforeCreateNode<br />
+beforeCreateStore<br />
+beforeDeleteAssociation<br />
+beforeDeleteChildAssociation<br />
+beforeDeleteNode<br />
+beforeMoveNode<br />
+beforeRemoveAspect<br />
+beforeSetNodeType<br />
+beforeUpdateNode<br />
+onAddAspect<br />
+onCreateAssociation<br />
+onCreateChildAssociation<br />
+onCreateNode<br />
+onCreateStore<br />
+onDeleteAssociation<br />
+onDeleteChildAssociation<br />
+onDeleteNode<br />
+onMoveNode<br />
+onRemoveAspect<br />
+onSetNodeType<br />
+onUpdateNode<br />
+onUpdateProperties</td>
 </tr>
 <tr class="even">
 <td align="left">org.alfresco.repo.version.VersionServicePolicies</td>
-<td align="left">beforeCreateVersion<br />afterCreateVersion<br />onCreateVersion<br />calculateVersionLabel</td>
+<td align="left">beforeCreateVersion<br />
+afterCreateVersion<br />
+onCreateVersion<br />
+calculateVersionLabel</td>
 </tr>
 </tbody>
 </table>
@@ -394,13 +430,13 @@ private Behaviour onDeleteNode;</code></pre>
     // Bind behaviours to node policies
     this.policyComponent.bindClassBehaviour(
         Qname.createQName(NamespaceService.ALFRESCO_URI, &quot;onCreateNode&quot;),
-        Qname.createQName(SomeCoModel.NAMESPACE_SOMECO_CONTENT_MODEL, SomeCoModel.TYPE_SC_RATING),
+        Qname.createQName(SomeCoRatingsModel.NAMESPACE_SOMECO_RATINGS_CONTENT_MODEL, SomeCoRatingsModel.TYPE_SCR_RATING),
         this.onCreateNode
     );
 
     this.policyComponent.bindClassBehaviour(
         QName.createQName(NamespaceService.ALFRESCO_URI, &quot;onDeleteNode&quot;),
-        Qname.createQName(SomeCoModel.NAMESPACE_SOMECO_CONTENT_MODEL, SomeCoModel.TYPE_SC_RATING),
+        Qname.createQName(SomeCoRatingsModel.NAMESPACE_SOMECO_RATINGS_CONTENT_MODEL, SomeCoRatingsModel.TYPE_SCR_RATING),
         this.onDeleteNode
     );
 
@@ -427,7 +463,7 @@ public void onDeleteNode(ChildAssociationRef childAssocRef, boolean isNodeArchiv
     NodeRef parentRef = childAssocRef.getParentRef();
 
     // check the parent to make sure it has the right aspect
-    if (nodeService.exists(parentRef) &amp;&amp; nodeService.hasAspect(parentRef, Qname.createQName(SomeCoModel.NAMESPACE_SOMECO_CONTENT_MODEL, SomeCoModel.ASPECT_SC_RATEABLE))) {
+    if (nodeService.exists(parentRef) &amp;&amp; nodeService.hasAspect(parentRef, Qname.createQName(SomeCoRatingsModel.NAMESPACE_SOMECO_RATINGS_CONTENT_MODEL, SomeCoRatingsModel.ASPECT_SCR_RATEABLE))) {
 
         // continue, this is what we want
 
@@ -446,7 +482,7 @@ public void onDeleteNode(ChildAssociationRef childAssocRef, boolean isNodeArchiv
     for (ChildAssociationRef child : children) {
         int rating = (Integer)nodeService.getProperty(
         child.getChildRef(),
-        Qname.createQName(SomeCoModel.NAMESPACE_SOMECO_CONTENT_MODEL, SomeCoModel.PROP_RATING));
+        Qname.createQName(SomeCoRatingsModel.NAMESPACE_SOMECO_RATINGS_CONTENT_MODEL, SomeCoRatingsModel.PROP_RATING));
         total += rating;
     }
 
@@ -747,7 +783,8 @@ parent=&quot;policyRegistration&quot;&gt;
 <li><p>Go back into Share and look at the test document's details. You should see its average rating and the total number of ratings displayed in the property list, like this:</p></li>
 </ol>
 <div class="figure">
-<img src="./images/content-with-test-ratings.png" alt="This piece of content has 20 ratings with an average of 3" /><p class="caption">This piece of content has 20 ratings with an average of 3</p>
+<img src="./images/content-with-test-ratings.png" alt="This piece of content has 20 ratings with an average of 3" />
+<p class="caption">This piece of content has 20 ratings with an average of 3</p>
 </div>
 <p>This shouldn't be too surprising--you are using a web script to exercise the same behavior as the integration test, but at least this way you can log in to Share and see for yourself that the behavior works.</p>
 <h1 id="deploying-the-amps-to-your-alfresco-server">Deploying the AMPs to your Alfresco server</h1>
