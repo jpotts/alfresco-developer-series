@@ -126,7 +126,7 @@ Log in using "admin" and "admin" to see the list of deployed web scripts.
 
 Because you chose to base your project off of the "all-in-one" archetype, not only did you get the Alfresco WAR with your sample AMP deployed, but also the Share WAR is up-and-running. That means you can go to:
 
-    http://localhost:8080/Share
+    http://localhost:8080/share
 
 And log in to navigate the repository, leverage the admin console, and so on.
 
