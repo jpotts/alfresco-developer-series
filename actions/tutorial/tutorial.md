@@ -113,7 +113,7 @@ those need to go into the pom.xml file as module dependencies:
         <moduleDependency>
             <groupId>com.someco</groupId>
             <artifactId>content-tutorial-platform-jar</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
+            <version>1.0-SNAPSHOT</version>
             <type>amp</type>
         </moduleDependency>
         ...SNIP...
