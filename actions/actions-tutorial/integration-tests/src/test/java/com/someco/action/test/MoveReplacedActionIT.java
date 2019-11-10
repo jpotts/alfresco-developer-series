@@ -32,8 +32,8 @@ public class MoveReplacedActionIT extends AbstractAlfrescoIT {
     @Test
     public void testGetAction() {
         ActionService actionService = getServiceRegistry().getActionService();
-    	Action action = actionService.createAction("move-replaced");
-    	Assert.assertNotNull(action);
+        Action action = actionService.createAction("move-replaced");
+        Assert.assertNotNull(action);
     }
 
     @Test
@@ -51,22 +51,22 @@ public class MoveReplacedActionIT extends AbstractAlfrescoIT {
 
         // create content node
         ChildAssociationRef association = nodeService.createNode(
-        				companyHome,
-                        ContentModel.ASSOC_CONTAINS,
-                        QName.createQName(NamespaceService.CONTENT_MODEL_PREFIX, name),
-                        ContentModel.TYPE_CONTENT,
-                        contentProps
-                        );
+                companyHome,
+                ContentModel.ASSOC_CONTAINS,
+                QName.createQName(NamespaceService.CONTENT_MODEL_PREFIX, name),
+                ContentModel.TYPE_CONTENT,
+                contentProps
+        );
 
         NodeRef content = association.getChildRef();
 
         NodeRef targetFolder = nodeLocatorService.getNode(UserHomeNodeLocator.NAME, null, null);
 
-    	Action action = actionService.createAction("move-replaced");
-    	action.setParameterValue("destination-folder", targetFolder);
-    	actionService.executeAction(action, content);
+        Action action = actionService.createAction("move-replaced");
+        action.setParameterValue("destination-folder", targetFolder);
+        actionService.executeAction(action, content);
 
-    	nodeService.deleteNode(content);
+        nodeService.deleteNode(content);
     }
 
 }
