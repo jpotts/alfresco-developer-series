@@ -6,7 +6,7 @@ services:
       dockerfile: ./Dockerfile
       context: ../../../maven-sdk-tutorial-share-docker/target
     environment:
-      CATALINA_OPTS: "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=8888"
+      CATALINA_OPTS: "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=0.0.0.0:8888"
       REPO_HOST: maven-sdk-tutorial-acs
       REPO_PORT: 8080
     ports:
@@ -18,7 +18,7 @@ services:
       dockerfile: ./Dockerfile
       context: ../../../maven-sdk-tutorial-platform-docker/target
     environment:
-      CATALINA_OPTS: "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=8888"
+      CATALINA_OPTS: "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=0.0.0.0:8888"
     ports:
       - "${acs.port}:8080"
       - "${acs.debug.port}:8888"
@@ -32,6 +32,7 @@ services:
       POSTGRES_DB: alfresco
       POSTGRES_USER: alfresco
       POSTGRES_PASSWORD: alfresco
+    command: postgres -c max_connections=300 -c log_min_messages=LOG
     ports:
       - "${postgres.port}:5432"
     volumes:
