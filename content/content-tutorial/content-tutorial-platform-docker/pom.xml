@@ -19,7 +19,7 @@
     <dependencies>
         <dependency>
             <groupId>com.someco</groupId>
-            <artifactId>content-tutorial-platform-jar</artifactId>
+            <artifactId>content-tutorial-platform</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
     </dependencies>
@@ -42,7 +42,7 @@
                             <artifactItems>
                                 <artifactItem>
                                     <groupId>com.someco</groupId>
-                                    <artifactId>content-tutorial-platform-jar</artifactId>
+                                    <artifactId>content-tutorial-platform</artifactId>
                                     <version>1.0-SNAPSHOT</version>
                                     <overWrite>false</overWrite>
                                     <outputDirectory>${project.build.directory}/extensions</outputDirectory>

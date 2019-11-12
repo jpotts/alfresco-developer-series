@@ -241,7 +241,7 @@ Now that you have a project that is ready to package your customizations you can
 1. Models belong in a directory called “model” in your project's module directory, which is:
 
     ```
-    $TUTORIAL_HOME/content-tutorial-platform-jar/src/main/resources/alfresco/module/content-tutorial-platform-jar
+    $TUTORIAL_HOME/content-tutorial-platform/src/main/resources/alfresco/module/content-tutorial-platform
     ```
 
     If the "model" directory does not exist when the project is initially created by the Alfresco Maven SDK, go ahead and create it now. If it does exist and there are files in it, delete them now.
@@ -369,7 +369,7 @@ Here's an important note about the content model schema that may save you some t
 
 The next step is to **register the new model with a Spring bean** in a Spring context file. You'll find that the Alfresco Maven SDK has already created a Spring context file for your module in:
 
-    $TUTORIAL_HOME/content-tutorial-platform-jar/src/main/resources/alfresco/module/content-tutorial-platform-jar/context
+    $TUTORIAL_HOME/content-tutorial-platform/src/main/resources/alfresco/module/content-tutorial-platform/context
 
 The file is named bootstrap-context.xml. If you open that file you'll see that two Spring beans are already there. They were created by the Alfresco Maven SDK and they are used to wire in an example content model, workflow model, and sample workflows.
 
@@ -394,7 +394,7 @@ Notice the `${project.artifactId}` placeholder. That will be automatically repla
 
 The last step is to test your changes. The Alfresco Maven SDK makes that easy. Do this:
 
-1. From the command line, change directories to $TUTORIAL_HOME/content-tutorial-platform-jar.
+1. From the command line, change directories to $TUTORIAL_HOME/content-tutorial-platform.
 2. Run:
 
     ```
@@ -424,9 +424,9 @@ If you still have problems, post as much detail as you can in the [Alfresco Foru
 
 You have now created an AMP that contains a custom content model. If you go look in:
 
-    $TUTORIAL_HOME/content-tutorial-platform-jar/target
+    $TUTORIAL_HOME/content-tutorial-platform/target
 
-you'll see a file named content-tutorial-platform-jar-1.0-SNAPSHOT.amp. That AMP can be installed in an Alfresco installation. For example, if you are running Alfresco using the binary installer, you can copy the AMP to `$ALFRESCO_HOME/amps` and then run `$ALFRESCO_HOME/bin/apply_amps.sh` to install the AMP into your Alfresco web application.
+you'll see a file named content-tutorial-platform-1.0-SNAPSHOT.amp. That AMP can be installed in an Alfresco installation. For example, if you are running Alfresco using the binary installer, you can copy the AMP to `$ALFRESCO_HOME/amps` and then run `$ALFRESCO_HOME/bin/apply_amps.sh` to install the AMP into your Alfresco web application.
 
 For the purpose of this tutorial, though, let's keep moving. You've got your content model defined but the Alfresco Share user interface doesn't know anything about it yet. You'll learn how to do that next.
 
@@ -463,7 +463,7 @@ Let's do it.
 
 ### Step 1: Create a custom Share configuration file
 
-A module called "content-repo-share-jar" was added to our project when we created the content-tutorial project using the Alfresco SDK using the "all-in-one" archetype.
+A module called "content-repo-share" was added to our project when we created the content-tutorial project using the Alfresco SDK using the "all-in-one" archetype.
 
 Alfresco Share uses a configuration file called "share-config-custom.xml". The share-config-custom.xml file is a proprietary file composed of numerous “config” elements. Each config element has an “evaluator” and a “condition”. Extending the out-of-the-box Share configuration is a matter of knowing which evaluator/condition to use.
 
@@ -471,7 +471,7 @@ The location of the share-config-custom.xml file is a little counter-intuitive. 
 
 Create an empty XML file called "share-config-custom.xml" in:
 
-    $TUTORIAL_HOME/content-tutorial-share-jar/src/main/resources/META-INF
+    $TUTORIAL_HOME/content-tutorial-share/src/main/resources/META-INF
 
 We'll add to that file in the next sections.
 
@@ -773,7 +773,7 @@ Localizing Strings for Custom Content Models
 
 We’ve put off localizing the form labels until now. To fix this, first create a messages bundle, then register it with a Spring bean. Here are the steps:
 
-1. Create a new folder called "messages" in $TUTORIAL_HOME/content-tutorial-share-jar/src/main/resources/alfresco/web-extension. If the folder is already there, delete any files that may already be present.
+1. Create a new folder called "messages" in $TUTORIAL_HOME/content-tutorial-share/src/main/resources/alfresco/web-extension. If the folder is already there, delete any files that may already be present.
 2. In the messages folder, create a new file called "scModel.properties" with the following content:
 
     ```
@@ -796,8 +796,8 @@ We’ve put off localizing the form labels until now. To fix this, first create 
     prop.sc_version=Version
     ```
 
-3. We need to register this properties bundle with Spring. Share does not look in module directories for Spring context files. Instead, it uses the web-extension folder. That folder already exists in $TUTORIAL_HOME/content-tutorial-share-jar/src/main/resources/alfresco.
-4. In the web-extension folder, create a new file called "content-tutorial-share-jar-context.xml". I am using the `artifactId` as part of the file name because this file will ultimately end up in a folder that may contain other Spring configuration files and I don't want this one to collide with any of those. If the SDK already placed a similar file in the folder, it is okay to use it instead, just clear out the contents of the file.
+3. We need to register this properties bundle with Spring. Share does not look in module directories for Spring context files. Instead, it uses the web-extension folder. That folder already exists in $TUTORIAL_HOME/content-tutorial-share/src/main/resources/alfresco.
+4. In the web-extension folder, create a new file called "content-tutorial-share-context.xml". I am using the `artifactId` as part of the file name because this file will ultimately end up in a folder that may contain other Spring configuration files and I don't want this one to collide with any of those. If the SDK already placed a similar file in the folder, it is okay to use it instead, just clear out the contents of the file.
 5. Add the following content to the file, then save:
 
     ```xml
@@ -805,7 +805,7 @@ We’ve put off localizing the form labels until now. To fix this, first create 
 
     <beans>
         <!-- Add Someco messages -->
-        <bean id="com.someco.content-tutorial-share-jar.resources" class="org.springframework.extensions.surf.util.ResourceBundleBootstrapComponent">
+        <bean id="com.someco.content-tutorial-share.resources" class="org.springframework.extensions.surf.util.ResourceBundleBootstrapComponent">
             <property name="resourceBundles">
                 <list>
                     <value>alfresco.web-extension.messages.scModel</value>
@@ -874,7 +874,7 @@ To create the CMIS project, do this:
     </dependency>
     ```
 
-The content-tutorial-cmis project depends on some constants that are related to our custom content model, so those make sense to be defined in the content-tutorial project within the content-tutorial-platform-jar module. For this tutorial, all we need is the com.someco.model.SomeCoModel.java class which contains constants that map to the custom content model. These constants are used for convenience by Java classes that need to know things like namespaces, names of content types, etc. If you are building your own project just copy it from the source.
+The content-tutorial-cmis project depends on some constants that are related to our custom content model, so those make sense to be defined in the content-tutorial project within the content-tutorial-platform module. For this tutorial, all we need is the com.someco.model.SomeCoModel.java class which contains constants that map to the custom content model. These constants are used for convenience by Java classes that need to know things like namespaces, names of content types, etc. If you are building your own project just copy it from the source.
 
 CMIS 1.0 and the Alfresco OpenCMIS Extension Library
 ----------------------------------------------------
