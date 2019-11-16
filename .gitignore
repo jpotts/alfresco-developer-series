@@ -30,6 +30,7 @@ alfresco.log.*
 solr.log.*
 share.log.*
 target
+*.iml
 behaviors/behavior-tutorial-repo/.idea
 behaviors/behavior-tutorial-share/.idea
 behaviors/behavior-tutorial-common/.idea

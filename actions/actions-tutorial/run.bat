@@ -93,13 +93,13 @@ EXIT /B 0
     docker-compose -f "%COMPOSE_FILE_PATH%" kill actions-tutorial-share
     docker-compose -f "%COMPOSE_FILE_PATH%" rm -f actions-tutorial-share
     docker rmi alfresco-share-actions-tutorial:development
-	call %MVN_EXEC% clean install -DskipTests -pl actions-tutorial-share-jar
+	call %MVN_EXEC% clean install -DskipTests -pl actions-tutorial-share
 EXIT /B 0
 :build_acs
     docker-compose -f "%COMPOSE_FILE_PATH%" kill actions-tutorial-acs
     docker-compose -f "%COMPOSE_FILE_PATH%" rm -f actions-tutorial-acs
     docker rmi alfresco-content-services-actions-tutorial:development
-	call %MVN_EXEC% clean install -DskipTests -pl actions-tutorial-platform-jar
+	call %MVN_EXEC% clean install -DskipTests -pl actions-tutorial-platform
 EXIT /B 0
 :tail
     docker-compose -f "%COMPOSE_FILE_PATH%" logs -f

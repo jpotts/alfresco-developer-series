@@ -43,14 +43,14 @@ build_share() {
     docker-compose -f $COMPOSE_FILE_PATH kill actions-tutorial-share
     yes | docker-compose -f $COMPOSE_FILE_PATH rm -f actions-tutorial-share
     docker rmi alfresco-share-actions-tutorial:development
-    $MVN_EXEC clean install -DskipTests=true -pl actions-tutorial-share-jar
+    $MVN_EXEC clean install -DskipTests=true -pl actions-tutorial-share
 }
 
 build_acs() {
     docker-compose -f $COMPOSE_FILE_PATH kill actions-tutorial-acs
     yes | docker-compose -f $COMPOSE_FILE_PATH rm -f actions-tutorial-acs
     docker rmi alfresco-content-services-actions-tutorial:development
-    $MVN_EXEC clean install -DskipTests=true -pl actions-tutorial-platform-jar
+    $MVN_EXEC clean install -DskipTests=true -pl actions-tutorial-platform
 }
 
 tail() {

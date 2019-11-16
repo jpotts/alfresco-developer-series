@@ -8,28 +8,28 @@
     <description>All-In-One (AIO) project for SDK 4.0</description>
     <packaging>pom</packaging>
 
+    <prerequisites>
+        <maven>3.3.0</maven>
+    </prerequisites>
+
     <properties>
         <!-- Alfresco Maven Plugin version to use -->
-        <alfresco.sdk.version>4.0.0-beta-1</alfresco.sdk.version>
+        <alfresco.sdk.version>4.0.0</alfresco.sdk.version>
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
         <!-- Properties used in dependency declarations, you don't need to change these -->
         <alfresco.groupId>org.alfresco</alfresco.groupId>
         <alfresco.bomDependencyArtifactId>acs-community-packaging</alfresco.bomDependencyArtifactId>
-        <alfresco.platform.version>6.0.7-ga</alfresco.platform.version>
-        <alfresco.share.version>6.0.b</alfresco.share.version>
+        <alfresco.platform.version>6.1.2-ga</alfresco.platform.version>
+        <alfresco.share.version>6.1.0-RC3</alfresco.share.version>
 
         <!-- Docker images -->
         <docker.acs.image>alfresco/alfresco-content-repository-community</docker.acs.image>
         <docker.share.image>alfresco/alfresco-share</docker.share.image>
 
         <!-- JRebel Hot reloading of classpath stuff and web resource stuff -->
-        <jrebel.version>1.1.6</jrebel.version>
-
-        <!-- Compile with Java 8, default is 5 -->
-        <maven.compiler.source>1.8</maven.compiler.source>
-        <maven.compiler.target>1.8</maven.compiler.target>
+        <jrebel.version>1.1.8</jrebel.version>
 
         <!-- Environment configuration properties -->
         <share.port>8180</share.port>
@@ -50,7 +50,6 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.12</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -62,7 +61,6 @@
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>
-            <version>4.5.2</version>
             <scope>test</scope>
         </dependency>
 
@@ -164,7 +162,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-resources-plugin</artifactId>
-                    <version>3.0.1</version>
+                    <version>3.1.0</version>
                     <configuration>
                         <encoding>UTF-8</encoding>
                         <nonFilteredFileExtensions> <!-- jpg, jpeg, gif, bmp and png are added automatically -->
@@ -195,6 +193,53 @@
                         </nonFilteredFileExtensions>
                     </configuration>
                 </plugin>
+
+                <plugin>
+                    <groupId>org.zeroturnaround</groupId>
+                    <artifactId>jrebel-maven-plugin</artifactId>
+                    <version>${jrebel.version}</version>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-jar-plugin</artifactId>
+                    <version>3.1.0</version>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-failsafe-plugin</artifactId>
+                    <version>3.0.0-M1</version>
+                    <executions>
+                        <execution>
+                            <id>integration-test</id>
+                            <phase>integration-test</phase>
+                            <goals>
+                                <goal>integration-test</goal>
+                            </goals>
+                        </execution>
+                        <execution>
+                            <id>verify-test</id>
+                            <phase>verify</phase>
+                            <goals>
+                                <goal>verify</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                    <dependencies>
+                        <dependency>
+                            <groupId>org.apache.maven.surefire</groupId>
+                            <artifactId>surefire-junit47</artifactId>
+                            <version>3.0.0-M1</version>
+                        </dependency>
+                    </dependencies>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-dependency-plugin</artifactId>
+                    <version>3.1.1</version>
+                </plugin>
             </plugins>
         </pluginManagement>
 
@@ -206,14 +251,12 @@
             </resource>
         </resources>
 
-
         <plugins>
             <!-- Filter the test resource files in the AIO parent project, and do property substitutions.
                  We need this config so this is done before the Alfresco Maven Plugin 'run' is executed. -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-resources-plugin</artifactId>
-                <version>3.0.1</version>
                 <inherited>false</inherited>
                 <!-- Run only for the AIO parent Project -->
                 <executions>
@@ -236,11 +279,60 @@
                 </executions>
             </plugin>
 
+            <!-- Compress JavaScript files and store as *-min.js -->
+            <plugin>
+                <groupId>net.alchim31.maven</groupId>
+                <artifactId>yuicompressor-maven-plugin</artifactId>
+                <version>1.5.1</version>
+                <executions>
+                    <!-- Compress the JS files under the assembly folder -->
+                    <execution>
+                        <id>compress-assembly</id>
+                        <goals>
+                            <goal>compress</goal>
+                        </goals>
+                        <configuration>
+                            <sourceDirectory>${project.basedir}/src/main/assembly/web</sourceDirectory>
+                            <outputDirectory>${project.basedir}/src/main/assembly/web</outputDirectory>
+                            <excludes>
+                                <exclude>**/webscripts/**</exclude>
+                                <exclude>**/site-webscripts/**</exclude>
+                                <exclude>**/META-INF/**</exclude>
+                                <exclude>**/*.lib.js</exclude>
+                                <exclude>**/*.css</exclude>
+                                <exclude>**/*-min.js</exclude>
+                                <exclude>**/*-min.css</exclude>
+                            </excludes>
+                            <force>true</force>
+                            <jswarn>false</jswarn>
+                        </configuration>
+                    </execution>
+                    <!-- Compress the JS files under the resources folder -->
+                    <execution>
+                        <id>compress-resources</id>
+                        <goals>
+                            <goal>compress</goal>
+                        </goals>
+                        <configuration>
+                            <excludes>
+                                <exclude>**/webscripts/**</exclude>
+                                <exclude>**/site-webscripts/**</exclude>
+                                <exclude>**/*.lib.js</exclude>
+                                <exclude>**/*.css</exclude>
+                                <exclude>**/*-min.js</exclude>
+                                <exclude>**/*-min.css</exclude>
+                            </excludes>
+                            <force>true</force>
+                            <jswarn>false</jswarn>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
             <!-- Hot reloading with JRebel -->
             <plugin>
                 <groupId>org.zeroturnaround</groupId>
                 <artifactId>jrebel-maven-plugin</artifactId>
-                <version>${jrebel.version}</version>
                 <executions>
                     <execution>
                         <id>generate-rebel-xml</id>
@@ -273,6 +365,46 @@
             </plugin>
         </plugins>
     </build>
+
+    <profiles>
+        <profile>
+            <id>java8</id>
+            <activation>
+                <jdk>[1.8,11.0)</jdk>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-compiler-plugin</artifactId>
+                        <version>3.8.0</version>
+                        <configuration>
+                            <source>1.8</source>
+                            <target>1.8</target>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>java11</id>
+            <activation>
+                <jdk>[11.0,)</jdk>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-compiler-plugin</artifactId>
+                        <version>3.8.0</version>
+                        <configuration>
+                            <release>11</release>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 
     <!--
         Alfresco Maven Repositories
@@ -312,9 +444,9 @@
         </pluginRepository>
     </pluginRepositories>
   <modules>
-    <module>actions-tutorial-platform-jar</module>
-    <module>actions-tutorial-share-jar</module>
-    <module>integration-tests</module>
+    <module>actions-tutorial-platform</module>
+    <module>actions-tutorial-share</module>
+    <module>actions-tutorial-integration-tests</module>
     <module>actions-tutorial-platform-docker</module>
     <module>actions-tutorial-share-docker</module>
   </modules>

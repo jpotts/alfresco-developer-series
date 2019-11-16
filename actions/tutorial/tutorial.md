@@ -127,13 +127,15 @@ need to be set up as dependencies in the pom.xml of the platform docker module:
     <dependencies>
         <dependency>
             <groupId>com.someco</groupId>
-            <artifactId>actions-tutorial-platform-jar</artifactId>
+            <artifactId>actions-tutorial-platform</artifactId>
             <version>1.0-SNAPSHOT</version>
+            <type>amp</type>
         </dependency>
         <dependency>
             <groupId>com.someco</groupId>
-            <artifactId>content-tutorial-platform-jar</artifactId>
+            <artifactId>content-tutorial-platform</artifactId>
             <version>1.0-SNAPSHOT</version>
+            <type>amp</type>            
         </dependency>
     </dependencies>
     ```
@@ -144,27 +146,29 @@ need to be set up as dependencies in the pom.xml of the platform docker module:
     <dependencies>
         <dependency>
             <groupId>com.someco</groupId>
-            <artifactId>actions-tutorial-share-jar</artifactId>
+            <artifactId>actions-tutorial-share</artifactId>
             <version>1.0-SNAPSHOT</version>
+            <type>amp</type>
         </dependency>    
         <dependency>
             <groupId>com.someco</groupId>
-            <artifactId>content-tutorial-share-jar</artifactId>
-            <version>1.0-SNAPSHOT</version>      
+            <artifactId>content-tutorial-share</artifactId>
+            <version>1.0-SNAPSHOT</version>
+            <type>amp</type>
         </dependency>        
     </dependencies>
     ```
 
 3. Third, not only do we want the content tutorial AMPs installed, but the
-actions tutorial actually has a compile-time dependency on that pject. So, go
-into the "actions-tutorial-platform-jar" directory and add the dependency to the
+actions tutorial actually has a compile-time dependency on that project. So, go
+into the "actions-tutorial-platform" directory and add the dependency to the
 pom.xml:
 
     ```xml
     <dependencies>
         <dependency>
             <groupId>com.someco</groupId>
-            <artifactId>content-tutorial-platform-jar</artifactId>
+            <artifactId>content-tutorial-platform</artifactId>
             <version>1.0-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
@@ -309,7 +313,7 @@ association.
 Alfresco's executer class for the Move action is called
 `org.alfresco.repo.action.executer.MoveActionExecuter`. If you have the
 Alfresco source you can find it in the repository project. I'll copy it
-into my own repository project and call it "[MoveReplacedActionExecuter](https://github.com/jpotts/alfresco-developer-series/blob/master/actions/actions-tutorial/actions-tutorial-platform-jar/src/main/java/com/someco/action/executer/MoveReplacedActionExecuter.java)".
+into my own repository project and call it "[MoveReplacedActionExecuter](https://github.com/jpotts/alfresco-developer-series/blob/master/actions/actions-tutorial/actions-tutorial-platform/src/main/java/com/someco/action/executer/MoveReplacedActionExecuter.java)".
 
 The out-of-the-box `executeImpl()` method is where the move logic is handled.
 It looks like this:
@@ -373,7 +377,7 @@ In the content types tutorial, you learned that Spring bean configurations go in
 the context file for the AMP. That file is called "service-context.xml" and it
 resides in:
 
-    $TUTORIAL_HOME/actions-tutorial-platform-jar/src/main/resources/alfresco/module/actions-tutorial-platform-jar/context
+    $TUTORIAL_HOME/actions-tutorial-platform/src/main/resources/alfresco/module/actions-tutorial-platform/context
 
 The file is created for you by the Alfresco Maven SDK. Initially, it contains
 some `bean` elements for some demo classes that are also created by the Alfresco
@@ -404,7 +408,7 @@ to get the action. For the Move Replaced action, I also execute the action.
 
 If you are following along, you can copy the `MoveReplacedActionIT` class into:
 
-    $TUTORIAL_HOME/actions-tutorial-platform-jar/src/test/java/com/someco/action/test
+    $TUTORIAL_HOME/actions-tutorial-platform/src/test/java/com/someco/action/test
 
 Once you do that (or if you have simply checked out the tutorial source from
 GitHub) you can then run `./run.sh build_start` to start up the Alfresco Docker
@@ -541,7 +545,7 @@ each of these actions needs to be set.
 Following the same pattern as the content tutorial, I created a "messages"
 folder in:
 
-    $TUTORIAL_HOME/actions-tutorial-platform-jar/src/main/resources/alfresco/module/actions-tutorial-platform-jar
+    $TUTORIAL_HOME/actions-tutorial-platform/src/main/resources/alfresco/module/actions-tutorial-platform
 
 It is okay to delete the demo properties file that the SDK may have put in the
 messages folder.
@@ -609,7 +613,7 @@ actions-tutorial-share project will have its own share-config-custom.xml that
 contains Share configuration specific to the custom actions. The file resides
 under:
 
-    $TUTORIAL_HOME/actions-tutorial-share-jar/src/main/resources/META-INF
+    $TUTORIAL_HOME/actions-tutorial-share/src/main/resources/META-INF
 
 You can replace the demo config elements the SDK populated in
 share-config-custom.xml as instructed in this section.
@@ -674,7 +678,7 @@ The last step in exposing the `cm:replaceable` aspect and `cm:replaces`
 association is localizing the labels. As you saw in the content types tutorial,
 custom labels go in:
 
-    $TUTORIAL_HOME/actions-tutorial-share-jar/src/main/resources/alfresco/web-extension/messages
+    $TUTORIAL_HOME/actions-tutorial-share/src/main/resources/alfresco/web-extension/messages
 
 The SDK probably created a demo properties file in that directory. Delete it.
 
@@ -690,7 +694,7 @@ assoc.cm_replaces=Replaces
 The custom properties file needs to be configured using Spring. So, again, just
 like the custom content types tutorial, I'll edit a context file called "actions-tutorial-slingshot-application-context.xml" in:
 
-    $TUTORIAL_HOME/actions-tutorial-share-jar/src/main/resources/alfresco/web-extension
+    $TUTORIAL_HOME/actions-tutorial-share/src/main/resources/alfresco/web-extension
 
 Replace the demo bean that the SDK created for you with this:
 
@@ -753,7 +757,7 @@ rule-config-action.get.config.xml file from:
 into your own project. For example, in the code that accompanies this
 tutorial, I copied the file into:
 
-    $TUTORIAL_HOME/actions-tutorial-share-jar/src/main/resources/alfresco/web-extension/site-webscripts/org/alfresco/components/rules/config
+    $TUTORIAL_HOME/actions-tutorial-share/src/main/resources/alfresco/web-extension/site-webscripts/org/alfresco/components/rules/config
 
 The first change is to specify a custom client-side JavaScript
 component:
@@ -812,7 +816,7 @@ copied from:
 
 Into the tutorial project under:
 
-    $TUTORIAL_HOME/actions-tutorial-share-jar/src/main/resources/alfresco/web-extension/site-webscripts/org/alfresco/components/rules
+    $TUTORIAL_HOME/actions-tutorial-share/src/main/resources/alfresco/web-extension/site-webscripts/org/alfresco/components/rules
 
 In both files, the new `script` element is added to the end of the JavaScript
 dependencies, like this:
@@ -838,7 +842,7 @@ The FreeMarker files have been modified to include a reference to a file
 called rule-config-action-custom.js. This file will contain client-side
 JavaScript. It goes in:
 
-    $TUTORIAL_HOME/actions-tutorial-share-jar/src/main/resources/META-INF/resources/components/someco/rules/config
+    $TUTORIAL_HOME/actions-tutorial-share/src/main/resources/META-INF/resources/components/someco/rules/config
 
 Alfresco has their rule-related client-side JavaScript under
 “components/rules/config” so I used the same folder structure, using "someco" to
@@ -856,7 +860,7 @@ if (typeof SomeCo == "undefined" || !SomeCo)
 ```
 
 Next, comes the constructor for the component (I've left out some boring stuff,
-check the [source](https://github.com/jpotts/alfresco-developer-series/blob/master/actions/actions-tutorial/actions-tutorial-share-jar/src/main/resources/META-INF/resources/components/someco/rules/config/rule-config-action-custom.js) for the full listing):
+check the [source](https://github.com/jpotts/alfresco-developer-series/blob/master/actions/actions-tutorial/actions-tutorial-share/src/main/resources/META-INF/resources/components/someco/rules/config/rule-config-action-custom.js) for the full listing):
 
 ```javascript
 SomeCo.RuleConfigActionCustom = function(htmlId)
@@ -1124,7 +1128,7 @@ ends with “-16.png”. Entirely lacking in graphics skills, I grabbed a
 couple of out-of-the-box icons that looked somewhat applicable and
 copied them in to my project under:
 
-    $TUTORIAL_HOME/actions-tutorial-share-jar/src/main/resources/META-INF/resources/components/documentlibrary/actions
+    $TUTORIAL_HOME/actions-tutorial-share/src/main/resources/META-INF/resources/components/documentlibrary/actions
 
 Because this is Alfresco's folder structure, I made sure to name the icons
 starting with “someco” so they would not be confused with others.
@@ -1298,7 +1302,7 @@ this case, the one created earlier can be reused:
 Alfresco will use the indicator's id attribute appended with “-16.png”
 for the icon. I copied the same icon used for the “enable” action into:
 
-    $TUTORIAL_HOME/actions-tutorial-share-jar/src/main/resources/META-INF/resources/components/documentlibrary/indicators
+    $TUTORIAL_HOME/actions-tutorial-share/src/main/resources/META-INF/resources/components/documentlibrary/indicators
 
 for this purpose.
 

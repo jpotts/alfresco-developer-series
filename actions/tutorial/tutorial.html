@@ -174,33 +174,37 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <div class="sourceCode"><pre class="sourceCode xml"><code class="sourceCode xml"><span class="kw">&lt;dependencies&gt;</span>
     <span class="kw">&lt;dependency&gt;</span>
         <span class="kw">&lt;groupId&gt;</span>com.someco<span class="kw">&lt;/groupId&gt;</span>
-        <span class="kw">&lt;artifactId&gt;</span>actions-tutorial-platform-jar<span class="kw">&lt;/artifactId&gt;</span>
+        <span class="kw">&lt;artifactId&gt;</span>actions-tutorial-platform<span class="kw">&lt;/artifactId&gt;</span>
         <span class="kw">&lt;version&gt;</span>1.0-SNAPSHOT<span class="kw">&lt;/version&gt;</span>
+        <span class="kw">&lt;type&gt;</span>amp<span class="kw">&lt;/type&gt;</span>
     <span class="kw">&lt;/dependency&gt;</span>
     <span class="kw">&lt;dependency&gt;</span>
         <span class="kw">&lt;groupId&gt;</span>com.someco<span class="kw">&lt;/groupId&gt;</span>
-        <span class="kw">&lt;artifactId&gt;</span>content-tutorial-platform-jar<span class="kw">&lt;/artifactId&gt;</span>
+        <span class="kw">&lt;artifactId&gt;</span>content-tutorial-platform<span class="kw">&lt;/artifactId&gt;</span>
         <span class="kw">&lt;version&gt;</span>1.0-SNAPSHOT<span class="kw">&lt;/version&gt;</span>
+        <span class="kw">&lt;type&gt;</span>amp<span class="kw">&lt;/type&gt;</span>            
     <span class="kw">&lt;/dependency&gt;</span>
 <span class="kw">&lt;/dependencies&gt;</span></code></pre></div>
 <p>And also in the pom.xml of the share docker module:</p>
 <div class="sourceCode"><pre class="sourceCode xml"><code class="sourceCode xml"><span class="kw">&lt;dependencies&gt;</span>
     <span class="kw">&lt;dependency&gt;</span>
         <span class="kw">&lt;groupId&gt;</span>com.someco<span class="kw">&lt;/groupId&gt;</span>
-        <span class="kw">&lt;artifactId&gt;</span>actions-tutorial-share-jar<span class="kw">&lt;/artifactId&gt;</span>
+        <span class="kw">&lt;artifactId&gt;</span>actions-tutorial-share<span class="kw">&lt;/artifactId&gt;</span>
         <span class="kw">&lt;version&gt;</span>1.0-SNAPSHOT<span class="kw">&lt;/version&gt;</span>
+        <span class="kw">&lt;type&gt;</span>amp<span class="kw">&lt;/type&gt;</span>
     <span class="kw">&lt;/dependency&gt;</span>    
     <span class="kw">&lt;dependency&gt;</span>
         <span class="kw">&lt;groupId&gt;</span>com.someco<span class="kw">&lt;/groupId&gt;</span>
-        <span class="kw">&lt;artifactId&gt;</span>content-tutorial-share-jar<span class="kw">&lt;/artifactId&gt;</span>
-        <span class="kw">&lt;version&gt;</span>1.0-SNAPSHOT<span class="kw">&lt;/version&gt;</span>      
+        <span class="kw">&lt;artifactId&gt;</span>content-tutorial-share<span class="kw">&lt;/artifactId&gt;</span>
+        <span class="kw">&lt;version&gt;</span>1.0-SNAPSHOT<span class="kw">&lt;/version&gt;</span>
+        <span class="kw">&lt;type&gt;</span>amp<span class="kw">&lt;/type&gt;</span>
     <span class="kw">&lt;/dependency&gt;</span>        
 <span class="kw">&lt;/dependencies&gt;</span></code></pre></div></li>
-<li><p>Third, not only do we want the content tutorial AMPs installed, but the actions tutorial actually has a compile-time dependency on that pject. So, go into the &quot;actions-tutorial-platform-jar&quot; directory and add the dependency to the pom.xml:</p>
+<li><p>Third, not only do we want the content tutorial AMPs installed, but the actions tutorial actually has a compile-time dependency on that project. So, go into the &quot;actions-tutorial-platform&quot; directory and add the dependency to the pom.xml:</p>
 <div class="sourceCode"><pre class="sourceCode xml"><code class="sourceCode xml"><span class="kw">&lt;dependencies&gt;</span>
     <span class="kw">&lt;dependency&gt;</span>
         <span class="kw">&lt;groupId&gt;</span>com.someco<span class="kw">&lt;/groupId&gt;</span>
-        <span class="kw">&lt;artifactId&gt;</span>content-tutorial-platform-jar<span class="kw">&lt;/artifactId&gt;</span>
+        <span class="kw">&lt;artifactId&gt;</span>content-tutorial-platform<span class="kw">&lt;/artifactId&gt;</span>
         <span class="kw">&lt;version&gt;</span>1.0-SNAPSHOT<span class="kw">&lt;/version&gt;</span>
         <span class="kw">&lt;scope&gt;</span>provided<span class="kw">&lt;/scope&gt;</span>
     <span class="kw">&lt;/dependency&gt;</span>
@@ -249,7 +253,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <h3 id="step-1-write-the-action-executer-class">Step 1: Write the action executer class</h3>
 <p>At its most basic, an action consists of an Action Executer class and its associated Spring bean configuration. Implementing an action involves extending <code>ActionExecuterAbstractBase</code> and then implementing the <code>executeImpl()</code> method. Before starting, though, think about similar code that might already exist within Alfresco that might be a good starting point for the new action. Alfresco is open source--it would be a shame to ignore that valuable resource. Plus, following the same patterns to implement this customization will make it easier for someone to support and makes it easier to share our code with others or even to contribute the code back to the Alfresco community project.</p>
 <p>The new action is doing a move, so the existing Move action is a good place to start. In fact, the only difference between the Move action and the custom Move Replaced action is that the node being moved isn't the current node--it's the node on the target end of a &quot;replaces&quot; association.</p>
-<p>Alfresco's executer class for the Move action is called <code>org.alfresco.repo.action.executer.MoveActionExecuter</code>. If you have the Alfresco source you can find it in the repository project. I'll copy it into my own repository project and call it &quot;<a href="https://github.com/jpotts/alfresco-developer-series/blob/master/actions/actions-tutorial/actions-tutorial-platform-jar/src/main/java/com/someco/action/executer/MoveReplacedActionExecuter.java">MoveReplacedActionExecuter</a>&quot;.</p>
+<p>Alfresco's executer class for the Move action is called <code>org.alfresco.repo.action.executer.MoveActionExecuter</code>. If you have the Alfresco source you can find it in the repository project. I'll copy it into my own repository project and call it &quot;<a href="https://github.com/jpotts/alfresco-developer-series/blob/master/actions/actions-tutorial/actions-tutorial-platform/src/main/java/com/someco/action/executer/MoveReplacedActionExecuter.java">MoveReplacedActionExecuter</a>&quot;.</p>
 <p>The out-of-the-box <code>executeImpl()</code> method is where the move logic is handled. It looks like this:</p>
 <div class="sourceCode"><pre class="sourceCode java"><code class="sourceCode java"><span class="kw">public</span> <span class="dt">void</span> <span class="fu">executeImpl</span>(Action ruleAction, NodeRef actionedUponNodeRef)
 {
@@ -291,7 +295,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <p>The only other change needed is to change the value of the constant NAME from &quot;move&quot; to &quot;move-replaced&quot;. (Throughout this document I'll only include relevant pieces of these classes—check the source that accompanies this tutorial for code that actually compiles).</p>
 <h3 id="step-2-configure-the-action-in-spring">Step 2: Configure the action in Spring</h3>
 <p>In the content types tutorial, you learned that Spring bean configurations go in the context file for the AMP. That file is called &quot;service-context.xml&quot; and it resides in:</p>
-<pre><code>$TUTORIAL_HOME/actions-tutorial-platform-jar/src/main/resources/alfresco/module/actions-tutorial-platform-jar/context</code></pre>
+<pre><code>$TUTORIAL_HOME/actions-tutorial-platform/src/main/resources/alfresco/module/actions-tutorial-platform/context</code></pre>
 <p>The file is created for you by the Alfresco Maven SDK. Initially, it contains some <code>bean</code> elements for some demo classes that are also created by the Alfresco Maven SDK. It is safe to delete the demo beans. If you deleted the demo Java code that the SDK created, you must also delete the demo beans.</p>
 <p>Add the following <code>bean</code> element to the existing <code>beans</code> element:</p>
 <div class="sourceCode"><pre class="sourceCode xml"><code class="sourceCode xml"><span class="kw">&lt;bean</span><span class="ot"> id=</span><span class="st">&quot;move-replaced&quot;</span><span class="ot"> class=</span><span class="st">&quot;com.someco.action.executer.MoveReplacedActionExecuter&quot;</span><span class="ot"> parent=</span><span class="st">&quot;action-executer&quot;</span><span class="kw">&gt;</span>
@@ -306,7 +310,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <h3 id="testing-the-action">Testing the Action</h3>
 <p>In the source code that accompanies this tutorial, I've included some integration tests. The integration tests just attempt to use the <code>ActionService</code> to get the action. For the Move Replaced action, I also execute the action.</p>
 <p>If you are following along, you can copy the <code>MoveReplacedActionIT</code> class into:</p>
-<pre><code>$TUTORIAL_HOME/actions-tutorial-platform-jar/src/test/java/com/someco/action/test</code></pre>
+<pre><code>$TUTORIAL_HOME/actions-tutorial-platform/src/test/java/com/someco/action/test</code></pre>
 <p>Once you do that (or if you have simply checked out the tutorial source from GitHub) you can then run <code>./run.sh build_start</code> to start up the Alfresco Docker containers with your extensions installed. Once everything is up, run <code>./run.sh test</code> to compile and run the integration tests.</p>
 <p>In SDK 3.0.1 you can run Alfresco in the embedded Tomcat server and execute the integration tests in a single step by running <code>mvn install</code>. You may see some stack traces that make it seem like something didn't work. If you scroll up a little bit you should see that the tests ran successfully. The stack traces are a known issue with version 3.0.1 of the SDK.</p>
 <p>So at this point, you've got one new custom action, but it isn't configured in the Alfresco Share user interface. Before doing that, let's look at another Action Executer example, then we'll configure them both in the UI.</p>
@@ -376,7 +380,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <h2 id="localizing-the-actions">Localizing the actions</h2>
 <p>This step isn't strictly necessary at this point, but it will save a step later. There are some places in the Alfresco Share user interface that get localized values from the repository tier. So a user-friendly title and description for each of these actions needs to be set.</p>
 <p>Following the same pattern as the content tutorial, I created a &quot;messages&quot; folder in:</p>
-<pre><code>$TUTORIAL_HOME/actions-tutorial-platform-jar/src/main/resources/alfresco/module/actions-tutorial-platform-jar</code></pre>
+<pre><code>$TUTORIAL_HOME/actions-tutorial-platform/src/main/resources/alfresco/module/actions-tutorial-platform</code></pre>
 <p>It is okay to delete the demo properties file that the SDK may have put in the messages folder.</p>
 <p>In that folder I created a file called &quot;somecoactions.properties&quot; with the following content:</p>
 <pre><code># Move Replaced action
@@ -403,7 +407,7 @@ set-web-flag.description=This will add the sc:webable aspect and set the isAct
 <p>Alfresco's out-of-the-box content model already defines an association called <code>cm:replaces</code> as part of the <code>cm:replaceable</code> aspect. But neither the aspect nor the association are configured to be displayed in the Share user interface. That's easy to fix. All you have to do is edit share-config-custom.xml and then localize the labels.</p>
 <h3 id="step-1-edit-share-config-custom.xml">Step 1: Edit share-config-custom.xml</h3>
 <p>Recall from the content types tutorial that the Share user interface configuration resides in a file called “share-config-custom.xml”. The actions-tutorial-share project will have its own share-config-custom.xml that contains Share configuration specific to the custom actions. The file resides under:</p>
-<pre><code>$TUTORIAL_HOME/actions-tutorial-share-jar/src/main/resources/META-INF</code></pre>
+<pre><code>$TUTORIAL_HOME/actions-tutorial-share/src/main/resources/META-INF</code></pre>
 <p>You can replace the demo config elements the SDK populated in share-config-custom.xml as instructed in this section.</p>
 <p>The <code>cm:replaceable</code> aspect can be added to the list of aspects a user can see by adding some document library configuation to share-config-custom.xml, like this:</p>
 <div class="sourceCode"><pre class="sourceCode xml"><code class="sourceCode xml"><span class="kw">&lt;alfresco-config&gt;</span>
@@ -441,14 +445,14 @@ set-web-flag.description=This will add the sc:webable aspect and set the isAct
 <span class="er">&lt;</span>/appearance&gt;</code></pre></div>
 <h3 id="step-2-localize-the-labels">Step 2: Localize the labels</h3>
 <p>The last step in exposing the <code>cm:replaceable</code> aspect and <code>cm:replaces</code> association is localizing the labels. As you saw in the content types tutorial, custom labels go in:</p>
-<pre><code>$TUTORIAL_HOME/actions-tutorial-share-jar/src/main/resources/alfresco/web-extension/messages</code></pre>
+<pre><code>$TUTORIAL_HOME/actions-tutorial-share/src/main/resources/alfresco/web-extension/messages</code></pre>
 <p>The SDK probably created a demo properties file in that directory. Delete it.</p>
 <p>I'll create a new file for this module called scActions.properties. In it goes the following:</p>
 <pre><code>#cm:replaceable
 aspect.cm_replaceable=Replaceable
 assoc.cm_replaces=Replaces</code></pre>
 <p>The custom properties file needs to be configured using Spring. So, again, just like the custom content types tutorial, I'll edit a context file called &quot;actions-tutorial-slingshot-application-context.xml&quot; in:</p>
-<pre><code>$TUTORIAL_HOME/actions-tutorial-share-jar/src/main/resources/alfresco/web-extension</code></pre>
+<pre><code>$TUTORIAL_HOME/actions-tutorial-share/src/main/resources/alfresco/web-extension</code></pre>
 <p>Replace the demo bean that the SDK created for you with this:</p>
 <div class="sourceCode"><pre class="sourceCode xml"><code class="sourceCode xml"><span class="co">&lt;!-- Add Someco messages --&gt;</span>
 <span class="kw">&lt;bean</span><span class="ot"> id=</span><span class="st">&quot;${project.artifactId}_resources&quot;</span><span class="ot"> class=</span><span class="st">&quot;org.springframework.extensions.surf.util.ResourceBundleBootstrapComponent&quot;</span><span class="kw">&gt;</span>
@@ -477,7 +481,7 @@ assoc.cm_replaces=Replaces</code></pre>
 <p>Rule config lives in the rule config web script. It is easy to override one or more files that make up a web script. In this case, copy the rule-config-action.get.config.xml file from:</p>
 <pre><code>$TOMCAT_HOME/webapps/share/WEB-INF/classes/alfresco/site-webscripts/org/alfresco/components/rules/config</code></pre>
 <p>into your own project. For example, in the code that accompanies this tutorial, I copied the file into:</p>
-<pre><code>$TUTORIAL_HOME/actions-tutorial-share-jar/src/main/resources/alfresco/web-extension/site-webscripts/org/alfresco/components/rules/config</code></pre>
+<pre><code>$TUTORIAL_HOME/actions-tutorial-share/src/main/resources/alfresco/web-extension/site-webscripts/org/alfresco/components/rules/config</code></pre>
 <p>The first change is to specify a custom client-side JavaScript component:</p>
 <div class="sourceCode"><pre class="sourceCode xml"><code class="sourceCode xml"><span class="kw">&lt;rule-config</span><span class="ot"> type=</span><span class="st">&quot;action&quot;</span><span class="kw">&gt;</span>
    <span class="kw">&lt;component&gt;</span>SomeCo.RuleConfigActionCustom<span class="kw">&lt;/component&gt;</span>
@@ -506,7 +510,7 @@ assoc.cm_replaces=Replaces</code></pre>
 <p>The <code>move-replaced</code> action is going to be invoking some client-side JavaScript. So a reference to the file that contains the JavaScript needs to be added to the page so it can be loaded by the browser. The preferred way to point to a client-side resource is by adding it to the Freemarker view as a dependency. To do that, the rule-details.get.html.ftl and rule-edit.get.html.ftl files are copied from:</p>
 <pre><code>$TOMCAT_HOME/webapps/share/WEB-INF/classes/alfresco/site-webscripts/org/alfresco/components/rules</code></pre>
 <p>Into the tutorial project under:</p>
-<pre><code>$TUTORIAL_HOME/actions-tutorial-share-jar/src/main/resources/alfresco/web-extension/site-webscripts/org/alfresco/components/rules</code></pre>
+<pre><code>$TUTORIAL_HOME/actions-tutorial-share/src/main/resources/alfresco/web-extension/site-webscripts/org/alfresco/components/rules</code></pre>
 <p>In both files, the new <code>script</code> element is added to the end of the JavaScript dependencies, like this:</p>
 <pre><code>&lt;@markup id=&quot;js&quot;&gt;
     &lt;#-- JavaScript Dependencies --&gt;
@@ -517,14 +521,14 @@ assoc.cm_replaces=Replaces</code></pre>
 <p>Okay, at this point, the rule form will be looking for a custom client-side JavaScript component called SomeCo.RuleConfigActionCustom, the action will show up in the right place, and the page's <code>head</code> element will include a reference to the custom client-side JavaScript file where the component will reside. It's time to implement the client-side JavaScript.</p>
 <h3 id="step-3-implement-the-custom-client-side-javascript-component">Step 3: Implement the custom client-side JavaScript component</h3>
 <p>The FreeMarker files have been modified to include a reference to a file called rule-config-action-custom.js. This file will contain client-side JavaScript. It goes in:</p>
-<pre><code>$TUTORIAL_HOME/actions-tutorial-share-jar/src/main/resources/META-INF/resources/components/someco/rules/config</code></pre>
+<pre><code>$TUTORIAL_HOME/actions-tutorial-share/src/main/resources/META-INF/resources/components/someco/rules/config</code></pre>
 <p>Alfresco has their rule-related client-side JavaScript under “components/rules/config” so I used the same folder structure, using &quot;someco&quot; to keep my stuff separate from Alfresco's.</p>
 <p>The first thing the rule-config-action-custom.js file does is declare a SomeCo namespace. It is important that you namespace everything in Alfresco to avoid collisions with Alfresco's code or other add-ons you might install.</p>
 <div class="sourceCode"><pre class="sourceCode javascript"><code class="sourceCode javascript"><span class="cf">if</span> (<span class="kw">typeof</span> SomeCo <span class="op">==</span> <span class="st">&quot;undefined&quot;</span> <span class="op">||</span> <span class="op">!</span>SomeCo)
 <span class="op">{</span>
    <span class="kw">var</span> SomeCo <span class="op">=</span> <span class="op">{};</span>
 <span class="op">}</span></code></pre></div>
-<p>Next, comes the constructor for the component (I've left out some boring stuff, check the <a href="https://github.com/jpotts/alfresco-developer-series/blob/master/actions/actions-tutorial/actions-tutorial-share-jar/src/main/resources/META-INF/resources/components/someco/rules/config/rule-config-action-custom.js">source</a> for the full listing):</p>
+<p>Next, comes the constructor for the component (I've left out some boring stuff, check the <a href="https://github.com/jpotts/alfresco-developer-series/blob/master/actions/actions-tutorial/actions-tutorial-share/src/main/resources/META-INF/resources/components/someco/rules/config/rule-config-action-custom.js">source</a> for the full listing):</p>
 <div class="sourceCode"><pre class="sourceCode javascript"><code class="sourceCode javascript"><span class="va">SomeCo</span>.<span class="at">RuleConfigActionCustom</span> <span class="op">=</span> <span class="kw">function</span>(htmlId)
 <span class="op">{</span>
    <span class="va">SomeCo</span>.<span class="va">RuleConfigActionCustom</span>.<span class="va">superclass</span>.<span class="va">constructor</span>.<span class="at">call</span>(<span class="kw">this</span><span class="op">,</span> htmlId)<span class="op">;</span>
@@ -661,7 +665,7 @@ assoc.cm_replaces=Replaces</code></pre>
 <p>There are a couple of things to note about the action configuration. First, you don't have to copy in the out-of-the-box actions and action groups. They will get merged in. Second, the order of the action items in the list can be controlled by setting the index attribute. The higher the index, the lower in the list the menu items appear.</p>
 <h3 id="step-3-create-icons-and-localize-the-strings">Step 3: Create icons and localize the strings</h3>
 <p>The last step is to provide some icons for the actions and localize the action labels. In step 2 the action element had an “icon” attribute. Alfresco will look in a path for an icon that starts with that name and ends with “-16.png”. Entirely lacking in graphics skills, I grabbed a couple of out-of-the-box icons that looked somewhat applicable and copied them in to my project under:</p>
-<pre><code>$TUTORIAL_HOME/actions-tutorial-share-jar/src/main/resources/META-INF/resources/components/documentlibrary/actions</code></pre>
+<pre><code>$TUTORIAL_HOME/actions-tutorial-share/src/main/resources/META-INF/resources/components/documentlibrary/actions</code></pre>
 <p>Because this is Alfresco's folder structure, I made sure to name the icons starting with “someco” so they would not be confused with others.</p>
 <p>The localized strings can go in the existing scActions.properties file. Here they are:</p>
 <pre><code>#actions
@@ -748,7 +752,7 @@ message.web-flag.failure=Error setting the SomeCo active flag</code></pre>
     <span class="kw">&lt;/indicators&gt;</span>
 <span class="er">&lt;</span>/config&gt;</code></pre></div>
 <p>Alfresco will use the indicator's id attribute appended with “-16.png” for the icon. I copied the same icon used for the “enable” action into:</p>
-<pre><code>$TUTORIAL_HOME/actions-tutorial-share-jar/src/main/resources/META-INF/resources/components/documentlibrary/indicators</code></pre>
+<pre><code>$TUTORIAL_HOME/actions-tutorial-share/src/main/resources/META-INF/resources/components/documentlibrary/indicators</code></pre>
 <p>for this purpose.</p>
 <p>Now you have seen that evaluators can be used to show UI actions and indicators. If the evaluator returns <code>true</code> the UI action or indicator is shown. If it returns <code>false</code> the UI action or indicator is hidden. In the UI actions, you saw that the <code>negate</code> attribute can be used to invert what the evaluator returns. That was used to hide the <code>someco-web-enable</code> UI action when the <code>isActive</code> flag was already <code>true</code>.</p>
 <p>That's it. You can now either do a <code>./run.sh stop</code> followed by a <code>./run.sh build_start</code> to stop and start all of the containers or you can do a <code>mvn install -DskipTests</code> to build the AMPs then do a <code>./run.sh reload_share</code> to just restart the Share container. You may find the second option to be a lot faster.</p>
