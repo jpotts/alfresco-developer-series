@@ -1,4 +1,4 @@
-<import resource="classpath:alfresco/module/behavior-tutorial-platform-jar/scripts/rating.js">
+<import resource="classpath:alfresco/module/behavior-tutorial-platform/scripts/rating.js">
 
 function main() {
 	logger.log("Inside whitepapers.get.js");

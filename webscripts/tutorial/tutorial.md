@@ -368,25 +368,25 @@ directory and add the following platform dependencies:
 <dependencies>
     <dependency>
         <groupId>com.someco</groupId>
-        <artifactId>webscripts-tutorial-platform-jar</artifactId>
+        <artifactId>webscripts-tutorial-platform</artifactId>
         <version>1.0-SNAPSHOT</version>
     </dependency>
     <!-- Bring in the content tutorial repo AMP so we can run embedded. -->
     <dependency>
         <groupId>com.someco</groupId>
-        <artifactId>content-tutorial-platform-jar</artifactId>
+        <artifactId>content-tutorial-platform</artifactId>
         <version>1.0-SNAPSHOT</version>
     </dependency>
     <!-- Bring in the actions tutorial repo AMP so we can run embedded. -->
     <dependency>
         <groupId>com.someco</groupId>
-        <artifactId>actions-tutorial-platform-jar</artifactId>
+        <artifactId>actions-tutorial-platform</artifactId>
         <version>1.0-SNAPSHOT</version>
     </dependency>
     <!-- Bring in the behavior tutorial repo AMP so we can run embedded. -->
     <dependency>
         <groupId>com.someco</groupId>
-        <artifactId>behavior-tutorial-platform-jar</artifactId>
+        <artifactId>behavior-tutorial-platform</artifactId>
         <version>1.0-SNAPSHOT</version>
     </dependency>
 </dependencies>
@@ -400,38 +400,38 @@ following Share dependencies:
 <dependencies>
     <dependency>
         <groupId>com.someco</groupId>
-        <artifactId>webscripts-tutorial-share-jar</artifactId>
+        <artifactId>webscripts-tutorial-share</artifactId>
         <version>1.0-SNAPSHOT</version>
     </dependency>
     <!-- Bring in the content tutorial share AMP so we can run embedded. -->
     <dependency>
         <groupId>com.someco</groupId>
-        <artifactId>content-tutorial-share-jar</artifactId>
+        <artifactId>content-tutorial-share</artifactId>
         <version>1.0-SNAPSHOT</version>
     </dependency>
     <!-- Bring in the actions tutorial share AMP so we can run embedded. -->
     <dependency>
         <groupId>com.someco</groupId>
-        <artifactId>actions-tutorial-share-jar</artifactId>
+        <artifactId>actions-tutorial-share</artifactId>
         <version>1.0-SNAPSHOT</version>
     </dependency>
     <!-- Bring in the behavior tutorial share AMP so we can run embedded. -->
     <dependency>
         <groupId>com.someco</groupId>
-        <artifactId>behavior-tutorial-share-jar</artifactId>
+        <artifactId>behavior-tutorial-share</artifactId>
         <version>1.0-SNAPSHOT</version>
     </dependency>
 </dependencies>
 ```
 
 Finally, the tutorial will have a compile-time dependency on the behavior-tutorial.
-To address that, edit the pom.xml under "webscripts-tutorial-platform-jar" and
+To address that, edit the pom.xml under "webscripts-tutorial-platform" and
 add the following dependency:
 
 ```xml
 <dependency>
     <groupId>com.someco</groupId>
-    <artifactId>behavior-tutorial-platform-jar</artifactId>
+    <artifactId>behavior-tutorial-platform</artifactId>
     <version>1.0-SNAPSHOT</version>
     <scope>provided</scope>
 </dependency>
@@ -511,7 +511,7 @@ I'll walk you through the descriptor, controller, and the two views.
 The first step is to create the descriptor file. Web scripts that are deployed
 in an AMP go in:
 
-    $TUTORIAL_HOME/webscripts-tutorial-platform-jar/src/main/resources/alfresco/extension/templates/webscripts
+    $TUTORIAL_HOME/webscripts-tutorial-platform/src/main/resources/alfresco/extension/templates/webscripts
 
 The Alfresco Maven SDK probably created that directory structure and added an
 "alfresco" directory with some demo web scripts. Go ahead and delete the example
@@ -525,9 +525,9 @@ tutorial will use "com/someco" for its package. This particular web script is
 about whitepapers so the files that make up the whitepapers web script will
 reside in:
 
-    $TUTORIAL_HOME/webscripts-tutorial-platform-jar/src/main/resources/alfresco/extension/templates/webscripts/com/someco/whitepapers
+    $TUTORIAL_HOME/webscripts-tutorial-platform/src/main/resources/alfresco/extension/templates/webscripts/com/someco/whitepapers
 
-To create the descriptor, create a new XML file called "[whitepapers.get.desc.xml](https://github.com/jpotts/alfresco-developer-series/blob/master/webscripts/webscripts-tutorial/webscripts-tutorial-platform-jar/src/main/resources/alfresco/extension/templates/webscripts/com/someco/whitepapers/whitepapers.get.desc.xml)"
+To create the descriptor, create a new XML file called "[whitepapers.get.desc.xml](https://github.com/jpotts/alfresco-developer-series/blob/master/webscripts/webscripts-tutorial/webscripts-tutorial-platform/src/main/resources/alfresco/extension/templates/webscripts/com/someco/whitepapers/whitepapers.get.desc.xml)"
 in that directory.
 
 Edit the file to have the following content:
@@ -587,7 +587,7 @@ The next step is to write the controller.
 ### Step 2: Write the controller
 
 The controller is where the logic that queries the whitepapers will live. Create
-a file called "[whitepapers.get.js](https://github.com/jpotts/alfresco-developer-series/blob/master/webscripts/webscripts-tutorial/webscripts-tutorial-platform-jar/src/main/resources/alfresco/extension/templates/webscripts/com/someco/whitepapers/whitepapers.get.js)"
+a file called "[whitepapers.get.js](https://github.com/jpotts/alfresco-developer-series/blob/master/webscripts/webscripts-tutorial/webscripts-tutorial-platform/src/main/resources/alfresco/extension/templates/webscripts/com/someco/whitepapers/whitepapers.get.js)"
 in the same directory as the controller. Edit the file with the following
 content:
 
@@ -658,7 +658,7 @@ this object, and returns everything in a single rating object.
 
 Assuming there are items in the search results, the web script will need
 FreeMarker templates to return them in the appropriate format. Let's create the
-HTML response template first. Create a new file called "[whitepapers.get.html.ftl](https://github.com/jpotts/alfresco-developer-series/blob/master/webscripts/webscripts-tutorial/webscripts-tutorial-platform-jar/src/main/resources/alfresco/extension/templates/webscripts/com/someco/whitepapers/whitepapers.get.html.ftl)"
+HTML response template first. Create a new file called "[whitepapers.get.html.ftl](https://github.com/jpotts/alfresco-developer-series/blob/master/webscripts/webscripts-tutorial/webscripts-tutorial-platform/src/main/resources/alfresco/extension/templates/webscripts/com/someco/whitepapers/whitepapers.get.html.ftl)"
 in the same directory as the controller you just created. Edit the file with the
 following content:
 
@@ -737,7 +737,7 @@ table entirely. But for SomeCo, this response template is really for debugging
 purposes only and I didn't want to fool with the CSS so a table it is).
 
 Now create the response template for the JSON response. In the same directory
-as the HTML response template, create a file called "[whitepapers.get.json.ftl](https://github.com/jpotts/alfresco-developer-series/blob/master/webscripts/webscripts-tutorial/webscripts-tutorial-platform-jar/src/main/resources/alfresco/extension/templates/webscripts/com/someco/whitepapers/whitepapers.get.json.ftl)"
+as the HTML response template, create a file called "[whitepapers.get.json.ftl](https://github.com/jpotts/alfresco-developer-series/blob/master/webscripts/webscripts-tutorial/webscripts-tutorial-platform/src/main/resources/alfresco/extension/templates/webscripts/com/someco/whitepapers/whitepapers.get.json.ftl)"
 with the following content:
 
 ```
@@ -780,14 +780,14 @@ custom actions from the actions tutorial, and so on.
 
 The dependencies from the earlier tutorials do the following:
 
-* **content-tutorial-platform-jar**. This is required because the web script
+* **content-tutorial-platform**. This is required because the web script
 looks for content with the `sc:isActive` flag set and that's defined in the
 SomeCo Content Model that is part of that project.
-* **behavior-tutorial-platform-jar**. This is required because it contains a
+* **behavior-tutorial-platform**. This is required because it contains a
 behavior that calculates the average rating for a piece of content and because
 it has the rating.js server-side JavaScript file that the controllers in this
 tutorial import.
-* **actions-tutorial-platform-jar**. This one is optional. It contains a UI
+* **actions-tutorial-platform**. This one is optional. It contains a UI
 action that is used to set the `sc:isActive` flag from within the Alfresco Share
 user interface.
 
@@ -801,7 +801,7 @@ For now, it's easiest just to use the SDK-generated Docker containers. To start
 those up using Docker Compose, switch to the "webscripts-tutorial" directory and
 run `./run.sh build_start` or `run.bat build_start` depending on your platform.
 
-Now that your Alfresco server is running the webscripts-tutorial-platform-jar
+Now that your Alfresco server is running the webscripts-tutorial-platform
 AMP and its dependencies, you are ready to test out the whitepapers web script.
 
 ### Testing
@@ -904,17 +904,17 @@ You have a working web script that fetches a list of whitepapers. Now let's
 create a web script that retrieves rating summary data for a specific object.
 
 This is pretty easy because of the existing `getRating()` function in
-rating.js. The controller is called "[rating.get.js](https://github.com/jpotts/alfresco-developer-series/blob/master/webscripts/webscripts-tutorial/webscripts-tutorial-platform-jar/src/main/resources/alfresco/extension/templates/webscripts/com/someco/ratings/rating.get.js)"
+rating.js. The controller is called "[rating.get.js](https://github.com/jpotts/alfresco-developer-series/blob/master/webscripts/webscripts-tutorial/webscripts-tutorial-platform/src/main/resources/alfresco/extension/templates/webscripts/com/someco/ratings/rating.get.js)"
 and it resides in:
 
-    $TUTORIAL_HOME/webscripts-tutorial-platform-jar/src/main/resources/alfresco/extension/templates/webscripts/com/someco/ratings
+    $TUTORIAL_HOME/webscripts-tutorial-platform/src/main/resources/alfresco/extension/templates/webscripts/com/someco/ratings
 
 All the controller has to do is grab the ID of the rateable object that is being
 requested, locate
 the node, then call `getRating()` as shown below:
 
 ```javascript
-<import resource="classpath:alfresco/module/behavior-tutorial-platform-jar/scripts/rating.js">
+<import resource="classpath:alfresco/module/behavior-tutorial-platform/scripts/rating.js">
 if (args.id == null || args.id.length == 0) {
     status.code = 400;
     status.message = "Node ID has not been provided";
@@ -935,9 +935,9 @@ The descriptor and response templates are very similar to the whitepaper
 example so I won't include them here. If you want to grab them to copy them into
 your project, they are:
 
-* [rating.get.desc.xml](https://github.com/jpotts/alfresco-developer-series/blob/master/webscripts/webscripts-tutorial/webscripts-tutorial-platform-jar/src/main/resources/alfresco/extension/templates/webscripts/com/someco/ratings/rating.get.desc.xml)
-* [rating.get.html.ftl](https://github.com/jpotts/alfresco-developer-series/blob/master/webscripts/webscripts-tutorial/webscripts-tutorial-platform-jar/src/main/resources/alfresco/extension/templates/webscripts/com/someco/ratings/rating.get.html.ftl)
-* [rating.get.json.ftl](https://github.com/jpotts/alfresco-developer-series/blob/master/webscripts/webscripts-tutorial/webscripts-tutorial-platform-jar/src/main/resources/alfresco/extension/templates/webscripts/com/someco/ratings/rating.get.json.ftl)
+* [rating.get.desc.xml](https://github.com/jpotts/alfresco-developer-series/blob/master/webscripts/webscripts-tutorial/webscripts-tutorial-platform/src/main/resources/alfresco/extension/templates/webscripts/com/someco/ratings/rating.get.desc.xml)
+* [rating.get.html.ftl](https://github.com/jpotts/alfresco-developer-series/blob/master/webscripts/webscripts-tutorial/webscripts-tutorial-platform/src/main/resources/alfresco/extension/templates/webscripts/com/someco/ratings/rating.get.html.ftl)
+* [rating.get.json.ftl](https://github.com/jpotts/alfresco-developer-series/blob/master/webscripts/webscripts-tutorial/webscripts-tutorial-platform/src/main/resources/alfresco/extension/templates/webscripts/com/someco/ratings/rating.get.json.ftl)
 
 Now you can deploy and test the rating web script.
 
@@ -1012,7 +1012,7 @@ Java will be used, the steps are the same at a high-level:
 The descriptor, together with the two views, reside in the same folder as the
 GET rating web script you worked on in the previous section, which is:
 
-    $TUTORIAL_HOME/webscripts-tutorial-platform-jar/src/main/resources/alfresco/extension/templates/webscripts/com/someco/ratings
+    $TUTORIAL_HOME/webscripts-tutorial-platform/src/main/resources/alfresco/extension/templates/webscripts/com/someco/ratings
 
 The controller will be written in the Java source code folder for the project,
 compiled, and packaged in a JAR as part of the AMP.
@@ -1021,7 +1021,7 @@ Let's look at each of the steps needed to implement the post rating web script.
 
 ### Step 1: Write the descriptor
 
-The descriptor, [rating.post.desc.xml](https://github.com/jpotts/alfresco-developer-series/blob/master/webscripts/webscripts-tutorial/webscripts-tutorial-platform-jar/src/main/resources/alfresco/extension/templates/webscripts/com/someco/ratings/rating.post.desc.xml), has two things you haven't seen yet. First, the `authentication` element uses the
+The descriptor, [rating.post.desc.xml](https://github.com/jpotts/alfresco-developer-series/blob/master/webscripts/webscripts-tutorial/webscripts-tutorial-platform/src/main/resources/alfresco/extension/templates/webscripts/com/someco/ratings/rating.post.desc.xml), has two things you haven't seen yet. First, the `authentication` element uses the
 `runas` attribute to specify that the web script should be executed as "admin"
 even though it only requires Guest access or higher to execute:
 
@@ -1060,17 +1060,17 @@ Let's take a look.
 
 At some point there might be other Java classes that need to create ratings. So
 the logic that does that should be generic. This class has a dependency on the
-"behavior-tutorial-platform-jar" project created in an earlier tutorial, so the first
-thing to do is to edit this project's [pom.xml](https://github.com/jpotts/alfresco-developer-series/blob/master/webscripts/webscripts-tutorial/webscripts-tutorial-platform-jar/pom.xml) file, which lives in:
+"behavior-tutorial-platform" project created in an earlier tutorial, so the first
+thing to do is to edit this project's [pom.xml](https://github.com/jpotts/alfresco-developer-series/blob/master/webscripts/webscripts-tutorial/webscripts-tutorial-platform/pom.xml) file, which lives in:
 
-    $TUTORIAL_HOME/webscripts-tutorial-platform-jar
+    $TUTORIAL_HOME/webscripts-tutorial-platform
 
 And add the dependency, which looks like this:
 
 ```xml
 <dependency>
     <groupId>com.someco</groupId>
-    <artifactId>behavior-tutorial-platform-jar</artifactId>
+    <artifactId>behavior-tutorial-platform</artifactId>
     <version>1.0-SNAPSHOT</version>
     <scope>provided</scope>
 </dependency>
@@ -1078,9 +1078,9 @@ And add the dependency, which looks like this:
 
 Create a new package called "com.someco.beans" in:
 
-    $TUTORIAL_HOME/webscripts-tutorial-platform-jar/src/main/java
+    $TUTORIAL_HOME/webscripts-tutorial-platform/src/main/java
 
-In that package, create a new class called "[RatingBean](https://github.com/jpotts/alfresco-developer-series/blob/master/webscripts/webscripts-tutorial/webscripts-tutorial-platform-jar/src/main/java/com/someco/beans/RatingBean.java)".
+In that package, create a new class called "[RatingBean](https://github.com/jpotts/alfresco-developer-series/blob/master/webscripts/webscripts-tutorial/webscripts-tutorial-platform/src/main/java/com/someco/beans/RatingBean.java)".
 The class (without the imports) looks like this:
 
 ```java
@@ -1135,9 +1135,9 @@ the `create()` method.
 
 To do that, create a new package called "com.someco.scripts" in:
 
-    $TUTORIAL_HOME/webscripts-tutorial-platform-jar/src/main/java
+    $TUTORIAL_HOME/webscripts-tutorial-platform/src/main/java
 
-Within that package, create a new class called "[PostRating](https://github.com/jpotts/alfresco-developer-series/blob/master/webscripts/webscripts-tutorial/webscripts-tutorial-platform-jar/src/main/java/com/someco/scripts/PostRating.java)".
+Within that package, create a new class called "[PostRating](https://github.com/jpotts/alfresco-developer-series/blob/master/webscripts/webscripts-tutorial/webscripts-tutorial-platform/src/main/java/com/someco/scripts/PostRating.java)".
 The class name isn't significant but following a descriptive convention is
 helpful as the number of Java-backed web scripts grows.
 
@@ -1216,10 +1216,10 @@ know to invoke the `PostRating` class when the web script is called. All of that
 happens through Spring configuration.
 
 You learned in earlier tutorials that the Spring context file for a module is
-called [service-context.xml](https://github.com/jpotts/alfresco-developer-series/blob/master/webscripts/webscripts-tutorial/webscripts-tutorial-platform-jar/src/main/resources/alfresco/module/webscripts-tutorial-platform-jar/context/service-context.xml)
+called [service-context.xml](https://github.com/jpotts/alfresco-developer-series/blob/master/webscripts/webscripts-tutorial/webscripts-tutorial-platform/src/main/resources/alfresco/module/webscripts-tutorial-platform/context/service-context.xml)
 and it lives in:
 
-    $TUTORIAL_HOME/webscripts-tutorial-platform-jar/src/main/resources/alfresco/module/webscripts-tutorial-platform-jar/context
+    $TUTORIAL_HOME/webscripts-tutorial-platform/src/main/resources/alfresco/module/webscripts-tutorial-platform/context
 
 The Alfresco Maven SDK created that file for you when you used it to bootstrap
 the project.
@@ -1276,8 +1276,8 @@ The response templates for this web script look like the examples you've seen so
 far. Like previous examples, this web script can respond with either an HTML or
 JSON response:
 
-* [rating.post.html.ftl](https://github.com/jpotts/alfresco-developer-series/blob/master/webscripts/webscripts-tutorial/webscripts-tutorial-platform-jar/src/main/resources/alfresco/extension/templates/webscripts/com/someco/ratings/rating.post.html.ftl)
-* [rating.post.json.ftl](https://github.com/jpotts/alfresco-developer-series/blob/master/webscripts/webscripts-tutorial/webscripts-tutorial-platform-jar/src/main/resources/alfresco/extension/templates/webscripts/com/someco/ratings/rating.post.json.ftl)
+* [rating.post.html.ftl](https://github.com/jpotts/alfresco-developer-series/blob/master/webscripts/webscripts-tutorial/webscripts-tutorial-platform/src/main/resources/alfresco/extension/templates/webscripts/com/someco/ratings/rating.post.html.ftl)
+* [rating.post.json.ftl](https://github.com/jpotts/alfresco-developer-series/blob/master/webscripts/webscripts-tutorial/webscripts-tutorial-platform/src/main/resources/alfresco/extension/templates/webscripts/com/someco/ratings/rating.post.json.ftl)
 
 These should look similar to the views you've already created.
 
@@ -1326,10 +1326,10 @@ descriptor and the controller.
 It seems rare that you would want to delete all ratings for a given node but
 highly likely that if you are going to expose it, it should be for admins only.
 So let's tell Alfresco that this web script can only by run by administrators.
-The descriptor is named [rating.delete.desc.xml](https://github.com/jpotts/alfresco-developer-series/blob/master/webscripts/webscripts-tutorial/webscripts-tutorial-platform-jar/src/main/resources/alfresco/extension/templates/webscripts/com/someco/ratings/rating.delete.desc.xml).
+The descriptor is named [rating.delete.desc.xml](https://github.com/jpotts/alfresco-developer-series/blob/master/webscripts/webscripts-tutorial/webscripts-tutorial-platform/src/main/resources/alfresco/extension/templates/webscripts/com/someco/ratings/rating.delete.desc.xml).
 It lives in:
 
-    $TUTORIAL_HOME/webscripts-tutorial-platform-jar/src/main/resources/alfresco/extension/templates/webscripts/com/someco/ratings
+    $TUTORIAL_HOME/webscripts-tutorial-platform/src/main/resources/alfresco/extension/templates/webscripts/com/someco/ratings
 
 To restrict the web script to administrators, set the `authentication` element
 like this:
@@ -1340,10 +1340,10 @@ Now only administrators can execute the web script.
 
 ### Step 2: Write the controller
 
-As in previous examples, the controller JavaScript, [rating.delete.js](https://github.com/jpotts/alfresco-developer-series/blob/master/webscripts/webscripts-tutorial/webscripts-tutorial-platform-jar/src/main/resources/alfresco/extension/templates/webscripts/com/someco/ratings/rating.delete.js),
+As in previous examples, the controller JavaScript, [rating.delete.js](https://github.com/jpotts/alfresco-developer-series/blob/master/webscripts/webscripts-tutorial/webscripts-tutorial-platform/src/main/resources/alfresco/extension/templates/webscripts/com/someco/ratings/rating.delete.js),
 reads and checks the arguments then calls a function. In this case it is the
 `deleteRatings()` function that already exists in the rating.js file packaged in
-the behavior-tutorial project in the behavior-tutorial-platform-jar module.
+the behavior-tutorial project in the behavior-tutorial-platform module.
 The body of the function is:
 
 ```javascript
@@ -1378,7 +1378,7 @@ more discriminating.
 
 ### Step 3: Create the view
 
-The delete web script has only a single view, [rating.delete.html.ftl](https://github.com/jpotts/alfresco-developer-series/blob/master/webscripts/webscripts-tutorial/webscripts-tutorial-platform-jar/src/main/resources/alfresco/extension/templates/webscripts/com/someco/ratings/rating.delete.html.ftl),
+The delete web script has only a single view, [rating.delete.html.ftl](https://github.com/jpotts/alfresco-developer-series/blob/master/webscripts/webscripts-tutorial/webscripts-tutorial-platform/src/main/resources/alfresco/extension/templates/webscripts/com/someco/ratings/rating.delete.html.ftl),
 and it is pretty boring. It echos back the ID of the object from which the
 ratings were deleted, then provides a link back to the GET rating web script.
 
@@ -1468,11 +1468,11 @@ leverages the [prototype](http://prototypejs.org/) JavaScript library.
 The first step is to copy the JavaScript and images into the AMP project
 structure. The images reside in:
 
-    $TUTORIAL_HOME/webscripts-tutorial-platform-jar/src/main/amp/web/images
+    $TUTORIAL_HOME/webscripts-tutorial-platform/src/main/amp/web/images
 
 And the client-side JavaScript resides in:
 
-    $TUTORIAL_HOME/webscripts-tutorial-platform-jar/src/main/amp/web/scripts
+    $TUTORIAL_HOME/webscripts-tutorial-platform/src/main/amp/web/scripts
 
 Next you'll modify the rating web script to leverage these.
 
@@ -1481,9 +1481,9 @@ Step 2: Modify the GET rating web script to include client-side JavaScript
 
 Recall that the FreeMarker view for the rating GET web script resides in:
 
-    $TUTORIAL_HOME/webscripts-tutorial-platform-jar/src/main/resources/alfresco/extension/templates/webscripts/com/someco/ratings
+    $TUTORIAL_HOME/webscripts-tutorial-platform/src/main/resources/alfresco/extension/templates/webscripts/com/someco/ratings
 
-The file is called [rating.get.html.ftl](https://github.com/jpotts/alfresco-developer-series/blob/master/webscripts/webscripts-tutorial/webscripts-tutorial-platform-jar/src/main/resources/alfresco/extension/templates/webscripts/com/someco/ratings/rating.get.html.ftl), but let's focus on the main body of the HTML first. Here it is:
+The file is called [rating.get.html.ftl](https://github.com/jpotts/alfresco-developer-series/blob/master/webscripts/webscripts-tutorial/webscripts-tutorial-platform/src/main/resources/alfresco/extension/templates/webscripts/com/someco/ratings/rating.get.html.ftl), but let's focus on the main body of the HTML first. Here it is:
 
 ```html
 <p><a href="${url.serviceContext}/someco/whitepapers.html?guest=true">Back to the list</a> of whitepapers</p>

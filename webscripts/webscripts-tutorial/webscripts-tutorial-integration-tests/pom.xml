@@ -2,7 +2,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>integration-tests</artifactId>
+    <artifactId>webscripts-tutorial-integration-tests</artifactId>
     <name>Integration Tests Module</name>
     <description>Integration Tests module for in-container integration testing - part of AIO - SDK 4.0</description>
     <packaging>jar</packaging> <!-- Note. this just runs Integration Tests, but it needs to be a JAR otherwise
@@ -22,7 +22,7 @@
              that is generated for the AIO project -->
         <dependency>
             <groupId>com.someco</groupId>
-            <artifactId>webscripts-tutorial-platform-jar</artifactId>
+            <artifactId>webscripts-tutorial-platform</artifactId>
             <version>1.0-SNAPSHOT</version>
             <scope>test</scope>
         </dependency>

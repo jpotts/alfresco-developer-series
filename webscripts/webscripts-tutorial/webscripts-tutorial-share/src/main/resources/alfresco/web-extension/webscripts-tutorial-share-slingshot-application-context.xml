@@ -3,7 +3,7 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
                 http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
-   
+
    <!--
     Define beans related to this Share extension here, such as
      evaluators and resource bootstrapping.
@@ -14,11 +14,11 @@
    -->
 
    <!-- Add module specific messages and labels -->
-   <bean id="com.someco.webscripts-tutorial-share-jar.resources"
+   <bean id="com.someco.webscripts-tutorial-share.resources"
          class="org.springframework.extensions.surf.util.ResourceBundleBootstrapComponent">
       <property name="resourceBundles">
          <list>
-            <value>alfresco.web-extension.messages.webscripts-tutorial-share-jar</value>
+            <value>alfresco.web-extension.messages.webscripts-tutorial-share</value>
          </list>
       </property>
    </bean>

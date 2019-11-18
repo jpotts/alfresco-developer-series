@@ -1,4 +1,4 @@
-<import resource="classpath:alfresco/module/behavior-tutorial-platform-jar/scripts/rating.js">
+<import resource="classpath:alfresco/module/behavior-tutorial-platform/scripts/rating.js">
 
 if (args.id == null || args.id.length == 0) {
 	logger.log("ID arg not set");
@@ -7,14 +7,14 @@ if (args.id == null || args.id.length == 0) {
 	status.redirect = true;
 } else {
 	logger.log("Getting current node");
-	var curNode = search.findNode("workspace://SpacesStore/" + args.id);	
+	var curNode = search.findNode("workspace://SpacesStore/" + args.id);
 	if (curNode == null) {
 		logger.log("Node not found");
 		status.code = 404;
 		status.message = "No node found for id:" + args.id;
 		status.redirect = true;
 	} else {
-		logger.log("Setting model rating data");
-		model.rating = getRating(curNode, args.user);
+		deleteRatings(curNode);
+		model.id = args.id;
 	}
 }

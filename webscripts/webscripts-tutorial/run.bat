@@ -11,13 +11,21 @@ IF NOT [%M2_HOME%]==[] (
 )
 
 IF [%1]==[] (
-    echo "Usage: %0 {build_start|start|stop|purge|tail|reload_share|reload_acs|build_test|test}"
+    echo "Usage: %0 {build_start|build_start_it_supported|start|stop|purge|tail|reload_share|reload_acs|build_test|test}"
     GOTO END
 )
 
 IF %1==build_start (
     CALL :down
     CALL :build
+    CALL :start
+    CALL :tail
+    GOTO END
+)
+IF %1==build_start_it_supported (
+    CALL :down
+    CALL :build
+    CALL :prepare-test
     CALL :start
     CALL :tail
     GOTO END
@@ -55,6 +63,7 @@ IF %1==reload_acs (
 IF %1==build_test (
     CALL :down
     CALL :build
+    CALL :prepare-test
     CALL :start
     CALL :test
     CALL :tail_all
@@ -82,24 +91,22 @@ EXIT /B 0
     docker-compose -f "%COMPOSE_FILE_PATH%" up --build -d webscripts-tutorial-acs
 EXIT /B 0
 :down
-    docker-compose -f "%COMPOSE_FILE_PATH%" down
+    if exist "%COMPOSE_FILE_PATH%" (
+        docker-compose -f "%COMPOSE_FILE_PATH%" down
+    )
 EXIT /B 0
 :build
-    docker rmi alfresco-content-services-webscripts-tutorial:development
-    docker rmi alfresco-share-webscripts-tutorial:development
-	call %MVN_EXEC% clean install -DskipTests
+	call %MVN_EXEC% clean package
 EXIT /B 0
 :build_share
     docker-compose -f "%COMPOSE_FILE_PATH%" kill webscripts-tutorial-share
     docker-compose -f "%COMPOSE_FILE_PATH%" rm -f webscripts-tutorial-share
-    docker rmi alfresco-share-webscripts-tutorial:development
-	call %MVN_EXEC% clean install -DskipTests -pl webscripts-tutorial-share-jar
+	call %MVN_EXEC% clean package -pl webscripts-tutorial-share,webscripts-tutorial-share-docker
 EXIT /B 0
 :build_acs
     docker-compose -f "%COMPOSE_FILE_PATH%" kill webscripts-tutorial-acs
     docker-compose -f "%COMPOSE_FILE_PATH%" rm -f webscripts-tutorial-acs
-    docker rmi alfresco-content-services-webscripts-tutorial:development
-	call %MVN_EXEC% clean install -DskipTests -pl webscripts-tutorial-platform-jar
+	call %MVN_EXEC% clean package -pl webscripts-tutorial-integration-tests,webscripts-tutorial-platform,webscripts-tutorial-platform-docker
 EXIT /B 0
 :tail
     docker-compose -f "%COMPOSE_FILE_PATH%" logs -f
@@ -107,11 +114,14 @@ EXIT /B 0
 :tail_all
     docker-compose -f "%COMPOSE_FILE_PATH%" logs --tail="all"
 EXIT /B 0
+:prepare-test
+    call %MVN_EXEC% verify -DskipTests=true -pl webscripts-tutorial-platform,webscripts-tutorial-integration-tests,webscripts-tutorial-platform-docker
+EXIT /B 0
 :test
-    call %MVN_EXEC% verify -pl integration-tests
+    call %MVN_EXEC% verify -pl webscripts-tutorial-platform,webscripts-tutorial-integration-tests
 EXIT /B 0
 :purge
-    docker volume rm webscripts-tutorial-acs-volume
-    docker volume rm webscripts-tutorial-db-volume
-    docker volume rm webscripts-tutorial-ass-volume
+    docker volume rm -f webscripts-tutorial-acs-volume
+    docker volume rm -f webscripts-tutorial-db-volume
+    docker volume rm -f webscripts-tutorial-ass-volume
 EXIT /B 0

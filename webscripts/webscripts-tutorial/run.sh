@@ -24,33 +24,31 @@ start_acs() {
 }
 
 down() {
-    docker-compose -f $COMPOSE_FILE_PATH down
+    if [ -f $COMPOSE_FILE_PATH ]; then
+        docker-compose -f $COMPOSE_FILE_PATH down
+    fi
 }
 
 purge() {
-    docker volume rm webscripts-tutorial-acs-volume
-    docker volume rm webscripts-tutorial-db-volume
-    docker volume rm webscripts-tutorial-ass-volume
+    docker volume rm -f webscripts-tutorial-acs-volume
+    docker volume rm -f webscripts-tutorial-db-volume
+    docker volume rm -f webscripts-tutorial-ass-volume
 }
 
 build() {
-    docker rmi alfresco-content-services-webscripts-tutorial:development
-    docker rmi alfresco-share-webscripts-tutorial:development
-    $MVN_EXEC clean install -DskipTests=true
+    $MVN_EXEC clean package
 }
 
 build_share() {
     docker-compose -f $COMPOSE_FILE_PATH kill webscripts-tutorial-share
     yes | docker-compose -f $COMPOSE_FILE_PATH rm -f webscripts-tutorial-share
-    docker rmi alfresco-share-webscripts-tutorial:development
-    $MVN_EXEC clean install -DskipTests=true -pl webscripts-tutorial-share-jar
+    $MVN_EXEC clean package -pl webscripts-tutorial-share,webscripts-tutorial-share-docker
 }
 
 build_acs() {
     docker-compose -f $COMPOSE_FILE_PATH kill webscripts-tutorial-acs
     yes | docker-compose -f $COMPOSE_FILE_PATH rm -f webscripts-tutorial-acs
-    docker rmi alfresco-content-services-webscripts-tutorial:development
-    $MVN_EXEC clean install -DskipTests=true -pl webscripts-tutorial-platform-jar
+    $MVN_EXEC clean package -pl webscripts-tutorial-integration-tests,webscripts-tutorial-platform,webscripts-tutorial-platform-docker
 }
 
 tail() {
@@ -61,14 +59,25 @@ tail_all() {
     docker-compose -f $COMPOSE_FILE_PATH logs --tail="all"
 }
 
+prepare_test() {
+    $MVN_EXEC verify -DskipTests=true -pl webscripts-tutorial-platform,webscripts-tutorial-integration-tests,webscripts-tutorial-platform-docker
+}
+
 test() {
-    $MVN_EXEC verify -pl integration-tests
+    $MVN_EXEC verify -pl webscripts-tutorial-platform,webscripts-tutorial-integration-tests
 }
 
 case "$1" in
   build_start)
     down
     build
+    start
+    tail
+    ;;
+  build_start_it_supported)
+    down
+    build
+    prepare_test
     start
     tail
     ;;
@@ -99,6 +108,7 @@ case "$1" in
   build_test)
     down
     build
+    prepare_test
     start
     test
     tail_all
@@ -108,5 +118,5 @@ case "$1" in
     test
     ;;
   *)
-    echo "Usage: $0 {build_start|start|stop|purge|tail|reload_share|reload_acs|build_test|test}"
+    echo "Usage: $0 {build_start|build_start_it_supported|start|stop|purge|tail|reload_share|reload_acs|build_test|test}"
 esac
