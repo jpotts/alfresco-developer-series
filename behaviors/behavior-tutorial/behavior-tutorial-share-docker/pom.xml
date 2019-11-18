@@ -19,7 +19,7 @@
     <dependencies>
         <dependency>
             <groupId>com.someco</groupId>
-            <artifactId>behavior-tutorial-share-jar</artifactId>
+            <artifactId>behavior-tutorial-share</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
     </dependencies>
@@ -29,37 +29,18 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
-                <version>3.0.2</version>
                 <executions>
-                    <!-- Copy the share extension -->
+                    <!-- Collect extensions (JARs or AMPs) declared in this module do be deployed to docker -->
                     <execution>
-                        <id>copy-repo-extension</id>
-                        <phase>pre-integration-test</phase>
-                        <goals>
-                            <goal>copy</goal>
-                        </goals>
-                        <configuration>
-                            <artifactItems>
-                                <artifactItem>
-                                    <groupId>com.someco</groupId>
-                                    <artifactId>behavior-tutorial-share-jar</artifactId>
-                                    <version>1.0-SNAPSHOT</version>
-                                    <overWrite>false</overWrite>
-                                    <outputDirectory>${project.build.directory}/extensions</outputDirectory>
-                                </artifactItem>
-                            </artifactItems>
-                        </configuration>
-                    </execution>
-                    <!-- Copy other dependencies (JARs or AMPs) declared in the share module -->
-                    <execution>
-                        <id>copy-third-party-dependencies</id>
-                        <phase>pre-integration-test</phase>
+                        <id>collect-extensions</id>
+                        <phase>package</phase>
                         <goals>
                             <goal>copy-dependencies</goal>
                         </goals>
                         <configuration>
                             <outputDirectory>${project.build.directory}/extensions</outputDirectory>
                             <includeScope>runtime</includeScope>
+                            <!-- IMPORTANT: if using amp dependencies only, add <includeTypes>amp</includeTypes> -->
                         </configuration>
                     </execution>
                 </executions>
@@ -68,7 +49,6 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-resources-plugin</artifactId>
-                <version>3.0.1</version>
                 <executions>
                     <execution>
                         <id>copy-and-filter-docker-resources</id>

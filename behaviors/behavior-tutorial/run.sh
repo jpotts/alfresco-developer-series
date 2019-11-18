@@ -43,14 +43,14 @@ build_share() {
     docker-compose -f $COMPOSE_FILE_PATH kill behavior-tutorial-share
     yes | docker-compose -f $COMPOSE_FILE_PATH rm -f behavior-tutorial-share
     docker rmi alfresco-share-behavior-tutorial:development
-    $MVN_EXEC clean install -DskipTests=true -pl behavior-tutorial-share-jar
+    $MVN_EXEC clean install -DskipTests=true -pl behavior-tutorial-share
 }
 
 build_acs() {
     docker-compose -f $COMPOSE_FILE_PATH kill behavior-tutorial-acs
     yes | docker-compose -f $COMPOSE_FILE_PATH rm -f behavior-tutorial-acs
     docker rmi alfresco-content-services-behavior-tutorial:development
-    $MVN_EXEC clean install -DskipTests=true -pl behavior-tutorial-platform-jar
+    $MVN_EXEC clean install -DskipTests=true -pl behavior-tutorial-platform
 }
 
 tail() {
@@ -62,7 +62,7 @@ tail_all() {
 }
 
 test() {
-    $MVN_EXEC verify -pl integration-tests
+    $MVN_EXEC verify -pl behavior-tutorial-integration-tests
 }
 
 case "$1" in

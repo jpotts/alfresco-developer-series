@@ -8,7 +8,7 @@
 		 workflow, and loading custom content models.  -->
 
     <!-- Registration of new models -->
-    <bean id="behavior-tutorial-platform-jar.dictionaryBootstrap" parent="dictionaryModelBootstrap" depends-on="dictionaryBootstrap">
+    <bean id="behavior-tutorial-platform.dictionaryBootstrap" parent="dictionaryModelBootstrap" depends-on="dictionaryBootstrap">
         <property name="models">
             <list>
                 <value>alfresco/module/${project.artifactId}/model/scRatingsModel.xml</value>
