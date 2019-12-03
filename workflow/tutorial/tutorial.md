@@ -363,25 +363,25 @@ containers automatically. Edit the pom.xml file in the
 <dependencies>
     <dependency>
         <groupId>com.someco</groupId>
-        <artifactId>workflow-tutorial-platform-jar</artifactId>
+        <artifactId>workflow-tutorial-platform</artifactId>
         <version>1.0-SNAPSHOT</version>
     </dependency>
     <!-- Bring in the content tutorial repo AMP so we can run embedded. -->
     <dependency>
         <groupId>com.someco</groupId>
-        <artifactId>content-tutorial-platform-jar</artifactId>
+        <artifactId>content-tutorial-platform</artifactId>
         <version>1.0-SNAPSHOT</version>
     </dependency>
     <!-- Bring in the behavior tutorial repo AMP so we can run embedded. -->
     <dependency>
         <groupId>com.someco</groupId>
-        <artifactId>behavior-tutorial-platform-jar</artifactId>
+        <artifactId>behavior-tutorial-platform</artifactId>
         <version>1.0-SNAPSHOT</version>
     </dependency>
     <!-- Bring in the actions tutorial repo AMP so we can run embedded. -->
     <dependency>
         <groupId>com.someco</groupId>
-        <artifactId>actions-tutorial-platform-jar</artifactId>
+        <artifactId>actions-tutorial-platform</artifactId>
         <version>1.0-SNAPSHOT</version>
     </dependency>
 </dependencies>
@@ -394,25 +394,25 @@ Those all have corresponding Share tier modules so edit the pom.xml file in the
 <dependencies>
     <dependency>
         <groupId>com.someco</groupId>
-        <artifactId>workflow-tutorial-share-jar</artifactId>
+        <artifactId>workflow-tutorial-share</artifactId>
         <version>1.0-SNAPSHOT</version>
     </dependency>
     <!-- Bring in the content tutorial share AMP so we can run embedded. -->
     <dependency>
         <groupId>com.someco</groupId>
-        <artifactId>content-tutorial-share-jar</artifactId>
+        <artifactId>content-tutorial-share</artifactId>
         <version>1.0-SNAPSHOT</version>
     </dependency>
     <!-- Bring in the behavior tutorial share AMP so we can run embedded. -->
     <dependency>
         <groupId>com.someco</groupId>
-        <artifactId>behavior-tutorial-share-jar</artifactId>
+        <artifactId>behavior-tutorial-share</artifactId>
         <version>1.0-SNAPSHOT</version>
     </dependency>
     <!-- Bring in the actions tutorial share AMP so we can run embedded. -->
     <dependency>
         <groupId>com.someco</groupId>
-        <artifactId>actions-tutorial-share-jar</artifactId>
+        <artifactId>actions-tutorial-share</artifactId>
         <version>1.0-SNAPSHOT</version>
     </dependency>
 </dependencies>
@@ -442,18 +442,18 @@ log.
 
 Workflows reside in:
 
-    $TUTORIAL_HOME/workflow-tutorial-platform-jar/src/main/resources/alfresco/module/workflow-tutorial-platform-jar/workflow
+    $TUTORIAL_HOME/workflow-tutorial-platform/src/main/resources/alfresco/module/workflow-tutorial-platform/workflow
 
 When you created the workflow-tutorial project using the Alfresco Maven SDK, the
 folder structure was created for you, and it may have included a "workflow"
-directory in the workflow-tutorial-platform-jar module with a sample workflow.
+directory in the workflow-tutorial-platform module with a sample workflow.
 If so, you can delete the sample workflow. If not, create the "workflow"
 directory now.
 
 Once that is done, follow these steps:
 
 1. Right-click the workflows folder and choose New, Other, Activiti Diagram.
-Specify "[helloWorld.bpmn](https://github.com/jpotts/alfresco-developer-series/blob/master/workflow/workflow-tutorial/workflow-tutorial-platform-jar/src/main/resources/alfresco/module/workflow-tutorial-platform-jar/workflow/helloWorld.bpmn)"
+Specify "[helloWorld.bpmn](https://github.com/jpotts/alfresco-developer-series/blob/master/workflow/workflow-tutorial/workflow-tutorial-platform/src/main/resources/alfresco/module/workflow-tutorial-platform/workflow/helloWorld.bpmn)"
 for the process name and click Finish.
 2. Drag-and-drop a start event, a user task and an end event from the palette
 onto your blank canvas.
@@ -530,7 +530,7 @@ another Hello World example that does a fork and a join.
 
 Do this:
 
-1. Create a new diagram in the workflows folder called "[helloWorldFork.bpmn](https://github.com/jpotts/alfresco-developer-series/blob/master/workflow/workflow-tutorial/workflow-tutorial-platform-jar/src/main/resources/alfresco/module/workflow-tutorial-platform-jar/workflow/helloWorldFork.bpmn)".
+1. Create a new diagram in the workflows folder called "[helloWorldFork.bpmn](https://github.com/jpotts/alfresco-developer-series/blob/master/workflow/workflow-tutorial/workflow-tutorial-platform/src/main/resources/alfresco/module/workflow-tutorial-platform/workflow/helloWorldFork.bpmn)".
 2. From the palette, grab a start event, an end event, two user tasks, and two
 parallel gateways.
 3. Click "Select" in the palette, then click each of the two user tasks to
@@ -582,7 +582,7 @@ elements that lead to "usertask1" and "usertask2":
 Remember to save the diagram.
 
 With a couple of, admittedly, ridiculously simple examples saved in the
-workflow-tutorial-platform-jar module, it is time to deploy them to Activiti
+workflow-tutorial-platform module, it is time to deploy them to Activiti
 running within Alfresco and try them out.
 
 Deploying processes
@@ -599,9 +599,9 @@ Alfresco Workflow Console to deploy subsequent versions if needed.
 ### Deploying the workflows with Spring
 
 As you learned in previous tutorials, the AMP project created by the Alfresco
-Maven SDK already has a Spring context file. It is named "[bootstrap-context.xml](https://github.com/jpotts/alfresco-developer-series/blob/master/workflow/workflow-tutorial/workflow-tutorial-platform-jar/src/main/resources/alfresco/module/workflow-tutorial-platform-jar/context/bootstrap-context.xml)" and resides in:
+Maven SDK already has a Spring context file. It is named "[bootstrap-context.xml](https://github.com/jpotts/alfresco-developer-series/blob/master/workflow/workflow-tutorial/workflow-tutorial-platform/src/main/resources/alfresco/module/workflow-tutorial-platform/context/bootstrap-context.xml)" and resides in:
 
-    $TUTORIAL_HOME/workflow-tutorial-platform-jar/src/main/resources/alfresco/module/workflow-tutorial-platform-jar/context
+    $TUTORIAL_HOME/workflow-tutorial-platform/src/main/resources/alfresco/module/workflow-tutorial-platform/context
 
 Edit that file and delete any existing bean elements that the SDK might have
 added for you. Then, add a workflow deployer bean, like this:
@@ -770,7 +770,7 @@ submitted, and then write the greeting out to the log. The first step is to
 define the process.
 
 1. In Eclipse, right-click on the "workflows" folder and create a new Activiti
-Diagram named "[helloWorldUI.bpmn](https://github.com/jpotts/alfresco-developer-series/blob/master/workflow/workflow-tutorial/workflow-tutorial-platform-jar/src/main/resources/alfresco/module/workflow-tutorial-platform-jar/workflow/helloWorldUI.bpmn)".
+Diagram named "[helloWorldUI.bpmn](https://github.com/jpotts/alfresco-developer-series/blob/master/workflow/workflow-tutorial/workflow-tutorial-platform/src/main/resources/alfresco/module/workflow-tutorial-platform/workflow/helloWorldUI.bpmn)".
 2. From the palette, drag a start event, an end event, an Alfresco User Task,
 and an Alfresco Script task onto the canvas. You'll see the benefit of using the
 Alfresco-specific User Task and Script Task shortly.
@@ -972,13 +972,13 @@ Now you need to create a content model with a custom type that corresponds to
 the form key value. From previous tutorials you know that models are defined in
 XML and reside in:
 
-    $TUTORIAL_HOME/workflow-tutorial-platform-jar/src/main/resources/alfresco/module/workflow-tutorial-platform-jar/model
+    $TUTORIAL_HOME/workflow-tutorial-platform/src/main/resources/alfresco/module/workflow-tutorial-platform/model
 
 The SDK has already created the "model" folder for you as well as a couple of
 sample model files. Go ahead and delete the sample model files as they will not
 be needed.
 
-In the model folder, create a new content model XML file called "[scWorkflowModel.xml](https://github.com/jpotts/alfresco-developer-series/blob/master/workflow/workflow-tutorial/workflow-tutorial-platform-jar/src/main/resources/alfresco/module/workflow-tutorial-platform-jar/model/scWorkflowModel.xml)"
+In the model folder, create a new content model XML file called "[scWorkflowModel.xml](https://github.com/jpotts/alfresco-developer-series/blob/master/workflow/workflow-tutorial/workflow-tutorial-platform/src/main/resources/alfresco/module/workflow-tutorial-platform/model/scWorkflowModel.xml)"
 with the following content:
 
 ```xml
@@ -1044,12 +1044,12 @@ specifically for the share tier.
 The user interface configuration for Alfresco Share resides in a directory
 called:
 
-    $TUTORIAL_HOME/workflow-tutorial-share-jar/src/main/resources/META-INF
+    $TUTORIAL_HOME/workflow-tutorial-share/src/main/resources/META-INF
 
 The SDK probably already created this directory structure as well as a sample
 share-config-custom.xml file.
 
-In the META-INF directory, edit the file called "[share-config-custom.xml](https://github.com/jpotts/alfresco-developer-series/blob/master/workflow/workflow-tutorial/workflow-tutorial-share-jar/src/main/resources/META-INF/share-config-custom.xml)"
+In the META-INF directory, edit the file called "[share-config-custom.xml](https://github.com/jpotts/alfresco-developer-series/blob/master/workflow/workflow-tutorial/workflow-tutorial-share/src/main/resources/META-INF/share-config-custom.xml)"
 . Replace the sample content with the following content:
 
 ```xml
@@ -1096,17 +1096,17 @@ dialog, and titles and descriptions for individual tasks. The identifiers for
 these strings follow a specific format.
 
 There are two separate properties bundles to deal with. One is for the "repo"
-tier, so it goes in the workflow-tutorial-platform-jar module. The other is for
-the "share" tier, so it goes in the workflow-tutorial-share-jar module.
+tier, so it goes in the workflow-tutorial-platform module. The other is for
+the "share" tier, so it goes in the workflow-tutorial-share module.
 
 Properties for the repo tier go in:
 
-    $TUTORIAL_HOME/workflow-tutorial-platform-jar/src/main/resources/alfresco/module/workflow-tutorial-platform-jar/messages
+    $TUTORIAL_HOME/workflow-tutorial-platform/src/main/resources/alfresco/module/workflow-tutorial-platform/messages
 
 The SDK has already created the "messages" folder along with a sample properties
 file, which you can delete.
 
-In the messages folder, create a new file called "[scWorkflow.properties](https://github.com/jpotts/alfresco-developer-series/blob/master/workflow/workflow-tutorial/workflow-tutorial-platform-jar/src/main/resources/alfresco/module/workflow-tutorial-platform-jar/messages/scWorkflow.properties)" with the following content:
+In the messages folder, create a new file called "[scWorkflow.properties](https://github.com/jpotts/alfresco-developer-series/blob/master/workflow/workflow-tutorial/workflow-tutorial-platform/src/main/resources/alfresco/module/workflow-tutorial-platform/messages/scWorkflow.properties)" with the following content:
 
 ```
 # Workflow related strings
@@ -1128,12 +1128,12 @@ the process (the workflow title, the workflow history, etc.).
 
 Properties for the share tier go in:
 
-    $TUTORIAL_HOME/workflow-tutorial-share-jar/src/main/resources/alfresco/web-extension/messages
+    $TUTORIAL_HOME/workflow-tutorial-share/src/main/resources/alfresco/web-extension/messages
 
 The SDK has already created the "messages" folder and a sample properties file
 which you can delete.
 
-In the messages folder, create a new file called "[scWorkflow.properties](https://github.com/jpotts/alfresco-developer-series/blob/master/workflow/workflow-tutorial/workflow-tutorial-share-jar/src/main/resources/alfresco/web-extension/messages/scWorkflow.properties)" with the following content:
+In the messages folder, create a new file called "[scWorkflow.properties](https://github.com/jpotts/alfresco-developer-series/blob/master/workflow/workflow-tutorial/workflow-tutorial-share/src/main/resources/alfresco/web-extension/messages/scWorkflow.properties)" with the following content:
 
 ```
 #scwf:helloName
@@ -1160,9 +1160,9 @@ Let's update the repo tier Spring configuration, then the share tier.
 
 #### Repo tier Spring configuration
 
-Edit the [bootstrap-context.xml](https://github.com/jpotts/alfresco-developer-series/blob/master/workflow/workflow-tutorial/workflow-tutorial-platform-jar/src/main/resources/alfresco/module/workflow-tutorial-platform-jar/context/bootstrap-context.xml) file that resides in:
+Edit the [bootstrap-context.xml](https://github.com/jpotts/alfresco-developer-series/blob/master/workflow/workflow-tutorial/workflow-tutorial-platform/src/main/resources/alfresco/module/workflow-tutorial-platform/context/bootstrap-context.xml) file that resides in:
 
-    $TUTORIAL_HOME/workflow-tutorial-platform-jar/src/main/resources/alfresco/module/workflow-tutorial-platform-jar/context
+    $TUTORIAL_HOME/workflow-tutorial-platform/src/main/resources/alfresco/module/workflow-tutorial-platform/context
 
 You can add the workflow model, the new workflow, and the labels all in the same
 bean. Edit the bootstrap-context.xml file and append the following to the
@@ -1194,11 +1194,11 @@ Save and close the file.
 
 #### Share tier Spring configuration
 
-The Spring configuration for the workflow-tutorial-share-jar module resides in:
+The Spring configuration for the workflow-tutorial-share module resides in:
 
-    $TUTORIAL_HOME/workflow-tutorial-share-jar/src/main/resources/alfresco/web-extension
+    $TUTORIAL_HOME/workflow-tutorial-share/src/main/resources/alfresco/web-extension
 
-In the web-extension directory, the SDK has created file called "[workflow-tutorial-share-slingshot-application-context.xml](https://github.com/jpotts/alfresco-developer-series/blob/master/workflow/workflow-tutorial/workflow-tutorial-share-jar/src/main/resources/alfresco/web-extension/workflow-tutorial-share-slingshot-application-context.xml)"
+In the web-extension directory, the SDK has created file called "[workflow-tutorial-share-slingshot-application-context.xml](https://github.com/jpotts/alfresco-developer-series/blob/master/workflow/workflow-tutorial/workflow-tutorial-share/src/main/resources/alfresco/web-extension/workflow-tutorial-share-slingshot-application-context.xml)"
 . Replace the content of that file with the following content:
 
 ```xml
@@ -1365,7 +1365,7 @@ The diagram step is just like you've seen before, it's just that the diagram is
 a little more complex.
 
 1. Right-click on the workflows folder, New, Other, Activiti Process Diagram.
-2. Name the process "[publishWhitepaper.bpmn](https://github.com/jpotts/alfresco-developer-series/blob/master/workflow/workflow-tutorial/workflow-tutorial-platform-jar/src/main/resources/alfresco/module/workflow-tutorial-platform-jar/workflow/publishWhitepaper.bpmn)".
+2. Name the process "[publishWhitepaper.bpmn](https://github.com/jpotts/alfresco-developer-series/blob/master/workflow/workflow-tutorial/workflow-tutorial-platform/src/main/resources/alfresco/module/workflow-tutorial-platform/workflow/publishWhitepaper.bpmn)".
 3. Click on the canvas to open the properties editor for the entire process. Set
 the ID to "publishWhitepaper" and the name to "Publish Whitepaper".
 4. Drag-and-drop nodes from the palette and connect them with sequence flows to
@@ -1596,7 +1596,7 @@ updating the client configuration.
 #### Defining the workflow content model
 
 You started a workflow content model in the earlier Hello World UI example. The
-first thing to do is update the content model XML ([scWorkflowModel.xml](https://github.com/jpotts/alfresco-developer-series/blob/master/workflow/workflow-tutorial/workflow-tutorial-platform-jar/src/main/resources/alfresco/module/workflow-tutorial-platform-jar/model/scWorkflowModel.xml))
+first thing to do is update the content model XML ([scWorkflowModel.xml](https://github.com/jpotts/alfresco-developer-series/blob/master/workflow/workflow-tutorial/workflow-tutorial-platform/src/main/resources/alfresco/module/workflow-tutorial-platform/model/scWorkflowModel.xml))
 with types and aspects specific to the publish whitepaper process.
 
 Edit the file and add:
@@ -1728,7 +1728,7 @@ user interface.
 
 #### Configure the Alfresco Share user interface
 
-In the Hello World UI example you saw that Alfresco Share is configured using [share-config-custom.xml](https://github.com/jpotts/alfresco-developer-series/blob/master/workflow/workflow-tutorial/workflow-tutorial-share-jar/src/main/resources/META-INF/share-config-custom.xml).
+In the Hello World UI example you saw that Alfresco Share is configured using [share-config-custom.xml](https://github.com/jpotts/alfresco-developer-series/blob/master/workflow/workflow-tutorial/workflow-tutorial-share/src/main/resources/META-INF/share-config-custom.xml).
 Because it is mostly repetitive, I'll just show the configuration for
 `scwf:activitiReviewTask` here and if you want to see the rest of the Share
 configuration, you can look at the source that accompanies this tutorial.
@@ -1780,14 +1780,14 @@ Table: What does the config do?
 
 The last step is to externalize the strings in the model and process. Remember
 that in the Hello World UI example the strings went into two files named
-"scWorkflow.properties", one for the workflow-tutorial-platform-jar module and
-one for the workflow-tutorial-share-jar module.
+"scWorkflow.properties", one for the workflow-tutorial-platform module and
+one for the workflow-tutorial-share module.
 
-The one in the workflow-tutorial-platform-jar module resides in:
+The one in the workflow-tutorial-platform module resides in:
 
-    $TUTORIAL_HOME/workflow-tutorial-platform-jar/src/main/resources/alfresco/module/workflow-tutorial-platform-jar/messages
+    $TUTORIAL_HOME/workflow-tutorial-platform/src/main/resources/alfresco/module/workflow-tutorial-platform/messages
 
-Add the following to [scWorkflow.properties](https://github.com/jpotts/alfresco-developer-series/blob/master/workflow/workflow-tutorial/workflow-tutorial-platform-jar/src/main/resources/alfresco/module/workflow-tutorial-platform-jar/messages/scWorkflow.properties):
+Add the following to [scWorkflow.properties](https://github.com/jpotts/alfresco-developer-series/blob/master/workflow/workflow-tutorial/workflow-tutorial-platform/src/main/resources/alfresco/module/workflow-tutorial-platform/messages/scWorkflow.properties):
 
 ```
 publishWhitepaper.workflow.title=Publish Whitepaper to Web (Activiti)
@@ -1834,9 +1834,9 @@ The first part of the key is the name of the workflow model, then whether or not
 this key is for a type or a property, then the name of the type or property.
 These are the strings shown when someone manages a task.
 
-Now edit [scWorkflow.properties](https://github.com/jpotts/alfresco-developer-series/blob/master/workflow/workflow-tutorial/workflow-tutorial-share-jar/src/main/resources/alfresco/web-extension/messages/scWorkflow.properties) in the workflow-tutorial-share-jar module. It resides in:
+Now edit [scWorkflow.properties](https://github.com/jpotts/alfresco-developer-series/blob/master/workflow/workflow-tutorial/workflow-tutorial-share/src/main/resources/alfresco/web-extension/messages/scWorkflow.properties) in the workflow-tutorial-share module. It resides in:
 
-    $TUTORIAL_HOME/workflow-tutorial-share-jar/src/main/resources/alfresco/web-extension/messages
+    $TUTORIAL_HOME/workflow-tutorial-share/src/main/resources/alfresco/web-extension/messages
 
 Add these properties to the file:
 
@@ -1851,9 +1851,9 @@ Save the file and you are ready to deploy and test what you have so far.
 
 ### Deploy and test
 
-You created a new workflow so it needs to be deployed via Spring. Edit the "[bootstrap-context.xml](https://github.com/jpotts/alfresco-developer-series/blob/master/workflow/workflow-tutorial/workflow-tutorial-platform-jar/src/main/resources/alfresco/module/workflow-tutorial-platform-jar/context/bootstrap-context.xml)" file that resides in:
+You created a new workflow so it needs to be deployed via Spring. Edit the "[bootstrap-context.xml](https://github.com/jpotts/alfresco-developer-series/blob/master/workflow/workflow-tutorial/workflow-tutorial-platform/src/main/resources/alfresco/module/workflow-tutorial-platform/context/bootstrap-context.xml)" file that resides in:
 
-    $TUTORIAL_HOME/workflow-tutorial-platform-jar/src/main/resources/alfresco/module/workflow-tutorial-platform-jar/context
+    $TUTORIAL_HOME/workflow-tutorial-platform/src/main/resources/alfresco/module/workflow-tutorial-platform/context
 
 Add the new workflow to the list of workflows:
 
@@ -1962,11 +1962,11 @@ the other files that make up the web script.
 
 The source for the web script's controller resides in:
 
-    $TUTORIAL_HOME/workflow-tutorial-platform-jar/src/main/java
+    $TUTORIAL_HOME/workflow-tutorial-platform/src/main/java
 
 First, create a package folder structure called "com/someco/scripts".
 
-Now create a new class called "[GetReview](https://github.com/jpotts/alfresco-developer-series/blob/master/workflow/workflow-tutorial/workflow-tutorial-platform-jar/src/main/java/com/someco/scripts/GetReview.java)"
+Now create a new class called "[GetReview](https://github.com/jpotts/alfresco-developer-series/blob/master/workflow/workflow-tutorial/workflow-tutorial-platform/src/main/java/com/someco/scripts/GetReview.java)"
 . Here's the class, without the imports or the getter/setter methods:
 
 ```java
@@ -2011,16 +2011,16 @@ were to post this URL:
 the Java class would update the task identified by activiti$89 with the
 "Approve" outcome.
 
-If you are following along, don't forget to copy over the [web script descriptor](https://github.com/jpotts/alfresco-developer-series/blob/master/workflow/workflow-tutorial/workflow-tutorial-platform-jar/src/main/resources/alfresco/extension/templates/webscripts/com/someco/bpm/review.get.desc.xml)
-and the [freemarker](https://github.com/jpotts/alfresco-developer-series/blob/master/workflow/workflow-tutorial/workflow-tutorial-platform-jar/src/main/resources/alfresco/extension/templates/webscripts/com/someco/bpm/review.get.html.ftl)
+If you are following along, don't forget to copy over the [web script descriptor](https://github.com/jpotts/alfresco-developer-series/blob/master/workflow/workflow-tutorial/workflow-tutorial-platform/src/main/resources/alfresco/extension/templates/webscripts/com/someco/bpm/review.get.desc.xml)
+and the [freemarker](https://github.com/jpotts/alfresco-developer-series/blob/master/workflow/workflow-tutorial/workflow-tutorial-platform/src/main/resources/alfresco/extension/templates/webscripts/com/someco/bpm/review.get.html.ftl)
 for the web script into:
 
-    $TUTORIAL_HOME/workflow-tutorial-platform-jar/src/main/resources/alfresco/extension/templates/webscripts/com/someco/bpm
+    $TUTORIAL_HOME/workflow-tutorial-platform/src/main/resources/alfresco/extension/templates/webscripts/com/someco/bpm
 
-You will also need to copy the Spring bean that wires in the Java controller into the [bootstrap-context.xml](https://github.com/jpotts/alfresco-developer-series/blob/master/workflow/workflow-tutorial/workflow-tutorial-platform-jar/src/main/resources/alfresco/module/workflow-tutorial-platform-jar/context/bootstrap-context.xml)
+You will also need to copy the Spring bean that wires in the Java controller into the [bootstrap-context.xml](https://github.com/jpotts/alfresco-developer-series/blob/master/workflow/workflow-tutorial/workflow-tutorial-platform/src/main/resources/alfresco/module/workflow-tutorial-platform/context/bootstrap-context.xml)
 file located in:
 
-    $TUTORIAL_HOME/workflow-tutorial-platform-jar/src/main/resources/alfresco/module/workflow-tutorial-platform-jar/context
+    $TUTORIAL_HOME/workflow-tutorial-platform/src/main/resources/alfresco/module/workflow-tutorial-platform/context
 
 Once these are in place, the web script will be ready to receive clicks from the
 email that gets sent out. Writing code that sends the email is the next step.
@@ -2035,7 +2035,7 @@ custom task listener class to handle it.
 
 First, create a new package called "com.someco.bpm".
 
-Then, create a new class called "[ExternalReviewNotification](https://github.com/jpotts/alfresco-developer-series/blob/master/workflow/workflow-tutorial/workflow-tutorial-platform-jar/src/main/java/com/someco/bpm/ExternalReviewNotification.java)"
+Then, create a new class called "[ExternalReviewNotification](https://github.com/jpotts/alfresco-developer-series/blob/master/workflow/workflow-tutorial/workflow-tutorial-platform/src/main/java/com/someco/bpm/ExternalReviewNotification.java)"
 . The goal is to send an email that has two links—one for approve and one for
 reject—that represent the two possible outcomes of the Third Party Review user
 task. The links need to include the task ID and the desired outcome as
@@ -2090,7 +2090,7 @@ same SMTP configuration settings already configured for Alfresco in
 alfresco-global.properties.
 
 The last thing to do is to call the `ExternalReviewNotification` class from the
-process. Edit the [publishWhitepaper.bpmn](https://github.com/jpotts/alfresco-developer-series/blob/master/workflow/workflow-tutorial/workflow-tutorial-platform-jar/src/main/resources/alfresco/module/workflow-tutorial-platform-jar/workflow/publishWhitepaper.bpmn)
+process. Edit the [publishWhitepaper.bpmn](https://github.com/jpotts/alfresco-developer-series/blob/master/workflow/workflow-tutorial/workflow-tutorial-platform/src/main/resources/alfresco/module/workflow-tutorial-platform/workflow/publishWhitepaper.bpmn)
 file and find the task named "Third Party Review". The user task already has a
 task listener on the "complete" event that you added earlier. Insert a new
 `activiti:taskListener` element that creates a task listener on the "create"
@@ -2207,7 +2207,7 @@ then route to the Approved task.
 
 Here's how to do it:
 
-1. Edit the [publishWhitepaper.bpmn](https://github.com/jpotts/alfresco-developer-series/blob/master/workflow/workflow-tutorial/workflow-tutorial-platform-jar/src/main/resources/alfresco/module/workflow-tutorial-platform-jar/workflow/publishWhitepaper.bpmn)
+1. Edit the [publishWhitepaper.bpmn](https://github.com/jpotts/alfresco-developer-series/blob/master/workflow/workflow-tutorial/workflow-tutorial-platform/src/main/resources/alfresco/module/workflow-tutorial-platform/workflow/publishWhitepaper.bpmn)
 process definition file.
 2. Find the Third-Party Review task. In my diagram it is "usertask2". Find the
 "Approved Notification" task. In my diagram it is "usertask5". With those
