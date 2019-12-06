@@ -192,7 +192,7 @@ Alfresco Share Docker image, and using Docker Compose to start up Alfresco,
 Share, PostgreSQL, and Alfresco Search Services. Eventually you'll see:
 
     2018-04-13 13:23:07,796  INFO  [repo.module.ModuleServiceImpl] [localhost-startStop-1] Found 3 module package(s).
-    2018-04-13 13:23:07,807  INFO  [repo.module.ModuleServiceImpl] [localhost-startStop-1] Installing module 'maven-sdk-tutorial-platform-jar' version 1.0-SNAPSHOT.
+    2018-04-13 13:23:07,807  INFO  [repo.module.ModuleServiceImpl] [localhost-startStop-1] Installing module 'maven-sdk-tutorial-platform' version 1.0-SNAPSHOT.
     DemoComponent has been executed
 
 Which means that the module your project generated was recognized by the
@@ -238,13 +238,13 @@ Once it started up, you were able to log in to both the repository tier admin
 console and web scripts console running in the Alfresco WAR as well as Share
 running in the Share WAR.
 
-If you go look in the target directory under "maven-sdk-tutorial-platform-jar"
-you'll see a JAR file called "maven-sdk-tutorial-platform-jar-1.0-SNAPSHOT.jar"
+If you go look in the target directory under "maven-sdk-tutorial-platform"
+you'll see a JAR file called "maven-sdk-tutorial-platform-1.0-SNAPSHOT.jar"
 that was produced by the build and subsequently deployed to the Alfresco WAR.
 
-Similarly, in the target directory under "maven-sdk-tutorial-share-jar" you'll
+Similarly, in the target directory under "maven-sdk-tutorial-share" you'll
 see that the build also created a "Share tier" JAR called
-"maven-sdk-tutorial-share-jar-1.0-SNAPSHOT.jar".
+"maven-sdk-tutorial-share-1.0-SNAPSHOT.jar".
 
 If you do a `docker ps -a|grep maven` you'll see the list of Docker containers
 that the SDK generated for you.
@@ -288,7 +288,7 @@ cover that in the next section.
 Unit & Integration Tests
 ------------------------
 You may have noticed that the default project includes a simple unit test in the
-platform-jar module and some integration tests in the integration-tests module.
+platform module and some integration tests in the integration-tests module.
 By default, Maven will automatically run the unit tests and integration tests in
 your project unless you include `-DskipTests`.
 
@@ -387,12 +387,12 @@ IDE. Let's see what we've got.
 When you created the project from the all-in-one archetype, you ended up with a
 project called "maven-sdk-tutorial" that has five modules:
 
-1. maven-sdk-tutorial-platform-jar: This is the module that holds your
+1. maven-sdk-tutorial-platform: This is the module that holds your
 "repository tier" customizations and produces an AMP that gets installed into
 the Alfresco WAR.
-2. maven-sdk-tutorial-share-jar: This is the module that holds your "Share tier"
+2. maven-sdk-tutorial-share: This is the module that holds your "Share tier"
 customizations and produces an AMP that gets installed in the Share WAR.
-3. integration-tests: This module is for integration tests that run in the
+3. maven-sdk-integration-tests: This module is for integration tests that run in the
 embedded Tomcat server.
 4. maven-sdk-tutorial-platform-docker: This is the module that defines an
 Alfresco Content Services Docker image specific to your project. It is based on
@@ -411,7 +411,7 @@ assumes you are working with Alfresco Community Edition 6.0.7. If you wanted to
 work with a different version, you would simply change those properties and then
 tell Maven to update and it will take care of the rest.
 
-Now look at "maven-sdk-tutorial-platform-jar". In it, you'll find:
+Now look at "maven-sdk-tutorial-platform". In it, you'll find:
 
 * *src/main/java* This is where you should create your own packages to organize
 your Java code. Things like custom action executer classes, custom behaviors,
@@ -434,7 +434,7 @@ an AMP file.
 project. The structure of an AMP is well-documented so I don't want to duplicate
 that here. Let me just point out the highlights:
 
-    * The alfresco/module/maven-sdk-tutorial-platform-jar directory is the heart
+    * The alfresco/module/maven-sdk-tutorial-platform directory is the heart
     of the AMP. This is where you place Spring config XML files, content model
     XML files, and user interface configuration. As you'll see in later
     tutorials, I prefer separate sub-directories for each of these things.
@@ -444,8 +444,8 @@ that here. Let me just point out the highlights:
     the root of the web application. Those go in META-INF/resources in
     directories such as css, jsp, scripts, and images.
 
-Going back up a level, take a look at "maven-sdk-tutorial-share-jar". It has a
-similar structure as the platform-jar module, but instead of an "extension"
+Going back up a level, take a look at "maven-sdk-tutorial-share". It has a
+similar structure as the platform module, but instead of an "extension"
 directory under "src/main/resources/alfresco", a Share project has a
 "web-extension" directory where you'll find Share-specific directories like
 "site-data" and "site-webscripts".
@@ -466,7 +466,7 @@ tier AMP. It is often convenient to do that in a single project.
 
 If you know you are going to create only one or the other, you can specify a
 different archetype. When generating your project from an archetype, choose
-"alfresco-platform-jar-archetype" to create a project that will produce only a
+"alfresco-platform-archetype" to create a project that will produce only a
 repository tier AMP. Choose "share-amp-archetype" to create a project that will
 produce only a Share tier AMP.
 

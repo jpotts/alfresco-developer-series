@@ -132,7 +132,7 @@ Architect | Alfresco Developer Tutorials</title>
 <p>If you get a permissions error, run <code>chmod u+x ./run.sh</code> and try again. If you are on Windows, use run.bat instead.</p>
 <p>If you watch the output, you'll see that Maven is downloading everything it needs to compile the project, creating an AMP, downloading Docker images from Docker Hub, deploying the AMP to the Alfresco WAR, defining an Alfresco Content Services Docker image, deploying the Share AMP to the Share WAR, defining an Alfresco Share Docker image, and using Docker Compose to start up Alfresco, Share, PostgreSQL, and Alfresco Search Services. Eventually you'll see:</p>
 <pre><code>2018-04-13 13:23:07,796  INFO  [repo.module.ModuleServiceImpl] [localhost-startStop-1] Found 3 module package(s).
-2018-04-13 13:23:07,807  INFO  [repo.module.ModuleServiceImpl] [localhost-startStop-1] Installing module &#39;maven-sdk-tutorial-platform-jar&#39; version 1.0-SNAPSHOT.
+2018-04-13 13:23:07,807  INFO  [repo.module.ModuleServiceImpl] [localhost-startStop-1] Installing module &#39;maven-sdk-tutorial-platform&#39; version 1.0-SNAPSHOT.
 DemoComponent has been executed</code></pre>
 <p>Which means that the module your project generated was recognized by the Alfresco server.</p>
 <p>Once you see:</p>
@@ -150,8 +150,8 @@ DemoComponent has been executed</code></pre>
 <p>If you look at the run script, you'll see that &quot;build_start&quot; cleans the project output, builds the Alfresco and Share extensions, sets up Docker named volumes, then tells Docker Compose to bring up the Docker containers.</p>
 <p>The Docker Compose file lives in the Docker directory in the root of the project.</p>
 <p>Once it started up, you were able to log in to both the repository tier admin console and web scripts console running in the Alfresco WAR as well as Share running in the Share WAR.</p>
-<p>If you go look in the target directory under &quot;maven-sdk-tutorial-platform-jar&quot; you'll see a JAR file called &quot;maven-sdk-tutorial-platform-jar-1.0-SNAPSHOT.jar&quot; that was produced by the build and subsequently deployed to the Alfresco WAR.</p>
-<p>Similarly, in the target directory under &quot;maven-sdk-tutorial-share-jar&quot; you'll see that the build also created a &quot;Share tier&quot; JAR called &quot;maven-sdk-tutorial-share-jar-1.0-SNAPSHOT.jar&quot;.</p>
+<p>If you go look in the target directory under &quot;maven-sdk-tutorial-platform&quot; you'll see a JAR file called &quot;maven-sdk-tutorial-platform-1.0-SNAPSHOT.jar&quot; that was produced by the build and subsequently deployed to the Alfresco WAR.</p>
+<p>Similarly, in the target directory under &quot;maven-sdk-tutorial-share&quot; you'll see that the build also created a &quot;Share tier&quot; JAR called &quot;maven-sdk-tutorial-share-1.0-SNAPSHOT.jar&quot;.</p>
 <p>If you do a <code>docker ps -a|grep maven</code> you'll see the list of Docker containers that the SDK generated for you.</p>
 <h2 id="jars-versus-amps">JARs versus AMPs</h2>
 <p>You can deploy Alfresco projects as JAR files only in a limited number of very simple cases. More often, your changes will need to be packaged as an Alfresco Module Package (AMP) file. Because AMPs must still be used most of the time, it simplifies things to use AMPs all of the time and to never use JARs. So, it's a good idea to just get in the mindset that you've just built your last Alfresco modules as JAR files and from now on it will be all AMPs, all the time.</p>
@@ -165,7 +165,7 @@ DemoComponent has been executed</code></pre>
 <p>In 3.0.1 you may see some stack traces after running <code>mvn install</code>. If you scroll up a bit, you'll see that the tests ran successfully. The stack traces are a known issue related to Tomcat shutdown hooks and can safely be ignored.</p>
 <p>In 4.0, the containers need to be running before executing the tests. We'll cover that in the next section.</p>
 <h2 id="unit-integration-tests">Unit &amp; Integration Tests</h2>
-<p>You may have noticed that the default project includes a simple unit test in the platform-jar module and some integration tests in the integration-tests module. By default, Maven will automatically run the unit tests and integration tests in your project unless you include <code>-DskipTests</code>.</p>
+<p>You may have noticed that the default project includes a simple unit test in the platform module and some integration tests in the integration-tests module. By default, Maven will automatically run the unit tests and integration tests in your project unless you include <code>-DskipTests</code>.</p>
 <p>It's a good practice to make sure that your project always includes unit tests and to run them every time you build. Many organizations run CI (Continuous Integration) tools that depend on this being the case. Running <code>mvn test</code> will compile and run the project's unit tests.</p>
 <p>To run integration tests using SDK 4.0, first start up the server using <code>run.sh build_start</code>. Once it is running, do <code>run.sh test</code> to run the integration tests. You'll see something like:</p>
 <pre><code>-------------------------------------------------------
@@ -215,9 +215,9 @@ Tests run: 5, Failures: 0, Errors: 0, Skipped: 0</code></pre>
 <p>The folder structure of your project is a bit more pleasant to explore in your IDE. Let's see what we've got.</p>
 <p>When you created the project from the all-in-one archetype, you ended up with a project called &quot;maven-sdk-tutorial&quot; that has five modules:</p>
 <ol style="list-style-type: decimal">
-<li>maven-sdk-tutorial-platform-jar: This is the module that holds your &quot;repository tier&quot; customizations and produces an AMP that gets installed into the Alfresco WAR.</li>
-<li>maven-sdk-tutorial-share-jar: This is the module that holds your &quot;Share tier&quot; customizations and produces an AMP that gets installed in the Share WAR.</li>
-<li>integration-tests: This module is for integration tests that run in the embedded Tomcat server.</li>
+<li>maven-sdk-tutorial-platform: This is the module that holds your &quot;repository tier&quot; customizations and produces an AMP that gets installed into the Alfresco WAR.</li>
+<li>maven-sdk-tutorial-share: This is the module that holds your &quot;Share tier&quot; customizations and produces an AMP that gets installed in the Share WAR.</li>
+<li>maven-sdk-integration-tests: This module is for integration tests that run in the embedded Tomcat server.</li>
 <li>maven-sdk-tutorial-platform-docker: This is the module that defines an Alfresco Content Services Docker image specific to your project. It is based on the Alfresco packaged Docker image and adds your platform extension.</li>
 <li>maven-sdk-tutorial-share-docker: This is the module that defines an Alfresco Share Docker image specific to your project. It is based on the Alfresco packaged Docker image and adds your Share extension.</li>
 </ol>
@@ -225,24 +225,24 @@ Tests run: 5, Failures: 0, Errors: 0, Skipped: 0</code></pre>
 <ul>
 <li><em>pom.xml</em> In the root of the project directory you'll see pom.xml. This tells Maven everything it needs to know about your project. Remember those settings you specified when you created the project from the archetype? You can make changes to those settings here. For example, version 4.0 of the archetype assumes you are working with Alfresco Community Edition 6.0.7. If you wanted to work with a different version, you would simply change those properties and then tell Maven to update and it will take care of the rest.</li>
 </ul>
-<p>Now look at &quot;maven-sdk-tutorial-platform-jar&quot;. In it, you'll find:</p>
+<p>Now look at &quot;maven-sdk-tutorial-platform&quot;. In it, you'll find:</p>
 <ul>
 <li><p><em>src/main/java</em> This is where you should create your own packages to organize your Java code. Things like custom action executer classes, custom behaviors, Java-based controllers for web scripts go here. If you don't know what those are, don't worry, there are tutorials available <a href="https://ecmarchitect.com/alfresco-developer-series">here</a>. These files will ultimately be placed in a JAR. When the AMP is installed into the Alfresco WAR, the JAR will be placed under WEB-INF/lib.</p></li>
 <li><p><em>src/test</em> Everything under src/test is about running unit tests. The unit tests themselves go in src/test/java. Any resources those classes need go in src/test/resources. In src/test/properties/local you'll see an alfresco-global.properties file. If you are already know something about Alfresco you know that this is used to configure Alfresco. In this case, it is only used when running the embedded Alfresco server for testing purposes.</p></li>
 <li><p><em>src/main/assembly</em> Everything in this directory tells Maven how to construct an AMP file.</p></li>
 <li><p><em>src/main/resources</em> Everything else goes somewhere in this part of the project. The structure of an AMP is well-documented so I don't want to duplicate that here. Let me just point out the highlights:</p>
 <ul>
-<li>The alfresco/module/maven-sdk-tutorial-platform-jar directory is the heart of the AMP. This is where you place Spring config XML files, content model XML files, and user interface configuration. As you'll see in later tutorials, I prefer separate sub-directories for each of these things.</li>
+<li>The alfresco/module/maven-sdk-tutorial-platform directory is the heart of the AMP. This is where you place Spring config XML files, content model XML files, and user interface configuration. As you'll see in later tutorials, I prefer separate sub-directories for each of these things.</li>
 <li>If your module includes web scripts, those don't reside under the module directory. Instead, those go under alfresco/extension/templates/webscripts.</li>
 <li>Your module may include client-side resources that need to be deployed to the root of the web application. Those go in META-INF/resources in directories such as css, jsp, scripts, and images.</li>
 </ul></li>
 </ul>
-<p>Going back up a level, take a look at &quot;maven-sdk-tutorial-share-jar&quot;. It has a similar structure as the platform-jar module, but instead of an &quot;extension&quot; directory under &quot;src/main/resources/alfresco&quot;, a Share project has a &quot;web-extension&quot; directory where you'll find Share-specific directories like &quot;site-data&quot; and &quot;site-webscripts&quot;.</p>
+<p>Going back up a level, take a look at &quot;maven-sdk-tutorial-share&quot;. It has a similar structure as the platform module, but instead of an &quot;extension&quot; directory under &quot;src/main/resources/alfresco&quot;, a Share project has a &quot;web-extension&quot; directory where you'll find Share-specific directories like &quot;site-data&quot; and &quot;site-webscripts&quot;.</p>
 <p>If you are already familiar with Share customizations, you may be wondering where to find &quot;share-config-custom.xml&quot;. It is in &quot;src/main/resources/META-INF&quot;.</p>
 <p>You should check this entire project, starting with the &quot;maven-sdk-tutorial&quot; directory, into source code control. You will want to configure your source code control client to ignore the target directories. If you are running IntelliJ, check in the IML files but do not check in the .idea directory or its children.</p>
 <h1 id="other-types-of-archetypes">Other Types of Archetypes</h1>
 <p>In this and subsequent tutorials I am using the &quot;all-in-one&quot; archetype because most of these tutorials need to produce both a repository tier AMP and a Share tier AMP. It is often convenient to do that in a single project.</p>
-<p>If you know you are going to create only one or the other, you can specify a different archetype. When generating your project from an archetype, choose &quot;alfresco-platform-jar-archetype&quot; to create a project that will produce only a repository tier AMP. Choose &quot;share-amp-archetype&quot; to create a project that will produce only a Share tier AMP.</p>
+<p>If you know you are going to create only one or the other, you can specify a different archetype. When generating your project from an archetype, choose &quot;alfresco-platform-archetype&quot; to create a project that will produce only a repository tier AMP. Choose &quot;share-amp-archetype&quot; to create a project that will produce only a Share tier AMP.</p>
 <p>The nice thing about using one of these tier-specific archetypes is that it is a smaller, more simplified project structure. One downside is that these projects lack the &quot;integration-tests&quot; module. You can add it, but it won't be there initially.</p>
 <p>Even when developing both a repository tier AMP and a Share tier AMP, some developers like having two independent projects that can be versioned independently.</p>
 <h1 id="creating-projects-from-within-eclipse">Creating Projects from Within Eclipse</h1>
