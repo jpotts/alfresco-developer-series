@@ -4,54 +4,42 @@
     <groupId>com.someco</groupId>
     <artifactId>webscripts-tutorial</artifactId>
     <version>1.0-SNAPSHOT</version>
-    <name>webscripts-tutorial</name>
-    <description>ecmarchitect.com webscripts tutorial</description>
+    <name>AIO - SDK 4.0</name>
+    <description>All-In-One (AIO) project for SDK 4.0</description>
     <packaging>pom</packaging>
 
+    <prerequisites>
+        <maven>3.3.0</maven>
+    </prerequisites>
     <properties>
         <!-- Alfresco Maven Plugin version to use -->
-        <alfresco.sdk.version>3.0.1</alfresco.sdk.version>
+        <alfresco.sdk.version>4.0.0</alfresco.sdk.version>
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-        <!-- Alfresco Data directory, which will contain:
-              Content Store (i.e. the files we upload)
-              Database (i.e. the metadata for the uploaded files)
-              Search index (i.e. the indexed content and metadata)
-             Configured in alfresco-global.properties with the 'dir.root' property.
-              -->
-        <alfresco.data.location>${session.executionRootDirectory}/alf_data_dev</alfresco.data.location>
-
-        <!-- Duplicated with alfresco.solrHome in the plugin, we need them out here to do filtering -->
-        <solr.home>${alfresco.data.location}/solr</solr.home>
-        <solr.model.dir>${solr.home}/alfrescoModels</solr.model.dir>
-        <solr.content.dir>${solr.home}/index</solr.content.dir>
-
         <!-- Properties used in dependency declarations, you don't need to change these -->
         <alfresco.groupId>org.alfresco</alfresco.groupId>
+        <alfresco.bomDependencyArtifactId>acs-community-packaging</alfresco.bomDependencyArtifactId>
+        <alfresco.platform.version>6.1.2-ga</alfresco.platform.version>
+        <alfresco.share.version>6.1.0-RC3</alfresco.share.version>
 
-        <!-- Alfresco Platform and Share webapp versions, these are the original Alfresco webapps that will be
-             customized and then deployed and run by the tomcat maven plugin when
-             executing for example $ mvn clean install alfresco:run -->
-        <alfresco.platform.version>5.2.f</alfresco.platform.version>
-        <alfresco.share.version>5.2.e</alfresco.share.version>
-
-        <!-- Default is to run with a Community edition, change to 'enterprise' if using Enterprise edition -->
-        <maven.alfresco.edition>community</maven.alfresco.edition>
-
-        <!-- Alfresco Surf version, if you change Share version you might need to change Surf version -->
-        <alfresco.surf.version>6.11</alfresco.surf.version>
+        <!-- Docker images -->
+        <docker.acs.image>alfresco/alfresco-content-repository-community</docker.acs.image>
+        <docker.share.image>alfresco/alfresco-share</docker.share.image>
 
         <!-- JRebel Hot reloading of classpath stuff and web resource stuff -->
-        <jrebel.version>1.1.6</jrebel.version>
+        <jrebel.version>1.1.8</jrebel.version>
 
-        <!-- Environment to use, Alfresco Maven Plugin will
-             copy alfresco-global-*.properties files from this directory, such as src/test/properties/local -->
-        <env>local</env>
+        <!-- Environment configuration properties -->
+        <share.port>8180</share.port>
+        <share.debug.port>9898</share.debug.port>
+        <acs.host>webscripts-tutorial-acs</acs.host>
+        <acs.port>8080</acs.port>
+        <acs.debug.port>8888</acs.debug.port>
+        <postgres.port>5555</postgres.port>
+        <!-- This parameter is only required for those cases in which ACS is not exposed in http://localhost:8080/alfresco (i.e. Windows Docker) -->
+        <test.acs.endpoint.path/>
 
-        <!-- Compile with Java 7, default is 5 -->
-        <maven.compiler.source>1.7</maven.compiler.source>
-        <maven.compiler.target>1.7</maven.compiler.target>
     </properties>
 
     <!-- Libs used in Unit and Integration tests -->
@@ -61,7 +49,6 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.12</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -73,22 +60,14 @@
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>
-            <version>4.5.2</version>
             <scope>test</scope>
         </dependency>
 
         <!-- The main Alfresco Repo dependency for compiling Java code in src/main/java -->
         <dependency>
             <groupId>${alfresco.groupId}</groupId>
-            <artifactId>alfresco-repository</artifactId>
-        </dependency>
-
-        <!-- Bring in Spring Context so we can use ApplicationContext, ApplicationContextAware etc -->
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-context</artifactId>
-            <version>3.2.17.RELEASE</version>
-            <scope>test</scope>
+            <artifactId>alfresco-remote-api</artifactId>
+            <scope>provided</scope>
         </dependency>
 
         <!-- Bring in Alfresco RAD so we get access to AlfrescoTestRunner classes -->
@@ -110,7 +89,7 @@
             -->
             <dependency>
                 <groupId>${alfresco.groupId}</groupId>
-                <artifactId>alfresco-platform-distribution</artifactId>
+                <artifactId>${alfresco.bomDependencyArtifactId}</artifactId>
                 <version>${alfresco.platform.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
@@ -139,20 +118,6 @@
                 <scope>provided</scope>
             </dependency>
 
-            <!-- Redefine the following surf dependencies as they have no resolvable version in the
-                 alfresco-platform-distribution artifact -->
-            <dependency>
-                <groupId>org.alfresco.surf</groupId>
-                <artifactId>spring-surf</artifactId>
-                <version>${alfresco.surf.version}</version>
-                <scope>provided</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.alfresco.surf</groupId>
-                <artifactId>spring-surf-api</artifactId>
-                <version>${alfresco.surf.version}</version>
-                <scope>provided</scope>
-            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -196,7 +161,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-resources-plugin</artifactId>
-                    <version>3.0.1</version>
+                    <version>3.1.0</version>
                     <configuration>
                         <encoding>UTF-8</encoding>
                         <nonFilteredFileExtensions> <!-- jpg, jpeg, gif, bmp and png are added automatically -->
@@ -227,6 +192,53 @@
                         </nonFilteredFileExtensions>
                     </configuration>
                 </plugin>
+
+                <plugin>
+                    <groupId>org.zeroturnaround</groupId>
+                    <artifactId>jrebel-maven-plugin</artifactId>
+                    <version>${jrebel.version}</version>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-jar-plugin</artifactId>
+                    <version>3.1.0</version>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-failsafe-plugin</artifactId>
+                    <version>3.0.0-M1</version>
+                    <executions>
+                        <execution>
+                            <id>integration-test</id>
+                            <phase>integration-test</phase>
+                            <goals>
+                                <goal>integration-test</goal>
+                            </goals>
+                        </execution>
+                        <execution>
+                            <id>verify-test</id>
+                            <phase>verify</phase>
+                            <goals>
+                                <goal>verify</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                    <dependencies>
+                        <dependency>
+                            <groupId>org.apache.maven.surefire</groupId>
+                            <artifactId>surefire-junit47</artifactId>
+                            <version>3.0.0-M1</version>
+                        </dependency>
+                    </dependencies>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-dependency-plugin</artifactId>
+                    <version>3.1.1</version>
+                </plugin>
             </plugins>
         </pluginManagement>
 
@@ -238,156 +250,88 @@
             </resource>
         </resources>
 
-
         <plugins>
             <!-- Filter the test resource files in the AIO parent project, and do property substitutions.
                  We need this config so this is done before the Alfresco Maven Plugin 'run' is executed. -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-resources-plugin</artifactId>
-                <version>3.0.1</version>
                 <inherited>false</inherited>
                 <!-- Run only for the AIO parent Project -->
                 <executions>
                     <execution>
-                        <id>copy-and-filter-test-resources</id>
+                        <id>copy-and-filter-docker-resources</id>
                         <phase>validate</phase>
                         <goals>
                             <goal>copy-resources</goal>
                         </goals>
                         <configuration>
-                            <outputDirectory>${project.build.testOutputDirectory}</outputDirectory>
+                            <outputDirectory>${project.build.outputDirectory}/docker</outputDirectory>
                             <resources>
-                                <testResource>
-                                    <directory>src/test/resources</directory>
+                                <resource>
+                                    <directory>docker</directory>
                                     <filtering>true</filtering>
-                                </testResource>
+                                </resource>
                             </resources>
                         </configuration>
                     </execution>
                 </executions>
             </plugin>
 
-            <!--
-                The Alfresco Maven Plugin contains all the logic to run the extension
-                in an embedded Tomcat with the H2 database.
-            -->
+            <!-- Compress JavaScript files and store as *-min.js -->
             <plugin>
-                <groupId>org.alfresco.maven.plugin</groupId>
-                <artifactId>alfresco-maven-plugin</artifactId>
-                <version>${alfresco.sdk.version}</version>
-                <configuration>
-
-                    <!-- We need the flat file H2 database to run the Repo -->
-                    <enableH2>true</enableH2>
-                    <!-- We always need the Platform/Repo webapp - alfresco.war -->
-                    <enablePlatform>true</enablePlatform>
-                    <!-- Enable Solr webapp so we can use search -->
-                    <enableSolr>true</enableSolr>
-                    <!-- We need Share webapp, so we got a UI for working with the Repo -->
-                    <enableShare>true</enableShare>
-                    <!-- Enable the REST API Explorer -->
-                    <enableApiExplorer>true</enableApiExplorer>
-
-                    <!--
-                        JARs and AMPs that should be overlayed/applied to the Platform/Repository WAR
-                        (i.e. alfresco.war)
-                    -->
-                    <platformModules>
-                        <!-- Share Services will be ignored if you are on Platform earlier than 5.1 -->
-                        <moduleDependency>
-                            <groupId>${alfresco.groupId}</groupId>
-                            <artifactId>alfresco-share-services</artifactId>
-                            <version>${alfresco.share.version}</version>
-                            <type>amp</type>
-                        </moduleDependency>
-
-                        <!-- Bring in custom Modules -->
-                        <moduleDependency>
-                            <groupId>${project.groupId}</groupId>
-                            <artifactId>webscripts-tutorial-platform-jar</artifactId>
-                            <version>${project.version}</version>
-                            <type>amp</type>
-                        </moduleDependency>
-
-                        <!-- Bring in the content tutorial repo AMP so we can run embedded. -->
-                        <moduleDependency>
-                            <groupId>com.someco</groupId>
-                            <artifactId>content-tutorial-platform-jar</artifactId>
-                            <version>1.0-SNAPSHOT</version>
-                            <type>amp</type>
-                        </moduleDependency>
-
-                        <!-- Bring in the behavior tutorial repo AMP so we can run embedded. -->
-                        <moduleDependency>
-                            <groupId>com.someco</groupId>
-                            <artifactId>behavior-tutorial-platform-jar</artifactId>
-                            <version>1.0-SNAPSHOT</version>
-                            <type>amp</type>
-                        </moduleDependency>
-
-                        <!-- Bring in the actions tutorial repo AMP so we can run embedded. -->
-                        <moduleDependency>
-                            <groupId>com.someco</groupId>
-                            <artifactId>actions-tutorial-platform-jar</artifactId>
-                            <version>1.0-SNAPSHOT</version>
-                            <type>amp</type>
-                        </moduleDependency>
-
-                        <!-- Bring in the integration tests -->
-                        <moduleDependency>
-                            <groupId>${project.groupId}</groupId>
-                            <artifactId>integration-tests</artifactId>
-                            <version>${project.version}</version>
-                            <classifier>tests</classifier>
-                        </moduleDependency>
-
-                    </platformModules>
-
-                    <!--
-                        JARs and AMPs that should be overlayed/applied to the Share WAR (i.e. share.war)
-                    -->
-                    <shareModules>
-                        <!-- Bring in custom Modules -->
-                        <moduleDependency>
-                            <groupId>${project.groupId}</groupId>
-                            <artifactId>webscripts-tutorial-share-jar</artifactId>
-                            <version>${project.version}</version>
-                            <type>amp</type>
-                        </moduleDependency>
-
-                        <!-- Bring in the content tutorial share AMP so we can run embedded. -->
-                        <moduleDependency>
-                            <groupId>com.someco</groupId>
-                            <artifactId>content-tutorial-share-jar</artifactId>
-                            <version>1.0-SNAPSHOT</version>
-                            <type>amp</type>
-                        </moduleDependency>
-
-                        <!-- Bring in the behavior tutorial share AMP so we can run embedded. -->
-                        <moduleDependency>
-                            <groupId>com.someco</groupId>
-                            <artifactId>behavior-tutorial-share-jar</artifactId>
-                            <version>1.0-SNAPSHOT</version>
-                            <type>amp</type>
-                        </moduleDependency>
-
-                        <!-- Bring in the actions tutorial share AMP so we can run embedded. -->
-                        <moduleDependency>
-                            <groupId>com.someco</groupId>
-                            <artifactId>actions-tutorial-share-jar</artifactId>
-                            <version>1.0-SNAPSHOT</version>
-                            <type>amp</type>
-                        </moduleDependency>
-                    </shareModules>
-                </configuration>
+                <groupId>net.alchim31.maven</groupId>
+                <artifactId>yuicompressor-maven-plugin</artifactId>
+                <version>1.5.1</version>
+                <executions>
+                    <!-- Compress the JS files under the assembly folder -->
+                    <execution>
+                        <id>compress-assembly</id>
+                        <goals>
+                            <goal>compress</goal>
+                        </goals>
+                        <configuration>
+                            <sourceDirectory>${project.basedir}/src/main/assembly/web</sourceDirectory>
+                            <outputDirectory>${project.basedir}/src/main/assembly/web</outputDirectory>
+                            <excludes>
+                                <exclude>**/webscripts/**</exclude>
+                                <exclude>**/site-webscripts/**</exclude>
+                                <exclude>**/META-INF/**</exclude>
+                                <exclude>**/*.lib.js</exclude>
+                                <exclude>**/*.css</exclude>
+                                <exclude>**/*-min.js</exclude>
+                                <exclude>**/*-min.css</exclude>
+                            </excludes>
+                            <force>true</force>
+                            <jswarn>false</jswarn>
+                        </configuration>
+                    </execution>
+                    <!-- Compress the JS files under the resources folder -->
+                    <execution>
+                        <id>compress-resources</id>
+                        <goals>
+                            <goal>compress</goal>
+                        </goals>
+                        <configuration>
+                            <excludes>
+                                <exclude>**/webscripts/**</exclude>
+                                <exclude>**/site-webscripts/**</exclude>
+                                <exclude>**/*.lib.js</exclude>
+                                <exclude>**/*.css</exclude>
+                                <exclude>**/*-min.js</exclude>
+                                <exclude>**/*-min.css</exclude>
+                            </excludes>
+                            <force>true</force>
+                            <jswarn>false</jswarn>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
 
             <!-- Hot reloading with JRebel -->
             <plugin>
                 <groupId>org.zeroturnaround</groupId>
                 <artifactId>jrebel-maven-plugin</artifactId>
-                <version>${jrebel.version}</version>
                 <executions>
                     <execution>
                         <id>generate-rebel-xml</id>
@@ -421,6 +365,46 @@
         </plugins>
     </build>
 
+    <profiles>
+        <profile>
+            <id>java8</id>
+            <activation>
+                <jdk>[1.8,11.0)</jdk>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-compiler-plugin</artifactId>
+                        <version>3.8.0</version>
+                        <configuration>
+                            <source>1.8</source>
+                            <target>1.8</target>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>java11</id>
+            <activation>
+                <jdk>[11.0,)</jdk>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-compiler-plugin</artifactId>
+                        <version>3.8.0</version>
+                        <configuration>
+                            <release>11</release>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+
     <!--
         Alfresco Maven Repositories
         -->
@@ -443,6 +427,7 @@
             <url>https://artifacts.alfresco.com/nexus/content/groups/private</url>
         </repository>
     </repositories>
+
     <pluginRepositories>
         <pluginRepository>
             <id>alfresco-plugin-public</id>
@@ -458,8 +443,10 @@
         </pluginRepository>
     </pluginRepositories>
   <modules>
-    <module>webscripts-tutorial-platform-jar</module>
-    <module>webscripts-tutorial-share-jar</module>
-    <module>integration-tests</module>
+    <module>webscripts-tutorial-platform</module>
+    <module>webscripts-tutorial-share</module>
+    <module>webscripts-tutorial-integration-tests</module>
+    <module>webscripts-tutorial-platform-docker</module>
+    <module>webscripts-tutorial-share-docker</module>
   </modules>
 </project>

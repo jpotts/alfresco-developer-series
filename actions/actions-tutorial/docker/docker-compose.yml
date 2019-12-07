@@ -1,0 +1,58 @@
+version: '3.4'
+services:
+  actions-tutorial-share:
+    image: alfresco-share-actions-tutorial:development
+    build:
+      dockerfile: ./Dockerfile
+      context: ../../../actions-tutorial-share-docker/target
+    environment:
+      CATALINA_OPTS: "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=8888"
+      REPO_HOST: actions-tutorial-acs
+      REPO_PORT: 8080
+    ports:
+      - "${share.port}:8080"
+      - "${share.debug.port}:8888"
+  actions-tutorial-acs:
+    image: alfresco-content-services-actions-tutorial:development
+    build:
+      dockerfile: ./Dockerfile
+      context: ../../../actions-tutorial-platform-docker/target
+    environment:
+      CATALINA_OPTS: "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=8888"
+    ports:
+      - "${acs.port}:8080"
+      - "${acs.debug.port}:8888"
+    volumes:
+      - actions-tutorial-acs-volume:/usr/local/tomcat/alf_data
+    depends_on:
+      - actions-tutorial-postgres
+  actions-tutorial-postgres:
+    image: postgres:9.6
+    environment:
+      POSTGRES_DB: alfresco
+      POSTGRES_USER: alfresco
+      POSTGRES_PASSWORD: alfresco
+    ports:
+      - "${postgres.port}:5432"
+    volumes:
+      - actions-tutorial-db-volume:/var/lib/postgresql/data
+  actions-tutorial-ass:
+    image: alfresco/alfresco-search-services:1.2.0
+    environment:
+      SOLR_ALFRESCO_HOST: actions-tutorial-acs
+      SOLR_ALFRESCO_PORT: 8080
+      SOLR_SOLR_HOST: actions-tutorial-ass
+      SOLR_SOLR_PORT: 8983
+      SOLR_CREATE_ALFRESCO_DEFAULTS: alfresco,archive
+    ports:
+      - "8983:8983"
+    volumes:
+      - actions-tutorial-ass-volume:/opt/alfresco-search-services/contentstore
+      - actions-tutorial-ass-volume:/opt/alfresco-search-services/data
+volumes:
+  actions-tutorial-acs-volume:
+    external: true
+  actions-tutorial-db-volume:
+    external: true
+  actions-tutorial-ass-volume:
+    external: true

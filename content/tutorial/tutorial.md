@@ -1,6 +1,6 @@
 % Working With Custom Content Types in Alfresco
 % Jeff Potts, [Metaversant Group](https://www.metaversant.com)
-% April, 2018
+% February, 2019
 
 License
 =======
@@ -172,16 +172,18 @@ Before starting, let's get a local development environment set up. First I'll gi
 
 Here is what I am using on my machine:
 
-* Mac OS X 10.12.6
-* Java 1.8.0_77
-* Apache Maven 3.5.3 (installed using Macports)
-* Alfresco Maven SDK 3.0.1 (No download necessary)
+* Ubuntu 16.04.5 LTS
+* Java 1.8.0_201
+* Apache Maven 3.3.9
+* Alfresco Maven SDK 4.0 (No download necessary)
+* Docker 18.09.2
+* Docker Compose 1.23.2
 
 By default, when you create an Alfresco project using the Alfresco Maven SDK the project will be configured to depend on the latest stable Alfresco Community Edition build.
 
-Note that version 3.0.x of the Alfresco Maven SDK works with Alfresco 4.2.7 and higher. This tutorial assumes you are using SDK 3.0.x.
+Note that version 3.0.x of the Alfresco Maven SDK works with Alfresco 4.2.7 through and including Alfresco 5.2.x. Version 4.0 of the SDK works with Alfresco 6.0 and higher. This tutorial assumes you are using SDK 4.0.x.
 
-Projects created using the Alfresco Maven SDK have the ability to run Alfresco on an embedded Tomcat server. This makes [downloading](http://www.alfresco.com/products/community) and installing Alfresco optional. But if you want to run a full Alfresco server locally, you are welcome to do that.
+Projects created using the Alfresco Maven SDK are runnable. Version 3.0.x of the SDK uses an embedded Tomcat server and an H2 in-memory database while version 4.0.x of the SDK uses Docker and Docker Compose. This makes [downloading](http://www.alfresco.com/products/community) and installing Alfresco optional. But if you want to run a full Alfresco server locally, you are welcome to do that.
 
 An IDE is also optional. Most people working with Alfresco use IntelliJ, Eclipse, or something similar.
 
@@ -220,8 +222,8 @@ The first step is to **create a new project** using the Alfresco Maven SDK. Foll
     mvn archetype:generate -Dfilter=org.alfresco:
     ```
 
-3. Choose the "alfresco-allinone-archetype" archetype (option 2).
-4. Choose version 3.0.1 of the archetype if prompted.
+3. Choose the "alfresco-allinone-archetype" archetype.
+4. Choose version 4.0 of the archetype if prompted.
 5. Specify "com.someco" for the `groupId`.
 6. Specify "content-tutorial" for the `artifactId`.
 7. If your IDE isn't running, start it up and import the content-tutorial project you just created.
@@ -239,14 +241,14 @@ Now that you have a project that is ready to package your customizations you can
 1. Models belong in a directory called “model” in your project's module directory, which is:
 
     ```
-    $TUTORIAL_HOME/content-tutorial-platform-jar/src/main/resources/alfresco/module/content-tutorial-platform-jar
+    $TUTORIAL_HOME/content-tutorial-platform/src/main/resources/alfresco/module/content-tutorial-platform
     ```
 
     If the "model" directory does not exist when the project is initially created by the Alfresco Maven SDK, go ahead and create it now. If it does exist and there are files in it, delete them now.
 2. Custom models live in the model directory as XML. Create a new XML file in the model directory called "scModel.xml". The name of the file isn't important but you should choose a name that will help you and your team distinguish it from other model files you might add to this directory over time.
 3. Copy the following XML into the scModel.xml file and save.
 
-    ```
+    ```xml
     <?xml version="1.0" encoding="UTF-8"?>
     <!-- Definition of new Model -->
     <model name="sc:somecomodel" xmlns="http://www.alfresco.org/model/dictionary/1.0">
@@ -367,7 +369,7 @@ Here's an important note about the content model schema that may save you some t
 
 The next step is to **register the new model with a Spring bean** in a Spring context file. You'll find that the Alfresco Maven SDK has already created a Spring context file for your module in:
 
-    $TUTORIAL_HOME/content-tutorial-platform-jar/src/main/resources/alfresco/module/content-tutorial-platform-jar/context
+    $TUTORIAL_HOME/content-tutorial-platform/src/main/resources/alfresco/module/content-tutorial-platform/context
 
 The file is named bootstrap-context.xml. If you open that file you'll see that two Spring beans are already there. They were created by the Alfresco Maven SDK and they are used to wire in an example content model, workflow model, and sample workflows.
 
@@ -375,14 +377,16 @@ Delete the two sample Spring beans. You will replace these with your own definit
 
 To register the custom content model with Spring, all we have to do is add a new `bean` element to the list of `beans`. The new `bean` element looks like this:
 
-    <!-- Registration of new models -->
-    <bean id="${project.artifactId}_dictionaryBootstrap" parent="dictionaryModelBootstrap" depends-on="dictionaryBootstrap">
-        <property name="models">
-            <list>
-                <value>alfresco/module/${project.artifactId}/model/scModel.xml</value>
-            </list>
-        </property>
-    </bean>
+```xml
+<!-- Registration of new models -->
+<bean id="${project.artifactId}_dictionaryBootstrap" parent="dictionaryModelBootstrap" depends-on="dictionaryBootstrap">
+    <property name="models">
+        <list>
+            <value>alfresco/module/${project.artifactId}/model/scModel.xml</value>
+        </list>
+    </property>
+</bean>
+```
 
 Notice the `${project.artifactId}` placeholder. That will be automatically replaced by the Alfresco Maven SDK using the `artifactId` specified in the pom.xml file when Maven generates the AMP.
 
@@ -390,29 +394,23 @@ Notice the `${project.artifactId}` placeholder. That will be automatically repla
 
 The last step is to test your changes. The Alfresco Maven SDK makes that easy. Do this:
 
-1. From the command line, change directories to $TUTORIAL_HOME/content-tutorial-platform-jar.
+1. From the command line, change directories to $TUTORIAL_HOME/content-tutorial-platform.
 2. Run:
 
     ```
-    mvn install
+    mvn install -DskipTests
     ```
 
-The first time you do this it may take quite a while. Maven is downloading everything it needs to run Alfresco in an embedded Tomcat server along with your custom content model.
-
-In this version of the SDK you may see some stack traces. That's because Maven is running integration tests using the embedded Tomcat server and there are some known issues with the Tomcat shutdown hooks. If you scroll up a bit you should see that the integration tests passed.
-
-If you want to run without the tests, run:
-
-    mvn install -DskipTests=true
+The first time you do this it may take quite a while. Maven is downloading everything it needs to compile and package the project.
 
 If everything goes as expected you should see:
 
     [INFO] ------------------------------------------------------------------------
     [INFO] BUILD SUCCESS
     [INFO] ------------------------------------------------------------------------
-    [INFO] Total time: 1:38.455s
-    [INFO] Finished at: Wed Jan 22 12:55:48 CST 2014
-    [INFO] Final Memory: 38M/203M
+    [INFO] Total time: 1.465 s
+    [INFO] Finished at: 2019-02-11T13:22:29-06:00
+    [INFO] Final Memory: 25M/501M
     [INFO] ------------------------------------------------------------------------
 
 If you get a build failure, it is time to debug. Make sure that:
@@ -426,9 +424,9 @@ If you still have problems, post as much detail as you can in the [Alfresco Foru
 
 You have now created an AMP that contains a custom content model. If you go look in:
 
-    $TUTORIAL_HOME/content-tutorial-platform-jar/target
+    $TUTORIAL_HOME/content-tutorial-platform/target
 
-you'll see a file named content-tutorial-platform-jar-1.0-SNAPSHOT.amp. That AMP can be installed in an Alfresco installation. For example, if you are running Alfresco using the binary installer, you can copy the AMP to `$ALFRESCO_HOME/amps` and then run `$ALFRESCO_HOME/bin/apply_amps.sh` to install the AMP into your Alfresco web application.
+you'll see a file named content-tutorial-platform-1.0-SNAPSHOT.amp. That AMP can be installed in an Alfresco installation. For example, if you are running Alfresco using the binary installer, you can copy the AMP to `$ALFRESCO_HOME/amps` and then run `$ALFRESCO_HOME/bin/apply_amps.sh` to install the AMP into your Alfresco web application.
 
 For the purpose of this tutorial, though, let's keep moving. You've got your content model defined but the Alfresco Share user interface doesn't know anything about it yet. You'll learn how to do that next.
 
@@ -465,7 +463,7 @@ Let's do it.
 
 ### Step 1: Create a custom Share configuration file
 
-A module called "content-repo-share-jar" was added to our project when we created the content-tutorial project using the Alfresco SDK using the "all-in-one" archetype.
+A module called "content-repo-share" was added to our project when we created the content-tutorial project using the Alfresco SDK using the "all-in-one" archetype.
 
 Alfresco Share uses a configuration file called "share-config-custom.xml". The share-config-custom.xml file is a proprietary file composed of numerous “config” elements. Each config element has an “evaluator” and a “condition”. Extending the out-of-the-box Share configuration is a matter of knowing which evaluator/condition to use.
 
@@ -473,7 +471,7 @@ The location of the share-config-custom.xml file is a little counter-intuitive. 
 
 Create an empty XML file called "share-config-custom.xml" in:
 
-    $TUTORIAL_HOME/content-tutorial-share-jar/src/main/resources/META-INF
+    $TUTORIAL_HOME/content-tutorial-share/src/main/resources/META-INF
 
 We'll add to that file in the next sections.
 
@@ -483,7 +481,7 @@ The first four items in our configuration wish list have to do with telling the 
 
 1. Edit the share-config-custom.xml file you just created and add the following:
 
-    ```
+    ```xml
     <alfresco-config>
         <!-- Document Library config section -->
         <config evaluator="string-compare" condition="DocumentLibrary">
@@ -492,7 +490,7 @@ The first four items in our configuration wish list have to do with telling the 
     ```
 2. Now add an `aspects` element as a child of the `config` element to identify the aspects that are visible, addable, and removeable:
 
-    ```
+    ```xml
     <aspects>
         <!-- Aspects that a user can see -->
         <visible>
@@ -513,7 +511,7 @@ The first four items in our configuration wish list have to do with telling the 
     As the comments suggest, the `addable` and `removeable` elements can remain empty if the list is the same.
 3. That takes care of aspects. Let’s configure the types. Add a `types` element as a sibling to the `aspects` element you just added with the following content:
 
-    ```
+    ```xml
     <types>
         <type name="cm:content">
             <subtype name="sc:doc" />
@@ -536,14 +534,14 @@ You need two things to test this: An Alfresco repository that is running the rep
 3. Run:
 
     ```
-    ./run.sh
+    ./run.sh build_start
     ```
 
     If you get a permissions problem you may have to run `chmod u+x run.sh` first.
 
-    This will start up a Tomcat server with the Alfresco WAR and Share WARS deployed along with your repository tier AMP and your Share tier AMP.
+    This script will download images from Docker Hub (or quay.io if you are using Enterprise Edition), copy your AMPs to the containers, then use Docker Compose to start up several containers.
 
-Now open your browser and point it to http://localhost:8080/share. Log in using admin/admin and let’s see what’s different.
+Now open your browser and point it to http://localhost:8180/share. Log in using admin/admin and let’s see what’s different.
 
 What’s different is that the “is sub-type” dropdown in the rule configuration panel now has our custom types and the “has aspect” dropdown now has our custom aspects.
 
@@ -602,12 +600,13 @@ Suppose whitepapers need to have the same metadata displayed as instances of `cm
 
 To test this change:
 
-1. Go to the terminal window currently running your project.
-2. Click ctrl+c to stop the Tomcat server.
-3. Re-run the server using:
+1. Go to the terminal window currently tailing the logs of the running containers.
+2. Click ctrl+c to interrupt the tail.
+3. Re-build the AMPs by running `mvn install -DskipTests`
+4. Re-build and re-run the Share container using:
 
     ```
-    ./run.sh
+    ./run.sh reload_share
     ```
 
 Now when you log in to Alfresco Share, you’ll see that the property sets match for `sc:whitepaper` and `cm:content` across all forms, as shown below:
@@ -624,20 +623,22 @@ For the properties defined in aspects, you have a choice. You can either add the
 
 This example takes the latter route. Edit the share-config-custom.xml file and add the following aspect configuration for `sc:webable`:
 
-    <config evaluator="aspect" condition="sc:webable">
-        <forms>
-            <form>
-                <field-visibility>
-                    <show id="sc:published" />
-                    <show id="sc:isActive" />
-                </field-visibility>
-                <appearance> 				    
-                    <field id="sc:published" label-id="prop.sc_published" />
-                    <field id="sc:isActive" label-id="prop.sc_isActive" />
-                </appearance>
-            </form>
-        </forms>
-    </config>
+```xml
+<config evaluator="aspect" condition="sc:webable">
+    <forms>
+        <form>
+            <field-visibility>
+                <show id="sc:published" />
+                <show id="sc:isActive" />
+            </field-visibility>
+            <appearance> 				    
+                <field id="sc:published" label-id="prop.sc_published" />
+                <field id="sc:isActive" label-id="prop.sc_isActive" />
+            </appearance>
+        </form>
+    </forms>
+</config>
+```
 
 You can add the aspect configuration for `sc:productRelated` following the same pattern.
 
@@ -645,26 +646,30 @@ Notice that there are two elements you have to worry about—the `field-visibili
 
 Let’s take care of the `sc:relatedDocuments` association. It’s not defined in an aspect, so it is added directly to the form configuration for `sc:whitepaper`. It probably makes sense for the related documents property to be shown on both the default form and the edit metadata popup dialog. To do that, you’re going to modify the default form configuration element for `sc:whitepaper` that you created earlier. First add a `show` element just before the closing `field-visibility` tag:
 
-        <!-- surf:widget aspect -->
-        <show id="surf:widgetType"/>
-        <show id="surf:mid"/>
-        <show id="surf:label"/>
+```xml
+    <!-- surf:widget aspect -->
+    <show id="surf:widgetType"/>
+    <show id="surf:mid"/>
+    <show id="surf:label"/>
 
-        <!-- sc:doc -->
-        <show id="sc:relatedDocuments" />
-    </field-visibility>
+    <!-- sc:doc -->
+    <show id="sc:relatedDocuments" />
+</field-visibility>
+```
 
 Then, add a new `field` element just before the closing `appearance` tag:
 
-        <field id="cm:addressees" read-only="true" />
-        <field id="cm:sentdate" read-only="true" />
-        <field id="cm:subjectline" read-only="true" />
-        <field id="sc:relatedDocuments" label-id="assoc.sc_relatedDocuments" />
-    </appearance>
+```xml
+    <field id="cm:addressees" read-only="true" />
+    <field id="cm:sentdate" read-only="true" />
+    <field id="cm:subjectline" read-only="true" />
+    <field id="sc:relatedDocuments" label-id="assoc.sc_relatedDocuments" />
+</appearance>
+```
 
 Now do the same thing for the `doclib-simple-metadata` form.
 
-After restarting the embedded Tomcat server, you should see all four custom properties and the related documents association in the document details page, like this:
+To see your changes, re-build the AMPs using `mvn install -DskipTests` then re-build and re-run the Share container using `./run.sh reload_share`. You should see all four custom properties and the related documents association in the document details page, like this:
 
 ![Custom properties now show up in document details](./images/configured-doc-details.png)
 
@@ -684,16 +689,18 @@ The advanced search form in Alfresco Share allows end-users to first select what
 
 Users need to be able to search specifically for SomeCo Whitepapers, so the first step is to add the `sc:whitepaper` type to the list. Like the other Share form configuration covered thus far, the configuration goes in share-config-custom.xml. In this case, the condition is `AdvancedSearch`.
 
-    <config replace="true" evaluator="string-compare" condition="AdvancedSearch">
-        <advanced-search>
-            <!-- Forms for the advanced search type list -->
-            <forms>
-                <form labelId="search.form.label.cm_content" descriptionId="search.form.desc.cm_content">cm:content</form>
-                <form labelId="search.form.label.cm_folder" descriptionId="search.form.desc.cm_folder">cm:folder</form>            
-                <form labelId="type.sc_whitepaper" descriptionId="search.form.desc.sc_whitepaper">sc:whitepaper</form>
-            </forms>
-        </advanced-search>
-    </config>
+```xml
+<config replace="true" evaluator="string-compare" condition="AdvancedSearch">
+    <advanced-search>
+        <!-- Forms for the advanced search type list -->
+        <forms>
+            <form labelId="search.form.label.cm_content" descriptionId="search.form.desc.cm_content">cm:content</form>
+            <form labelId="search.form.label.cm_folder" descriptionId="search.form.desc.cm_folder">cm:folder</form>            
+            <form labelId="type.sc_whitepaper" descriptionId="search.form.desc.sc_whitepaper">sc:whitepaper</form>
+        </forms>
+    </advanced-search>
+</config>
+```
 
 Notice that the list of advanced search forms replaces the out-of-the-box list. If the list only had `sc:whitepaper` and left out `cm:content` and `cm:folder`, Share users would not be able to search for plain content or folders.
 
@@ -701,59 +708,61 @@ The next step is to tell Share which form to use when a given type is selected. 
 
 The search form for whitepapers should be the same as the one for plain content, but should include the four properties defined in the custom aspects. The easiest way to do this is to copy the `cm:content` search form from the out-of-the-box form configuration into share-config-custom.xml and then modify it to suit our needs. The code listing below shows this:
 
-    <!-- sc:whitepaper type (new nodes) -->
-    <config evaluator="model-type" condition="sc:whitepaper">
-        <forms>
-            <!-- Search form -->
-            <form id="search">
-                <field-visibility>
-                    <show id="cm:name" />
-                    <show id="cm:title" force="true" />
-                    <show id="cm:description" force="true" />
-                    <show id="mimetype" />
-                    <show id="cm:modified" />
-                    <show id="cm:modifier" />
-                    <!-- sc:productRelated -->
-                    <show id="sc:product" />
-                    <show id="sc:version" />
-                    <!-- sc:webable -->
-                    <show id="sc:isActive" />
-                    <show id="sc:published" />
-                </field-visibility>
-                <appearance>
-                    <field id="mimetype">
-                        <control template="/org/alfresco/components/form/controls/mimetype.ftl" />
-                    </field>
-                    <field id="cm:modifier">
-                        <control>
-                            <control-param name="forceEditable">true</control-param>
-                        </control>
-                    </field>
-                    <field id="cm:modified">
-                        <control template="/org/alfresco/components/form/controls/daterange.ftl" />
-                    </field>
-                    <!-- sc:productRelated -->
-                    <field id="sc:product" label-id="prop.sc_product">
-                        <control template="/org/alfresco/components/form/controls/textfield.ftl" />
-                    </field>
-                    <field id="sc:version" label-id="prop.sc_version">
-                        <control template="/org/alfresco/components/form/controls/textfield.ftl" />
-                    </field>               
-                    <!-- sc:webable -->
-                    <field id="sc:isActive" label-id="prop.sc_isActive">
-                        <control template="/org/alfresco/components/form/controls/checkbox.ftl" />
-                    </field>
-                    <field id="sc:published" label-id="prop.sc_published">
-                        <control template="/org/alfresco/components/form/controls/daterange.ftl" />
-                    </field>
-                </appearance>
-            </form>
-        </forms>
-    </config>
+```xml
+<!-- sc:whitepaper type (new nodes) -->
+<config evaluator="model-type" condition="sc:whitepaper">
+    <forms>
+        <!-- Search form -->
+        <form id="search">
+            <field-visibility>
+                <show id="cm:name" />
+                <show id="cm:title" force="true" />
+                <show id="cm:description" force="true" />
+                <show id="mimetype" />
+                <show id="cm:modified" />
+                <show id="cm:modifier" />
+                <!-- sc:productRelated -->
+                <show id="sc:product" />
+                <show id="sc:version" />
+                <!-- sc:webable -->
+                <show id="sc:isActive" />
+                <show id="sc:published" />
+            </field-visibility>
+            <appearance>
+                <field id="mimetype">
+                    <control template="/org/alfresco/components/form/controls/mimetype.ftl" />
+                </field>
+                <field id="cm:modifier">
+                    <control>
+                        <control-param name="forceEditable">true</control-param>
+                    </control>
+                </field>
+                <field id="cm:modified">
+                    <control template="/org/alfresco/components/form/controls/daterange.ftl" />
+                </field>
+                <!-- sc:productRelated -->
+                <field id="sc:product" label-id="prop.sc_product">
+                    <control template="/org/alfresco/components/form/controls/textfield.ftl" />
+                </field>
+                <field id="sc:version" label-id="prop.sc_version">
+                    <control template="/org/alfresco/components/form/controls/textfield.ftl" />
+                </field>               
+                <!-- sc:webable -->
+                <field id="sc:isActive" label-id="prop.sc_isActive">
+                    <control template="/org/alfresco/components/form/controls/checkbox.ftl" />
+                </field>
+                <field id="sc:published" label-id="prop.sc_published">
+                    <control template="/org/alfresco/components/form/controls/daterange.ftl" />
+                </field>
+            </appearance>
+        </form>
+    </forms>
+</config>
+```
 
 It is important to note that the field elements in the appearance section require the form control to be specified. If it is not specified, the field will not show up on the search form.
 
-After deploying this configuration and restarting the embedded Tomcat for your Alfresco Share project, the SomeCo Whitepaper type is included in the advanced search dropdown, and four fields for the aspect properties are shown in the search form.
+After re-building the AMP and reloading the Share container, the SomeCo Whitepaper type is included in the advanced search dropdown, and four fields for the aspect properties are shown in the search form.
 
 ![Search by Type](./images/adv-search-type.png)
 
@@ -764,7 +773,7 @@ Localizing Strings for Custom Content Models
 
 We’ve put off localizing the form labels until now. To fix this, first create a messages bundle, then register it with a Spring bean. Here are the steps:
 
-1. Create a new folder called "messages" in $TUTORIAL_HOME/content-tutorial-share-jar/src/main/resources/alfresco/web-extension. If the folder is already there, delete any files that may already be present.
+1. Create a new folder called "messages" in $TUTORIAL_HOME/content-tutorial-share/src/main/resources/alfresco/web-extension. If the folder is already there, delete any files that may already be present.
 2. In the messages folder, create a new file called "scModel.properties" with the following content:
 
     ```
@@ -787,16 +796,16 @@ We’ve put off localizing the form labels until now. To fix this, first create 
     prop.sc_version=Version
     ```
 
-3. We need to register this properties bundle with Spring. Share does not look in module directories for Spring context files. Instead, it uses the web-extension folder. That folder already exists in $TUTORIAL_HOME/content-tutorial-share-jar/src/main/resources/alfresco.
-4. In the web-extension folder, create a new file called "content-tutorial-share-jar-context.xml". I am using the `artifactId` as part of the file name because this file will ultimately end up in a folder that may contain other Spring configuration files and I don't want this one to collide with any of those. If the SDK already placed a similar file in the folder, it is okay to use it instead, just clear out the contents of the file.
+3. We need to register this properties bundle with Spring. Share does not look in module directories for Spring context files. Instead, it uses the web-extension folder. That folder already exists in $TUTORIAL_HOME/content-tutorial-share/src/main/resources/alfresco.
+4. In the web-extension folder, create a new file called "content-tutorial-share-context.xml". I am using the `artifactId` as part of the file name because this file will ultimately end up in a folder that may contain other Spring configuration files and I don't want this one to collide with any of those. If the SDK already placed a similar file in the folder, it is okay to use it instead, just clear out the contents of the file.
 5. Add the following content to the file, then save:
 
-    ```
+    ```xml
     <?xml version='1.0' encoding='UTF-8'?><!DOCTYPE beans PUBLIC '-//SPRING//DTD BEAN//EN' 'http://www.springframework.org/dtd/spring-beans.dtd'>
 
     <beans>
         <!-- Add Someco messages -->
-        <bean id="com.someco.content-tutorial-share-jar.resources" class="org.springframework.extensions.surf.util.ResourceBundleBootstrapComponent">
+        <bean id="com.someco.content-tutorial-share.resources" class="org.springframework.extensions.surf.util.ResourceBundleBootstrapComponent">
             <property name="resourceBundles">
                 <list>
                     <value>alfresco.web-extension.messages.scModel</value>
@@ -806,7 +815,7 @@ We’ve put off localizing the form labels until now. To fix this, first create 
     </beans>
     ```
 
-Now restart the embedded Tomcat server and you should see that the types, aspects, and properties have the localized labels.
+Now re-build the AMPs and reload the Share container and you should see that the types, aspects, and properties have the localized labels.
 
 Share Configuration Summary
 ---------------------------
@@ -828,7 +837,7 @@ So far we've created a custom model and we've configured Alfresco Share to let e
 There are several API's available depending on what you want to do. The table below outlines the choices:
 
 | Solution type | Language | Alfresco API |
-| ------------- | -------- |------------- |
+| ----------------------- | ------------------ | ----------------------------- |
 | Alfresco Share user interface customizations | Freemarker Templating Language, Java/JSP, JavaScript | Alfresco Freemarker API, Alfresco JavaScript API |
 | Custom applications with an embedded Alfresco repository (Repository runs in the same process as the application) | Java | Alfresco Foundation API |
 | Custom applications using a remote Alfresco repository | Java, Python, PHP, .NET, or any language that can make calls via HTTP | CMIS, Web Scripts, REST API |
@@ -852,7 +861,7 @@ To create the CMIS project, do this:
 4. Edit the pom.xml file that belongs to "content-tutorial-cmis".
 5. This project uses the OpenCMIS library from Apache Chemistry and the content-tutorial project, so add those as dependencies:
 
-    ```
+    ```xml
     <dependency>
         <groupId>org.apache.chemistry.opencmis</groupId>
         <artifactId>chemistry-opencmis-client-impl</artifactId>
@@ -865,7 +874,7 @@ To create the CMIS project, do this:
     </dependency>
     ```
 
-The content-tutorial-cmis project depends on some constants that are related to our custom content model, so those make sense to be defined in the content-tutorial project within the content-tutorial-platform-jar module. For this tutorial, all we need is the com.someco.model.SomeCoModel.java class which contains constants that map to the custom content model. These constants are used for convenience by Java classes that need to know things like namespaces, names of content types, etc. If you are building your own project just copy it from the source.
+The content-tutorial-cmis project depends on some constants that are related to our custom content model, so those make sense to be defined in the content-tutorial project within the content-tutorial-platform module. For this tutorial, all we need is the com.someco.model.SomeCoModel.java class which contains constants that map to the custom content model. These constants are used for convenience by Java classes that need to know things like namespaces, names of content types, etc. If you are building your own project just copy it from the source.
 
 CMIS 1.0 and the Alfresco OpenCMIS Extension Library
 ----------------------------------------------------
@@ -873,7 +882,7 @@ Alfresco offers support for both CMIS 1.0 and CMIS 1.1. Unless you have a good r
 
 If you are using CMIS 1.0, you may want to use an additional library called the Alfresco OpenCMIS Extension. It was created to make it easier to work with aspects before native support for aspects was added to CMIS 1.1. If you need to work with CMIS 1.0 for some reason, add the following to the CMIS project pom.xml:
 
-```
+```xml
 <dependency>
     <groupId>org.alfresco.cmis.client</groupId>
     <artifactId>alfresco-opencmis-extension</artifactId>
@@ -883,7 +892,7 @@ If you are using CMIS 1.0, you may want to use an additional library called the 
 
 As well as the repository where the OpenCMIS Extension Library resides:
 
-```
+```xml
 <repositories>
     <repository>
         <id>artifacts.alfresco.com</id>
@@ -896,7 +905,7 @@ As well as the repository where the OpenCMIS Extension Library resides:
 Start Your Repository
 ---------------------
 
-To run the examples in Part 3 you need to have an Alfresco repository running with the repo tier AMP you created in Part 1. Using the embedded Tomcat server as shown in that part of the tutorial works fine. If it isn't running already, go ahead and start it up.
+To run the examples in Part 3 you need to have an Alfresco repository running with the repo tier AMP you created in Part 1. Using the `/run.sh build_start` script to fire up your SDK-created Docker containers as shown in that part of the tutorial works fine. If it isn't running already, go ahead and start it up.
 
 Now you are ready to write some code.
 
@@ -912,30 +921,34 @@ A common mistake is to use an old CMIS service URL, so make sure you are using t
 
 Once the code has a session, it gets a reference to the folder where the content will be created. The timestamp is incorporated into the content name so that if the code is run multiple times, the object names will be unique.
 
-    Session session = getSession();
+```java
+Session session = getSession();
 
-    // Grab a reference to the folder where we want to create content
-    Folder folder = (Folder) session.getObjectByPath("/" + getFolderName());
+// Grab a reference to the folder where we want to create content
+Folder folder = (Folder) session.getObjectByPath("/" + getFolderName());
 
-    String timeStamp = new Long(System.currentTimeMillis()).toString();
-    String filename = getContentName() + " (" + timeStamp + ")";
+String timeStamp = new Long(System.currentTimeMillis()).toString();
+String filename = getContentName() + " (" + timeStamp + ")";
+```
 
 Next, the code sets up the properties that will be set on the new document. It creates a `Map` of `Strings` and `Objects` to hold the property names and values.
 
-    // Create a Map of objects with the props we want to set
-    Map <String, Object> properties = new HashMap<String, Object>();
-    properties.put(PropertyIds.NAME, filename);
-    properties.put(PropertyIds.OBJECT_TYPE_ID, "D:sc:whitepaper");
-    properties.put(PropertyIds.SECONDARY_OBJECT_TYPE_IDS,
-        Arrays.asList(
-            "P:sc:webable",
-            "P:sc:productRelated",
-            "P:cm:generalclassifiable"
-        )
-    );
-    properties.put("sc:isActive", true);
-    GregorianCalendar publishDate = new GregorianCalendar(2007,4,1,5,0);
-    properties.put("sc:published", publishDate);
+```java
+// Create a Map of objects with the props we want to set
+Map <String, Object> properties = new HashMap<String, Object>();
+properties.put(PropertyIds.NAME, filename);
+properties.put(PropertyIds.OBJECT_TYPE_ID, "D:sc:whitepaper");
+properties.put(PropertyIds.SECONDARY_OBJECT_TYPE_IDS,
+    Arrays.asList(
+        "P:sc:webable",
+        "P:sc:productRelated",
+        "P:cm:generalclassifiable"
+    )
+);
+properties.put("sc:isActive", true);
+GregorianCalendar publishDate = new GregorianCalendar(2007,4,1,5,0);
+properties.put("sc:published", publishDate);
+```
 
 Notice that the base type is being set with the OBJECT_TYPE_ID property. The aspects are being set with the SECONDARY_OBJECT_TYPE_IDS property, which accepts a list of aspect IDs.
 
@@ -943,20 +956,24 @@ It is also important to point out that, in CMIS, document types begin with “D:
 
 The next step is to prepare the content that will be set on the new object. This is a matter of calling the `createContentStream()` method on the `ObjectFactory` with the file name, length, mimetype, and an `InputStream` based on the content.
 
-    String docText = "This is a sample " + getContentType() + " document called " +
-           getContentName();
-    byte[] content = docText.getBytes();
-    InputStream stream = new ByteArrayInputStream(content);
-    ContentStream contentStream = session.getObjectFactory().
-        createContentStream(
-            filename, Long.valueOf(content.length), "text/plain", stream
-        );
+```java
+String docText = "This is a sample " + getContentType() + " document called " +
+       getContentName();
+byte[] content = docText.getBytes();
+InputStream stream = new ByteArrayInputStream(content);
+ContentStream contentStream = session.getObjectFactory().
+    createContentStream(
+        filename, Long.valueOf(content.length), "text/plain", stream
+    );
+```
 
 Finally, the code tells the folder to create a new document and passes in the properties, content stream, and versioning state, then dumps the length of the content that was created.
 
-    Document doc = folder.createDocument(properties, contentStream,
-         VersioningState.MAJOR);
-    System.out.println("Content Length: " + doc.getContentStreamLength());
+```java
+Document doc = folder.createDocument(properties, contentStream,
+     VersioningState.MAJOR);
+System.out.println("Content Length: " + doc.getContentStreamLength());
+```
 
 If you are in an IDE like Eclipse, you should be able to set the arguments and run this class easily. If you want to do it from the command line, you can run it via Maven so that it will set up the classpath for you. To do that you would run:
 
@@ -977,32 +994,36 @@ Now let's look at a class that creates a “related documents” association bet
 
 The [SomeCoCMISDataRelater](https://github.com/jpotts/alfresco-developer-series/blob/master/content/content-tutorial-cmis/src/main/java/com/someco/cmis/examples/SomeCoCMISDataRelater.java) class accepts a source object ID and a target object ID as arguments. The code creates a map of properties containing the association type, source ID, and target ID. Note that the association type is preceded by “R:”, which stands for "relationship", when working with CMIS.
 
-    Session session = getSession();
+```java
+Session session = getSession();
 
-    // Create a Map of objects with the props we want to set
-    Map <String, String> properties = new HashMap<String, String>();
-    properties.put(PropertyIds.OBJECT_TYPE_ID, "R:sc:relatedDocuments");
-    properties.put(PropertyIds.SOURCE_ID, getSourceObjectId());
-    properties.put(PropertyIds.TARGET_ID, getTargetObjectId());
-    try {
-        session.createRelationship(properties);
-    } catch (Exception e) {
-        System.out.println("Oops, something unexpected happened. Maybe the rel already exists?");
-    }
+// Create a Map of objects with the props we want to set
+Map <String, String> properties = new HashMap<String, String>();
+properties.put(PropertyIds.OBJECT_TYPE_ID, "R:sc:relatedDocuments");
+properties.put(PropertyIds.SOURCE_ID, getSourceObjectId());
+properties.put(PropertyIds.TARGET_ID, getTargetObjectId());
+try {
+    session.createRelationship(properties);
+} catch (Exception e) {
+    System.out.println("Oops, something unexpected happened. Maybe the rel already exists?");
+}
+```
 
 The last half of the method dumps the associations of the source object. The trick here is that when you make the `getObject()` call to instantiate the object, you will not get back the relationships by default. The `OperationContext` that is being instantiated makes sure that happens.
 
-    // Dump the object's associations
-    OperationContext oc = new OperationContextImpl();
-    oc.setIncludeRelationships(IncludeRelationships.SOURCE);
-    Document sourceDoc = (Document) session.getObject(
-                  session.createObjectId(getSourceObjectId()),
-                  oc);
-    List<Relationship> relList = sourceDoc.getRelationships();
-    System.out.println("Associations of objectId:" + getSourceObjectId());
-    for (Relationship rel : relList) {
-        System.out.println("    " + rel.getTarget().getId());
-    }
+```java
+// Dump the object's associations
+OperationContext oc = new OperationContextImpl();
+oc.setIncludeRelationships(IncludeRelationships.SOURCE);
+Document sourceDoc = (Document) session.getObject(
+              session.createObjectId(getSourceObjectId()),
+              oc);
+List<Relationship> relList = sourceDoc.getRelationships();
+System.out.println("Associations of objectId:" + getSourceObjectId());
+for (Relationship rel : relList) {
+    System.out.println("    " + rel.getTarget().getId());
+}
+```    
 
 The last line calls a method that queries the associations for a given reference. This should dump the association that was just created plus any other associations that have been created for this object.
 
@@ -1039,36 +1060,40 @@ Let's take a look at the generic query execution method first, then the method t
 
 The `getQueryResults()` method is pretty straightforward. It returns a list of `CmisObject` objects. It instantiates those objects by iterating over the query results, grabbing the `objectId` from each result, and making a `getObject()` call on the `session`.
 
-    public List<CmisObject> getQueryResults(String queryString) {
-        List<CmisObject> objList = new ArrayList<CmisObject>();
-        Session session = getSession();
+```java
+public List<CmisObject> getQueryResults(String queryString) {
+    List<CmisObject> objList = new ArrayList<CmisObject>();
+    Session session = getSession();
 
-        // execute query
-        ItemIterable<QueryResult> results = session.query(queryString, false);
+    // execute query
+    ItemIterable<QueryResult> results = session.query(queryString, false);
 
-        for (QueryResult qResult : results) {
-            PropertyData<?> propData = qResult.getPropertyById("cmis:objectId");
-            String objectId = (String) propData.getFirstValue();
-            CmisObject obj = session.getObject(session.createObjectId(objectId));
-            objList.add(obj);
-        }
+    for (QueryResult qResult : results) {
+        PropertyData<?> propData = qResult.getPropertyById("cmis:objectId");
+        String objectId = (String) propData.getFirstValue();
+        CmisObject obj = session.getObject(session.createObjectId(objectId));
+        objList.add(obj);
+    }
 
-        return objList;
-    };
+    return objList;
+};
+```
 
 The `doExamples()` method then executes a series of example queries and dumps the results. The first two queries are simple. One returns every instance of `sc:doc` including instances of types that inherit from `sc:doc`. The second one finds any objects residing in the folder passed in that contain the word “sample” anywhere in the content. Notice the SQL-like syntax of CMIS Query Language. It basically treats content types as if they were tables.
 
-    System.out.println(RESULT_SEP);
-    System.out.println("Finding content of type:" +
-         SomeCoModel.TYPE_SC_DOC.toString());
-    queryString = "select * from sc:doc";
-    dumpQueryResults(getQueryResults(queryString));
+```java
+System.out.println(RESULT_SEP);
+System.out.println("Finding content of type:" +
+     SomeCoModel.TYPE_SC_DOC.toString());
+queryString = "select * from sc:doc";
+dumpQueryResults(getQueryResults(queryString));
 
-    System.out.println(RESULT_SEP);
-    System.out.println("Find content in the root folder with text like 'sample'");
-    queryString = "select * from cmis:document where contains('sample') and
-         in_folder('" + getFolderId() + "')";
-    dumpQueryResults(getQueryResults(queryString));
+System.out.println(RESULT_SEP);
+System.out.println("Find content in the root folder with text like 'sample'");
+queryString = "select * from cmis:document where contains('sample') and
+     in_folder('" + getFolderId() + "')";
+dumpQueryResults(getQueryResults(queryString));
+```
 
 You might have noticed the `getFolderId()` call. The `in_folder` predicate expects an object ID. So the `getFolderId()` method does a query to find the object ID of the folder that was passed in as an argument to the class. It would be nice if you could do this in a single query, but you can’t.
 
@@ -1076,38 +1101,44 @@ You might have noticed the `getFolderId()` call. The `in_folder` predicate expec
 
 The next query looks for active content. This is when it starts to get interesting because the property that tracks whether or not a piece of content is active, `sc:isActive`, is defined on an aspect. The CMIS specification allows for joins in queries. But Alfresco does not support joins except in the special case of aspects. In Alfresco CMIS, joins are used to relate a base type to one of its aspects. That allows you to use an aspect-based property in a where clause.
 
-    System.out.println(RESULT_SEP);
-    System.out.println("Find active content");
-    queryString = "select d.*, w.* from cmis:document as d join sc:webable as w on
-         d.cmis:objectId = w.cmis:objectId where w.sc:isActive = True";
-    dumpQueryResults(getQueryResults(queryString));
+```java
+System.out.println(RESULT_SEP);
+System.out.println("Find active content");
+queryString = "select d.*, w.* from cmis:document as d join sc:webable as w on
+     d.cmis:objectId = w.cmis:objectId where w.sc:isActive = True";
+dumpQueryResults(getQueryResults(queryString));
+```
 
 ### Queries Across Multiple Aspects
 
 The next query shows another special case. In this example the goal is to find the active content that has a product property set to a specific value. That’s a challenge because the `sc:isActive` property is defined by the `sc:webable` aspect while the `sc:product` property is defined by a different aspect, `sc:productRelated`. Unfortunately, there is no good way to get these results in a single query. The solution used here is to write a method called `getSubQueryResults()` that accepts two queries as arguments. The method runs the first query and then builds an `IN` predicate using the object IDs that come back, which it appends to the second query before invoking it.
 
-    System.out.println(RESULT_SEP);
-    System.out.println("Find active content with a product equal to 'SomePortal'");
-    String queryString1 = "select d.cmis:objectId from cmis:document as d join
-        sc:productRelated as p on d.cmis:objectId = p.cmis:objectId " +
-        "where p.sc:product = 'SomePortal'";
-    String queryString2 = "select d.cmis:objectId from cmis:document as d join
-        sc:webable as w on d.cmis:objectId = w.cmis:objectId " +
-    	 "where w.sc:isActive = True";
-    dumpQueryResults(getSubQueryResults(queryString1, queryString2));
+```java
+System.out.println(RESULT_SEP);
+System.out.println("Find active content with a product equal to 'SomePortal'");
+String queryString1 = "select d.cmis:objectId from cmis:document as d join
+    sc:productRelated as p on d.cmis:objectId = p.cmis:objectId " +
+    "where p.sc:product = 'SomePortal'";
+String queryString2 = "select d.cmis:objectId from cmis:document as d join
+    sc:webable as w on d.cmis:objectId = w.cmis:objectId " +
+	 "where w.sc:isActive = True";
+dumpQueryResults(getSubQueryResults(queryString1, queryString2));
+```
 
 ### Queries Using Dates
 
 The last query uses the aspect join trick to do a date range search on instances of `sc:whitepaper` published between a specific range.
 
-    System.out.println(RESULT_SEP);
-    System.out.println("Find content of type sc:whitepaper published between 1/1/2006
-        and 6/1/2007");
-    queryString = "select d.cmis:objectId, w.sc:published from sc:whitepaper as d join
-        sc:webable as w on d.cmis:objectId = w.cmis:objectId " +  
-        "where w.sc:published > TIMESTAMP '2006-01-01T00:00:00.000-05:00' " +
-        "  and w.sc:published < TIMESTAMP '2007-06-02T00:00:00.000-05:00'";
-    dumpQueryResults(getQueryResults(queryString));
+```java
+System.out.println(RESULT_SEP);
+System.out.println("Find content of type sc:whitepaper published between 1/1/2006
+    and 6/1/2007");
+queryString = "select d.cmis:objectId, w.sc:published from sc:whitepaper as d join
+    sc:webable as w on d.cmis:objectId = w.cmis:objectId " +  
+    "where w.sc:published > TIMESTAMP '2006-01-01T00:00:00.000-05:00' " +
+    "  and w.sc:published < TIMESTAMP '2007-06-02T00:00:00.000-05:00'";
+dumpQueryResults(getQueryResults(queryString));
+```
 
 ### Running the Queries
 
@@ -1239,24 +1270,26 @@ Deleting Content with OpenCMIS
 ------------------------------
 Now it is time to clean up after ourselves by deleting content from the repository. The delete logic in the [SomeCoCMISDataCleaner](https://github.com/jpotts/alfresco-developer-series/blob/master/content/content-tutorial-cmis/src/main/java/com/someco/cmis/examples/SomeCoCMISDataCleaner.java) class is similar to the search logic except that instead of dumping the results, the CmisObject’s `delete()` method gets called on every hit that is returned.
 
-    Session session = getSession();
+```java
+Session session = getSession();
 
-    // execute query
-    String queryString = "select * from sc:doc";
-    ItemIterable<QueryResult> results = session.query(queryString, false);
+// execute query
+String queryString = "select * from sc:doc";
+ItemIterable<QueryResult> results = session.query(queryString, false);
 
-    // if we found some rows, create an array of DeleteCML objects    	
-    if (results.getTotalNumItems() >= 0)
-        System.out.println("Found " + results.getTotalNumItems() + " objects to delete.");
+// if we found some rows, create an array of DeleteCML objects    	
+if (results.getTotalNumItems() >= 0)
+    System.out.println("Found " + results.getTotalNumItems() + " objects to delete.");
 
-    for (QueryResult qResult : results) {
-        PropertyData<?> propData = qResult.getPropertyById("cmis:objectId");
-        String objectId = (String) propData.getFirstValue();
-        CmisObject obj = session.getObject(session.createObjectId(objectId));
-        obj.delete(true);
-        System.out.println("Deleted: " + objectId);
-    }
-    System.out.println("Done!");
+for (QueryResult qResult : results) {
+    PropertyData<?> propData = qResult.getPropertyById("cmis:objectId");
+    String objectId = (String) propData.getFirstValue();
+    CmisObject obj = session.getObject(session.createObjectId(objectId));
+    obj.delete(true);
+    System.out.println("Deleted: " + objectId);
+}
+System.out.println("Done!");
+```
 
 Note that this code deletes every object in the repository of type `sc:doc` and instances of child types. You would definitely want to “think twice and cut once” if you were running this code on a production repository, particularly if you were using a broad content type like `cm:content`.
 
@@ -1299,7 +1332,6 @@ Where to Find More Information
 ==============================
 * The complete source code for these examples is available on [GitHub](https://github.com/jpotts/alfresco-developer-series).
 * Official documentation for both Enterprise Edition and Community Edition is available at [docs.alfresco.com](http://docs.alfresco.com/).
-* [Share Extras](http://share-extras.github.io/) has many examples of deeper Share customization.
 * The [Apache Chemistry Home Page](http://chemistry.apache.org/) has examples and source code that works with CMIS.
 * See [“Getting Started with CMIS”](https://ecmarchitect.com/archives/2009/11/23/1094) on [ecmarchitect.com](https://ecmarchitect.com) for a brief introduction to CMIS. The [Alfresco CMIS](http://cmis.alfresco.com/) page is also a great resource. And there is now a [CMIS book](http://www.manning.com/mueller/) availaible.
-* If you are ready to cover new ground, try another [ecmarchitect.com](https://ecmarchitect.com) tutorial in the [Alfresco Developer Series](https://ecmarchitect.com/alfresco-developer-series).
+* If you are ready to cover new ground, try another [ecmarchitect.com](https://ecmarchitect.com) tutorial in the [Alfresco Developer Series](https://ecmarchitect.com/alfresco-developer-series). The most logical next step is the [Developing Custom Actions](https://ecmarchitect.com/alfresco-developer-series-tutorials/actions/tutorial/tutorial.html) tutorial.

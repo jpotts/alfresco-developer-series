@@ -11,6 +11,43 @@
   <title>Creating Custom Advanced Workflows in Alfresco | ECM
 Architect | Alfresco Developer Tutorials</title>
   <style type="text/css">code{white-space: pre;}</style>
+  <style type="text/css">
+div.sourceCode { overflow-x: auto; }
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
+td.sourceCode { padding-left: 5px; }
+code > span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code > span.dt { color: #902000; } /* DataType */
+code > span.dv { color: #40a070; } /* DecVal */
+code > span.bn { color: #40a070; } /* BaseN */
+code > span.fl { color: #40a070; } /* Float */
+code > span.ch { color: #4070a0; } /* Char */
+code > span.st { color: #4070a0; } /* String */
+code > span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code > span.ot { color: #007020; } /* Other */
+code > span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code > span.fu { color: #06287e; } /* Function */
+code > span.er { color: #ff0000; font-weight: bold; } /* Error */
+code > span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+code > span.cn { color: #880000; } /* Constant */
+code > span.sc { color: #4070a0; } /* SpecialChar */
+code > span.vs { color: #4070a0; } /* VerbatimString */
+code > span.ss { color: #bb6688; } /* SpecialString */
+code > span.im { } /* Import */
+code > span.va { color: #19177c; } /* Variable */
+code > span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code > span.op { color: #666666; } /* Operator */
+code > span.bu { } /* BuiltIn */
+code > span.ex { } /* Extension */
+code > span.pp { color: #bc7a00; } /* Preprocessor */
+code > span.at { color: #7d9029; } /* Attribute */
+code > span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code > span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code > span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+  </style>
   <link rel="stylesheet" href="../../tutorial-common/style.css" type="text/css" />
 </head>
 <body class="page page-template page-template-onecolumn-page-php custom-background">
@@ -30,10 +67,11 @@ Architect | Alfresco Developer Tutorials</title>
 <div id="header">
 <h1 class="entry-title">Creating Custom Advanced Workflows in Alfresco</h1>
 <h2 class="author">Jeff Potts, <a href="https://www.ecmarchitect.com/">Metaversant Group</a></h2>
-<h3 class="date">April, 2018</h3>
+<h3 class="date">February, 2019</h3>
 </div>
 <div id="TOC">
 <ul>
+<li><a href="#license">License</a></li>
 <li><a href="#introduction">Introduction</a></li>
 <li><a href="#what-is-a-workflow">What is a workflow?</a><ul>
 <li><a href="#options-for-implementing-workflow-in-your-apps">Options for implementing workflow in your apps</a><ul>
@@ -104,6 +142,12 @@ Architect | Alfresco Developer Tutorials</title>
 <li><a href="#where-to-find-more-information">Where to find more information</a></li>
 </ul>
 </div>
+<h1 id="license">License</h1>
+<div class="figure">
+<img src="./images/cc-by-sa-88x31.png" />
+
+</div>
+<p>This work is licensed under the Creative Commons Attribution-ShareAlike 3.0 Unported License. To view a copy of this license, visit http://creativecommons.org/licenses/by-sa/3.0/ or send a letter to Creative Commons, 444 Castro Street, Suite 900, Mountain View, California, 94041, USA.</p>
 <h1 id="introduction">Introduction</h1>
 <p>This tutorial is about the advanced workflow functionality available in Alfresco through its embedded Activiti workflow engine. First, because &quot;workflow&quot; can mean different things to different people, I'll talk about my definition of the term. Then, I'll introduce some Activiti concepts that will help you understand how processes are defined and how the workflow engine actually works. Once that foundation is in place, I'll walk through some examples that feature many of the different concepts.</p>
 <p>This tutorial builds upon the &quot;SomeCo&quot; examples covered in earlier tutorials. In it, I'll implement a business process that helps SomeCo route whitepapers for review and approval by internal as well as external parties.</p>
@@ -157,6 +201,10 @@ Architect | Alfresco Developer Tutorials</title>
 <p>Although I haven't yet covered the detailed capabilities of Alfresco advanced workflows, I thought it would be a good idea to compare basic and advanced workflows at a high level now so I can leave the topic of basic workflows behind and spend the rest of the tutorial on advanced workflows:</p>
 <table>
 <caption>Difference between basic and advanced workflows</caption>
+<colgroup>
+<col width="48%" />
+<col width="52%" />
+</colgroup>
 <thead>
 <tr class="header">
 <th align="left">Alfresco basic workflows...</th>
@@ -211,7 +259,8 @@ Architect | Alfresco Developer Tutorials</title>
 <p>A business process can be described as a graph of connected nodes. In Activiti (and really, in BPMN) these nodes are essentially events (start, stop, timer), tasks, and gateways. These nodes are connected by &quot;sequence flows&quot;. You can model just about any business process you can think of by organizing events, tasks, gateways, and sequence flows on a diagram.</p>
 <p>The OMG has a great document called, &quot;BPMN 2.0 by Example&quot; that shows several examples of business process diagrams and then walks you through each. There's a link to it at the end of this document. The diagrams include features that may not be included in the current release of Activiti, but they do illustrate the kinds of things you can do with BPMN 2.0. For example, here's a diagram from that document called &quot;The Pizza Collaboration&quot;:</p>
 <div class="figure">
-<img src="images/omg-pizza-example.png" alt="OMG&#39;s Pizza Collaboration Example" /><p class="caption">OMG's Pizza Collaboration Example</p>
+<img src="images/omg-pizza-example.png" alt="OMG&#39;s Pizza Collaboration Example" />
+<p class="caption">OMG's Pizza Collaboration Example</p>
 </div>
 <p>A process, then, is a collection of events, tasks (some automated, some performed by humans), and gateways, connected by sequence flows.</p>
 <h1 id="setup">Setup</h1>
@@ -219,10 +268,12 @@ Architect | Alfresco Developer Tutorials</title>
 <h2 id="tools">Tools</h2>
 <p>Here is what I am using on my machine:</p>
 <ul>
-<li>Mac OS X 10.12.6</li>
-<li>Java 1.8.0_77</li>
-<li>Apache Maven 3.5.3 (installed using Macports)</li>
-<li>Alfresco Maven SDK 3.0.1 (No download necessary)</li>
+<li>Ubuntu 16.04.5 LTS</li>
+<li>Java 1.8.0_201</li>
+<li>Apache Maven 3.3.9</li>
+<li>Alfresco Maven SDK 4.0 (No download necessary)</li>
+<li>Docker 18.09.2</li>
+<li>Docker Compose 1.23.2</li>
 <li>Eclipse Java EE IDE for Web Developers, Neon</li>
 <li>Activiti Eclipse BPMN 2.0 Designer 5.18 (<a href="http://www.activiti.org/designer/update/">Eclipse Update Site</a>)</li>
 <li>Apache James 2.3.1 (for testing third-party notification via SMTP)</li>
@@ -231,82 +282,79 @@ Architect | Alfresco Developer Tutorials</title>
 <h2 id="project-organization">Project Organization</h2>
 <p>I am going to use the Alfresco Maven SDK to create a project from the &quot;all-in-one&quot; archetype that will package up my customizations in two AMPs (Alfresco Module Packages). One AMP is for the Alfresco web application (the &quot;repo&quot; tier) and the other is for the Alfresco Share web application (the &quot;Share&quot; tier).</p>
 <p>I am not going to spend much time talking about how the Alfresco Maven SDK works. If you aren't already familiar with it, you may want to read the <a href="https://ecmarchitect.com/alfresco-developer-series">Getting Started with the Alfresco Maven SDK</a> tutorial on ecmarchitect.com first and then come back to this one.</p>
-<p>This tutorial relies on code from the <a href="https://ecmarchitect.com/alfresco-developer-series-tutorials/content/tutorial/tutorial.html">Custom Content Types</a> tutorial. The tutorial assumes that the repo tier AMP and Share tier AMP created during that tutorial have been installed into your local Maven repository. Or, if you are deploying to an Alfresco server instead of running the embedded Tomcat server, those AMPs need to be deployed to the Alfresco server. More details on that will be discussed later in the document.</p>
+<p>This tutorial relies on code from the <a href="https://ecmarchitect.com/alfresco-developer-series-tutorials/content/tutorial/tutorial.html">Custom Content Types</a> tutorial. The tutorial assumes that the repo tier AMP and Share tier AMP created during that tutorial have been installed into your local Maven repository. Or, if you are deploying to an Alfresco server instead of running the Docker images generated by the SDK, those AMPs need to be deployed to the Alfresco server. More details on that will be discussed later in the document.</p>
 <p>If you are planning on following along, go ahead and use the Alfresco Maven SDK to create a new project from the &quot;all-in-one&quot; archetype. Use a <code>groupId</code> of &quot;com.someco&quot; and an <code>artifactId</code> of &quot;workflow-tutorial&quot;.</p>
 <p>Starting with 3.0.0, the SDK will generate JAR files by default. We always want to generate AMPs, not JARs, so edit the pom.xml file to uncomment the maven-assembly-plugin.</p>
-<p>We'll be running the project using an embedded Tomcat server. We can configure the project to install AMPs from the earlier tutorials automatically. Edit the pom.xml file in the &quot;workflow-tutorial&quot; directory to add the following &quot;platformModule&quot; dependencies:</p>
-<pre><code>&lt;platformModules&gt;
-    ...SNIP...
-    &lt;!-- Bring in the content tutorial repo AMP so we can run embedded. --&gt;
-    &lt;moduleDependency&gt;
-        &lt;groupId&gt;com.someco&lt;/groupId&gt;
-        &lt;artifactId&gt;content-tutorial-platform-jar&lt;/artifactId&gt;
-        &lt;version&gt;1.0-SNAPSHOT&lt;/version&gt;
-        &lt;type&gt;amp&lt;/type&gt;
-    &lt;/moduleDependency&gt;
-
-    &lt;!-- Bring in the behavior tutorial repo AMP so we can run embedded. --&gt;
-    &lt;moduleDependency&gt;
-        &lt;groupId&gt;com.someco&lt;/groupId&gt;
-        &lt;artifactId&gt;behavior-tutorial-platform-jar&lt;/artifactId&gt;
-        &lt;version&gt;1.0-SNAPSHOT&lt;/version&gt;
-        &lt;type&gt;amp&lt;/type&gt;
-    &lt;/moduleDependency&gt;
-
-    &lt;!-- Bring in the actions tutorial repo AMP so we can run embedded. --&gt;
-    &lt;moduleDependency&gt;
-        &lt;groupId&gt;com.someco&lt;/groupId&gt;
-        &lt;artifactId&gt;actions-tutorial-platform-jar&lt;/artifactId&gt;
-        &lt;version&gt;1.0-SNAPSHOT&lt;/version&gt;
-        &lt;type&gt;amp&lt;/type&gt;
-    &lt;/moduleDependency&gt;
-    ...SNIP...
-&lt;/platformModules&gt;</code></pre>
-<p>Those all have corresponding Share tier modules so add those as &quot;shareModule&quot; dependencies:</p>
-<pre><code>&lt;shareModules&gt;
-    ...SNIP...
-    &lt;!-- Bring in the content tutorial share AMP so we can run embedded. --&gt;
-    &lt;moduleDependency&gt;
-        &lt;groupId&gt;com.someco&lt;/groupId&gt;
-        &lt;artifactId&gt;content-tutorial-share-jar&lt;/artifactId&gt;
-        &lt;version&gt;1.0-SNAPSHOT&lt;/version&gt;
-        &lt;type&gt;amp&lt;/type&gt;
-    &lt;/moduleDependency&gt;
-
-    &lt;!-- Bring in the behavior tutorial share AMP so we can run embedded. --&gt;
-    &lt;moduleDependency&gt;
-        &lt;groupId&gt;com.someco&lt;/groupId&gt;
-        &lt;artifactId&gt;behavior-tutorial-share-jar&lt;/artifactId&gt;
-        &lt;version&gt;1.0-SNAPSHOT&lt;/version&gt;
-        &lt;type&gt;amp&lt;/type&gt;
-    &lt;/moduleDependency&gt;
-
-    &lt;!-- Bring in the actions tutorial share AMP so we can run embedded. --&gt;
-    &lt;moduleDependency&gt;
-        &lt;groupId&gt;com.someco&lt;/groupId&gt;
-        &lt;artifactId&gt;actions-tutorial-share-jar&lt;/artifactId&gt;
-        &lt;version&gt;1.0-SNAPSHOT&lt;/version&gt;
-        &lt;type&gt;amp&lt;/type&gt;
-    &lt;/moduleDependency&gt;
-    ...SNIP...
-&lt;/shareModules&gt;</code></pre>
-<p>Now when we fire up the embedded Tomcat server the workflow AMPs will be installed as well as the AMPs from the earlier content, behavior, and actions tutorials.</p>
-<p>If you have not installed those artifacts into your local Maven repository, switch to the root of each of those earlier tutorial projects and run <code>mvn install</code> to do so now.</p>
+<p>We'll be running the project using Docker and Docker Compose. We can configure the project to install AMPs from the earlier tutorials into the Docker containers automatically. Edit the pom.xml file in the &quot;workflow-tutorial-platform-docker&quot; directory to add the following dependencies:</p>
+<div class="sourceCode"><pre class="sourceCode xml"><code class="sourceCode xml"><span class="kw">&lt;dependencies&gt;</span>
+    <span class="kw">&lt;dependency&gt;</span>
+        <span class="kw">&lt;groupId&gt;</span>com.someco<span class="kw">&lt;/groupId&gt;</span>
+        <span class="kw">&lt;artifactId&gt;</span>workflow-tutorial-platform<span class="kw">&lt;/artifactId&gt;</span>
+        <span class="kw">&lt;version&gt;</span>1.0-SNAPSHOT<span class="kw">&lt;/version&gt;</span>
+    <span class="kw">&lt;/dependency&gt;</span>
+    <span class="co">&lt;!-- Bring in the content tutorial repo AMP so we can run embedded. --&gt;</span>
+    <span class="kw">&lt;dependency&gt;</span>
+        <span class="kw">&lt;groupId&gt;</span>com.someco<span class="kw">&lt;/groupId&gt;</span>
+        <span class="kw">&lt;artifactId&gt;</span>content-tutorial-platform<span class="kw">&lt;/artifactId&gt;</span>
+        <span class="kw">&lt;version&gt;</span>1.0-SNAPSHOT<span class="kw">&lt;/version&gt;</span>
+    <span class="kw">&lt;/dependency&gt;</span>
+    <span class="co">&lt;!-- Bring in the behavior tutorial repo AMP so we can run embedded. --&gt;</span>
+    <span class="kw">&lt;dependency&gt;</span>
+        <span class="kw">&lt;groupId&gt;</span>com.someco<span class="kw">&lt;/groupId&gt;</span>
+        <span class="kw">&lt;artifactId&gt;</span>behavior-tutorial-platform<span class="kw">&lt;/artifactId&gt;</span>
+        <span class="kw">&lt;version&gt;</span>1.0-SNAPSHOT<span class="kw">&lt;/version&gt;</span>
+    <span class="kw">&lt;/dependency&gt;</span>
+    <span class="co">&lt;!-- Bring in the actions tutorial repo AMP so we can run embedded. --&gt;</span>
+    <span class="kw">&lt;dependency&gt;</span>
+        <span class="kw">&lt;groupId&gt;</span>com.someco<span class="kw">&lt;/groupId&gt;</span>
+        <span class="kw">&lt;artifactId&gt;</span>actions-tutorial-platform<span class="kw">&lt;/artifactId&gt;</span>
+        <span class="kw">&lt;version&gt;</span>1.0-SNAPSHOT<span class="kw">&lt;/version&gt;</span>
+    <span class="kw">&lt;/dependency&gt;</span>
+<span class="kw">&lt;/dependencies&gt;</span></code></pre></div>
+<p>Those all have corresponding Share tier modules so edit the pom.xml file in the &quot;workflow-tutorial-share-docker&quot; directory to add the following dependencies:</p>
+<div class="sourceCode"><pre class="sourceCode xml"><code class="sourceCode xml"><span class="kw">&lt;dependencies&gt;</span>
+    <span class="kw">&lt;dependency&gt;</span>
+        <span class="kw">&lt;groupId&gt;</span>com.someco<span class="kw">&lt;/groupId&gt;</span>
+        <span class="kw">&lt;artifactId&gt;</span>workflow-tutorial-share<span class="kw">&lt;/artifactId&gt;</span>
+        <span class="kw">&lt;version&gt;</span>1.0-SNAPSHOT<span class="kw">&lt;/version&gt;</span>
+    <span class="kw">&lt;/dependency&gt;</span>
+    <span class="co">&lt;!-- Bring in the content tutorial share AMP so we can run embedded. --&gt;</span>
+    <span class="kw">&lt;dependency&gt;</span>
+        <span class="kw">&lt;groupId&gt;</span>com.someco<span class="kw">&lt;/groupId&gt;</span>
+        <span class="kw">&lt;artifactId&gt;</span>content-tutorial-share<span class="kw">&lt;/artifactId&gt;</span>
+        <span class="kw">&lt;version&gt;</span>1.0-SNAPSHOT<span class="kw">&lt;/version&gt;</span>
+    <span class="kw">&lt;/dependency&gt;</span>
+    <span class="co">&lt;!-- Bring in the behavior tutorial share AMP so we can run embedded. --&gt;</span>
+    <span class="kw">&lt;dependency&gt;</span>
+        <span class="kw">&lt;groupId&gt;</span>com.someco<span class="kw">&lt;/groupId&gt;</span>
+        <span class="kw">&lt;artifactId&gt;</span>behavior-tutorial-share<span class="kw">&lt;/artifactId&gt;</span>
+        <span class="kw">&lt;version&gt;</span>1.0-SNAPSHOT<span class="kw">&lt;/version&gt;</span>
+    <span class="kw">&lt;/dependency&gt;</span>
+    <span class="co">&lt;!-- Bring in the actions tutorial share AMP so we can run embedded. --&gt;</span>
+    <span class="kw">&lt;dependency&gt;</span>
+        <span class="kw">&lt;groupId&gt;</span>com.someco<span class="kw">&lt;/groupId&gt;</span>
+        <span class="kw">&lt;artifactId&gt;</span>actions-tutorial-share<span class="kw">&lt;/artifactId&gt;</span>
+        <span class="kw">&lt;version&gt;</span>1.0-SNAPSHOT<span class="kw">&lt;/version&gt;</span>
+    <span class="kw">&lt;/dependency&gt;</span>
+<span class="kw">&lt;/dependencies&gt;</span></code></pre></div>
+<p>Now when we fire up the Docker containers the workflow AMPs will be installed as well as the AMPs from the earlier content, behavior, and actions tutorials.</p>
+<p>If you have not installed those artifacts into your local Maven repository, switch to the root of each of those earlier tutorial projects and run <code>mvn install -DskipTests</code> to do so now.</p>
 <h1 id="hello-world-examples">Hello World Examples</h1>
 <p>Let's create a couple of super simple Hello World processes using the Activiti Process Designer. These processes will not be wired into the Alfresco web client user interface. Instead, I'll use the workflow console to start them. Once I've run through the basic steps of diagramming and deploying workflows, I'll show you examples that are fully integrated into the user interface.</p>
 <h2 id="the-helloworld-process">The helloWorld process</h2>
 <p>The helloWorld process will consist of a start event, a user task, and an end event. The goal is to do nothing more than write &quot;Hello, World!&quot; to the Alfresco log.</p>
 <p>Workflows reside in:</p>
-<pre><code>$TUTORIAL_HOME/workflow-tutorial-platform-jar/src/main/resources/alfresco/module/workflow-tutorial-platform-jar/workflow</code></pre>
-<p>When you created the workflow-tutorial project using the Alfresco Maven SDK, the folder structure was created for you, and it may have included a &quot;workflow&quot; directory in the workflow-tutorial-platform-jar module with a sample workflow. If so, you can delete the sample workflow. If not, create the &quot;workflow&quot; directory now.</p>
+<pre><code>$TUTORIAL_HOME/workflow-tutorial-platform/src/main/resources/alfresco/module/workflow-tutorial-platform/workflow</code></pre>
+<p>When you created the workflow-tutorial project using the Alfresco Maven SDK, the folder structure was created for you, and it may have included a &quot;workflow&quot; directory in the workflow-tutorial-platform module with a sample workflow. If so, you can delete the sample workflow. If not, create the &quot;workflow&quot; directory now.</p>
 <p>Once that is done, follow these steps:</p>
 <ol style="list-style-type: decimal">
-<li>Right-click the workflows folder and choose New, Other, Activiti Diagram. Specify &quot;<a href="https://github.com/jpotts/alfresco-developer-series/blob/master/workflow/workflow-tutorial/workflow-tutorial-platform-jar/src/main/resources/alfresco/module/workflow-tutorial-platform-jar/workflow/helloWorld.bpmn">helloWorld.bpmn</a>&quot; for the process name and click Finish.</li>
+<li>Right-click the workflows folder and choose New, Other, Activiti Diagram. Specify &quot;<a href="https://github.com/jpotts/alfresco-developer-series/blob/master/workflow/workflow-tutorial/workflow-tutorial-platform/src/main/resources/alfresco/module/workflow-tutorial-platform/workflow/helloWorld.bpmn">helloWorld.bpmn</a>&quot; for the process name and click Finish.</li>
 <li>Drag-and-drop a start event, a user task and an end event from the palette onto your blank canvas.</li>
 <li>Connect the start event to the user task and the user task to the end event using sequence flows from the palette. When you are done, the diagram should look like this:</li>
 </ol>
 <div class="figure">
-<img src="images/hello-world-bpmn.png" alt="Hello World BPMN Diagram" /><p class="caption">Hello World BPMN Diagram</p>
+<img src="images/hello-world-bpmn.png" alt="Hello World BPMN Diagram" />
+<p class="caption">Hello World BPMN Diagram</p>
 </div>
 <ol start="4" style="list-style-type: decimal">
 <li>If it isn't open already, open the &quot;Properties&quot; view by going to Window, Show View, Other, General, Properties.</li>
@@ -314,31 +362,33 @@ Architect | Alfresco Developer Tutorials</title>
 <li>Specify &quot;${initiator.properties.userName}&quot; as the assignee, as shown below:</li>
 </ol>
 <div class="figure">
-<img src="images/hello-world-properties.png" alt="Hello World user task properties" /><p class="caption">Hello World user task properties</p>
+<img src="images/hello-world-properties.png" alt="Hello World user task properties" />
+<p class="caption">Hello World user task properties</p>
 </div>
 <ol start="6" style="list-style-type: decimal">
 <li>Click somewhere on the canvas. This should display the &quot;Process&quot; tab in the Properties viewer. Specify &quot;helloWorld&quot; as the ID and &quot;Hello World&quot; as the Name.</li>
 </ol>
 <div class="figure">
-<img src="images/hello-world-process-properties.png" alt="Hello World user task properties" /><p class="caption">Hello World user task properties</p>
+<img src="images/hello-world-process-properties.png" alt="Hello World user task properties" />
+<p class="caption">Hello World user task properties</p>
 </div>
 <ol start="7" style="list-style-type: decimal">
 <li>Save and close the diagram.</li>
 </ol>
 <p>Let's put a little logger statement in the process to see how to add code to a process. Activiti supports multiple scripting languages, but in Alfresco's embedded Activiti, JavaScript is the most practical because it gives you access to the full JavaScript API.</p>
 <p>To add code to the process, re-open the &quot;helloWorld.bpmn&quot; file in the XML editor instead of the diagram editor and look for the sequence flow that connects the start event to the user task. It should look something like this:</p>
-<pre><code>&lt;sequenceFlow id=&quot;flow1&quot; sourceRef=&quot;startevent1&quot; targetRef=&quot;usertask1&quot;&gt;&lt;/sequenceFlow&gt;</code></pre>
+<div class="sourceCode"><pre class="sourceCode xml"><code class="sourceCode xml"><span class="kw">&lt;sequenceFlow</span><span class="ot"> id=</span><span class="st">&quot;flow1&quot;</span><span class="ot"> sourceRef=</span><span class="st">&quot;startevent1&quot;</span><span class="ot"> targetRef=</span><span class="st">&quot;usertask1&quot;</span><span class="kw">&gt;&lt;/sequenceFlow&gt;</span></code></pre></div>
 <p>Note that your <code>id</code> attribute value may be different than mine depending on what order you created the sequence flow.</p>
 <p>Activiti has all kinds of hook points for custom code. To log a message when this sequence flow starts, add an execution listener on the flow, like this:</p>
-<pre><code>&lt;sequenceFlow id=&quot;flow1&quot; sourceRef=&quot;startevent1&quot; targetRef=&quot;usertask1&quot;&gt;
-    &lt;extensionElements&gt;
-        &lt;activiti:executionListener event=&quot;start&quot; class=&quot;org.alfresco.repo.workflow.activiti.listener.ScriptExecutionListener&quot;&gt;
-            &lt;activiti:field name=&quot;script&quot;&gt;
-                &lt;activiti:string&gt;logger.log(&quot;Hello, World!&quot;);&lt;/activiti:string&gt;
-            &lt;/activiti:field&gt;
-        &lt;/activiti:executionListener&gt;
-    &lt;/extensionElements&gt;
-&lt;/sequenceFlow&gt;</code></pre>
+<div class="sourceCode"><pre class="sourceCode xml"><code class="sourceCode xml"><span class="kw">&lt;sequenceFlow</span><span class="ot"> id=</span><span class="st">&quot;flow1&quot;</span><span class="ot"> sourceRef=</span><span class="st">&quot;startevent1&quot;</span><span class="ot"> targetRef=</span><span class="st">&quot;usertask1&quot;</span><span class="kw">&gt;</span>
+    <span class="kw">&lt;extensionElements&gt;</span>
+        <span class="kw">&lt;activiti:executionListener</span><span class="ot"> event=</span><span class="st">&quot;start&quot;</span><span class="ot"> class=</span><span class="st">&quot;org.alfresco.repo.workflow.activiti.listener.ScriptExecutionListener&quot;</span><span class="kw">&gt;</span>
+            <span class="kw">&lt;activiti:field</span><span class="ot"> name=</span><span class="st">&quot;script&quot;</span><span class="kw">&gt;</span>
+                <span class="kw">&lt;activiti:string&gt;</span>logger.log(&quot;Hello, World!&quot;);<span class="kw">&lt;/activiti:string&gt;</span>
+            <span class="kw">&lt;/activiti:field&gt;</span>
+        <span class="kw">&lt;/activiti:executionListener&gt;</span>
+    <span class="kw">&lt;/extensionElements&gt;</span>
+<span class="kw">&lt;/sequenceFlow&gt;</span></code></pre></div>
 <p>Now save the diagram.</p>
 <p>Look at the <code>activiti:executionListener</code> element. You can see from the <code>event</code> attribute that this script will be fired when the &quot;start&quot; event for this sequence flow happens. The <code>class</code> attribute specifies the class to invoke which is an out-of-the-box class called <code>ScriptExecutionListener</code>. The <code>activiti:string</code> element could contain any server-side JavaScript. For right now it is a simple logger statement. In a later example, you'll see how to iterate over the documents in the workflow package.</p>
 <p>You're going to run this process shortly. Before that, let's create another simple process to see how forks work.</p>
@@ -346,13 +396,14 @@ Architect | Alfresco Developer Tutorials</title>
 <p>Before I show you how to deploy the process definition to Alfresco, let's do another Hello World example that does a fork and a join.</p>
 <p>Do this:</p>
 <ol style="list-style-type: decimal">
-<li>Create a new diagram in the workflows folder called &quot;<a href="https://github.com/jpotts/alfresco-developer-series/blob/master/workflow/workflow-tutorial/workflow-tutorial-platform-jar/src/main/resources/alfresco/module/workflow-tutorial-platform-jar/workflow/helloWorldFork.bpmn">helloWorldFork.bpmn</a>&quot;.</li>
+<li>Create a new diagram in the workflows folder called &quot;<a href="https://github.com/jpotts/alfresco-developer-series/blob/master/workflow/workflow-tutorial/workflow-tutorial-platform/src/main/resources/alfresco/module/workflow-tutorial-platform/workflow/helloWorldFork.bpmn">helloWorldFork.bpmn</a>&quot;.</li>
 <li>From the palette, grab a start event, an end event, two user tasks, and two parallel gateways.</li>
 <li>Click &quot;Select&quot; in the palette, then click each of the two user tasks to change their names to &quot;User Task A&quot; and &quot;User Task B&quot; respectively.</li>
 <li>Click &quot;Sequence Flow&quot; in the palette and connect the nodes in the diagram so it looks like this:</li>
 </ol>
 <div class="figure">
-<img src="images/hello-world-fork.png" alt="Hello World Fork BPMN Diagram" /><p class="caption">Hello World Fork BPMN Diagram</p>
+<img src="images/hello-world-fork.png" alt="Hello World Fork BPMN Diagram" />
+<p class="caption">Hello World Fork BPMN Diagram</p>
 </div>
 <ol start="5" style="list-style-type: decimal">
 <li>Click somewhere on the canvas. This should display the &quot;Process&quot; tab in the Properties viewer. Specify &quot;helloWorldFork&quot; as the ID and &quot;Hello World Fork&quot; as the Name.</li>
@@ -360,30 +411,30 @@ Architect | Alfresco Developer Tutorials</title>
 </ol>
 <p>Now you have a business process with two parallel paths of execution. If you wanted the process to go to either User Task A or User Task B, but not both, you would use an exclusive gateway instead of a parallel gateway.</p>
 <p>Similar to the first example, let's add a logger statement to the sequence flows leading to the two user tasks. Open helloWorldFork.bpmn in the XML editor and add two new <code>extensionElements</code> elements, one in each of the <code>sequenceFlow</code> elements that lead to &quot;usertask1&quot; and &quot;usertask2&quot;:</p>
-<pre><code>&lt;sequenceFlow id=&quot;flow2&quot; sourceRef=&quot;parallelgateway1&quot; targetRef=&quot;usertask1&quot;&gt;
-    &lt;extensionElements&gt;
-        &lt;activiti:executionListener event=&quot;start&quot; class=&quot;org.alfresco.repo.workflow.activiti.listener.ScriptExecutionListener&quot;&gt;
-            &lt;activiti:field name=&quot;script&quot;&gt;
-                &lt;activiti:string&gt;
+<div class="sourceCode"><pre class="sourceCode xml"><code class="sourceCode xml"><span class="kw">&lt;sequenceFlow</span><span class="ot"> id=</span><span class="st">&quot;flow2&quot;</span><span class="ot"> sourceRef=</span><span class="st">&quot;parallelgateway1&quot;</span><span class="ot"> targetRef=</span><span class="st">&quot;usertask1&quot;</span><span class="kw">&gt;</span>
+    <span class="kw">&lt;extensionElements&gt;</span>
+        <span class="kw">&lt;activiti:executionListener</span><span class="ot"> event=</span><span class="st">&quot;start&quot;</span><span class="ot"> class=</span><span class="st">&quot;org.alfresco.repo.workflow.activiti.listener.ScriptExecutionListener&quot;</span><span class="kw">&gt;</span>
+            <span class="kw">&lt;activiti:field</span><span class="ot"> name=</span><span class="st">&quot;script&quot;</span><span class="kw">&gt;</span>
+                <span class="kw">&lt;activiti:string&gt;</span>
                     logger.log(&quot;Hello, World, from transition to User Task A!&quot;);
-                &lt;/activiti:string&gt;
-            &lt;/activiti:field&gt;
-        &lt;/activiti:executionListener&gt;
-    &lt;/extensionElements&gt;
-&lt;/sequenceFlow&gt;
-&lt;sequenceFlow id=&quot;flow3&quot; sourceRef=&quot;parallelgateway1&quot; targetRef=&quot;usertask2&quot;&gt;
-    &lt;extensionElements&gt;
-        &lt;activiti:executionListener event=&quot;start&quot; class=&quot;org.alfresco.repo.workflow.activiti.listener.ScriptExecutionListener&quot;&gt;
-            &lt;activiti:field name=&quot;script&quot;&gt;
-                &lt;activiti:string&gt;
+                <span class="kw">&lt;/activiti:string&gt;</span>
+            <span class="kw">&lt;/activiti:field&gt;</span>
+        <span class="kw">&lt;/activiti:executionListener&gt;</span>
+    <span class="kw">&lt;/extensionElements&gt;</span>
+<span class="kw">&lt;/sequenceFlow&gt;</span>
+<span class="kw">&lt;sequenceFlow</span><span class="ot"> id=</span><span class="st">&quot;flow3&quot;</span><span class="ot"> sourceRef=</span><span class="st">&quot;parallelgateway1&quot;</span><span class="ot"> targetRef=</span><span class="st">&quot;usertask2&quot;</span><span class="kw">&gt;</span>
+    <span class="kw">&lt;extensionElements&gt;</span>
+        <span class="kw">&lt;activiti:executionListener</span><span class="ot"> event=</span><span class="st">&quot;start&quot;</span><span class="ot"> class=</span><span class="st">&quot;org.alfresco.repo.workflow.activiti.listener.ScriptExecutionListener&quot;</span><span class="kw">&gt;</span>
+            <span class="kw">&lt;activiti:field</span><span class="ot"> name=</span><span class="st">&quot;script&quot;</span><span class="kw">&gt;</span>
+                <span class="kw">&lt;activiti:string&gt;</span>
                     logger.log(&quot;Hello, World, from transition to User Task B!&quot;);
-                &lt;/activiti:string&gt;
-            &lt;/activiti:field&gt;
-        &lt;/activiti:executionListener&gt;
-    &lt;/extensionElements&gt;
-&lt;/sequenceFlow&gt;</code></pre>
+                <span class="kw">&lt;/activiti:string&gt;</span>
+            <span class="kw">&lt;/activiti:field&gt;</span>
+        <span class="kw">&lt;/activiti:executionListener&gt;</span>
+    <span class="kw">&lt;/extensionElements&gt;</span>
+<span class="kw">&lt;/sequenceFlow&gt;</span></code></pre></div>
 <p>Remember to save the diagram.</p>
-<p>With a couple of, admittedly, ridiculously simple examples saved in the workflow-tutorial-platform-jar module, it is time to deploy them to Activiti running within Alfresco and try them out.</p>
+<p>With a couple of, admittedly, ridiculously simple examples saved in the workflow-tutorial-platform module, it is time to deploy them to Activiti running within Alfresco and try them out.</p>
 <h2 id="deploying-processes">Deploying processes</h2>
 <p>There are two other options for deploying workflows to Alfresco:</p>
 <ol style="list-style-type: decimal">
@@ -392,67 +443,75 @@ Architect | Alfresco Developer Tutorials</title>
 </ol>
 <p>This tutorial will use Spring to deploy the workflows initially. Then, use the Alfresco Workflow Console to deploy subsequent versions if needed.</p>
 <h3 id="deploying-the-workflows-with-spring">Deploying the workflows with Spring</h3>
-<p>As you learned in previous tutorials, the AMP project created by the Alfresco Maven SDK already has a Spring context file. It is named &quot;<a href="https://github.com/jpotts/alfresco-developer-series/blob/master/workflow/workflow-tutorial/workflow-tutorial-platform-jar/src/main/resources/alfresco/module/workflow-tutorial-platform-jar/context/bootstrap-context.xml">bootstrap-context.xml</a>&quot; and resides in:</p>
-<pre><code>$TUTORIAL_HOME/workflow-tutorial-platform-jar/src/main/resources/alfresco/module/workflow-tutorial-platform-jar/context</code></pre>
+<p>As you learned in previous tutorials, the AMP project created by the Alfresco Maven SDK already has a Spring context file. It is named &quot;<a href="https://github.com/jpotts/alfresco-developer-series/blob/master/workflow/workflow-tutorial/workflow-tutorial-platform/src/main/resources/alfresco/module/workflow-tutorial-platform/context/bootstrap-context.xml">bootstrap-context.xml</a>&quot; and resides in:</p>
+<pre><code>$TUTORIAL_HOME/workflow-tutorial-platform/src/main/resources/alfresco/module/workflow-tutorial-platform/context</code></pre>
 <p>Edit that file and delete any existing bean elements that the SDK might have added for you. Then, add a workflow deployer bean, like this:</p>
-<pre><code>&lt;bean id=&quot;${project.artifactId}.workflowBootstrap&quot; parent=&quot;workflowDeployer&quot;&gt;
-    &lt;property name=&quot;workflowDefinitions&quot;&gt;
-        &lt;list&gt;
-            &lt;props&gt;
-                &lt;prop key=&quot;engineId&quot;&gt;activiti&lt;/prop&gt;
-                &lt;prop key=&quot;location&quot;&gt;alfresco/module/${project.artifactId}/workflow/helloWorld.bpmn&lt;/prop&gt;
-                &lt;prop key=&quot;mimetype&quot;&gt;text/xml&lt;/prop&gt;
-                &lt;prop key=&quot;redeploy&quot;&gt;false&lt;/prop&gt;
-            &lt;/props&gt;
-            &lt;props&gt;
-                &lt;prop key=&quot;engineId&quot;&gt;activiti&lt;/prop&gt;
-                &lt;prop key=&quot;location&quot;&gt;alfresco/module/${project.artifactId}/workflow/helloWorldFork.bpmn&lt;/prop&gt;
-                &lt;prop key=&quot;mimetype&quot;&gt;text/xml&lt;/prop&gt;
-                &lt;prop key=&quot;redeploy&quot;&gt;false&lt;/prop&gt;
-            &lt;/props&gt;
-        &lt;/list&gt;
-    &lt;/property&gt;
-&lt;/bean&gt;</code></pre>
+<div class="sourceCode"><pre class="sourceCode xml"><code class="sourceCode xml"><span class="kw">&lt;bean</span><span class="ot"> id=</span><span class="st">&quot;${project.artifactId}.workflowBootstrap&quot;</span><span class="ot"> parent=</span><span class="st">&quot;workflowDeployer&quot;</span><span class="kw">&gt;</span>
+    <span class="kw">&lt;property</span><span class="ot"> name=</span><span class="st">&quot;workflowDefinitions&quot;</span><span class="kw">&gt;</span>
+        <span class="kw">&lt;list&gt;</span>
+            <span class="kw">&lt;props&gt;</span>
+                <span class="kw">&lt;prop</span><span class="ot"> key=</span><span class="st">&quot;engineId&quot;</span><span class="kw">&gt;</span>activiti<span class="kw">&lt;/prop&gt;</span>
+                <span class="kw">&lt;prop</span><span class="ot"> key=</span><span class="st">&quot;location&quot;</span><span class="kw">&gt;</span>alfresco/module/${project.artifactId}/workflow/helloWorld.bpmn<span class="kw">&lt;/prop&gt;</span>
+                <span class="kw">&lt;prop</span><span class="ot"> key=</span><span class="st">&quot;mimetype&quot;</span><span class="kw">&gt;</span>text/xml<span class="kw">&lt;/prop&gt;</span>
+                <span class="kw">&lt;prop</span><span class="ot"> key=</span><span class="st">&quot;redeploy&quot;</span><span class="kw">&gt;</span>false<span class="kw">&lt;/prop&gt;</span>
+            <span class="kw">&lt;/props&gt;</span>
+            <span class="kw">&lt;props&gt;</span>
+                <span class="kw">&lt;prop</span><span class="ot"> key=</span><span class="st">&quot;engineId&quot;</span><span class="kw">&gt;</span>activiti<span class="kw">&lt;/prop&gt;</span>
+                <span class="kw">&lt;prop</span><span class="ot"> key=</span><span class="st">&quot;location&quot;</span><span class="kw">&gt;</span>alfresco/module/${project.artifactId}/workflow/helloWorldFork.bpmn<span class="kw">&lt;/prop&gt;</span>
+                <span class="kw">&lt;prop</span><span class="ot"> key=</span><span class="st">&quot;mimetype&quot;</span><span class="kw">&gt;</span>text/xml<span class="kw">&lt;/prop&gt;</span>
+                <span class="kw">&lt;prop</span><span class="ot"> key=</span><span class="st">&quot;redeploy&quot;</span><span class="kw">&gt;</span>false<span class="kw">&lt;/prop&gt;</span>
+            <span class="kw">&lt;/props&gt;</span>
+        <span class="kw">&lt;/list&gt;</span>
+    <span class="kw">&lt;/property&gt;</span>
+<span class="kw">&lt;/bean&gt;</span></code></pre></div>
 <p>Setting &quot;redeploy&quot; to false prevents the workflows from being redeployed every time Alfresco restarts.</p>
-<p>The JavaScript in these business processes contain &quot;logger&quot; statements. To get those to show up in the log, edit the <a href="https://github.com/jpotts/alfresco-developer-series/blob/master/workflow/workflow-tutorial/workflow-tutorial-platform-jar/src/test/resources/alfresco/extension/dev-log4j.properties">dev-log4j.properties</a> file that is in the workflow-tutorial-platform-jar module. It resides in:</p>
-<pre><code>$TUTORIAL_HOME/workflow-tutorial-platform-jar/src/test/resources/alfresco/extension</code></pre>
+<p>The JavaScript in these business processes contain &quot;logger&quot; statements. To get those to show up in the log, edit the <a href="https://github.com/jpotts/alfresco-developer-series/blob/master/workflow/workflow-tutorial/workflow-tutorial-platform-docker/src/main/docker/dev-log4j.properties">dev-log4j.properties</a> file that is in the workflow-tutorial-platform-docker module. It resides in:</p>
+<pre><code>$TUTORIAL_HOME/workflow-tutorial-platform-docker/src/main/docker</code></pre>
 <p>Change the <code>ScriptLogger</code> to debug by changing this line:</p>
 <pre><code>log4j.logger.org.alfresco.repo.jscript.ScriptLogger=DEBUG</code></pre>
-<p>Now everything is ready to go. For this test, you can leverage the embedded Alfresco server that the Alfresco Maven SDK sets up for you. To run your AMP in the embedded Alfresco server, open a command-line window, switch to $TUTORIAL_HOME, and run <code>run.sh</code> (or <code>run.bat</code> depending on your operating system).</p>
-<p>Apache Maven will download some dependencies, build your AMPs, merge them with the Alfresco WAR file and Share WAR file, then start up an embedded Tomcat server.</p>
+<p>Now everything is ready to go. For this test, you can leverage the SDK-generated Docker images that the Alfresco Maven SDK sets up for you. To run your AMPs in Docker, open a command-line window, switch to $TUTORIAL_HOME, and run <code>./run.sh build_start</code> (or <code>run.bat</code> depending on your operating system).</p>
+<p>Apache Maven will download some dependencies, build your AMPs, merge them with the Alfresco WAR file and Share WAR file, then use Docker Compose to start up containers for Alfresco, Share, PostgreSQL, and SOLR.</p>
 <p>Next you'll see how to use the Alfresco Workflow Console to test the two hello world process definitions.</p>
 <h2 id="using-the-workflow-console">Using the workflow console</h2>
 <p>Your Alfresco server is running and the hello world process definitions should have been deployed when the server started up. The Alfresco Workflow Console can be used to verify that they were deployed successfully. And you can use it to start instances of those workflows to test them out. It can also be a handy workflow debugging tool.</p>
-<p>In Alfresco Enterprise, the Workflow Console link is: <a href="http://localhost:8080/alfresco/s/enterprise/admin/admin-workflowconsole">http://localhost:8080/alfresco/s/enterprise/admin/admin-workflowconsole</a></p>
-<p>In Alfresco Community, the Workflow Console link is: <a href="http://localhost:8080/alfresco/s/admin/admin-workflowconsole">http://localhost:8080/alfresco/s/admin/admin-workflowconsole</a></p>
+<p>In Alfresco Enterprise, the Workflow Console link is: <a href="http://localhost:8080/alfresco/s/enterprise/admin/admin-workflowconsole" class="uri">http://localhost:8080/alfresco/s/enterprise/admin/admin-workflowconsole</a></p>
+<p>In Alfresco Community, the Workflow Console link is: <a href="http://localhost:8080/alfresco/s/admin/admin-workflowconsole" class="uri">http://localhost:8080/alfresco/s/admin/admin-workflowconsole</a></p>
 <p>If you haven't already authenticated as an administrator you will be asked to do so when you go to that URL.</p>
 <p>In the workflow console do this:</p>
 <ol style="list-style-type: decimal">
 <li><p>Type &quot;show definitions all&quot; then click Execute to see what process definitions have been deployed:</p>
 <div class="figure">
-<img src="images/workflow-console.png" alt="Workflow console: Show definitions all" /><p class="caption">Workflow console: Show definitions all</p>
+<img src="images/workflow-console.png" alt="Workflow console: Show definitions all" />
+<p class="caption">Workflow console: Show definitions all</p>
 </div></li>
 </ol>
-<p>You should see entries for helloWorld and helloWorldFork. Note that the ID for helloWorld is &quot;activiti<span class="math">$helloWorld:1:104&quot; and the ID for helloWorldFork is &quot;activiti$</span>helloWorldFork:1:108&quot;. Your IDs may be different.</p>
+<p>You should see entries for helloWorld and helloWorldFork. Note that the ID for helloWorld is &quot;activiti<span class="math inline">$helloWorld:1:104&quot; and the ID for helloWorldFork is &quot;activiti$</span>helloWorldFork:1:108&quot;. Your IDs may be different.</p>
 <ol start="2" style="list-style-type: decimal">
 <li>Type &quot;use definition activiti$helloWorld:1:104&quot; and click Execute. Subsequent commands having to do with a workflow definition will now use that one by default.</li>
 <li><p>Start an instance of the helloWorld workflow by typing &quot;start&quot; and clicking Execute. You should see something like this:</p>
 <div class="figure">
-<img src="images/workflow-console-start-workflow.png" alt="Workflow console: Start workflow" /><p class="caption">Workflow console: Start workflow</p>
+<img src="images/workflow-console-start-workflow.png" alt="Workflow console: Start workflow" />
+<p class="caption">Workflow console: Start workflow</p>
 </div></li>
 </ol>
 <p>And in the server log, the logger output appears:</p>
 <div class="figure">
-<img src="images/hello-world-log-output.png" alt="Hello World log output" /><p class="caption">Hello World log output</p>
+<img src="images/hello-world-log-output.png" alt="Hello World log output" />
+<p class="caption">Hello World log output</p>
 </div>
 <p>Now follow the same steps to start an instance of the <code>helloWorldFork</code> process. You should see log messages from both tasks.</p>
 <div class="figure">
-<img src="images/hello-world-fork-log-output.png" alt="Hello World log output" /><p class="caption">Hello World log output</p>
+<img src="images/hello-world-fork-log-output.png" alt="Hello World log output" />
+<p class="caption">Hello World log output</p>
 </div>
 <p>After running helloWorldFork go back to the workflow console and type &quot;show workflows all&quot; and click Execute. That command shows the running workflow instances. You'll notice that the helloWorldFork workflow is still running. The easiest way to get rid of it is to use the &quot;delete workflow [workflow ID]&quot; command (you'll need the workflow's ID from the &quot;show workflows all&quot; command you just completed).</p>
 <p>You've seen how to start workflows and how to list and delete running workflows using the workflow console. The table below shows some other common commands and what they do.</p>
 <table>
 <caption>Partial list of workflow console commands</caption>
+<colgroup>
+<col width="40%" />
+<col width="60%" />
+</colgroup>
 <thead>
 <tr class="header">
 <th align="left">Command</th>
@@ -509,20 +568,23 @@ Architect | Alfresco Developer Tutorials</title>
 <h2 id="step-1-define-the-helloworldui-process">Step 1: Define the helloWorldUI process</h2>
 <p>The goal for this example is to create a workflow that will capture a piece of metadata (a name the logger should use for a greeting) when the workflow is submitted, and then write the greeting out to the log. The first step is to define the process.</p>
 <ol style="list-style-type: decimal">
-<li>In Eclipse, right-click on the &quot;workflows&quot; folder and create a new Activiti Diagram named &quot;<a href="https://github.com/jpotts/alfresco-developer-series/blob/master/workflow/workflow-tutorial/workflow-tutorial-platform-jar/src/main/resources/alfresco/module/workflow-tutorial-platform-jar/workflow/helloWorldUI.bpmn">helloWorldUI.bpmn</a>&quot;.</li>
+<li>In Eclipse, right-click on the &quot;workflows&quot; folder and create a new Activiti Diagram named &quot;<a href="https://github.com/jpotts/alfresco-developer-series/blob/master/workflow/workflow-tutorial/workflow-tutorial-platform/src/main/resources/alfresco/module/workflow-tutorial-platform/workflow/helloWorldUI.bpmn">helloWorldUI.bpmn</a>&quot;.</li>
 <li>From the palette, drag a start event, an end event, an Alfresco User Task, and an Alfresco Script task onto the canvas. You'll see the benefit of using the Alfresco-specific User Task and Script Task shortly.</li>
 <li><p>Click &quot;Sequence Flow&quot; in the palette and then connect the nodes in the process to look like this:</p>
 <div class="figure">
-<img src="images/hello-world-ui-bpmn.png" alt="Hello World UI BPMN Diagram" /><p class="caption">Hello World UI BPMN Diagram</p>
+<img src="images/hello-world-ui-bpmn.png" alt="Hello World UI BPMN Diagram" />
+<p class="caption">Hello World UI BPMN Diagram</p>
 </div></li>
 <li>Now set the properties on the Alfresco User Task. Set the performer type to &quot;Assignee&quot; and the expression to &quot;${initiator.properties.userName}&quot;. This is the equivalent to what you've done in the first two hello world examples, it's just that this panel uses two separate fields for the performer type and the expression.</li>
 <li><p>Now set the form key. In Alfresco, a form key is the name of a type in a workflow-specific content model. Because this is an Alfresco User Task instead of a generic User Task, it already knows the possible values for the out-of-the-box form keys. Set the form key to &quot;wf:activitiReviewTask&quot;. The out-of-the-box workflow content model has a type by that name and the out-of-the-box form configuration is already set up to create a form for the properties defined as part of that type.</p>
 <div class="figure">
-<img src="images/user-task-properties.png" alt="Alfresco User Task properties" /><p class="caption">Alfresco User Task properties</p>
+<img src="images/user-task-properties.png" alt="Alfresco User Task properties" />
+<p class="caption">Alfresco User Task properties</p>
 </div></li>
 <li><p>The requirement is to let the workflow initiator specify a name that the logger will use in a greeting. So the start event needs to point to a custom form key (which represents a custom content type you'll create shortly). Single-click the start event, then set the form key to &quot;scwf:submitHelloWorldTask&quot;.</p>
 <div class="figure">
-<img src="images/start-event-properties.png" alt="Start event properties" /><p class="caption">Start event properties</p>
+<img src="images/start-event-properties.png" alt="Start event properties" />
+<p class="caption">Start event properties</p>
 </div></li>
 <li>Single-click the canvas to open the properties editor for the process. Set the ID to &quot;helloWorldUI&quot; and the name to &quot;Hello World UI&quot;.</li>
 <li><p>Save and close the diagram.</p></li>
@@ -530,7 +592,8 @@ Architect | Alfresco Developer Tutorials</title>
 <h3 id="tasks">Tasks</h3>
 <p>You saw in the steps above that tasks can be assigned to human performers. Activiti maintains a list of tasks assigned to each participant. How users interact with the task list is up to each application. In Alfresco, a dashlet displays a to-do list for the currently logged in user. As users complete their tasks the tasks are removed from the to-do list. An empty to do list is shown below.</p>
 <div class="figure">
-<img src="images/my-tasks-dashlet-empty.png" alt="An empty task list in Alfresco Share" /><p class="caption">An empty task list in Alfresco Share</p>
+<img src="images/my-tasks-dashlet-empty.png" alt="An empty task list in Alfresco Share" />
+<p class="caption">An empty task list in Alfresco Share</p>
 </div>
 <h3 id="task-assignment">Task Assignment</h3>
 <p>If tasks are steps a human performs, how do tasks get assigned to the people who need to perform them? Activiti has extended BPMN with their own attribute called &quot;activiti:assignee&quot;. The value of the attribute can be a literal username or group name, or it can be an expression. In this case you assigned the user task to ${initiator.properties.userName}. Initiator is a special object that will always contain the object representing the person who started the workflow.</p>
@@ -545,34 +608,34 @@ Architect | Alfresco Developer Tutorials</title>
 <p>To add a logger statement with a process variable to the helloWorldUI example, do this:</p>
 <p>Open helloWorldUI.bpmn in the XML editor.</p>
 <p>Find the <code>sequenceFlow</code> element that goes from the start event to the user task and add the following <code>extensionElements</code> element:</p>
-<pre><code>&lt;sequenceFlow id=&quot;flow1&quot; sourceRef=&quot;startevent1&quot; targetRef=&quot;alfrescoUsertask1&quot;&gt;
-    &lt;extensionElements&gt;
-        &lt;activiti:executionListener event=&quot;start&quot; class=&quot;org.alfresco.repo.workflow.activiti.listener.ScriptExecutionListener&quot;&gt;
-            &lt;activiti:field name=&quot;script&quot;&gt;
-                &lt;activiti:string&gt;logger.log(&quot;Hello, &quot; + scwf_helloName + &quot;!&quot;);&lt;/activiti:string&gt;
-            &lt;/activiti:field&gt;
-        &lt;/activiti:executionListener&gt;
-    &lt;/extensionElements&gt;
-&lt;/sequenceFlow&gt;</code></pre>
+<div class="sourceCode"><pre class="sourceCode xml"><code class="sourceCode xml"><span class="kw">&lt;sequenceFlow</span><span class="ot"> id=</span><span class="st">&quot;flow1&quot;</span><span class="ot"> sourceRef=</span><span class="st">&quot;startevent1&quot;</span><span class="ot"> targetRef=</span><span class="st">&quot;alfrescoUsertask1&quot;</span><span class="kw">&gt;</span>
+    <span class="kw">&lt;extensionElements&gt;</span>
+        <span class="kw">&lt;activiti:executionListener</span><span class="ot"> event=</span><span class="st">&quot;start&quot;</span><span class="ot"> class=</span><span class="st">&quot;org.alfresco.repo.workflow.activiti.listener.ScriptExecutionListener&quot;</span><span class="kw">&gt;</span>
+            <span class="kw">&lt;activiti:field</span><span class="ot"> name=</span><span class="st">&quot;script&quot;</span><span class="kw">&gt;</span>
+                <span class="kw">&lt;activiti:string&gt;</span>logger.log(&quot;Hello, &quot; + scwf_helloName + &quot;!&quot;);<span class="kw">&lt;/activiti:string&gt;</span>
+            <span class="kw">&lt;/activiti:field&gt;</span>
+        <span class="kw">&lt;/activiti:executionListener&gt;</span>
+    <span class="kw">&lt;/extensionElements&gt;</span>
+<span class="kw">&lt;/sequenceFlow&gt;</span></code></pre></div>
 <p>The <code>scwf_helloName</code> variable maps to a property defined in the <code>scwf:submitHelloWorldTask</code> type. You'll define that later.</p>
 <p>The review task lets the user select &quot;approve&quot; or &quot;reject&quot;. The execution of the workflow needs the value of that selection. Add the logic needed to make that happen:</p>
-<pre><code>&lt;userTask id=&quot;alfrescoUsertask1&quot; name=&quot;Alfresco User Task&quot; activiti:assignee=&quot;${initiator.properties.userName}&quot; activiti:formKey=&quot;wf:activitiReviewTask&quot;&gt;
-    &lt;extensionElements&gt;
-        &lt;activiti:taskListener event=&quot;complete&quot; class=&quot;org.alfresco.repo.workflow.activiti.tasklistener.ScriptTaskListener&quot;&gt;
-            &lt;activiti:field name=&quot;script&quot;&gt;
-                &lt;activiti:string&gt;execution.setVariable(&#39;wf_reviewOutcome&#39;, task.getVariable(&#39;wf_reviewOutcome&#39;));&lt;/activiti:string&gt;
-            &lt;/activiti:field&gt;
-        &lt;/activiti:taskListener&gt;
-    &lt;/extensionElements&gt;
-&lt;/userTask&gt;</code></pre>
+<div class="sourceCode"><pre class="sourceCode xml"><code class="sourceCode xml"><span class="kw">&lt;userTask</span><span class="ot"> id=</span><span class="st">&quot;alfrescoUsertask1&quot;</span><span class="ot"> name=</span><span class="st">&quot;Alfresco User Task&quot;</span><span class="ot"> activiti:assignee=</span><span class="st">&quot;${initiator.properties.userName}&quot;</span><span class="ot"> activiti:formKey=</span><span class="st">&quot;wf:activitiReviewTask&quot;</span><span class="kw">&gt;</span>
+    <span class="kw">&lt;extensionElements&gt;</span>
+        <span class="kw">&lt;activiti:taskListener</span><span class="ot"> event=</span><span class="st">&quot;complete&quot;</span><span class="ot"> class=</span><span class="st">&quot;org.alfresco.repo.workflow.activiti.tasklistener.ScriptTaskListener&quot;</span><span class="kw">&gt;</span>
+            <span class="kw">&lt;activiti:field</span><span class="ot"> name=</span><span class="st">&quot;script&quot;</span><span class="kw">&gt;</span>
+                <span class="kw">&lt;activiti:string&gt;</span>execution.setVariable(&#39;wf_reviewOutcome&#39;, task.getVariable(&#39;wf_reviewOutcome&#39;));<span class="kw">&lt;/activiti:string&gt;</span>
+            <span class="kw">&lt;/activiti:field&gt;</span>
+        <span class="kw">&lt;/activiti:taskListener&gt;</span>
+    <span class="kw">&lt;/extensionElements&gt;</span>
+<span class="kw">&lt;/userTask&gt;</span></code></pre></div>
 <p>And, finally, just to show that a value can be set in one task and read in another, let's log the value of the approve/reject selection from within the Alfresco Script service task:</p>
-<pre><code>&lt;serviceTask id=&quot;alfrescoScripttask1&quot; name=&quot;Alfresco Script Task&quot; activiti:class=&quot;org.alfresco.repo.workflow.activiti.script.AlfrescoScriptDelegate&quot;&gt;
-    &lt;extensionElements&gt;
-        &lt;activiti:field name=&quot;script&quot;&gt;
-            &lt;activiti:string&gt;logger.log(&quot;The outcome of the review task is: &quot; + wf_reviewOutcome);&lt;/activiti:string&gt;
-        &lt;/activiti:field&gt;
-    &lt;/extensionElements&gt;
-&lt;/serviceTask&gt;</code></pre>
+<div class="sourceCode"><pre class="sourceCode xml"><code class="sourceCode xml"><span class="kw">&lt;serviceTask</span><span class="ot"> id=</span><span class="st">&quot;alfrescoScripttask1&quot;</span><span class="ot"> name=</span><span class="st">&quot;Alfresco Script Task&quot;</span><span class="ot"> activiti:class=</span><span class="st">&quot;org.alfresco.repo.workflow.activiti.script.AlfrescoScriptDelegate&quot;</span><span class="kw">&gt;</span>
+    <span class="kw">&lt;extensionElements&gt;</span>
+        <span class="kw">&lt;activiti:field</span><span class="ot"> name=</span><span class="st">&quot;script&quot;</span><span class="kw">&gt;</span>
+            <span class="kw">&lt;activiti:string&gt;</span>logger.log(&quot;The outcome of the review task is: &quot; + wf_reviewOutcome);<span class="kw">&lt;/activiti:string&gt;</span>
+        <span class="kw">&lt;/activiti:field&gt;</span>
+    <span class="kw">&lt;/extensionElements&gt;</span>
+<span class="kw">&lt;/serviceTask&gt;</span></code></pre></div>
 <p>Now the process is ready to go. The next step is to get the workflow content model squared away.</p>
 <h2 id="step-2-define-a-workflow-specific-content-model">Step 2: Define a workflow-specific content model</h2>
 <p>The workflow-specific content model defines the data structure for the process. Workflow models use the same fundamental building blocks—types, properties, aspects, and associations—as &quot;normal&quot; Alfresco content model definitions. In fact, if you already have a custom model, you can define your workflow-specific model in the same content model XML file, although to reduce confusion, I recommend you keep your content types separate from your workflow types by using at least two different model files.</p>
@@ -584,95 +647,95 @@ Architect | Alfresco Developer Tutorials</title>
 <p>When users interact with the workflow via the web client, Alfresco will use the workflow content model and the Alfresco Share form service configuration to figure out what metadata to expose to the UI and how to present it just as it does when viewing content properties. In Activiti, Alfresco uses the value of the form key attribute to figure out the appropriate workflow content type. So, <strong>all tasks in which there are Alfresco web client user interactions must be given a form key that corresponds to the name of a workflow content type.</strong></p>
 <h3 id="create-the-workflow-content-model-xml">Create the workflow content model XML</h3>
 <p>In the helloWorldUI example, you defined the following start event:</p>
-<pre><code>&lt;startEvent id=&quot;startevent1&quot; name=&quot;Start&quot; activiti:formKey=&quot;scwf:submitHelloWorldTask&quot;&gt;&lt;/startEvent&gt;</code></pre>
+<div class="sourceCode"><pre class="sourceCode xml"><code class="sourceCode xml"><span class="kw">&lt;startEvent</span><span class="ot"> id=</span><span class="st">&quot;startevent1&quot;</span><span class="ot"> name=</span><span class="st">&quot;Start&quot;</span><span class="ot"> activiti:formKey=</span><span class="st">&quot;scwf:submitHelloWorldTask&quot;</span><span class="kw">&gt;&lt;/startEvent&gt;</span></code></pre></div>
 <p>Now you need to create a content model with a custom type that corresponds to the form key value. From previous tutorials you know that models are defined in XML and reside in:</p>
-<pre><code>$TUTORIAL_HOME/workflow-tutorial-platform-jar/src/main/resources/alfresco/module/workflow-tutorial-platform-jar/model</code></pre>
+<pre><code>$TUTORIAL_HOME/workflow-tutorial-platform/src/main/resources/alfresco/module/workflow-tutorial-platform/model</code></pre>
 <p>The SDK has already created the &quot;model&quot; folder for you as well as a couple of sample model files. Go ahead and delete the sample model files as they will not be needed.</p>
-<p>In the model folder, create a new content model XML file called &quot;<a href="https://github.com/jpotts/alfresco-developer-series/blob/master/workflow/workflow-tutorial/workflow-tutorial-platform-jar/src/main/resources/alfresco/module/workflow-tutorial-platform-jar/model/scWorkflowModel.xml">scWorkflowModel.xml</a>&quot; with the following content:</p>
-<pre><code>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
-&lt;!-- Definition of new Model --&gt;
-&lt;model name=&quot;scwf:workflowmodel&quot;
-    xmlns=&quot;http://www.alfresco.org/model/dictionary/1.0&quot;&gt;
+<p>In the model folder, create a new content model XML file called &quot;<a href="https://github.com/jpotts/alfresco-developer-series/blob/master/workflow/workflow-tutorial/workflow-tutorial-platform/src/main/resources/alfresco/module/workflow-tutorial-platform/model/scWorkflowModel.xml">scWorkflowModel.xml</a>&quot; with the following content:</p>
+<div class="sourceCode"><pre class="sourceCode xml"><code class="sourceCode xml"><span class="kw">&lt;?xml</span> version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;<span class="kw">?&gt;</span>
+<span class="co">&lt;!-- Definition of new Model --&gt;</span>
+<span class="kw">&lt;model</span><span class="ot"> name=</span><span class="st">&quot;scwf:workflowmodel&quot;</span>
+<span class="ot">    xmlns=</span><span class="st">&quot;http://www.alfresco.org/model/dictionary/1.0&quot;</span><span class="kw">&gt;</span>
 
-    &lt;!-- Optional meta-data about the model --&gt;
-    &lt;description&gt;Someco Workflow Model&lt;/description&gt;
-    &lt;author&gt;Jeff Potts&lt;/author&gt;
-    &lt;version&gt;1.0&lt;/version&gt;
+    <span class="co">&lt;!-- Optional meta-data about the model --&gt;</span>
+    <span class="kw">&lt;description&gt;</span>Someco Workflow Model<span class="kw">&lt;/description&gt;</span>
+    <span class="kw">&lt;author&gt;</span>Jeff Potts<span class="kw">&lt;/author&gt;</span>
+    <span class="kw">&lt;version&gt;</span>1.0<span class="kw">&lt;/version&gt;</span>
 
-    &lt;!-- Imports are required to allow references to definitions in other models --&gt;
-    &lt;imports&gt;
-        &lt;import uri=&quot;http://www.alfresco.org/model/dictionary/1.0&quot;
-            prefix=&quot;d&quot; /&gt;
-        &lt;import uri=&quot;http://www.alfresco.org/model/bpm/1.0&quot;
-            prefix=&quot;bpm&quot; /&gt;
-    &lt;/imports&gt;
+    <span class="co">&lt;!-- Imports are required to allow references to definitions in other models --&gt;</span>
+    <span class="kw">&lt;imports&gt;</span>
+        <span class="kw">&lt;import</span><span class="ot"> uri=</span><span class="st">&quot;http://www.alfresco.org/model/dictionary/1.0&quot;</span>
+<span class="ot">            prefix=</span><span class="st">&quot;d&quot;</span> <span class="kw">/&gt;</span>
+        <span class="kw">&lt;import</span><span class="ot"> uri=</span><span class="st">&quot;http://www.alfresco.org/model/bpm/1.0&quot;</span>
+<span class="ot">            prefix=</span><span class="st">&quot;bpm&quot;</span> <span class="kw">/&gt;</span>
+    <span class="kw">&lt;/imports&gt;</span>
 
-    &lt;!-- Introduction of new namespaces defined by this model --&gt;
-    &lt;namespaces&gt;
-        &lt;namespace uri=&quot;http://www.someco.com/model/workflow/1.0&quot;
-            prefix=&quot;scwf&quot; /&gt;
-    &lt;/namespaces&gt;
+    <span class="co">&lt;!-- Introduction of new namespaces defined by this model --&gt;</span>
+    <span class="kw">&lt;namespaces&gt;</span>
+        <span class="kw">&lt;namespace</span><span class="ot"> uri=</span><span class="st">&quot;http://www.someco.com/model/workflow/1.0&quot;</span>
+<span class="ot">            prefix=</span><span class="st">&quot;scwf&quot;</span> <span class="kw">/&gt;</span>
+    <span class="kw">&lt;/namespaces&gt;</span>
 
-    &lt;types&gt;
-        &lt;type name=&quot;scwf:submitHelloWorldTask&quot;&gt;
-            &lt;parent&gt;bpm:startTask&lt;/parent&gt;
-            &lt;properties&gt;
-                &lt;property name=&quot;scwf:helloName&quot;&gt;
-                    &lt;type&gt;d:text&lt;/type&gt;
-                    &lt;mandatory&gt;true&lt;/mandatory&gt;
-                    &lt;multiple&gt;false&lt;/multiple&gt;
-                &lt;/property&gt;
-            &lt;/properties&gt;
-        &lt;/type&gt;
-    &lt;/types&gt;
+    <span class="kw">&lt;types&gt;</span>
+        <span class="kw">&lt;type</span><span class="ot"> name=</span><span class="st">&quot;scwf:submitHelloWorldTask&quot;</span><span class="kw">&gt;</span>
+            <span class="kw">&lt;parent&gt;</span>bpm:startTask<span class="kw">&lt;/parent&gt;</span>
+            <span class="kw">&lt;properties&gt;</span>
+                <span class="kw">&lt;property</span><span class="ot"> name=</span><span class="st">&quot;scwf:helloName&quot;</span><span class="kw">&gt;</span>
+                    <span class="kw">&lt;type&gt;</span>d:text<span class="kw">&lt;/type&gt;</span>
+                    <span class="kw">&lt;mandatory&gt;</span>true<span class="kw">&lt;/mandatory&gt;</span>
+                    <span class="kw">&lt;multiple&gt;</span>false<span class="kw">&lt;/multiple&gt;</span>
+                <span class="kw">&lt;/property&gt;</span>
+            <span class="kw">&lt;/properties&gt;</span>
+        <span class="kw">&lt;/type&gt;</span>
+    <span class="kw">&lt;/types&gt;</span>
 
-&lt;/model&gt;</code></pre>
+<span class="kw">&lt;/model&gt;</span></code></pre></div>
 <p>The <code>scwf:submitHelloWorldTask</code> type is a child of <code>bpm:startTask</code> and declares a property called <code>scwf:helloName</code>. That's a text property that will be displayed as a text field the workflow initiator can use to tell the workflow who to greet.</p>
 <p>Alfresco needs to know about this model. This is done through Spring configuration. There will be a few other additions to that context file so you'll do them all at once shortly.</p>
 <h2 id="step-3-configure-alfresco-share">Step 3: Configure Alfresco Share</h2>
 <p>The next step is to tell Alfresco Share how to display the process metadata. This works exactly like custom content types. As you saw in that tutorial, Share customizations go in their own project so that they can be packaged in an AMP specifically for the share tier.</p>
 <h3 id="edit-share-config-custom.xml">Edit share-config-custom.xml</h3>
 <p>The user interface configuration for Alfresco Share resides in a directory called:</p>
-<pre><code>$TUTORIAL_HOME/workflow-tutorial-share-jar/src/main/resources/META-INF</code></pre>
+<pre><code>$TUTORIAL_HOME/workflow-tutorial-share/src/main/resources/META-INF</code></pre>
 <p>The SDK probably already created this directory structure as well as a sample share-config-custom.xml file.</p>
-<p>In the META-INF directory, edit the file called &quot;<a href="https://github.com/jpotts/alfresco-developer-series/blob/master/workflow/workflow-tutorial/workflow-tutorial-share-jar/src/main/resources/META-INF/share-config-custom.xml">share-config-custom.xml</a>&quot;. Replace the sample content with the following content:</p>
-<pre><code>&lt;alfresco-config&gt;
-    &lt;config evaluator=&quot;string-compare&quot; condition=&quot;activiti$helloWorldUI&quot;&gt;
-      &lt;forms&gt;
-         &lt;form&gt;
-            &lt;field-visibility&gt;
-               &lt;show id=&quot;bpm:workflowDescription&quot; /&gt;
-               &lt;show id=&quot;packageItems&quot; /&gt;
-               &lt;show id=&quot;scwf:helloName&quot; /&gt;
-               &lt;show id=&quot;transitions&quot; /&gt;
-               &lt;show id=&quot;bpm:status&quot; /&gt;
-            &lt;/field-visibility&gt;
-            &lt;appearance&gt;
-               &lt;set id=&quot;&quot; appearance=&quot;title&quot; label-id=&quot;workflow.set.general&quot; /&gt;
-               &lt;set id=&quot;items&quot; appearance=&quot;title&quot; label-id=&quot;workflow.set.items&quot; /&gt;
-               &lt;set id=&quot;progress&quot; appearance=&quot;title&quot; label-id=&quot;workflow.set.task.progress&quot; /&gt;
-               &lt;set id=&quot;other&quot; appearance=&quot;title&quot; label-id=&quot;workflow.set.other&quot; /&gt;
-               &lt;field id=&quot;bpm:workflowDescription&quot; label-id=&quot;workflow.field.message&quot;&gt;
-                  &lt;control template=&quot;/org/alfresco/components/form/controls/textarea.ftl&quot;&gt;
-                     &lt;control-param name=&quot;style&quot;&gt;width: 95%&lt;/control-param&gt;
-                  &lt;/control&gt;
-               &lt;/field&gt;
-               &lt;field id=&quot;packageItems&quot; set=&quot;items&quot; /&gt;
-               &lt;field id=&quot;scwf:helloName&quot; set=&quot;other&quot; /&gt;
-               &lt;field id=&quot;bpm:status&quot; set=&quot;progress&quot; /&gt;
-            &lt;/appearance&gt;
-         &lt;/form&gt;
-      &lt;/forms&gt;
-    &lt;/config&gt;
-&lt;/alfresco-config&gt;</code></pre>
+<p>In the META-INF directory, edit the file called &quot;<a href="https://github.com/jpotts/alfresco-developer-series/blob/master/workflow/workflow-tutorial/workflow-tutorial-share/src/main/resources/META-INF/share-config-custom.xml">share-config-custom.xml</a>&quot; . Replace the sample content with the following content:</p>
+<div class="sourceCode"><pre class="sourceCode xml"><code class="sourceCode xml"><span class="kw">&lt;alfresco-config&gt;</span>
+    <span class="kw">&lt;config</span><span class="ot"> evaluator=</span><span class="st">&quot;string-compare&quot;</span><span class="ot"> condition=</span><span class="st">&quot;activiti$helloWorldUI&quot;</span><span class="kw">&gt;</span>
+      <span class="kw">&lt;forms&gt;</span>
+         <span class="kw">&lt;form&gt;</span>
+            <span class="kw">&lt;field-visibility&gt;</span>
+               <span class="kw">&lt;show</span><span class="ot"> id=</span><span class="st">&quot;bpm:workflowDescription&quot;</span> <span class="kw">/&gt;</span>
+               <span class="kw">&lt;show</span><span class="ot"> id=</span><span class="st">&quot;packageItems&quot;</span> <span class="kw">/&gt;</span>
+               <span class="kw">&lt;show</span><span class="ot"> id=</span><span class="st">&quot;scwf:helloName&quot;</span> <span class="kw">/&gt;</span>
+               <span class="kw">&lt;show</span><span class="ot"> id=</span><span class="st">&quot;transitions&quot;</span> <span class="kw">/&gt;</span>
+               <span class="kw">&lt;show</span><span class="ot"> id=</span><span class="st">&quot;bpm:status&quot;</span> <span class="kw">/&gt;</span>
+            <span class="kw">&lt;/field-visibility&gt;</span>
+            <span class="kw">&lt;appearance&gt;</span>
+               <span class="kw">&lt;set</span><span class="ot"> id=</span><span class="st">&quot;&quot;</span><span class="ot"> appearance=</span><span class="st">&quot;title&quot;</span><span class="ot"> label-id=</span><span class="st">&quot;workflow.set.general&quot;</span> <span class="kw">/&gt;</span>
+               <span class="kw">&lt;set</span><span class="ot"> id=</span><span class="st">&quot;items&quot;</span><span class="ot"> appearance=</span><span class="st">&quot;title&quot;</span><span class="ot"> label-id=</span><span class="st">&quot;workflow.set.items&quot;</span> <span class="kw">/&gt;</span>
+               <span class="kw">&lt;set</span><span class="ot"> id=</span><span class="st">&quot;progress&quot;</span><span class="ot"> appearance=</span><span class="st">&quot;title&quot;</span><span class="ot"> label-id=</span><span class="st">&quot;workflow.set.task.progress&quot;</span> <span class="kw">/&gt;</span>
+               <span class="kw">&lt;set</span><span class="ot"> id=</span><span class="st">&quot;other&quot;</span><span class="ot"> appearance=</span><span class="st">&quot;title&quot;</span><span class="ot"> label-id=</span><span class="st">&quot;workflow.set.other&quot;</span> <span class="kw">/&gt;</span>
+               <span class="kw">&lt;field</span><span class="ot"> id=</span><span class="st">&quot;bpm:workflowDescription&quot;</span><span class="ot"> label-id=</span><span class="st">&quot;workflow.field.message&quot;</span><span class="kw">&gt;</span>
+                  <span class="kw">&lt;control</span><span class="ot"> template=</span><span class="st">&quot;/org/alfresco/components/form/controls/textarea.ftl&quot;</span><span class="kw">&gt;</span>
+                     <span class="kw">&lt;control-param</span><span class="ot"> name=</span><span class="st">&quot;style&quot;</span><span class="kw">&gt;</span>width: 95%<span class="kw">&lt;/control-param&gt;</span>
+                  <span class="kw">&lt;/control&gt;</span>
+               <span class="kw">&lt;/field&gt;</span>
+               <span class="kw">&lt;field</span><span class="ot"> id=</span><span class="st">&quot;packageItems&quot;</span><span class="ot"> set=</span><span class="st">&quot;items&quot;</span> <span class="kw">/&gt;</span>
+               <span class="kw">&lt;field</span><span class="ot"> id=</span><span class="st">&quot;scwf:helloName&quot;</span><span class="ot"> set=</span><span class="st">&quot;other&quot;</span> <span class="kw">/&gt;</span>
+               <span class="kw">&lt;field</span><span class="ot"> id=</span><span class="st">&quot;bpm:status&quot;</span><span class="ot"> set=</span><span class="st">&quot;progress&quot;</span> <span class="kw">/&gt;</span>
+            <span class="kw">&lt;/appearance&gt;</span>
+         <span class="kw">&lt;/form&gt;</span>
+      <span class="kw">&lt;/forms&gt;</span>
+    <span class="kw">&lt;/config&gt;</span>
+<span class="kw">&lt;/alfresco-config&gt;</span></code></pre></div>
 <p>This form tells Alfresco Share that when someone starts a process named &quot;activiti$helloWorldUI&quot; it should show the user this form. The form definition includes the <code>scwf:helloName</code> property defined in the custom type.</p>
 <h3 id="externalize-the-strings">Externalize the strings</h3>
 <p>Alfresco Share needs to know which strings to use to display things like the workflow title and description that show up in the &quot;Start Advanced Workflow&quot; dialog, and titles and descriptions for individual tasks. The identifiers for these strings follow a specific format.</p>
-<p>There are two separate properties bundles to deal with. One is for the &quot;repo&quot; tier, so it goes in the workflow-tutorial-platform-jar module. The other is for the &quot;share&quot; tier, so it goes in the workflow-tutorial-share-jar module.</p>
+<p>There are two separate properties bundles to deal with. One is for the &quot;repo&quot; tier, so it goes in the workflow-tutorial-platform module. The other is for the &quot;share&quot; tier, so it goes in the workflow-tutorial-share module.</p>
 <p>Properties for the repo tier go in:</p>
-<pre><code>$TUTORIAL_HOME/workflow-tutorial-platform-jar/src/main/resources/alfresco/module/workflow-tutorial-platform-jar/messages</code></pre>
+<pre><code>$TUTORIAL_HOME/workflow-tutorial-platform/src/main/resources/alfresco/module/workflow-tutorial-platform/messages</code></pre>
 <p>The SDK has already created the &quot;messages&quot; folder along with a sample properties file, which you can delete.</p>
-<p>In the messages folder, create a new file called &quot;<a href="https://github.com/jpotts/alfresco-developer-series/blob/master/workflow/workflow-tutorial/workflow-tutorial-platform-jar/src/main/resources/alfresco/module/workflow-tutorial-platform-jar/messages/scWorkflow.properties">scWorkflow.properties</a>&quot; with the following content:</p>
+<p>In the messages folder, create a new file called &quot;<a href="https://github.com/jpotts/alfresco-developer-series/blob/master/workflow/workflow-tutorial/workflow-tutorial-platform/src/main/resources/alfresco/module/workflow-tutorial-platform/messages/scWorkflow.properties">scWorkflow.properties</a>&quot; with the following content:</p>
 <pre><code># Workflow related strings
 helloWorldUI.workflow.title=Hello World UI (Activiti)
 helloWorldUI.workflow.description=A simple hello world process using Activiti
@@ -684,9 +747,9 @@ scwf_workflowmodel.property.scwf_helloName.title=Name
 scwf_workflowmodel.property.scwf_helloName.description=Say hello to this person</code></pre>
 <p>I tend to think of these properties as belonging to two groups. One group is the set of model-related properties. These properties externalize the strings in the workflow content model. The other is the set of process-related properties. These properties externalize the strings users see when they are working with the process (the workflow title, the workflow history, etc.).</p>
 <p>Properties for the share tier go in:</p>
-<pre><code>$TUTORIAL_HOME/workflow-tutorial-share-jar/src/main/resources/alfresco/web-extension/messages</code></pre>
+<pre><code>$TUTORIAL_HOME/workflow-tutorial-share/src/main/resources/alfresco/web-extension/messages</code></pre>
 <p>The SDK has already created the &quot;messages&quot; folder and a sample properties file which you can delete.</p>
-<p>In the messages folder, create a new file called &quot;<a href="https://github.com/jpotts/alfresco-developer-series/blob/master/workflow/workflow-tutorial/workflow-tutorial-share-jar/src/main/resources/alfresco/web-extension/messages/scWorkflow.properties">scWorkflow.properties</a>&quot; with the following content:</p>
+<p>In the messages folder, create a new file called &quot;<a href="https://github.com/jpotts/alfresco-developer-series/blob/master/workflow/workflow-tutorial/workflow-tutorial-share/src/main/resources/alfresco/web-extension/messages/scWorkflow.properties">scWorkflow.properties</a>&quot; with the following content:</p>
 <pre><code>#scwf:helloName
 prop.scwf_helloName=Name
 
@@ -703,76 +766,86 @@ workflow.scwf_helloWorldUI=Hello World UI</code></pre>
 </ul>
 <p>Let's update the repo tier Spring configuration, then the share tier.</p>
 <h4 id="repo-tier-spring-configuration">Repo tier Spring configuration</h4>
-<p>Edit the <a href="https://github.com/jpotts/alfresco-developer-series/blob/master/workflow/workflow-tutorial/workflow-tutorial-platform-jar/src/main/resources/alfresco/module/workflow-tutorial-platform-jar/context/bootstrap-context.xml">bootstrap-context.xml</a> file that resides in:</p>
-<pre><code>$TUTORIAL_HOME/workflow-tutorial-platform-jar/src/main/resources/alfresco/module/workflow-tutorial-platform-jar/context</code></pre>
+<p>Edit the <a href="https://github.com/jpotts/alfresco-developer-series/blob/master/workflow/workflow-tutorial/workflow-tutorial-platform/src/main/resources/alfresco/module/workflow-tutorial-platform/context/bootstrap-context.xml">bootstrap-context.xml</a> file that resides in:</p>
+<pre><code>$TUTORIAL_HOME/workflow-tutorial-platform/src/main/resources/alfresco/module/workflow-tutorial-platform/context</code></pre>
 <p>You can add the workflow model, the new workflow, and the labels all in the same bean. Edit the bootstrap-context.xml file and append the following to the existing <code>bean</code> element:</p>
-<pre><code>            &lt;props&gt;
-                &lt;prop key=&quot;engineId&quot;&gt;activiti&lt;/prop&gt;
-                &lt;prop key=&quot;location&quot;&gt;alfresco/module/${project.artifactId}/workflow/helloWorldUI.bpmn&lt;/prop&gt;
-                &lt;prop key=&quot;mimetype&quot;&gt;text/xml&lt;/prop&gt;
-                &lt;prop key=&quot;redeploy&quot;&gt;false&lt;/prop&gt;
-            &lt;/props&gt;
-        &lt;/list&gt;
-    &lt;/property&gt;
-    &lt;property name=&quot;models&quot;&gt;
-        &lt;list&gt;
-            &lt;value&gt;alfresco/module/${project.artifactId}/model/scWorkflowModel.xml&lt;/value&gt;
-        &lt;/list&gt;
-    &lt;/property&gt;
-    &lt;property name=&quot;labels&quot;&gt;
-        &lt;list&gt;
-            &lt;value&gt;alfresco.module.${project.artifactId}.messages.scWorkflow&lt;/value&gt;
-        &lt;/list&gt;
-    &lt;/property&gt;
-&lt;/bean&gt;</code></pre>
+<div class="sourceCode"><pre class="sourceCode xml"><code class="sourceCode xml">            <span class="kw">&lt;props&gt;</span>
+                <span class="kw">&lt;prop</span><span class="ot"> key=</span><span class="st">&quot;engineId&quot;</span><span class="kw">&gt;</span>activiti<span class="kw">&lt;/prop&gt;</span>
+                <span class="kw">&lt;prop</span><span class="ot"> key=</span><span class="st">&quot;location&quot;</span><span class="kw">&gt;</span>alfresco/module/${project.artifactId}/workflow/helloWorldUI.bpmn<span class="kw">&lt;/prop&gt;</span>
+                <span class="kw">&lt;prop</span><span class="ot"> key=</span><span class="st">&quot;mimetype&quot;</span><span class="kw">&gt;</span>text/xml<span class="kw">&lt;/prop&gt;</span>
+                <span class="kw">&lt;prop</span><span class="ot"> key=</span><span class="st">&quot;redeploy&quot;</span><span class="kw">&gt;</span>false<span class="kw">&lt;/prop&gt;</span>
+            <span class="kw">&lt;/props&gt;</span>
+        <span class="er">&lt;</span>/list&gt;
+    <span class="er">&lt;</span>/property&gt;
+    <span class="kw">&lt;property</span><span class="ot"> name=</span><span class="st">&quot;models&quot;</span><span class="kw">&gt;</span>
+        <span class="kw">&lt;list&gt;</span>
+            <span class="kw">&lt;value&gt;</span>alfresco/module/${project.artifactId}/model/scWorkflowModel.xml<span class="kw">&lt;/value&gt;</span>
+        <span class="kw">&lt;/list&gt;</span>
+    <span class="kw">&lt;/property&gt;</span>
+    <span class="kw">&lt;property</span><span class="ot"> name=</span><span class="st">&quot;labels&quot;</span><span class="kw">&gt;</span>
+        <span class="kw">&lt;list&gt;</span>
+            <span class="kw">&lt;value&gt;</span>alfresco.module.${project.artifactId}.messages.scWorkflow<span class="kw">&lt;/value&gt;</span>
+        <span class="kw">&lt;/list&gt;</span>
+    <span class="kw">&lt;/property&gt;</span>
+<span class="er">&lt;</span>/bean&gt;</code></pre></div>
 <p>Save and close the file.</p>
 <h4 id="share-tier-spring-configuration">Share tier Spring configuration</h4>
-<p>The Spring configuration for the workflow-tutorial-share-jar module resides in:</p>
-<pre><code>$TUTORIAL_HOME/workflow-tutorial-share-jar/src/main/resources/alfresco/web-extension</code></pre>
-<p>In the web-extension directory, the SDK has created file called &quot;<a href="https://github.com/jpotts/alfresco-developer-series/blob/master/workflow/workflow-tutorial/workflow-tutorial-share-jar/src/main/resources/alfresco/web-extension/workflow-tutorial-share-slingshot-application-context.xml">workflow-tutorial-share-slingshot-application-context.xml</a>&quot;. Replace the content of that file with the following content:</p>
-<pre><code>&lt;?xml version=&#39;1.0&#39; encoding=&#39;UTF-8&#39;?&gt;
-&lt;!DOCTYPE beans PUBLIC &#39;-//SPRING//DTD BEAN//EN&#39; &#39;http://www.springframework.org/dtd/spring-beans.dtd&#39;&gt;
-&lt;beans&gt;
-    &lt;!-- Add Someco Workflow messages --&gt;
-    &lt;bean id=&quot;${project.artifactId}_resources&quot; class=&quot;org.springframework.extensions.surf.util.ResourceBundleBootstrapComponent&quot;&gt;
-        &lt;property name=&quot;resourceBundles&quot;&gt;
-            &lt;list&gt;
-                &lt;value&gt;alfresco.web-extension.messages.scWorkflow&lt;/value&gt;
-            &lt;/list&gt;
-        &lt;/property&gt;
-    &lt;/bean&gt;
-&lt;/beans&gt;</code></pre>
+<p>The Spring configuration for the workflow-tutorial-share module resides in:</p>
+<pre><code>$TUTORIAL_HOME/workflow-tutorial-share/src/main/resources/alfresco/web-extension</code></pre>
+<p>In the web-extension directory, the SDK has created file called &quot;<a href="https://github.com/jpotts/alfresco-developer-series/blob/master/workflow/workflow-tutorial/workflow-tutorial-share/src/main/resources/alfresco/web-extension/workflow-tutorial-share-slingshot-application-context.xml">workflow-tutorial-share-slingshot-application-context.xml</a>&quot; . Replace the content of that file with the following content:</p>
+<div class="sourceCode"><pre class="sourceCode xml"><code class="sourceCode xml"><span class="kw">&lt;?xml</span> version=&#39;1.0&#39; encoding=&#39;UTF-8&#39;<span class="kw">?&gt;</span>
+<span class="dt">&lt;!DOCTYPE </span>beans PUBLIC &#39;-//SPRING//DTD BEAN//EN&#39; &#39;http://www.springframework.org/dtd/spring-beans.dtd&#39;<span class="dt">&gt;</span>
+<span class="kw">&lt;beans&gt;</span>
+    <span class="co">&lt;!-- Add Someco Workflow messages --&gt;</span>
+    <span class="kw">&lt;bean</span><span class="ot"> id=</span><span class="st">&quot;${project.artifactId}_resources&quot;</span><span class="ot"> class=</span><span class="st">&quot;org.springframework.extensions.surf.util.ResourceBundleBootstrapComponent&quot;</span><span class="kw">&gt;</span>
+        <span class="kw">&lt;property</span><span class="ot"> name=</span><span class="st">&quot;resourceBundles&quot;</span><span class="kw">&gt;</span>
+            <span class="kw">&lt;list&gt;</span>
+                <span class="kw">&lt;value&gt;</span>alfresco.web-extension.messages.scWorkflow<span class="kw">&lt;/value&gt;</span>
+            <span class="kw">&lt;/list&gt;</span>
+        <span class="kw">&lt;/property&gt;</span>
+    <span class="kw">&lt;/bean&gt;</span>
+<span class="kw">&lt;/beans&gt;</span></code></pre></div>
 <p>Save and close the file.</p>
 <p>The helloWorldUI example is now ready to deploy.</p>
 <h2 id="deploy-test">Deploy &amp; Test</h2>
-<p>The hello world UI example can be tested using the embedded Tomcat server that is part of the Alfresco Maven SDK.</p>
+<p>The hello world UI example can be tested using the SDK-generated Docker images. You probably already have containers running from earlier. To find out:</p>
 <ol style="list-style-type: decimal">
-<li>Open a command-line window and switch to $TUTORIAL_HOME.</li>
-<li>Run <code>run.sh</code> (or <code>run.bat</code>).</li>
+<li>Open a command-line window.</li>
+<li>Run <code>docker ps</code>.</li>
+<li>If anything comes back there are containers running. To stop them, switch to $TUTORIAL_HOME then do <code>./run.sh stop</code>.</li>
 </ol>
-<p>Your repo tier AMP and Share tier AMP will be built, installed into their respective WARs, and started on Tomcat running on port 8080.</p>
+<p>Now you are ready to re-build the AMPs and start up fresh containers. To do that:</p>
+<ol style="list-style-type: decimal">
+<li>Switch to $TUTORIAL_HOME.</li>
+<li>Run <code>./run.sh build_start</code> (or <code>run.bat</code>).</li>
+</ol>
+<p>Your repo tier AMP and Share tier AMPs will be built, installed into their respective WARs in Docker images, and then Docker Compose will start up containers based on those images. Alfresco is running on port 8080 and Share is running on port 8180.</p>
 <p>When everything starts up:</p>
 <ol style="list-style-type: decimal">
-<li>Go to http://localhost:8080/share and log in as admin (password: admin).</li>
+<li>Go to http://localhost:8180/share and log in as admin (password: admin).</li>
 <li><p>In the &quot;My Tasks&quot; dashlet, click &quot;Start Workflow&quot; to start a workflow. You should see the Hello World UI workflow in the list of workflows:</p>
 <div class="figure">
-<img src="images/start-workflow-list.png" alt="Share workflow list shows custom workflows" /><p class="caption">Share workflow list shows custom workflows</p>
+<img src="images/start-workflow-list.png" alt="Share workflow list shows custom workflows" />
+<p class="caption">Share workflow list shows custom workflows</p>
 </div></li>
 <li><p>Select the Hello World UI workflow. Alfresco Share should display a form that includes the greeting field:</p>
 <div class="figure">
-<img src="images/start-workflow-form.png" alt="Hello World UI: Start workflow form" /><p class="caption">Hello World UI: Start workflow form</p>
+<img src="images/start-workflow-form.png" alt="Hello World UI: Start workflow form" />
+<p class="caption">Hello World UI: Start workflow form</p>
 </div></li>
 <li>Specify a name in the name field then click &quot;Start Workflow&quot; to start the workflow.</li>
 <li><p>After the workflow starts, you should see the greeting in the log:</p>
 <div class="figure">
-<img src="images/greeting-in-the-log.png" alt="Hello World UI greeting in the log" /><p class="caption">Hello World UI greeting in the log</p>
+<img src="images/greeting-in-the-log.png" alt="Hello World UI greeting in the log" />
+<p class="caption">Hello World UI greeting in the log</p>
 </div></li>
 <li>The &quot;My Tasks&quot; dashlet should now have a task waiting on you. Click the task description to edit the task.</li>
 <li>Add a comment if you want, then click either &quot;Approve&quot; or &quot;Reject&quot;.</li>
 <li><p>Check the log again. You should see a log message showing which one you selected:</p></li>
 </ol>
 <div class="figure">
-<img src="images/approval-result-in-log.png" alt="Hello World UI approval result in the log" /><p class="caption">Hello World UI approval result in the log</p>
+<img src="images/approval-result-in-log.png" alt="Hello World UI approval result in the log" />
+<p class="caption">Hello World UI approval result in the log</p>
 </div>
 <p>If all goes well, congratulations, you've successfully deployed a custom workflow with custom metadata that can be started and managed in Alfresco Share.</p>
 <h2 id="implementation-summary">Implementation summary</h2>
@@ -820,19 +893,26 @@ workflow.scwf_helloWorldUI=Hello World UI</code></pre>
 <p>The diagram step is just like you've seen before, it's just that the diagram is a little more complex.</p>
 <ol style="list-style-type: decimal">
 <li>Right-click on the workflows folder, New, Other, Activiti Process Diagram.</li>
-<li>Name the process &quot;<a href="https://github.com/jpotts/alfresco-developer-series/blob/master/workflow/workflow-tutorial/workflow-tutorial-platform-jar/src/main/resources/alfresco/module/workflow-tutorial-platform-jar/workflow/publishWhitepaper.bpmn">publishWhitepaper.bpmn</a>&quot;.</li>
+<li>Name the process &quot;<a href="https://github.com/jpotts/alfresco-developer-series/blob/master/workflow/workflow-tutorial/workflow-tutorial-platform/src/main/resources/alfresco/module/workflow-tutorial-platform/workflow/publishWhitepaper.bpmn">publishWhitepaper.bpmn</a>&quot;.</li>
 <li>Click on the canvas to open the properties editor for the entire process. Set the ID to &quot;publishWhitepaper&quot; and the name to &quot;Publish Whitepaper&quot;.</li>
 <li><p>Drag-and-drop nodes from the palette and connect them with sequence flows to make your diagram look like this:</p>
 <div class="figure">
-<img src="images/publish-whitepaper-bpmn.png" alt="Publish Whitepaper BPMN Diagram" /><p class="caption">Publish Whitepaper BPMN Diagram</p>
+<img src="images/publish-whitepaper-bpmn.png" alt="Publish Whitepaper BPMN Diagram" />
+<p class="caption">Publish Whitepaper BPMN Diagram</p>
 </div></li>
 </ol>
 <p>Submit is a Service Task. The rest are User Tasks. This example does not use the Alfresco-specific events or tasks, but feel free to do so in your own diagrams.</p>
 <p>Now that the diagram is in place, continue to the next section to see how to set the task properties.</p>
 <h3 id="configure-user-tasks-with-assignments">Configure user tasks with assignments</h3>
 <p>This table tells you how to set the performer type, expression, and form key on each task:</p>
-<table>
+<table style="width:56%;">
 <caption>Settings for performer, expression, &amp; form key</caption>
+<colgroup>
+<col width="6%" />
+<col width="20%" />
+<col width="15%" />
+<col width="12%" />
+</colgroup>
 <thead>
 <tr class="header">
 <th align="left">Task</th>
@@ -889,222 +969,226 @@ workflow.scwf_helloWorldUI=Hello World UI</code></pre>
 <p>These are pretty easy decisions to make based on process variables.</p>
 <h4 id="implement-the-approval-check">Implement the approval check</h4>
 <p>In the business process XML, find the <code>serviceTask</code> element named &quot;Submit&quot; and add the following script:</p>
-<pre><code>&lt;serviceTask id=&quot;scripttask1&quot; name=&quot;Submit&quot; activiti:class=&quot;org.alfresco.repo.workflow.activiti.script.AlfrescoScriptDelegate&quot;&gt;
-  &lt;extensionElements&gt;
-    &lt;activiti:field name=&quot;script&quot;&gt;
-      &lt;activiti:string&gt;&lt;![CDATA[execution.setVariable(&#39;scwf_approveCount&#39;, 0);
-          execution.setVariable(&#39;scwf_tpApproved&#39;, false);]]&gt;&lt;/activiti:string&gt;
-    &lt;/activiti:field&gt;
-  &lt;/extensionElements&gt;
-&lt;/serviceTask&gt;</code></pre>
+<div class="sourceCode"><pre class="sourceCode xml"><code class="sourceCode xml"><span class="kw">&lt;serviceTask</span><span class="ot"> id=</span><span class="st">&quot;scripttask1&quot;</span><span class="ot"> name=</span><span class="st">&quot;Submit&quot;</span><span class="ot"> activiti:class=</span><span class="st">&quot;org.alfresco.repo.workflow.activiti.script.AlfrescoScriptDelegate&quot;</span><span class="kw">&gt;</span>
+  <span class="kw">&lt;extensionElements&gt;</span>
+    <span class="kw">&lt;activiti:field</span><span class="ot"> name=</span><span class="st">&quot;script&quot;</span><span class="kw">&gt;</span>
+      <span class="kw">&lt;activiti:string&gt;</span><span class="bn">&lt;![CDATA[</span>execution.setVariable(&#39;scwf_approveCount&#39;, 0);
+          execution.setVariable(&#39;scwf_tpApproved&#39;, false);<span class="bn">]]&gt;</span><span class="kw">&lt;/activiti:string&gt;</span>
+    <span class="kw">&lt;/activiti:field&gt;</span>
+  <span class="kw">&lt;/extensionElements&gt;</span>
+<span class="kw">&lt;/serviceTask&gt;</span></code></pre></div>
 <p>This initializes two variables that will be used as part of the approval check. The <code>scwf_approveCount</code> variable will get incremented when the process follows the &quot;approve&quot; sequence flow. If the counter is equal to 2, the package received both approvals. It is important to initialize the counter to 0 and the approved variable to false in the &quot;Submit&quot; script task because it is possible that a whitepaper may go through several review cycles. Every time a new cycle starts the counters need to be reset.</p>
-<p>You may be wondering why this is a service task instead of a script task. In 5.0.d, the underlying JavaScript engine in Activiti switched from Rhino to Nashorn. This caused a problem related to setting execution variables. The work around is to use a service task.</p>
+<p>You may be wondering why this is a service task instead of a script task. In 5.0.d, the underlying JavaScript engine in Activiti switched from Rhino to Nashorn. This caused a problem related to setting execution variables. The workaround is to use a service task.</p>
 <p>Now add code to increment the counter when the execution follows the approve sequence flow. Find the <code>userTask</code> named &quot;Operations Review&quot; and add this extension element:</p>
-<pre><code>&lt;userTask id=&quot;usertask1&quot; name=&quot;Operations Review&quot; activiti:candidateGroups=&quot;GROUP_Operations&quot; activiti:formKey=&quot;scwf:activitiOperationsReview&quot;&gt;
-    &lt;extensionElements&gt;
-        &lt;activiti:taskListener event=&quot;complete&quot; class=&quot;org.alfresco.repo.workflow.activiti.tasklistener.ScriptTaskListener&quot;&gt;
-            &lt;activiti:field name=&quot;script&quot;&gt;
-                &lt;activiti:string&gt;
+<div class="sourceCode"><pre class="sourceCode xml"><code class="sourceCode xml"><span class="kw">&lt;userTask</span><span class="ot"> id=</span><span class="st">&quot;usertask1&quot;</span><span class="ot"> name=</span><span class="st">&quot;Operations Review&quot;</span><span class="ot"> activiti:candidateGroups=</span><span class="st">&quot;GROUP_Operations&quot;</span><span class="ot"> activiti:formKey=</span><span class="st">&quot;scwf:activitiOperationsReview&quot;</span><span class="kw">&gt;</span>
+    <span class="kw">&lt;extensionElements&gt;</span>
+        <span class="kw">&lt;activiti:taskListener</span><span class="ot"> event=</span><span class="st">&quot;complete&quot;</span><span class="ot"> class=</span><span class="st">&quot;org.alfresco.repo.workflow.activiti.tasklistener.ScriptTaskListener&quot;</span><span class="kw">&gt;</span>
+            <span class="kw">&lt;activiti:field</span><span class="ot"> name=</span><span class="st">&quot;script&quot;</span><span class="kw">&gt;</span>
+                <span class="kw">&lt;activiti:string&gt;</span>
                     if(task.getVariableLocal(&#39;scwf_approveRejectOutcome&#39;) == &#39;Approve&#39;) {
                         var newApprovedCount = scwf_approveCount + 1;
                         execution.setVariable(&#39;scwf_approveCount&#39;, newApprovedCount);
                     }
-                &lt;/activiti:string&gt;
-            &lt;/activiti:field&gt;
-        &lt;/activiti:taskListener&gt;
-    &lt;/extensionElements&gt;
-&lt;/userTask&gt;</code></pre>
+                <span class="kw">&lt;/activiti:string&gt;</span>
+            <span class="kw">&lt;/activiti:field&gt;</span>
+        <span class="kw">&lt;/activiti:taskListener&gt;</span>
+    <span class="kw">&lt;/extensionElements&gt;</span>
+<span class="kw">&lt;/userTask&gt;</span></code></pre></div>
 <p>The JavaScript inspects the value of <code>scwf_approveRejectOutcome</code> which will be set by the user when they manage the task in Alfresco Share. If it is equal to &quot;Approve&quot; it increments <code>scwf_approveCount</code>.</p>
 <p>Now add the same thing to the <code>userTask</code> element named Marketing Review.</p>
 <p>The first exclusive gateway after the &quot;Operations Review&quot; and &quot;Marketing Review&quot; user tasks represents a decision. If the approvals have been reached, the flow should continue on, otherwise it should go to the &quot;Revise&quot; user task.</p>
 <p>To implement this, find the <code>sequenceFlow</code> elements that connect that exclusive gateway and add a <code>conditionExpression</code> element to each one that inspects the <code>scwf_approveCount</code> variable, like this:</p>
-<pre><code>&lt;sequenceFlow id=&quot;flow8&quot; sourceRef=&quot;exclusivegateway1&quot; targetRef=&quot;exclusivegateway2&quot;&gt;
-    &lt;conditionExpression xsi:type=&quot;tFormalExpression&quot;&gt;&lt;![CDATA[${scwf_approveCount == 2}]]&gt;&lt;/conditionExpression&gt;
-&lt;/sequenceFlow&gt;
-&lt;sequenceFlow id=&quot;flow9&quot; sourceRef=&quot;exclusivegateway1&quot; targetRef=&quot;usertask3&quot;&gt;
-    &lt;conditionExpression xsi:type=&quot;tFormalExpression&quot;&gt;&lt;![CDATA[${scwf_approveCount &lt; 2}]]&gt;&lt;/conditionExpression&gt;
-&lt;/sequenceFlow&gt;</code></pre>
+<div class="sourceCode"><pre class="sourceCode xml"><code class="sourceCode xml"><span class="kw">&lt;sequenceFlow</span><span class="ot"> id=</span><span class="st">&quot;flow8&quot;</span><span class="ot"> sourceRef=</span><span class="st">&quot;exclusivegateway1&quot;</span><span class="ot"> targetRef=</span><span class="st">&quot;exclusivegateway2&quot;</span><span class="kw">&gt;</span>
+    <span class="kw">&lt;conditionExpression</span><span class="ot"> xsi:type=</span><span class="st">&quot;tFormalExpression&quot;</span><span class="kw">&gt;</span><span class="bn">&lt;![CDATA[</span>${scwf_approveCount == 2}<span class="bn">]]&gt;</span><span class="kw">&lt;/conditionExpression&gt;</span>
+<span class="kw">&lt;/sequenceFlow&gt;</span>
+<span class="kw">&lt;sequenceFlow</span><span class="ot"> id=</span><span class="st">&quot;flow9&quot;</span><span class="ot"> sourceRef=</span><span class="st">&quot;exclusivegateway1&quot;</span><span class="ot"> targetRef=</span><span class="st">&quot;usertask3&quot;</span><span class="kw">&gt;</span>
+    <span class="kw">&lt;conditionExpression</span><span class="ot"> xsi:type=</span><span class="st">&quot;tFormalExpression&quot;</span><span class="kw">&gt;</span><span class="bn">&lt;![CDATA[</span>${scwf_approveCount &lt; 2}<span class="bn">]]&gt;</span><span class="kw">&lt;/conditionExpression&gt;</span>
+<span class="kw">&lt;/sequenceFlow&gt;</span></code></pre></div>
 <p>The &quot;Third Party&quot; decision is similar. In this case, if the person who started the workflow provided an email address for the third-party reviewer, the workflow should route to the &quot;Third Party Review&quot;, otherwise, it should continue on. Here is what those conditions look like:</p>
-<pre><code>&lt;sequenceFlow id=&quot;flow11&quot; sourceRef=&quot;exclusivegateway2&quot; targetRef=&quot;usertask2&quot;&gt;
-    &lt;conditionExpression xsi:type=&quot;tFormalExpression&quot;&gt;&lt;![CDATA[${scwf_reviewerEmail != &#39;&#39;}]]&gt;&lt;/conditionExpression&gt;
-&lt;/sequenceFlow&gt;
-&lt;sequenceFlow id=&quot;flow14&quot; sourceRef=&quot;exclusivegateway2&quot; targetRef=&quot;usertask5&quot;&gt;
-    &lt;conditionExpression xsi:type=&quot;tFormalExpression&quot;&gt;&lt;![CDATA[${scwf_reviewerEmail == &#39;&#39;}]]&gt;&lt;/conditionExpression&gt;
-&lt;/sequenceFlow&gt;</code></pre>
+<div class="sourceCode"><pre class="sourceCode xml"><code class="sourceCode xml"><span class="kw">&lt;sequenceFlow</span><span class="ot"> id=</span><span class="st">&quot;flow11&quot;</span><span class="ot"> sourceRef=</span><span class="st">&quot;exclusivegateway2&quot;</span><span class="ot"> targetRef=</span><span class="st">&quot;usertask2&quot;</span><span class="kw">&gt;</span>
+    <span class="kw">&lt;conditionExpression</span><span class="ot"> xsi:type=</span><span class="st">&quot;tFormalExpression&quot;</span><span class="kw">&gt;</span><span class="bn">&lt;![CDATA[</span>${scwf_reviewerEmail != &#39;&#39;}<span class="bn">]]&gt;</span><span class="kw">&lt;/conditionExpression&gt;</span>
+<span class="kw">&lt;/sequenceFlow&gt;</span>
+<span class="kw">&lt;sequenceFlow</span><span class="ot"> id=</span><span class="st">&quot;flow14&quot;</span><span class="ot"> sourceRef=</span><span class="st">&quot;exclusivegateway2&quot;</span><span class="ot"> targetRef=</span><span class="st">&quot;usertask5&quot;</span><span class="kw">&gt;</span>
+    <span class="kw">&lt;conditionExpression</span><span class="ot"> xsi:type=</span><span class="st">&quot;tFormalExpression&quot;</span><span class="kw">&gt;</span><span class="bn">&lt;![CDATA[</span>${scwf_reviewerEmail == &#39;&#39;}<span class="bn">]]&gt;</span><span class="kw">&lt;/conditionExpression&gt;</span>
+<span class="kw">&lt;/sequenceFlow&gt;</span></code></pre></div>
 <p>There are two more places condition expressions are needed. One is on the two flows that leave Third Party Review. If the third-party approves their review, flow should go to the &quot;Approved Notification&quot;, otherwise, it should go to &quot;Revise&quot;:</p>
-<pre><code>&lt;sequenceFlow id=&quot;flow12&quot; sourceRef=&quot;usertask2&quot; targetRef=&quot;usertask3&quot;&gt;
-    &lt;conditionExpression xsi:type=&quot;tFormalExpression&quot;&gt;&lt;![CDATA[${scwf_tpApproved == false}]]&gt;&lt;/conditionExpression&gt;
-&lt;/sequenceFlow&gt;
-&lt;sequenceFlow id=&quot;flow17&quot; sourceRef=&quot;usertask2&quot; targetRef=&quot;usertask5&quot;&gt;
-    &lt;conditionExpression xsi:type=&quot;tFormalExpression&quot;&gt;&lt;![CDATA[${scwf_tpApproved == true}]]&gt;&lt;/conditionExpression&gt;
-&lt;/sequenceFlow&gt;</code></pre>
+<div class="sourceCode"><pre class="sourceCode xml"><code class="sourceCode xml"><span class="kw">&lt;sequenceFlow</span><span class="ot"> id=</span><span class="st">&quot;flow12&quot;</span><span class="ot"> sourceRef=</span><span class="st">&quot;usertask2&quot;</span><span class="ot"> targetRef=</span><span class="st">&quot;usertask3&quot;</span><span class="kw">&gt;</span>
+    <span class="kw">&lt;conditionExpression</span><span class="ot"> xsi:type=</span><span class="st">&quot;tFormalExpression&quot;</span><span class="kw">&gt;</span><span class="bn">&lt;![CDATA[</span>${scwf_tpApproved == false}<span class="bn">]]&gt;</span><span class="kw">&lt;/conditionExpression&gt;</span>
+<span class="kw">&lt;/sequenceFlow&gt;</span>
+<span class="kw">&lt;sequenceFlow</span><span class="ot"> id=</span><span class="st">&quot;flow17&quot;</span><span class="ot"> sourceRef=</span><span class="st">&quot;usertask2&quot;</span><span class="ot"> targetRef=</span><span class="st">&quot;usertask5&quot;</span><span class="kw">&gt;</span>
+    <span class="kw">&lt;conditionExpression</span><span class="ot"> xsi:type=</span><span class="st">&quot;tFormalExpression&quot;</span><span class="kw">&gt;</span><span class="bn">&lt;![CDATA[</span>${scwf_tpApproved == true}<span class="bn">]]&gt;</span><span class="kw">&lt;/conditionExpression&gt;</span>
+<span class="kw">&lt;/sequenceFlow&gt;</span></code></pre></div>
 <p>The other place for condition expressions is on the &quot;Revise&quot; user task. The flow should go to the &quot;Submit&quot; script task if the initiator re-submits and the &quot;End&quot; task if they decide to withdraw or abort their request:</p>
-<pre><code>&lt;sequenceFlow id=&quot;flow16&quot; sourceRef=&quot;usertask3&quot; targetRef=&quot;endevent1&quot;&gt;
-    &lt;conditionExpression xsi:type=&quot;tFormalExpression&quot;&gt;&lt;![CDATA[${scwf_resubmit == false}]]&gt;&lt;/conditionExpression&gt;
-&lt;/sequenceFlow&gt;
-&lt;sequenceFlow id=&quot;flow13&quot; sourceRef=&quot;usertask3&quot; targetRef=&quot;scripttask1&quot;&gt;
-    &lt;conditionExpression xsi:type=&quot;tFormalExpression&quot;&gt;&lt;![CDATA[${scwf_resubmit == true}]]&gt;&lt;/conditionExpression&gt;
-&lt;/sequenceFlow&gt;</code></pre>
+<div class="sourceCode"><pre class="sourceCode xml"><code class="sourceCode xml"><span class="kw">&lt;sequenceFlow</span><span class="ot"> id=</span><span class="st">&quot;flow16&quot;</span><span class="ot"> sourceRef=</span><span class="st">&quot;usertask3&quot;</span><span class="ot"> targetRef=</span><span class="st">&quot;endevent1&quot;</span><span class="kw">&gt;</span>
+    <span class="kw">&lt;conditionExpression</span><span class="ot"> xsi:type=</span><span class="st">&quot;tFormalExpression&quot;</span><span class="kw">&gt;</span><span class="bn">&lt;![CDATA[</span>${scwf_resubmit == false}<span class="bn">]]&gt;</span><span class="kw">&lt;/conditionExpression&gt;</span>
+<span class="kw">&lt;/sequenceFlow&gt;</span>
+<span class="kw">&lt;sequenceFlow</span><span class="ot"> id=</span><span class="st">&quot;flow13&quot;</span><span class="ot"> sourceRef=</span><span class="st">&quot;usertask3&quot;</span><span class="ot"> targetRef=</span><span class="st">&quot;scripttask1&quot;</span><span class="kw">&gt;</span>
+    <span class="kw">&lt;conditionExpression</span><span class="ot"> xsi:type=</span><span class="st">&quot;tFormalExpression&quot;</span><span class="kw">&gt;</span><span class="bn">&lt;![CDATA[</span>${scwf_resubmit == true}<span class="bn">]]&gt;</span><span class="kw">&lt;/conditionExpression&gt;</span>
+<span class="kw">&lt;/sequenceFlow&gt;</span></code></pre></div>
 <p>The &quot;Third Party Review&quot; user task needs some logic to capture the approve/reject outcome:</p>
-<pre><code>&lt;extensionElements&gt;
-    &lt;activiti:taskListener event=&quot;complete&quot; class=&quot;org.alfresco.repo.workflow.activiti.tasklistener.ScriptTaskListener&quot;&gt;
-        &lt;activiti:field name=&quot;script&quot;&gt;
-            &lt;activiti:string&gt;if(task.getVariableLocal(&#39;scwf_approveRejectOutcome&#39;) == &#39;Approve&#39;) {
+<div class="sourceCode"><pre class="sourceCode xml"><code class="sourceCode xml"><span class="kw">&lt;extensionElements&gt;</span>
+    <span class="kw">&lt;activiti:taskListener</span><span class="ot"> event=</span><span class="st">&quot;complete&quot;</span><span class="ot"> class=</span><span class="st">&quot;org.alfresco.repo.workflow.activiti.tasklistener.ScriptTaskListener&quot;</span><span class="kw">&gt;</span>
+        <span class="kw">&lt;activiti:field</span><span class="ot"> name=</span><span class="st">&quot;script&quot;</span><span class="kw">&gt;</span>
+            <span class="kw">&lt;activiti:string&gt;</span>if(task.getVariableLocal(&#39;scwf_approveRejectOutcome&#39;) == &#39;Approve&#39;) {
                 execution.setVariable(&#39;scwf_tpApproved&#39;, true);
                 } else {
                 execution.setVariable(&#39;scwf_tpApproved&#39;, false);
                 }
-            &lt;/activiti:string&gt;
-        &lt;/activiti:field&gt;
-    &lt;/activiti:taskListener&gt;
-&lt;/extensionElements&gt;</code></pre>
+            <span class="kw">&lt;/activiti:string&gt;</span>
+        <span class="kw">&lt;/activiti:field&gt;</span>
+    <span class="kw">&lt;/activiti:taskListener&gt;</span>
+<span class="kw">&lt;/extensionElements&gt;</span></code></pre></div>
 <p>Similarly, the Revise user task also needs to set a variable with the Abort/Re-Submit outcome:</p>
-<pre><code>&lt;extensionElements&gt;
-&lt;activiti:taskListener event=&quot;complete&quot; class=&quot;org.alfresco.repo.workflow.activiti.tasklistener.ScriptTaskListener&quot;&gt;
-        &lt;activiti:field name=&quot;script&quot;&gt;
-            &lt;activiti:string&gt;if(task.getVariableLocal(&#39;scwf_reviseOutcome&#39;) == &#39;Re-submit&#39;) {
+<div class="sourceCode"><pre class="sourceCode xml"><code class="sourceCode xml"><span class="kw">&lt;extensionElements&gt;</span>
+  <span class="kw">&lt;activiti:taskListener</span><span class="ot"> event=</span><span class="st">&quot;complete&quot;</span><span class="ot"> class=</span><span class="st">&quot;org.alfresco.repo.workflow.activiti.tasklistener.ScriptTaskListener&quot;</span><span class="kw">&gt;</span>
+        <span class="kw">&lt;activiti:field</span><span class="ot"> name=</span><span class="st">&quot;script&quot;</span><span class="kw">&gt;</span>
+            <span class="kw">&lt;activiti:string&gt;</span>if(task.getVariableLocal(&#39;scwf_reviseOutcome&#39;) == &#39;Re-submit&#39;) {
                 execution.setVariable(&#39;scwf_resubmit&#39;, true);
                 } else {
                 execution.setVariable(&#39;scwf_resubmit&#39;, false);
                 }
-            &lt;/activiti:string&gt;
-        &lt;/activiti:field&gt;
-    &lt;/activiti:taskListener&gt;
-&lt;/extensionElements&gt;</code></pre>
+            <span class="kw">&lt;/activiti:string&gt;</span>
+        <span class="kw">&lt;/activiti:field&gt;</span>
+  <span class="kw">&lt;/activiti:taskListener&gt;</span>
+<span class="kw">&lt;/extensionElements&gt;</span></code></pre></div>
 <p>You may be thinking that my sequence flow ID's aren't very helpful. I agree. Unfortunately, when I went back in to the process definition to refactor those, it caused some unanticipated problems. When you do your own business process definitions you should start with meaningful ID's from the beginning.</p>
 <h3 id="workflow-content-model-including-alfresco-share-configuration">Workflow content model including Alfresco Share configuration</h3>
 <p>At this point you've defined the process. It doesn't have all of the logic it will have eventually, but it has enough that you will be able to step through all of the paths in the process once the Alfresco Share user interface is configured. You'll do that in this section by defining the content model and updating the client configuration.</p>
 <h4 id="defining-the-workflow-content-model">Defining the workflow content model</h4>
-<p>You started a workflow content model in the earlier Hello World UI example. The first thing to do is update the content model XML (<a href="https://github.com/jpotts/alfresco-developer-series/blob/master/workflow/workflow-tutorial/workflow-tutorial-platform-jar/src/main/resources/alfresco/module/workflow-tutorial-platform-jar/model/scWorkflowModel.xml">scWorkflowModel.xml</a>) with types and aspects specific to the publish whitepaper process.</p>
+<p>You started a workflow content model in the earlier Hello World UI example. The first thing to do is update the content model XML (<a href="https://github.com/jpotts/alfresco-developer-series/blob/master/workflow/workflow-tutorial/workflow-tutorial-platform/src/main/resources/alfresco/module/workflow-tutorial-platform/model/scWorkflowModel.xml">scWorkflowModel.xml</a>) with types and aspects specific to the publish whitepaper process.</p>
 <p>Edit the file and add:</p>
-<pre><code>&lt;type name=&quot;scwf:submitReviewTask&quot;&gt;
-    &lt;parent&gt;bpm:startTask&lt;/parent&gt;
-    &lt;mandatory-aspects&gt;
-        &lt;aspect&gt;scwf:thirdPartyReviewable&lt;/aspect&gt;
-    &lt;/mandatory-aspects&gt;
-&lt;/type&gt;
-&lt;type name=&quot;scwf:activitiMarketingReview&quot;&gt;
-    &lt;parent&gt;scwf:activitiReviewTask&lt;/parent&gt;
-&lt;/type&gt;
-&lt;type name=&quot;scwf:activitiOperationsReview&quot;&gt;
-    &lt;parent&gt;scwf:activitiReviewTask&lt;/parent&gt;
-&lt;/type&gt;
-&lt;type name=&quot;scwf:activitiThirdPartyReview&quot;&gt;
-    &lt;parent&gt;scwf:activitiReviewTask&lt;/parent&gt;
-&lt;/type&gt;
-&lt;type name=&quot;scwf:activitiRevise&quot;&gt;
-    &lt;parent&gt;bpm:activitiOutcomeTask&lt;/parent&gt;
-    &lt;properties&gt;
-        &lt;property name=&quot;scwf:reviseOutcome&quot;&gt;
-            &lt;type&gt;d:text&lt;/type&gt;
-            &lt;default&gt;Abort&lt;/default&gt;
-            &lt;constraints&gt;
-                &lt;constraint type=&quot;LIST&quot;&gt;
-                    &lt;parameter name=&quot;allowedValues&quot;&gt;
-                        &lt;list&gt;
-                            &lt;value&gt;Re-submit&lt;/value&gt;
-                            &lt;value&gt;Abort&lt;/value&gt;
-                        &lt;/list&gt;
-                    &lt;/parameter&gt;
-                &lt;/constraint&gt;
-            &lt;/constraints&gt;
-        &lt;/property&gt;
-    &lt;/properties&gt;
-    &lt;overrides&gt;
-        &lt;property name=&quot;bpm:packageItemActionGroup&quot;&gt;
-        &lt;default&gt;edit_package_item_actions&lt;/default&gt;
-        &lt;/property&gt;
-        &lt;property name=&quot;bpm:outcomePropertyName&quot;&gt;
-        &lt;default&gt;{http://www.someco.com/model/workflow/1.0}reviseOutcome&lt;/default&gt;
-        &lt;/property&gt;
-    &lt;/overrides&gt;
-&lt;/type&gt;
-&lt;type name=&quot;scwf:activitiReviewTask&quot;&gt;
-    &lt;parent&gt;bpm:activitiOutcomeTask&lt;/parent&gt;
-    &lt;properties&gt;
-        &lt;property name=&quot;scwf:approveRejectOutcome&quot;&gt;
-            &lt;type&gt;d:text&lt;/type&gt;
-            &lt;default&gt;Reject&lt;/default&gt;
-            &lt;constraints&gt;
-                &lt;constraint type=&quot;LIST&quot;&gt;
-                    &lt;parameter name=&quot;allowedValues&quot;&gt;
-                        &lt;list&gt;
-                            &lt;value&gt;Approve&lt;/value&gt;
-                            &lt;value&gt;Reject&lt;/value&gt;
-                        &lt;/list&gt;
-                    &lt;/parameter&gt;
-                &lt;/constraint&gt;
-            &lt;/constraints&gt;
-        &lt;/property&gt;
-    &lt;/properties&gt;
-    &lt;overrides&gt;
-        &lt;property name=&quot;bpm:packageItemActionGroup&quot;&gt;
-            &lt;default&gt;read_package_item_actions&lt;/default&gt;
-        &lt;/property&gt;
-        &lt;property name=&quot;bpm:outcomePropertyName&quot;&gt;
-            &lt;default&gt;{http://www.someco.com/model/workflow/1.0}approveRejectOutcome&lt;/default&gt;
-        &lt;/property&gt;
-    &lt;/overrides&gt;
-&lt;/type&gt;
-&lt;type name=&quot;scwf:activitiApprovedNotification&quot;&gt;
-    &lt;parent&gt;bpm:workflowTask&lt;/parent&gt;
-    &lt;overrides&gt;
-        &lt;property name=&quot;bpm:packageItemActionGroup&quot;&gt;
-            &lt;default&gt;read_package_item_actions&lt;/default&gt;
-        &lt;/property&gt;
-    &lt;/overrides&gt;
-&lt;/type&gt;</code></pre>
+<div class="sourceCode"><pre class="sourceCode xml"><code class="sourceCode xml"><span class="kw">&lt;type</span><span class="ot"> name=</span><span class="st">&quot;scwf:submitReviewTask&quot;</span><span class="kw">&gt;</span>
+    <span class="kw">&lt;parent&gt;</span>bpm:startTask<span class="kw">&lt;/parent&gt;</span>
+    <span class="kw">&lt;mandatory-aspects&gt;</span>
+        <span class="kw">&lt;aspect&gt;</span>scwf:thirdPartyReviewable<span class="kw">&lt;/aspect&gt;</span>
+    <span class="kw">&lt;/mandatory-aspects&gt;</span>
+<span class="kw">&lt;/type&gt;</span>
+<span class="kw">&lt;type</span><span class="ot"> name=</span><span class="st">&quot;scwf:activitiMarketingReview&quot;</span><span class="kw">&gt;</span>
+    <span class="kw">&lt;parent&gt;</span>scwf:activitiReviewTask<span class="kw">&lt;/parent&gt;</span>
+<span class="kw">&lt;/type&gt;</span>
+<span class="kw">&lt;type</span><span class="ot"> name=</span><span class="st">&quot;scwf:activitiOperationsReview&quot;</span><span class="kw">&gt;</span>
+    <span class="kw">&lt;parent&gt;</span>scwf:activitiReviewTask<span class="kw">&lt;/parent&gt;</span>
+<span class="kw">&lt;/type&gt;</span>
+<span class="kw">&lt;type</span><span class="ot"> name=</span><span class="st">&quot;scwf:activitiThirdPartyReview&quot;</span><span class="kw">&gt;</span>
+    <span class="kw">&lt;parent&gt;</span>scwf:activitiReviewTask<span class="kw">&lt;/parent&gt;</span>
+<span class="kw">&lt;/type&gt;</span>
+<span class="kw">&lt;type</span><span class="ot"> name=</span><span class="st">&quot;scwf:activitiRevise&quot;</span><span class="kw">&gt;</span>
+    <span class="kw">&lt;parent&gt;</span>bpm:activitiOutcomeTask<span class="kw">&lt;/parent&gt;</span>
+    <span class="kw">&lt;properties&gt;</span>
+        <span class="kw">&lt;property</span><span class="ot"> name=</span><span class="st">&quot;scwf:reviseOutcome&quot;</span><span class="kw">&gt;</span>
+            <span class="kw">&lt;type&gt;</span>d:text<span class="kw">&lt;/type&gt;</span>
+            <span class="kw">&lt;default&gt;</span>Abort<span class="kw">&lt;/default&gt;</span>
+            <span class="kw">&lt;constraints&gt;</span>
+                <span class="kw">&lt;constraint</span><span class="ot"> type=</span><span class="st">&quot;LIST&quot;</span><span class="kw">&gt;</span>
+                    <span class="kw">&lt;parameter</span><span class="ot"> name=</span><span class="st">&quot;allowedValues&quot;</span><span class="kw">&gt;</span>
+                        <span class="kw">&lt;list&gt;</span>
+                            <span class="kw">&lt;value&gt;</span>Re-submit<span class="kw">&lt;/value&gt;</span>
+                            <span class="kw">&lt;value&gt;</span>Abort<span class="kw">&lt;/value&gt;</span>
+                        <span class="kw">&lt;/list&gt;</span>
+                    <span class="kw">&lt;/parameter&gt;</span>
+                <span class="kw">&lt;/constraint&gt;</span>
+            <span class="kw">&lt;/constraints&gt;</span>
+        <span class="kw">&lt;/property&gt;</span>
+    <span class="kw">&lt;/properties&gt;</span>
+    <span class="kw">&lt;overrides&gt;</span>
+        <span class="kw">&lt;property</span><span class="ot"> name=</span><span class="st">&quot;bpm:packageItemActionGroup&quot;</span><span class="kw">&gt;</span>
+        <span class="kw">&lt;default&gt;</span>edit_package_item_actions<span class="kw">&lt;/default&gt;</span>
+        <span class="kw">&lt;/property&gt;</span>
+        <span class="kw">&lt;property</span><span class="ot"> name=</span><span class="st">&quot;bpm:outcomePropertyName&quot;</span><span class="kw">&gt;</span>
+        <span class="kw">&lt;default&gt;</span>{http://www.someco.com/model/workflow/1.0}reviseOutcome<span class="kw">&lt;/default&gt;</span>
+        <span class="kw">&lt;/property&gt;</span>
+    <span class="kw">&lt;/overrides&gt;</span>
+<span class="kw">&lt;/type&gt;</span>
+<span class="kw">&lt;type</span><span class="ot"> name=</span><span class="st">&quot;scwf:activitiReviewTask&quot;</span><span class="kw">&gt;</span>
+    <span class="kw">&lt;parent&gt;</span>bpm:activitiOutcomeTask<span class="kw">&lt;/parent&gt;</span>
+    <span class="kw">&lt;properties&gt;</span>
+        <span class="kw">&lt;property</span><span class="ot"> name=</span><span class="st">&quot;scwf:approveRejectOutcome&quot;</span><span class="kw">&gt;</span>
+            <span class="kw">&lt;type&gt;</span>d:text<span class="kw">&lt;/type&gt;</span>
+            <span class="kw">&lt;default&gt;</span>Reject<span class="kw">&lt;/default&gt;</span>
+            <span class="kw">&lt;constraints&gt;</span>
+                <span class="kw">&lt;constraint</span><span class="ot"> type=</span><span class="st">&quot;LIST&quot;</span><span class="kw">&gt;</span>
+                    <span class="kw">&lt;parameter</span><span class="ot"> name=</span><span class="st">&quot;allowedValues&quot;</span><span class="kw">&gt;</span>
+                        <span class="kw">&lt;list&gt;</span>
+                            <span class="kw">&lt;value&gt;</span>Approve<span class="kw">&lt;/value&gt;</span>
+                            <span class="kw">&lt;value&gt;</span>Reject<span class="kw">&lt;/value&gt;</span>
+                        <span class="kw">&lt;/list&gt;</span>
+                    <span class="kw">&lt;/parameter&gt;</span>
+                <span class="kw">&lt;/constraint&gt;</span>
+            <span class="kw">&lt;/constraints&gt;</span>
+        <span class="kw">&lt;/property&gt;</span>
+    <span class="kw">&lt;/properties&gt;</span>
+    <span class="kw">&lt;overrides&gt;</span>
+        <span class="kw">&lt;property</span><span class="ot"> name=</span><span class="st">&quot;bpm:packageItemActionGroup&quot;</span><span class="kw">&gt;</span>
+            <span class="kw">&lt;default&gt;</span>read_package_item_actions<span class="kw">&lt;/default&gt;</span>
+        <span class="kw">&lt;/property&gt;</span>
+        <span class="kw">&lt;property</span><span class="ot"> name=</span><span class="st">&quot;bpm:outcomePropertyName&quot;</span><span class="kw">&gt;</span>
+            <span class="kw">&lt;default&gt;</span>{http://www.someco.com/model/workflow/1.0}approveRejectOutcome<span class="kw">&lt;/default&gt;</span>
+        <span class="kw">&lt;/property&gt;</span>
+    <span class="kw">&lt;/overrides&gt;</span>
+<span class="kw">&lt;/type&gt;</span>
+<span class="kw">&lt;type</span><span class="ot"> name=</span><span class="st">&quot;scwf:activitiApprovedNotification&quot;</span><span class="kw">&gt;</span>
+    <span class="kw">&lt;parent&gt;</span>bpm:workflowTask<span class="kw">&lt;/parent&gt;</span>
+    <span class="kw">&lt;overrides&gt;</span>
+        <span class="kw">&lt;property</span><span class="ot"> name=</span><span class="st">&quot;bpm:packageItemActionGroup&quot;</span><span class="kw">&gt;</span>
+            <span class="kw">&lt;default&gt;</span>read_package_item_actions<span class="kw">&lt;/default&gt;</span>
+        <span class="kw">&lt;/property&gt;</span>
+    <span class="kw">&lt;/overrides&gt;</span>
+<span class="kw">&lt;/type&gt;</span></code></pre></div>
 <p>There's one type for each task. The name of each type matches the form key of the user tasks in the publishWhitepaper.bpmn file.</p>
 <p>You'll notice that each type inherits from a type defined in the BPM content model. If you were to look at the out-of-the-box bpmModel.xml file you would see that the <code>bpm:startTask</code> type has helpful properties such as the workflow description, due date, and priority.</p>
 <p>The <code>bpm:workflowTask</code> has an association called <code>bpm:package</code>. The <code>bpm:package</code> points to a <code>bpm:workflowPackage</code> which is the aspect applied to a container (like a folder) that holds the documents being routed through a workflow. When you write code that needs to access the content being routed in a workflow you can get to it through the <code>bpm:package</code> association.</p>
 <p>The <code>property</code> element named &quot;bpm:packageItemActionGroup&quot; defines what actions are available for working with the content in the workflow at that particular step in the process. In the case, the initiator needs to be able to change the contents of the workflow when the workflow is started and when making revisions, but reviewers should not be able to add or remove anything to or from the workflow.</p>
 <p>The start task has a mandatory aspect called &quot;scwf:thirdPartyReviewable&quot;. After the closing <code>types</code> element, add the following:</p>
-<pre><code>&lt;aspects&gt;
-    &lt;aspect name=&quot;scwf:thirdPartyReviewable&quot;&gt;
-        &lt;title&gt;Someco Third Party Reviewable&lt;/title&gt;
-        &lt;properties&gt;
-            &lt;property name=&quot;scwf:reviewerEmail&quot;&gt;
-                &lt;type&gt;d:text&lt;/type&gt;
-                &lt;mandatory&gt;false&lt;/mandatory&gt;
-                &lt;multiple&gt;false&lt;/multiple&gt;
-            &lt;/property&gt;
-        &lt;/properties&gt;
-    &lt;/aspect&gt;
-&lt;/aspects&gt;</code></pre>
+<div class="sourceCode"><pre class="sourceCode xml"><code class="sourceCode xml"><span class="kw">&lt;aspects&gt;</span>
+    <span class="kw">&lt;aspect</span><span class="ot"> name=</span><span class="st">&quot;scwf:thirdPartyReviewable&quot;</span><span class="kw">&gt;</span>
+        <span class="kw">&lt;title&gt;</span>Someco Third Party Reviewable<span class="kw">&lt;/title&gt;</span>
+        <span class="kw">&lt;properties&gt;</span>
+            <span class="kw">&lt;property</span><span class="ot"> name=</span><span class="st">&quot;scwf:reviewerEmail&quot;</span><span class="kw">&gt;</span>
+                <span class="kw">&lt;type&gt;</span>d:text<span class="kw">&lt;/type&gt;</span>
+                <span class="kw">&lt;mandatory&gt;</span>false<span class="kw">&lt;/mandatory&gt;</span>
+                <span class="kw">&lt;multiple&gt;</span>false<span class="kw">&lt;/multiple&gt;</span>
+            <span class="kw">&lt;/property&gt;</span>
+        <span class="kw">&lt;/properties&gt;</span>
+    <span class="kw">&lt;/aspect&gt;</span>
+<span class="kw">&lt;/aspects&gt;</span></code></pre></div>
 <p>This defines an aspect used to define a property that will store the third-party reviewer's email address.</p>
 <p>That's it for the workflow content model. Now configure it in the Alfresco Share user interface.</p>
 <h4 id="configure-the-alfresco-share-user-interface">Configure the Alfresco Share user interface</h4>
-<p>In the Hello World UI example you saw that Alfresco Share is configured using <a href="https://github.com/jpotts/alfresco-developer-series/blob/master/workflow/workflow-tutorial/workflow-tutorial-share-jar/src/main/resources/META-INF/share-config-custom.xml">share-config-custom.xml</a>. Because it is mostly repetitive, I'll just show the configuration for <code>scwf:activitiReviewTask</code> here and if you want to see the rest of the Share configuration, you can look at the source that accompanies this tutorial.</p>
-<pre><code>&lt;config evaluator=&quot;task-type&quot; condition=&quot;scwf:activitiReviewTask&quot;&gt;
-    &lt;forms&gt;
-        &lt;form&gt;
-            &lt;field-visibility&gt;
-                &lt;show id=&quot;bpm:workflowDescription&quot; /&gt;
-                &lt;show id=&quot;packageItems&quot; /&gt;
-                &lt;show id=&quot;scwf:approveRejectOutcome&quot; /&gt;
-                &lt;show id=&quot;transitions&quot; /&gt;
-            &lt;/field-visibility&gt;
-            &lt;appearance&gt;
-                &lt;set id=&quot;&quot; appearance=&quot;title&quot; label-id=&quot;workflow.set.general&quot; /&gt;
-                &lt;set id=&quot;info&quot; appearance=&quot;&quot; template=&quot;/org/alfresco/components/form/2-column-set.ftl&quot; /&gt;
-                &lt;set id=&quot;assignee&quot; appearance=&quot;title&quot; label-id=&quot;workflow.set.assignee&quot; /&gt;
-                &lt;set id=&quot;items&quot; appearance=&quot;title&quot; label-id=&quot;workflow.set.items&quot; /&gt;
-                &lt;set id=&quot;response&quot; appearance=&quot;title&quot; label-id=&quot;workflow.set.response&quot; /&gt;
-                &lt;field id=&quot;bpm:workflowDescription&quot; label-id=&quot;workflow.field.message&quot;&gt;
-                    &lt;control template=&quot;/org/alfresco/components/form/controls/textarea.ftl&quot;&gt;
-                        &lt;control-param name=&quot;style&quot;&gt;width: 95%&lt;/control-param&gt;
-                    &lt;/control&gt;
-                &lt;/field&gt;
-                &lt;field id=&quot;packageItems&quot; set=&quot;items&quot; /&gt;
-                &lt;field id=&quot;scwf:approveRejectOutcome&quot; set=&quot;response&quot; /&gt;
-                &lt;field id=&quot;transitions&quot; set=&quot;response&quot; /&gt;
-            &lt;/appearance&gt;
-        &lt;/form&gt;
-    &lt;/forms&gt;
-&lt;/config&gt;</code></pre>
+<p>In the Hello World UI example you saw that Alfresco Share is configured using <a href="https://github.com/jpotts/alfresco-developer-series/blob/master/workflow/workflow-tutorial/workflow-tutorial-share/src/main/resources/META-INF/share-config-custom.xml">share-config-custom.xml</a>. Because it is mostly repetitive, I'll just show the configuration for <code>scwf:activitiReviewTask</code> here and if you want to see the rest of the Share configuration, you can look at the source that accompanies this tutorial.</p>
+<div class="sourceCode"><pre class="sourceCode xml"><code class="sourceCode xml"><span class="kw">&lt;config</span><span class="ot"> evaluator=</span><span class="st">&quot;task-type&quot;</span><span class="ot"> condition=</span><span class="st">&quot;scwf:activitiReviewTask&quot;</span><span class="kw">&gt;</span>
+    <span class="kw">&lt;forms&gt;</span>
+        <span class="kw">&lt;form&gt;</span>
+            <span class="kw">&lt;field-visibility&gt;</span>
+                <span class="kw">&lt;show</span><span class="ot"> id=</span><span class="st">&quot;bpm:workflowDescription&quot;</span> <span class="kw">/&gt;</span>
+                <span class="kw">&lt;show</span><span class="ot"> id=</span><span class="st">&quot;packageItems&quot;</span> <span class="kw">/&gt;</span>
+                <span class="kw">&lt;show</span><span class="ot"> id=</span><span class="st">&quot;scwf:approveRejectOutcome&quot;</span> <span class="kw">/&gt;</span>
+                <span class="kw">&lt;show</span><span class="ot"> id=</span><span class="st">&quot;transitions&quot;</span> <span class="kw">/&gt;</span>
+            <span class="kw">&lt;/field-visibility&gt;</span>
+            <span class="kw">&lt;appearance&gt;</span>
+                <span class="kw">&lt;set</span><span class="ot"> id=</span><span class="st">&quot;&quot;</span><span class="ot"> appearance=</span><span class="st">&quot;title&quot;</span><span class="ot"> label-id=</span><span class="st">&quot;workflow.set.general&quot;</span> <span class="kw">/&gt;</span>
+                <span class="kw">&lt;set</span><span class="ot"> id=</span><span class="st">&quot;info&quot;</span><span class="ot"> appearance=</span><span class="st">&quot;&quot;</span><span class="ot"> template=</span><span class="st">&quot;/org/alfresco/components/form/2-column-set.ftl&quot;</span> <span class="kw">/&gt;</span>
+                <span class="kw">&lt;set</span><span class="ot"> id=</span><span class="st">&quot;assignee&quot;</span><span class="ot"> appearance=</span><span class="st">&quot;title&quot;</span><span class="ot"> label-id=</span><span class="st">&quot;workflow.set.assignee&quot;</span> <span class="kw">/&gt;</span>
+                <span class="kw">&lt;set</span><span class="ot"> id=</span><span class="st">&quot;items&quot;</span><span class="ot"> appearance=</span><span class="st">&quot;title&quot;</span><span class="ot"> label-id=</span><span class="st">&quot;workflow.set.items&quot;</span> <span class="kw">/&gt;</span>
+                <span class="kw">&lt;set</span><span class="ot"> id=</span><span class="st">&quot;response&quot;</span><span class="ot"> appearance=</span><span class="st">&quot;title&quot;</span><span class="ot"> label-id=</span><span class="st">&quot;workflow.set.response&quot;</span> <span class="kw">/&gt;</span>
+                <span class="kw">&lt;field</span><span class="ot"> id=</span><span class="st">&quot;bpm:workflowDescription&quot;</span><span class="ot"> label-id=</span><span class="st">&quot;workflow.field.message&quot;</span><span class="kw">&gt;</span>
+                    <span class="kw">&lt;control</span><span class="ot"> template=</span><span class="st">&quot;/org/alfresco/components/form/controls/textarea.ftl&quot;</span><span class="kw">&gt;</span>
+                        <span class="kw">&lt;control-param</span><span class="ot"> name=</span><span class="st">&quot;style&quot;</span><span class="kw">&gt;</span>width: 95%<span class="kw">&lt;/control-param&gt;</span>
+                    <span class="kw">&lt;/control&gt;</span>
+                <span class="kw">&lt;/field&gt;</span>
+                <span class="kw">&lt;field</span><span class="ot"> id=</span><span class="st">&quot;packageItems&quot;</span><span class="ot"> set=</span><span class="st">&quot;items&quot;</span> <span class="kw">/&gt;</span>
+                <span class="kw">&lt;field</span><span class="ot"> id=</span><span class="st">&quot;scwf:approveRejectOutcome&quot;</span><span class="ot"> set=</span><span class="st">&quot;response&quot;</span> <span class="kw">/&gt;</span>
+                <span class="kw">&lt;field</span><span class="ot"> id=</span><span class="st">&quot;transitions&quot;</span><span class="ot"> set=</span><span class="st">&quot;response&quot;</span> <span class="kw">/&gt;</span>
+            <span class="kw">&lt;/appearance&gt;</span>
+        <span class="kw">&lt;/form&gt;</span>
+    <span class="kw">&lt;/forms&gt;</span>
+<span class="kw">&lt;/config&gt;</span></code></pre></div>
 <p>Something that isn't immediately obvious without looking closely at the accompanying Share form configuration is that there are multiple workflow form configurations needed for a given workflow. This table explains what configuration does what:</p>
-<table>
+<table style="width:96%;">
 <caption>What does the config do?</caption>
+<colgroup>
+<col width="48%" />
+<col width="47%" />
+</colgroup>
 <thead>
 <tr class="header">
 <th align="left">For example, this configuration...</th>
@@ -1127,10 +1211,10 @@ workflow.scwf_helloWorldUI=Hello World UI</code></pre>
 </tbody>
 </table>
 <h4 id="externalize-the-strings-1">Externalize the strings</h4>
-<p>The last step is to externalize the strings in the model and process. Remember that in the Hello World UI example the strings went into two files named &quot;scWorkflow.properties&quot;, one for the workflow-tutorial-platform-jar module and one for the workflow-tutorial-share-jar module.</p>
-<p>The one in the workflow-tutorial-platform-jar module resides in:</p>
-<pre><code>$TUTORIAL_HOME/workflow-tutorial-platform-jar/src/main/resources/alfresco/module/workflow-tutorial-platform-jar/messages</code></pre>
-<p>Add the following to <a href="https://github.com/jpotts/alfresco-developer-series/blob/master/workflow/workflow-tutorial/workflow-tutorial-platform-jar/src/main/resources/alfresco/module/workflow-tutorial-platform-jar/messages/scWorkflow.properties">scWorkflow.properties</a>:</p>
+<p>The last step is to externalize the strings in the model and process. Remember that in the Hello World UI example the strings went into two files named &quot;scWorkflow.properties&quot;, one for the workflow-tutorial-platform module and one for the workflow-tutorial-share module.</p>
+<p>The one in the workflow-tutorial-platform module resides in:</p>
+<pre><code>$TUTORIAL_HOME/workflow-tutorial-platform/src/main/resources/alfresco/module/workflow-tutorial-platform/messages</code></pre>
+<p>Add the following to <a href="https://github.com/jpotts/alfresco-developer-series/blob/master/workflow/workflow-tutorial/workflow-tutorial-platform/src/main/resources/alfresco/module/workflow-tutorial-platform/messages/scWorkflow.properties">scWorkflow.properties</a>:</p>
 <pre><code>publishWhitepaper.workflow.title=Publish Whitepaper to Web (Activiti)
 publishWhitepaper.workflow.description=Review and approve Someco Whitepaper content using Activiti</code></pre>
 <p>Note that the first part of the property key matches the name you gave the process definition. The values for the workflow.title and workflow.description keys will be what the user sees when she clicks &quot;Start Advanced Workflow&quot; in Alfresco Share.</p>
@@ -1162,8 +1246,8 @@ scwf_workflowmodel.property.scwf_approveRejectOutcome.description=Reviewer outco
 scwf_workflowmodel.property.scwf_reviseOutcome.title=Outcome
 scwf_workflowmodel.property.scwf_reviseOutcome.description=Reviewer outcome</code></pre>
 <p>The first part of the key is the name of the workflow model, then whether or not this key is for a type or a property, then the name of the type or property. These are the strings shown when someone manages a task.</p>
-<p>Now edit <a href="https://github.com/jpotts/alfresco-developer-series/blob/master/workflow/workflow-tutorial/workflow-tutorial-share-jar/src/main/resources/alfresco/web-extension/messages/scWorkflow.properties">scWorkflow.properties</a> in the workflow-tutorial-share-jar module. It resides in:</p>
-<pre><code>$TUTORIAL_HOME/workflow-tutorial-share-jar/src/main/resources/alfresco/web-extension/messages</code></pre>
+<p>Now edit <a href="https://github.com/jpotts/alfresco-developer-series/blob/master/workflow/workflow-tutorial/workflow-tutorial-share/src/main/resources/alfresco/web-extension/messages/scWorkflow.properties">scWorkflow.properties</a> in the workflow-tutorial-share module. It resides in:</p>
+<pre><code>$TUTORIAL_HOME/workflow-tutorial-share/src/main/resources/alfresco/web-extension/messages</code></pre>
 <p>Add these properties to the file:</p>
 <pre><code>workflow.scwf_publishWhitepaper=SC Publish Whitepaper
 
@@ -1171,23 +1255,24 @@ scwf_workflowmodel.property.scwf_reviseOutcome.description=Reviewer outcome</cod
 prop.scwf_reviewerEmail=Reviewer Email</code></pre>
 <p>Save the file and you are ready to deploy and test what you have so far.</p>
 <h3 id="deploy-and-test">Deploy and test</h3>
-<p>You created a new workflow so it needs to be deployed via Spring. Edit the &quot;<a href="https://github.com/jpotts/alfresco-developer-series/blob/master/workflow/workflow-tutorial/workflow-tutorial-platform-jar/src/main/resources/alfresco/module/workflow-tutorial-platform-jar/context/bootstrap-context.xml">bootstrap-context.xml</a>&quot; file that resides in:</p>
-<pre><code>$TUTORIAL_HOME/workflow-tutorial-platform-jar/src/main/resources/alfresco/module/workflow-tutorial-platform-jar/context</code></pre>
+<p>You created a new workflow so it needs to be deployed via Spring. Edit the &quot;<a href="https://github.com/jpotts/alfresco-developer-series/blob/master/workflow/workflow-tutorial/workflow-tutorial-platform/src/main/resources/alfresco/module/workflow-tutorial-platform/context/bootstrap-context.xml">bootstrap-context.xml</a>&quot; file that resides in:</p>
+<pre><code>$TUTORIAL_HOME/workflow-tutorial-platform/src/main/resources/alfresco/module/workflow-tutorial-platform/context</code></pre>
 <p>Add the new workflow to the list of workflows:</p>
-<pre><code>&lt;props&gt;
-    &lt;prop key=&quot;engineId&quot;&gt;activiti&lt;/prop&gt;
-    &lt;prop key=&quot;location&quot;&gt;alfresco/module/${project.artifactId}/workflow/publishWhitepaper.bpmn&lt;/prop&gt;
-    &lt;prop key=&quot;mimetype&quot;&gt;text/xml&lt;/prop&gt;
-    &lt;prop key=&quot;redeploy&quot;&gt;false&lt;/prop&gt;
-&lt;/props&gt;</code></pre>
-<p>At this stage you can continue to test using Alfresco on the embedded Tomcat server configured by the Alfresco Maven SDK. Here are the steps necessary to start up that you used earlier:</p>
+<div class="sourceCode"><pre class="sourceCode xml"><code class="sourceCode xml"><span class="kw">&lt;props&gt;</span>
+    <span class="kw">&lt;prop</span><span class="ot"> key=</span><span class="st">&quot;engineId&quot;</span><span class="kw">&gt;</span>activiti<span class="kw">&lt;/prop&gt;</span>
+    <span class="kw">&lt;prop</span><span class="ot"> key=</span><span class="st">&quot;location&quot;</span><span class="kw">&gt;</span>alfresco/module/${project.artifactId}/workflow/publishWhitepaper.bpmn<span class="kw">&lt;/prop&gt;</span>
+    <span class="kw">&lt;prop</span><span class="ot"> key=</span><span class="st">&quot;mimetype&quot;</span><span class="kw">&gt;</span>text/xml<span class="kw">&lt;/prop&gt;</span>
+    <span class="kw">&lt;prop</span><span class="ot"> key=</span><span class="st">&quot;redeploy&quot;</span><span class="kw">&gt;</span>false<span class="kw">&lt;/prop&gt;</span>
+<span class="kw">&lt;/props&gt;</span></code></pre></div>
+<p>At this stage you can continue to test using Alfresco on the SDK-generated Docker containers configured by the Alfresco Maven SDK. Here are the steps necessary to start up that you used earlier:</p>
 <ol style="list-style-type: decimal">
 <li>Open a command-line window and switch to $TUTORIAL_HOME.</li>
-<li>Run <code>run.sh</code> (or <code>run.bat</code>). Your AMPs will be installed and started on Tomcat running on port 8080.</li>
+<li>Stop the running containers with <code>./run.sh stop</code> (or <code>run.bat</code>).</li>
+<li>Run <code>./run.sh build_start</code> (or <code>run.bat</code>). Your AMPs will be installed into Docker containers running on 8080 (Alfresco) and 8180 (Share).</li>
 </ol>
 <p>When everything starts up:</p>
 <ol style="list-style-type: decimal">
-<li>Go to http://localhost:8080/share and log in as admin (password: admin).</li>
+<li>Go to http://localhost:8180/share and log in as admin (password: admin).</li>
 <li>If you haven't done so already, create a group called &quot;Operations&quot; and a group called &quot;Marketing&quot; and place one or more test users in each group.</li>
 <li>Create a piece of test content. It doesn't matter what it is.</li>
 <li>Now start a workflow for that piece of content.</li>
@@ -1199,22 +1284,22 @@ prop.scwf_reviewerEmail=Reviewer Email</code></pre>
 <h3 id="call-the-set-web-action-on-approved-documents">Call the set-web-action on approved documents</h3>
 <p>When a whitepaper is approved it needs to show up on the web site. Recall from the &quot;<a href="https://ecmarchitect.com/alfresco-developer-series-tutorials/actions/tutorial/tutorial.html">Custom Actions</a>&quot; tutorial that there is already an action that will add the <code>sc:webable</code> aspect to a document and set the <code>sc:isActive</code> and <code>sc:publishedFlag</code> properties. So all you have to do is tell the process to execute it against the approved whitepaper.</p>
 <p>To do that, edit the business process and search for the <code>userTask</code> element named &quot;Approved Notification&quot;. Add the following extension element:</p>
-<pre><code>&lt;userTask id=&quot;usertask4&quot; name=&quot;Approved Notification&quot; activiti:assignee=&quot;${initiator.properties.userName}&quot; activiti:formKey=&quot;scwf:activitiApprovedNotification&quot;&gt;
-    &lt;extensionElements&gt;
-        &lt;activiti:taskListener event=&quot;create&quot; class=&quot;org.alfresco.repo.workflow.activiti.tasklistener.ScriptTaskListener&quot;&gt;
-            &lt;activiti:field name=&quot;script&quot;&gt;
-                &lt;activiti:string&gt;
+<div class="sourceCode"><pre class="sourceCode xml"><code class="sourceCode xml"><span class="kw">&lt;userTask</span><span class="ot"> id=</span><span class="st">&quot;usertask4&quot;</span><span class="ot"> name=</span><span class="st">&quot;Approved Notification&quot;</span><span class="ot"> activiti:assignee=</span><span class="st">&quot;${initiator.properties.userName}&quot;</span><span class="ot"> activiti:formKey=</span><span class="st">&quot;scwf:activitiApprovedNotification&quot;</span><span class="kw">&gt;</span>
+    <span class="kw">&lt;extensionElements&gt;</span>
+        <span class="kw">&lt;activiti:taskListener</span><span class="ot"> event=</span><span class="st">&quot;create&quot;</span><span class="ot"> class=</span><span class="st">&quot;org.alfresco.repo.workflow.activiti.tasklistener.ScriptTaskListener&quot;</span><span class="kw">&gt;</span>
+            <span class="kw">&lt;activiti:field</span><span class="ot"> name=</span><span class="st">&quot;script&quot;</span><span class="kw">&gt;</span>
+                <span class="kw">&lt;activiti:string&gt;</span>
                     var setWebFlagAction = actions.create(&quot;set-web-flag&quot;);
                     setWebFlagAction.parameters[&quot;active&quot;] = true;
-                    for (var i = 0; i &amp;lt; bpm_package.children.length; i++) {
+                    for (var i = 0; i <span class="dv">&amp;lt;</span> bpm_package.children.length; i++) {
                         logger.log(&quot;Approving node:&quot; + bpm_package.children[i].nodeRef);
                         setWebFlagAction.execute(bpm_package.children[i]);
                     }
-                &lt;/activiti:string&gt;
-            &lt;/activiti:field&gt;
-        &lt;/activiti:taskListener&gt;
-    &lt;/extensionElements&gt;
-&lt;/userTask&gt;</code></pre>
+                <span class="kw">&lt;/activiti:string&gt;</span>
+            <span class="kw">&lt;/activiti:field&gt;</span>
+        <span class="kw">&lt;/activiti:taskListener&gt;</span>
+    <span class="kw">&lt;/extensionElements&gt;</span>
+<span class="kw">&lt;/userTask&gt;</span></code></pre></div>
 <p>This is a straightforward piece of Alfresco JavaScript that executes the custom action called &quot;set-web-flag&quot; for every piece of content in the workflow package. The action adds the aspect and sets the properties appropriately.</p>
 <p>That's all that's needed to handle the approval. Now for the Third Party Review.</p>
 <h3 id="implement-the-external-third-party-review">Implement the external third-party review</h3>
@@ -1224,102 +1309,102 @@ prop.scwf_reviewerEmail=Reviewer Email</code></pre>
 <h4 id="implement-the-web-script">Implement the Web Script</h4>
 <p>The &quot;<a href="https://ecmarchitect.com/alfresco-developer-series-tutorials/webscripts/tutorial/tutorial.html">Introduction to Web Scripts</a>&quot; tutorial showed you how to create custom web scripts, so I am only going to show you the Java class that acts as the web script controller. See the source for the other files that make up the web script.</p>
 <p>The source for the web script's controller resides in:</p>
-<pre><code>$TUTORIAL_HOME/workflow-tutorial-platform-jar/src/main/java</code></pre>
+<pre><code>$TUTORIAL_HOME/workflow-tutorial-platform/src/main/java</code></pre>
 <p>First, create a package folder structure called &quot;com/someco/scripts&quot;.</p>
-<p>Now create a new class called &quot;<a href="https://github.com/jpotts/alfresco-developer-series/blob/master/workflow/workflow-tutorial/workflow-tutorial-platform-jar/src/main/java/com/someco/scripts/GetReview.java">GetReview</a>&quot;. Here's the class, without the imports or the getter/setter methods:</p>
-<pre><code>public class GetReview extends DeclarativeWebScript {
+<p>Now create a new class called &quot;<a href="https://github.com/jpotts/alfresco-developer-series/blob/master/workflow/workflow-tutorial/workflow-tutorial-platform/src/main/java/com/someco/scripts/GetReview.java">GetReview</a>&quot; . Here's the class, without the imports or the getter/setter methods:</p>
+<div class="sourceCode"><pre class="sourceCode java"><code class="sourceCode java"><span class="kw">public</span> <span class="kw">class</span> GetReview <span class="kw">extends</span> DeclarativeWebScript {
 
-    Log logger = LogFactory.getLog(GetReview.class);
+    Log logger = LogFactory.<span class="fu">getLog</span>(GetReview.<span class="fu">class</span>);
 
-    // Dependencies
-    private WorkflowService workflowService;
+    <span class="co">// Dependencies</span>
+    <span class="kw">private</span> WorkflowService workflowService;
 
-    @Override
-    protected Map&lt;String, Object&gt; executeImpl(WebScriptRequest req, Status status) {
+    <span class="fu">@Override</span>
+    <span class="kw">protected</span> Map&lt;String, Object&gt; <span class="fu">executeImpl</span>(WebScriptRequest req, Status status) {
 
-        final String id = req.getParameter(&quot;id&quot;);
-        final String action = req.getParameter(&quot;action&quot;);
+        <span class="dt">final</span> String id = req.<span class="fu">getParameter</span>(<span class="st">&quot;id&quot;</span>);
+        <span class="dt">final</span> String action = req.<span class="fu">getParameter</span>(<span class="st">&quot;action&quot;</span>);
 
-        if (id == null || action == null) {
-            logger.debug(&quot;Email, ID, action, or secret not set&quot;);
-            status.setCode(400);
-            status.setMessage(&quot;Required data has not been provided&quot;);
-            status.setRedirect(true);
+        <span class="kw">if</span> (id == <span class="kw">null</span> || action == <span class="kw">null</span>) {
+            logger.<span class="fu">debug</span>(<span class="st">&quot;Email, ID, action, or secret not set&quot;</span>);
+            status.<span class="fu">setCode</span>(<span class="dv">400</span>);
+            status.<span class="fu">setMessage</span>(<span class="st">&quot;Required data has not been provided&quot;</span>);
+            status.<span class="fu">setRedirect</span>(<span class="kw">true</span>);
         }
 
-        Map&lt;String, Object&gt; model = new HashMap&lt;String, Object&gt;();
+        Map&lt;String, Object&gt; model = <span class="kw">new</span> HashMap&lt;String, Object&gt;();
 
-        Map&lt;QName, Serializable&gt; props = new HashMap&lt;QName, Serializable&gt;();
-        props.put(QName.createQName(SomeCoWorkflowModel.NAMESPACE_SOMECO_WORKFLOW_CONTENT_MODEL, SomeCoWorkflowModel.PROP_APPROVE_REJECT_OUTCOME), action);
-        workflowService.updateTask(id, props, null, null);
-        workflowService.endTask(id, action);
+        Map&lt;QName, Serializable&gt; props = <span class="kw">new</span> HashMap&lt;QName, Serializable&gt;();
+        props.<span class="fu">put</span>(QName.<span class="fu">createQName</span>(SomeCoWorkflowModel.<span class="fu">NAMESPACE_SOMECO_WORKFLOW_CONTENT_MODEL</span>, SomeCoWorkflowModel.<span class="fu">PROP_APPROVE_REJECT_OUTCOME</span>), action);
+        workflowService.<span class="fu">updateTask</span>(id, props, <span class="kw">null</span>, <span class="kw">null</span>);
+        workflowService.<span class="fu">endTask</span>(id, action);
 
-        return model;
+        <span class="kw">return</span> model;
     }
-}</code></pre>
+}</code></pre></div>
 <p>The class grabs the task ID and the action to take (the outcome) and then uses the workflow service to update and end the task. So, for example, if someone were to post this URL:</p>
 <pre><code>http://localhost:8080/alfresco/service/someco/bpm/review?id=activiti\$89&amp;action=Approve</code></pre>
 <p>the Java class would update the task identified by activiti$89 with the &quot;Approve&quot; outcome.</p>
-<p>If you are following along, don't forget to copy over the <a href="https://github.com/jpotts/alfresco-developer-series/blob/master/workflow/workflow-tutorial/workflow-tutorial-platform-jar/src/main/resources/alfresco/extension/templates/webscripts/com/someco/bpm/review.get.desc.xml">web script descriptor</a> and the <a href="https://github.com/jpotts/alfresco-developer-series/blob/master/workflow/workflow-tutorial/workflow-tutorial-platform-jar/src/main/resources/alfresco/extension/templates/webscripts/com/someco/bpm/review.get.html.ftl">freemarker</a> for the web script into:</p>
-<pre><code>$TUTORIAL_HOME/workflow-tutorial-platform-jar/src/main/resources/alfresco/extension/templates/webscripts/com/someco/bpm</code></pre>
-<p>You will also need to copy the Spring bean that wires in the Java controller into the <a href="https://github.com/jpotts/alfresco-developer-series/blob/master/workflow/workflow-tutorial/workflow-tutorial-platform-jar/src/main/resources/alfresco/module/workflow-tutorial-platform-jar/context/bootstrap-context.xml">bootstrap-context.xml</a> file located in:</p>
-<pre><code>$TUTORIAL_HOME/workflow-tutorial-platform-jar/src/main/resources/alfresco/module/workflow-tutorial-platform-jar/context</code></pre>
+<p>If you are following along, don't forget to copy over the <a href="https://github.com/jpotts/alfresco-developer-series/blob/master/workflow/workflow-tutorial/workflow-tutorial-platform/src/main/resources/alfresco/extension/templates/webscripts/com/someco/bpm/review.get.desc.xml">web script descriptor</a> and the <a href="https://github.com/jpotts/alfresco-developer-series/blob/master/workflow/workflow-tutorial/workflow-tutorial-platform/src/main/resources/alfresco/extension/templates/webscripts/com/someco/bpm/review.get.html.ftl">freemarker</a> for the web script into:</p>
+<pre><code>$TUTORIAL_HOME/workflow-tutorial-platform/src/main/resources/alfresco/extension/templates/webscripts/com/someco/bpm</code></pre>
+<p>You will also need to copy the Spring bean that wires in the Java controller into the <a href="https://github.com/jpotts/alfresco-developer-series/blob/master/workflow/workflow-tutorial/workflow-tutorial-platform/src/main/resources/alfresco/module/workflow-tutorial-platform/context/bootstrap-context.xml">bootstrap-context.xml</a> file located in:</p>
+<pre><code>$TUTORIAL_HOME/workflow-tutorial-platform/src/main/resources/alfresco/module/workflow-tutorial-platform/context</code></pre>
 <p>Once these are in place, the web script will be ready to receive clicks from the email that gets sent out. Writing code that sends the email is the next step.</p>
 <h4 id="create-a-custom-task-listener">Create a custom task listener</h4>
 <p>The second piece to the Third Party Review is sending the email to the third-party. There is an out-of-the-box mail action, and you've already seen how to call an action from a workflow using Alfresco JavaScript, but there are a few things to take care of other than simply sending an email, so let's write a custom task listener class to handle it.</p>
 <p>First, create a new package called &quot;com.someco.bpm&quot;.</p>
-<p>Then, create a new class called &quot;<a href="https://github.com/jpotts/alfresco-developer-series/blob/master/workflow/workflow-tutorial/workflow-tutorial-platform-jar/src/main/java/com/someco/bpm/ExternalReviewNotification.java">ExternalReviewNotification</a>&quot;. The goal is to send an email that has two links—one for approve and one for reject—that represent the two possible outcomes of the Third Party Review user task. The links need to include the task ID and the desired outcome as arguments.</p>
+<p>Then, create a new class called &quot;<a href="https://github.com/jpotts/alfresco-developer-series/blob/master/workflow/workflow-tutorial/workflow-tutorial-platform/src/main/java/com/someco/bpm/ExternalReviewNotification.java">ExternalReviewNotification</a>&quot; . The goal is to send an email that has two links—one for approve and one for reject—that represent the two possible outcomes of the Third Party Review user task. The links need to include the task ID and the desired outcome as arguments.</p>
 <p>The task listener's notify method will be called by Activiti. Here is what the method looks like:</p>
-<pre><code>public void notify(DelegateTask task) {
+<div class="sourceCode"><pre class="sourceCode java"><code class="sourceCode java"><span class="kw">public</span> <span class="dt">void</span> <span class="fu">notify</span>(DelegateTask task) {
 
     String recipient = (String)
-    task.getVariable(ExternalReviewNotification.RECIP_PROCESS_VARIABLE);
+    task.<span class="fu">getVariable</span>(ExternalReviewNotification.<span class="fu">RECIP_PROCESS_VARIABLE</span>);
 
-    StringBuffer sb = new StringBuffer();
-    sb.append(&quot;You have been assigned to a task named &quot;);
-    sb.append(task.getName());
-    sb.append(&quot;. Take the appropriate action by clicking one of the links below:rnrn&quot;);
-    sb.append(getLink(task.getId(), &quot;Approve&quot;));
-    sb.append(getLink(task.getId(), &quot;Reject&quot;));
+    StringBuffer sb = <span class="kw">new</span> StringBuffer();
+    sb.<span class="fu">append</span>(<span class="st">&quot;You have been assigned to a task named &quot;</span>);
+    sb.<span class="fu">append</span>(task.<span class="fu">getName</span>());
+    sb.<span class="fu">append</span>(<span class="st">&quot;. Take the appropriate action by clicking one of the links below:rnrn&quot;</span>);
+    sb.<span class="fu">append</span>(<span class="fu">getLink</span>(task.<span class="fu">getId</span>(), <span class="st">&quot;Approve&quot;</span>));
+    sb.<span class="fu">append</span>(<span class="fu">getLink</span>(task.<span class="fu">getId</span>(), <span class="st">&quot;Reject&quot;</span>));
 
-    ActionService actionService = getServiceRegistry().getActionService();
-    Action mailAction = actionService.createAction(MailActionExecuter.NAME);
+    ActionService actionService = <span class="fu">getServiceRegistry</span>().<span class="fu">getActionService</span>();
+    Action mailAction = actionService.<span class="fu">createAction</span>(MailActionExecuter.<span class="fu">NAME</span>);
 
-    mailAction.setParameterValue(MailActionExecuter.PARAM_SUBJECT, ExternalReviewNotification.SUBJECT);
-    mailAction.setParameterValue(MailActionExecuter.PARAM_TO, recipient);
-    mailAction.setParameterValue(MailActionExecuter.PARAM_FROM, ExternalReviewNotification.FROM_ADDRESS);
-    mailAction.setParameterValue(MailActionExecuter.PARAM_TEXT, sb.toString());
+    mailAction.<span class="fu">setParameterValue</span>(MailActionExecuter.<span class="fu">PARAM_SUBJECT</span>, ExternalReviewNotification.<span class="fu">SUBJECT</span>);
+    mailAction.<span class="fu">setParameterValue</span>(MailActionExecuter.<span class="fu">PARAM_TO</span>, recipient);
+    mailAction.<span class="fu">setParameterValue</span>(MailActionExecuter.<span class="fu">PARAM_FROM</span>, ExternalReviewNotification.<span class="fu">FROM_ADDRESS</span>);
+    mailAction.<span class="fu">setParameterValue</span>(MailActionExecuter.<span class="fu">PARAM_TEXT</span>, sb.<span class="fu">toString</span>());
 
-    actionService.executeAction(mailAction, null);
+    actionService.<span class="fu">executeAction</span>(mailAction, <span class="kw">null</span>);
 
-    return;
-}</code></pre>
+    <span class="kw">return</span>;
+}</code></pre></div>
 <p>The first thing the method does is grab the recipient from a process variable. Next, it uses a string buffer to start building the message body. The <code>task.getName()</code> call grabs the node name (&quot;Third Party Review&quot;).</p>
 <p>The <code>getLink()</code> method is just a helper method that produces a link that looks like this:</p>
 <pre><code>http://localhost:8080/alfresco/service/someco/bpm/review?id=activiti\$999&amp;action=Approve&amp;guest=true</code></pre>
 <p>The method has the host and port hardcoded which is another thing you'd want to fix if you did this for real.</p>
 <p>The last major block of code in the <code>notify()</code> method uses the action service to execute the Alfresco mail action. Sure, you could use the Java mail API to do it yourself, but why not leverage the mail action? That way you can leverage the same SMTP configuration settings already configured for Alfresco in alfresco-global.properties.</p>
-<p>The last thing to do is to call the <code>ExternalReviewNotification</code> class from the process. Edit the <a href="https://github.com/jpotts/alfresco-developer-series/blob/master/workflow/workflow-tutorial/workflow-tutorial-platform-jar/src/main/resources/alfresco/module/workflow-tutorial-platform-jar/workflow/publishWhitepaper.bpmn">publishWhitepaper.bpmn</a> file and find the task named &quot;Third Party Review&quot;. The user task already has a task listener on the &quot;complete&quot; event that you added earlier. Insert a new <code>activiti:taskListener</code> element that creates a task listener on the &quot;create&quot; event that invokes the ExternalReviewNotification class, like this:</p>
-<pre><code>&lt;userTask id=&quot;usertask5&quot; name=&quot;Third Party Review&quot; activiti:assignee=&quot;${initiator.properties.userName}&quot; activiti:formKey=&quot;scwf:activitiThirdPartyReview&quot;&gt;
-    &lt;extensionElements&gt;
-        &lt;activiti:taskListener event=&quot;create&quot; class=&quot;com.someco.bpm.ExternalReviewNotification&quot;&gt;&lt;/activiti:taskListener&gt;
-        &lt;activiti:taskListener event=&quot;complete&quot; class=&quot;org.alfresco.repo.workflow.activiti.tasklistener.ScriptTaskListener&quot;&gt;
-        &lt;activiti:field name=&quot;script&quot;&gt;
-        ...</code></pre>
+<p>The last thing to do is to call the <code>ExternalReviewNotification</code> class from the process. Edit the <a href="https://github.com/jpotts/alfresco-developer-series/blob/master/workflow/workflow-tutorial/workflow-tutorial-platform/src/main/resources/alfresco/module/workflow-tutorial-platform/workflow/publishWhitepaper.bpmn">publishWhitepaper.bpmn</a> file and find the task named &quot;Third Party Review&quot;. The user task already has a task listener on the &quot;complete&quot; event that you added earlier. Insert a new <code>activiti:taskListener</code> element that creates a task listener on the &quot;create&quot; event that invokes the ExternalReviewNotification class, like this:</p>
+<div class="sourceCode"><pre class="sourceCode xml"><code class="sourceCode xml"><span class="kw">&lt;userTask</span><span class="ot"> id=</span><span class="st">&quot;usertask5&quot;</span><span class="ot"> name=</span><span class="st">&quot;Third Party Review&quot;</span><span class="ot"> activiti:assignee=</span><span class="st">&quot;${initiator.properties.userName}&quot;</span><span class="ot"> activiti:formKey=</span><span class="st">&quot;scwf:activitiThirdPartyReview&quot;</span><span class="kw">&gt;</span>
+    <span class="kw">&lt;extensionElements&gt;</span>
+        <span class="kw">&lt;activiti:taskListener</span><span class="ot"> event=</span><span class="st">&quot;create&quot;</span><span class="ot"> class=</span><span class="st">&quot;com.someco.bpm.ExternalReviewNotification&quot;</span><span class="kw">&gt;&lt;/activiti:taskListener&gt;</span>
+        <span class="kw">&lt;activiti:taskListener</span><span class="ot"> event=</span><span class="st">&quot;complete&quot;</span><span class="ot"> class=</span><span class="st">&quot;org.alfresco.repo.workflow.activiti.tasklistener.ScriptTaskListener&quot;</span><span class="kw">&gt;</span>
+        <span class="kw">&lt;activiti:field</span><span class="ot"> name=</span><span class="st">&quot;script&quot;</span><span class="kw">&gt;</span>
+        ...</code></pre></div>
 <p>Now the process will send an email to a third-party reviewer if an email address is specified, the third-party reviewer can click on the appropriate outcome link which will trigger a web script causing the workflow to continue along the right path, and if the whitepaper is ultimately approved, the workflow will invoke the &quot;set web flag&quot; action to set its properties so it can be searched for and displayed on a web site.</p>
 <h3 id="deploy-and-test-1">Deploy and test</h3>
-<p>It's time to deploy and test. If you want to try out the notification piece, you'll need access to an SMTP server. For developing and testing locally, <a href="http://james.apache.org/">Apache James</a> works great. Remember to edit alfresco-global.properties to set your outgoing email settings to match your environment.</p>
+<p>It's time to deploy and test. If you want to try out the notification piece, you'll need access to an SMTP server. For developing and testing locally, <a href="http://james.apache.org/">Apache James</a> works great.</p>
+<p>Remember to edit alfresco-global.properties to set your outgoing email settings to match your environment. The alfresco-global.properties file that is copied to the Docker container resides in &quot;workflow-tutorial-platform-docker&quot; under src/main/docker. For example, I have Apache James running on a little test server, so I've added the following to the alfresco-global.properties file:</p>
+<pre><code>## Outbound email settings
+mail.host=192.168.0.30
+mail.port=25
+mail.protocol=smtp</code></pre>
+<p>I often use my local /etc/hosts file to resolve IP addresses, but because Alfresco is running in a Docker container, that won't work, so I'm using the IP address instead of the hostname.</p>
 <p>Two critical dependencies to your test are the content-tutorial and actions-tutorial AMPs. These must be deployed to the same repository your workflow-tutorial AMP is deployed to because your business process leverages an action and some Java code that exists in those AMPs.</p>
-<p>That's why, in the very beginning of the tutorial, you edited your pom.xml to add those projects as &quot;module dependencies&quot;. That way, when you run the embedded Tomcat server those AMPs will be installed automatically.</p>
-<p>If you are deploying the workflow tutorial AMPs to a standalone Alfresco installation, you can deploy the AMPs to your Alfresco installation as you normally would using the &quot;apply_amps.sh&quot; script. Alternatively, you can use the &quot;alfresco:install&quot; plugin that is part of the Alfresco Maven SDK to install each one.</p>
-<p>For example, on my machine, I have all of these projects checked out from source. I have Alfresco running in $TOMCAT_HOME with an exploded Alfresco WAR. So, for each project I can do this:</p>
-<ol style="list-style-type: decimal">
-<li>Switch to $TUTORIAL_HOME/$PROJECT_DIRECTORY</li>
-<li>Run <code>mvn install</code> to build the AMP. Use <code>mvn install -DskipTests=true</code> to skip the unit tests some of those projects may have.</li>
-<li>Run <code>mvn alfresco:install -Dmaven.alfresco.warLocation=$TOMCAT_HOME/webapps/alfresco</code> to install the AMP to the exploded Alfresco web application. If you are running the alfresco.war unexploded you can specify the path to the WAR file instead.</li>
-</ol>
-<p>Deploying to a standalone Alfresco is fine, but while you are developing (and working through these tutorials) it is easiest to use the embedded Tomcat server.</p>
-<p>Start it up by doing <code>run.sh</code> or <code>run.bat</code> depending on your platform. When it comes up, you'll be ready to test.</p>
+<p>That's why, in the very beginning of the tutorial, you edited the Docker module pom.xml to add those projects as dependencies. That way, when you run the containers those AMPs will be installed automatically.</p>
+<p>If you are deploying the workflow tutorial AMPs to a standalone Alfresco installation, you can deploy the AMPs to your Alfresco installation as you normally would using the &quot;apply_amps.sh&quot; script.</p>
+<p>Deploying to a standalone Alfresco is fine, but while you are developing (and working through these tutorials) it is easiest to use the Docker containers.</p>
+<p>Start it up by doing <code>./run.sh build_start</code> or <code>run.bat</code> depending on your platform. When it comes up, you'll be ready to test.</p>
 <p>At a minimum, you'll need to run several workflows:</p>
 <ol style="list-style-type: decimal">
 <li>The whitepaper receives all of its approvals but does not have a third-party reviewer.</li>
@@ -1328,7 +1413,8 @@ prop.scwf_reviewerEmail=Reviewer Email</code></pre>
 </ol>
 <p>When you test using the third-party reviewer email you should get an email that looks like this:</p>
 <div class="figure">
-<img src="images/reviewer-email-notification.png" alt="Third Party Reviewer notification email" /><p class="caption">Third Party Reviewer notification email</p>
+<img src="images/reviewer-email-notification.png" alt="Third Party Reviewer notification email" />
+<p class="caption">Third Party Reviewer notification email</p>
 </div>
 <p>Clicking on a link causes the workflow to proceed along the specified path.</p>
 <p><strong>Warning: The Third Party example is <em>not</em> production-ready</strong></p>
@@ -1344,24 +1430,23 @@ prop.scwf_reviewerEmail=Reviewer Email</code></pre>
 <p>One way to do this is to add a boundary timer to the Third Party Review task. When the timer expires, the timer can cancel the Third Party Review task and then route to the Approved task.</p>
 <p>Here's how to do it:</p>
 <ol style="list-style-type: decimal">
-<li>Edit the <a href="https://github.com/jpotts/alfresco-developer-series/blob/master/workflow/workflow-tutorial/workflow-tutorial-platform-jar/src/main/resources/alfresco/module/workflow-tutorial-platform-jar/workflow/publishWhitepaper.bpmn">publishWhitepaper.bpmn</a> process definition file.</li>
+<li>Edit the <a href="https://github.com/jpotts/alfresco-developer-series/blob/master/workflow/workflow-tutorial/workflow-tutorial-platform/src/main/resources/alfresco/module/workflow-tutorial-platform/workflow/publishWhitepaper.bpmn">publishWhitepaper.bpmn</a> process definition file.</li>
 <li><p>Find the Third-Party Review task. In my diagram it is &quot;usertask2&quot;. Find the &quot;Approved Notification&quot; task. In my diagram it is &quot;usertask5&quot;. With those references updated to reflect the values in your diagram, add the following:</p>
-<pre><code>&lt;boundaryEvent id=&quot;boundarytimer1&quot; cancelActivity=&quot;true&quot; attachedToRef=&quot;usertask2&quot;&gt;
-    &lt;timerEventDefinition&gt;
-        &lt;timeDuration&gt;PT5M&lt;/timeDuration&gt;
-    &lt;/timerEventDefinition&gt;
-&lt;/boundaryEvent&gt;
-&lt;sequenceFlow id=&quot;toExpiredApprove&quot; name=&quot;&quot; sourceRef=&quot;boundarytimer1&quot; targetRef=&quot;usertask5&quot;&gt;&lt;/sequenceFlow&gt;</code></pre></li>
+<div class="sourceCode"><pre class="sourceCode xml"><code class="sourceCode xml"><span class="kw">&lt;boundaryEvent</span><span class="ot"> id=</span><span class="st">&quot;boundarytimer1&quot;</span><span class="ot"> cancelActivity=</span><span class="st">&quot;true&quot;</span><span class="ot"> attachedToRef=</span><span class="st">&quot;usertask2&quot;</span><span class="kw">&gt;</span>
+    <span class="kw">&lt;timerEventDefinition&gt;</span>
+        <span class="kw">&lt;timeDuration&gt;</span>PT5M<span class="kw">&lt;/timeDuration&gt;</span>
+    <span class="kw">&lt;/timerEventDefinition&gt;</span>
+<span class="kw">&lt;/boundaryEvent&gt;</span>
+<span class="kw">&lt;sequenceFlow</span><span class="ot"> id=</span><span class="st">&quot;toExpiredApprove&quot;</span><span class="ot"> name=</span><span class="st">&quot;&quot;</span><span class="ot"> sourceRef=</span><span class="st">&quot;boundarytimer1&quot;</span><span class="ot"> targetRef=</span><span class="st">&quot;usertask5&quot;</span><span class="kw">&gt;&lt;/sequenceFlow&gt;</span></code></pre></div></li>
 </ol>
 <p>This sets the timer for 5 minutes—that's what the &quot;PT5M&quot; expression means--but you could obviously set it for as long or as short as you wish. That expression is part of the <a href="http://en.wikipedia.org/wiki/ISO_8601">ISO 8601</a> standard for durations.</p>
 <p>Setting an absolute date works as well. The due date could also be the result of an expression. To use a specific date instead of a duration, use a <code>timeDate</code> element instead of a <code>timeDuration</code> element.</p>
 <h3 id="deploy-and-test-2">Deploy and test</h3>
-<p>If you only make changes to the process definition, you can just build the project. You don't have to restart.</p>
-<p>If you are deploying to a separate, standalone Alfresco server, use <code>mvn install</code> to create the AMP, then <code>mvn alfresco:install</code> to deploy the AMP to your Alfresco installation without restarting.</p>
-<p>Regardless of how you are deploying, remember to use the Alfresco workflow console to redeploy the process definition.</p>
+<p>If you only make changes to the process definition, you can just build the project and restart the Alfresco container. You don't have to restart all of the containers. To do that, run <code>mvn install -DskipTests</code> and then <code>./run.sh reload_acs</code> to rebuild and reload the Alfresco container.</p>
+<p>Remember to use the Alfresco workflow console to redeploy the process definition.</p>
 <p>Now test the third-party reviewer path but instead of clicking the approve or reject link that is included in the email, ignore it for five minutes. You should see the workflow continue along the approved path when the timer expires.</p>
 <h1 id="conclusion">Conclusion</h1>
-<p>You now know the ins and outs of implementing advanced workflows using the Activiti engine embedded within Alfresco. You know when Alfresco's basic workflows will suffice and when advanced workflows are more appropriate. You learned that process definitions are collections of events, tasks, and gateways joined by sequence flows. The representation of a process definition, both as a diagram, and as XML, is standardized through BPMN. And, you now know how to add business logic to workflows using expressions, Alfresco JavaScript and Java.</p>
+<p>You now know the ins and outs of implementing advanced workflows using the Activiti engine embedded within Alfresco. You know when Alfresco's basic workflows will suffice and when advanced workflows are more appropriate. You learned that process definitions are collections of events, tasks, and gateways joined by sequence flows. The representation of a process definition, both as a diagram, and as XML, is standardized through BPMN. And, you now know how to add business logic to workflows using expressions, Alfresco JavaScript, and Java.</p>
 <p>I also walked you through the overall process of implementing advanced workflows in Alfresco by walking through some simple Hello World examples and then a more complex example that used many different node types and business logic options. I even spiced things up a bit by exposing the business process to a third-party via SMTP and HTTP with the help of the web script framework.</p>
 <p>Hopefully, this has sparked some ideas about how you can leverage Alfresco and Activiti in your own projects and has given you some concrete examples you can leverage in your own projects going forward.</p>
 <h1 id="where-to-find-more-information">Where to find more information</h1>

@@ -1,0 +1,66 @@
+<assembly
+    xmlns="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.3"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.3 http://maven.apache.org/xsd/assembly-1.1.3.xsd">
+
+    <!--
+    Note that the Module dependency specified in the configuration section for the Alfresco Maven Plugin
+    needs to be set to amp if any 3rd party libs should be applied by MMT:
+`
+    <platformModules>
+        <moduleDependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>some-platform</artifactId>
+            <version>${project.version}</version>
+            <type>amp</type>
+        </moduleDependency>
+    -->
+
+    <id>build-amp-file</id>
+
+    <formats>
+        <format>amp</format>
+    </formats>
+
+    <includeBaseDirectory>false</includeBaseDirectory>
+
+    <files>
+        <!-- Filter module.properties and put at top level in the AMP -->
+        <file>
+            <source>src/main/resources/alfresco/module/${project.artifactId}/module.properties</source>
+            <filtered>true</filtered>
+        </file>
+        <!-- Include AMP -> WAR mapping file (needed for custom mappings) -->
+        <file>
+            <source>src/main/assembly/file-mapping.properties</source>
+            <filtered>false</filtered>
+        </file>
+        <!-- Add module-specific log4j.properties configuration at top level in the AMP -->
+        <file>
+            <source>src/main/resources/alfresco/module/${project.artifactId}/log4j.properties</source>
+            <filtered>false</filtered>
+        </file>
+    </files>
+
+    <fileSets>
+        <!-- Anything in the assembly/web directory will end up in the /web directory in the AMP -->
+        <fileSet>
+            <directory>src/main/assembly/web</directory>
+            <outputDirectory>web</outputDirectory>
+            <filtered>true</filtered> <!-- Will filter files and substitute POM props such as for example ${project.name} -->
+            <excludes>
+                <exclude>README.md</exclude>
+            </excludes>
+        </fileSet>
+    </fileSets>
+
+    <!-- Include the project artifact (JAR) in the /lib directory in the AMP, and any 3rd party libraries (JARs)
+         used by the customization.
+    -->
+    <dependencySets>
+        <dependencySet>
+            <outputDirectory>lib</outputDirectory>
+        </dependencySet>
+    </dependencySets>
+
+</assembly>

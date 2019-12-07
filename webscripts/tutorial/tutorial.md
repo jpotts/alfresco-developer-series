@@ -1,6 +1,6 @@
 % Introduction to the Web Script Framework
 % Jeff Potts, [Metaversant Group](https://www.metaversant.com)
-% April, 2018
+% February, 2019
 
 License
 =======
@@ -62,7 +62,8 @@ a black-box component. Other systems, both producers and consumers of content,
 need to interact with the CMS and other components via REST.
 
 Alfresco provides an industry-standard, RESTful API for working with the
-repository called CMIS. But there are times when this API doesn't do everything
+repository called CMIS. Starting in release 5.2, they added a new proprietary
+RESTful API. But there are times when these APIs don't do everything
 you need to do. In that case, a great alternative is to create your own API
 using the web script framework.
 
@@ -89,14 +90,13 @@ of expense reports to return. The point is that the structure of the URL and how
 The response the URL returns is also up to you. Your response might return HTML,
 XML, JSON, or even a JSR-168 Portlet.
 
-The web script framework makes it easy to follow the
-Model-View-Controller (MVC) pattern, although it isn't required. The
-**controller** is server-side JavaScript, a Java class, or both. The controller
-handles the request, performs any business logic that is needed, populates the
-model with data, and then forwards the request to the **view**. The view is a
-FreeMarker template responsible for constructing a response in the appropriate
-format. The **model** is a data structure passed between the controller and the
-view.
+The web script framework makes it easy to follow the Model-View-Controller (MVC)
+pattern, although it isn't required. The **controller** is server-side
+JavaScript, a Java class, or both. The controller handles the request, performs
+any business logic that is needed, populates the model with data, and then
+forwards the request to the **view**. The view is a FreeMarker template
+responsible for constructing a response in the appropriate format. The **model**
+is a data structure passed between the controller and the view.
 
 The mapping of URL to controller is done through an XML *descriptor* which is
 responsible for declaring the URL pattern, whether the script requires a
@@ -156,18 +156,18 @@ Do the following:
 3.  Create a file called helloworld.get.desc.xml with the following
     content:
 
-    ```
+    ```xml
     <webscript>
-    <shortname>Hello World</shortname>
-    <description>Hello world web script</description>
-    <url>/someco/helloworld?name={nameArgument}</url>
+        <shortname>Hello World</shortname>
+        <description>Hello world web script</description>
+        <url>/someco/helloworld?name={nameArgument}</url>
     </webscript>
     ```
 
 4.  Create a file called helloworld.get.html.ftl with the following
     content:
 
-    ```
+    ```html
     <html>
     <body>
     <p>Hello, ${args.name}!</p>
@@ -186,10 +186,10 @@ Do the following:
     ```
 
     Notice that the URL starts with "/alfresco/service" but the descriptor you
-    created in step 3 defines the URL to be "/someco/helloworld". When you are invoking
-    web scripts running in Alfresco over HTTP/S, the URL will always start with
-    "/[alfresco web context]/service". You may also see the "service" part
-    shortened to "s".
+    created in step 3 defines the URL to be "/someco/helloworld". When you are
+    invoking web scripts running in Alfresco over HTTP/S, the URL will always
+    start with "/[alfresco web context]/service". You may also see the "service"
+    part shortened to "s".
 
 A few things to note. First, notice the file names include “get”. That's the
 HTTP method used to call the URL. In later examples you'll see how to use POST
@@ -216,13 +216,13 @@ Most web scripts are going to use a controller, though, so go ahead and add one.
 
 1.  Create a file called helloworld.get.js with the following content:
 
-    ```
+    ```javascript
     model.foo = "bar";
     ```
 
 2.  Update your helloworld.get.html.ftl file with the following content:
 
-    ```
+    ```html
     <html>
     <body>
     <p>Hello, ${args.name}!</p>
@@ -236,12 +236,12 @@ Most web scripts are going to use a controller, though, so go ahead and add one.
     you'd see an Error 500 to that effect. To fix this, modify your descriptor
     to add an authentication element, like this:
 
-    ```
+    ```xml
     <webscript>
-    <shortname>Hello World</shortname>
-    <description>Hello world web script</description>
-    <url>/someco/helloworld?name={nameArgument}</url>
-    <authentication>guest</authentication>
+        <shortname>Hello World</shortname>
+        <description>Hello world web script</description>
+        <url>/someco/helloworld?name={nameArgument}</url>
+        <authentication>guest</authentication>
     </webscript>
     ```
 
@@ -317,10 +317,12 @@ Tools
 -----
 Here is what I am using on my machine:
 
-* Mac OS X 10.12.6
-* Java 1.8.0_77
-* Apache Maven 3.5.3 (installed using Macports)
-* Alfresco Maven SDK 3.0.1 (No download necessary)
+* Ubuntu 16.04.5 LTS
+* Java 1.8.0_201
+* Apache Maven 3.3.9
+* Alfresco Maven SDK 4.0 (No download necessary)
+* Docker 18.09.2
+* Docker Compose 1.23.2
 
 By default, when you create an Alfresco project using the Alfresco Maven
 SDK the project will be configured to depend on the latest stable Alfresco
@@ -356,81 +358,84 @@ project to generate AMPs, edit the pom.xml and uncomment the
 maven-assembly-plugin.
 
 Next, there are a few dependencies we need to take care of. First, when running
-the project with the embedded Tomcat server, we want the webscripts-tutorial AMPs
-to be deployed, but we also want some of the AMPs from previous tutorials to be
-deployed. Specifically, the content tutorial, behaviors tutorial, and actions
-tutorial. To make this happen, edit the pom.xml in the "webscripts-tutorial"
+the project, we want the webscripts-tutorial AMPs to be deployed, but we also
+want some of the AMPs from previous tutorials to be deployed as well.
+Specifically, the content tutorial, behaviors tutorial, and actions tutorial. To
+make this happen, edit the pom.xml in the "webscripts-tutorial-platform-docker"
 directory and add the following platform dependencies:
 
-    <platformModules>
-        ...SNIP...
-        <!-- Bring in the content tutorial repo AMP so we can run embedded. -->
-        <moduleDependency>
-            <groupId>com.someco</groupId>
-            <artifactId>content-tutorial-platform-jar</artifactId>
-            <version>1.0-SNAPSHOT</version>
-            <type>amp</type>
-        </moduleDependency>
-
-        <!-- Bring in the behavior tutorial repo AMP so we can run embedded. -->
-        <moduleDependency>
-            <groupId>com.someco</groupId>
-            <artifactId>behavior-tutorial-platform-jar</artifactId>
-            <version>1.0-SNAPSHOT</version>
-            <type>amp</type>
-        </moduleDependency>
-
-        <!-- Bring in the actions tutorial repo AMP so we can run embedded. -->
-        <moduleDependency>
-            <groupId>com.someco</groupId>
-            <artifactId>actions-tutorial-platform-jar</artifactId>
-            <version>1.0-SNAPSHOT</version>
-            <type>amp</type>
-        </moduleDependency>
-        ...SNIP...
-    </platform-modules>
-
-We also want the Share AMPs from those same projects to be installed, so a little
-further down in the same file add the following Share dependencies:
-
-    <shareModules>
-        ...SNIP...
-        <!-- Bring in the content tutorial share AMP so we can run embedded. -->
-        <moduleDependency>
-            <groupId>com.someco</groupId>
-            <artifactId>content-tutorial-share-jar</artifactId>
-            <version>1.0-SNAPSHOT</version>
-            <type>amp</type>
-        </moduleDependency>
-
-        <!-- Bring in the behavior tutorial share AMP so we can run embedded. -->
-        <moduleDependency>
-            <groupId>com.someco</groupId>
-            <artifactId>behavior-tutorial-share-jar</artifactId>
-            <version>1.0-SNAPSHOT</version>
-            <type>amp</type>
-        </moduleDependency>
-
-        <!-- Bring in the actions tutorial share AMP so we can run embedded. -->
-        <moduleDependency>
-            <groupId>com.someco</groupId>
-            <artifactId>actions-tutorial-share-jar</artifactId>
-            <version>1.0-SNAPSHOT</version>
-            <type>amp</type>
-        </moduleDependency>
-        ...SNIP...
-    </shareModules>
-
-Finally, the tutorial will have a compile-time dependency on the behavior-tutorial.
-To address that, edit the pom.xml under "webscripts-tutorial-platform-jar" and
-add the following dependency:
-
+```xml
+<dependencies>
     <dependency>
         <groupId>com.someco</groupId>
-        <artifactId>behavior-tutorial-platform-jar</artifactId>
+        <artifactId>webscripts-tutorial-platform</artifactId>
         <version>1.0-SNAPSHOT</version>
-        <scope>provided</scope>
     </dependency>
+    <!-- Bring in the content tutorial repo AMP so we can run embedded. -->
+    <dependency>
+        <groupId>com.someco</groupId>
+        <artifactId>content-tutorial-platform</artifactId>
+        <version>1.0-SNAPSHOT</version>
+    </dependency>
+    <!-- Bring in the actions tutorial repo AMP so we can run embedded. -->
+    <dependency>
+        <groupId>com.someco</groupId>
+        <artifactId>actions-tutorial-platform</artifactId>
+        <version>1.0-SNAPSHOT</version>
+    </dependency>
+    <!-- Bring in the behavior tutorial repo AMP so we can run embedded. -->
+    <dependency>
+        <groupId>com.someco</groupId>
+        <artifactId>behavior-tutorial-platform</artifactId>
+        <version>1.0-SNAPSHOT</version>
+    </dependency>
+</dependencies>
+```
+
+We also want the Share AMPs from those same projects to be installed, so edit
+the pom.xml file in the "webscripts-tutorial-share-docker" directory to add the
+following Share dependencies:
+
+```xml
+<dependencies>
+    <dependency>
+        <groupId>com.someco</groupId>
+        <artifactId>webscripts-tutorial-share</artifactId>
+        <version>1.0-SNAPSHOT</version>
+    </dependency>
+    <!-- Bring in the content tutorial share AMP so we can run embedded. -->
+    <dependency>
+        <groupId>com.someco</groupId>
+        <artifactId>content-tutorial-share</artifactId>
+        <version>1.0-SNAPSHOT</version>
+    </dependency>
+    <!-- Bring in the actions tutorial share AMP so we can run embedded. -->
+    <dependency>
+        <groupId>com.someco</groupId>
+        <artifactId>actions-tutorial-share</artifactId>
+        <version>1.0-SNAPSHOT</version>
+    </dependency>
+    <!-- Bring in the behavior tutorial share AMP so we can run embedded. -->
+    <dependency>
+        <groupId>com.someco</groupId>
+        <artifactId>behavior-tutorial-share</artifactId>
+        <version>1.0-SNAPSHOT</version>
+    </dependency>
+</dependencies>
+```
+
+Finally, the tutorial will have a compile-time dependency on the behavior-tutorial.
+To address that, edit the pom.xml under "webscripts-tutorial-platform" and
+add the following dependency:
+
+```xml
+<dependency>
+    <groupId>com.someco</groupId>
+    <artifactId>behavior-tutorial-platform</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <scope>provided</scope>
+</dependency>
+```
 
 Now we'll be able to refer to Java classes in the behavior tutorial and when
 running the project the correct AMPs will get installed automatically.
@@ -449,7 +454,7 @@ and ratings as well as post new ratings. Before diving in, it probably makes
 sense to rough out the API.
 
 | URL | Method | Description | Response Formats |
-| --- | ------ | ----------- | ---------------- |
+| --- | ------ | ------------------------------------------ | ---------------- |
 | /someco/whitepapers | GET | Returns a list of whitepapers. | HTML, JSON |
 | /someco/rating?id={id} | GET | Gets the average rating for a given whitepaper by passing in the whitepaper's noderef. | HTML, JSON |
 | /someco/rating?id={id}&rating={rating}&user={user} | POST | Creates a new rating for the specified whitepaper by passing in a rating value and the user who posted the rating. | HTML, JSON |
@@ -506,7 +511,7 @@ I'll walk you through the descriptor, controller, and the two views.
 The first step is to create the descriptor file. Web scripts that are deployed
 in an AMP go in:
 
-    $TUTORIAL_HOME/webscripts-tutorial-platform-jar/src/main/resources/alfresco/extension/templates/webscripts
+    $TUTORIAL_HOME/webscripts-tutorial-platform/src/main/resources/alfresco/extension/templates/webscripts
 
 The Alfresco Maven SDK probably created that directory structure and added an
 "alfresco" directory with some demo web scripts. Go ahead and delete the example
@@ -520,38 +525,42 @@ tutorial will use "com/someco" for its package. This particular web script is
 about whitepapers so the files that make up the whitepapers web script will
 reside in:
 
-    $TUTORIAL_HOME/webscripts-tutorial-platform-jar/src/main/resources/alfresco/extension/templates/webscripts/com/someco/whitepapers
+    $TUTORIAL_HOME/webscripts-tutorial-platform/src/main/resources/alfresco/extension/templates/webscripts/com/someco/whitepapers
 
-To create the descriptor, create a new XML file called "[whitepapers.get.desc.xml](https://github.com/jpotts/alfresco-developer-series/blob/master/webscripts/webscripts-tutorial/webscripts-tutorial-platform-jar/src/main/resources/alfresco/extension/templates/webscripts/com/someco/whitepapers/whitepapers.get.desc.xml)"
+To create the descriptor, create a new XML file called "[whitepapers.get.desc.xml](https://github.com/jpotts/alfresco-developer-series/blob/master/webscripts/webscripts-tutorial/webscripts-tutorial-platform/src/main/resources/alfresco/extension/templates/webscripts/com/someco/whitepapers/whitepapers.get.desc.xml)"
 in that directory.
 
 Edit the file to have the following content:
 
-    <webscript>
-        <shortname>Get all whitepapers</shortname>
-        <description>Returns a list of active whitepapers</description>
-        <url>/someco/whitepapers</url>
-        <url>/someco/whitepapers.json</url>
-        <url>/someco/whitepapers.html</url>
-        <format default="json">extension</format>
-        <authentication>guest</authentication>
-        <transaction>none</transaction>
-    </webscript>
+```xml
+<webscript>
+    <shortname>Get all whitepapers</shortname>
+    <description>Returns a list of active whitepapers</description>
+    <url>/someco/whitepapers</url>
+    <url>/someco/whitepapers.json</url>
+    <url>/someco/whitepapers.html</url>
+    <format default="json">extension</format>
+    <authentication>guest</authentication>
+    <transaction>none</transaction>
+</webscript>
+```
 
-There are a few elements in this descriptor you didn't see in the Hello
-World example. First, notice that there are multiple `url` elements. There
-is one `url` element for each format plus one without a format. This shows how
-to request a different output format from the same base URL. Because the
-URLs differ only in format, it isn't strictly required that they be
-listed in the descriptor, but it is a good practice.
+There are a few elements in this descriptor you didn't see in the Hello World
+example. First, notice that there are multiple `url` elements. There is one
+`url` element for each format plus one without a format. This shows how to
+request a different output format from the same base URL. Because the URLs
+differ only in format, it isn't strictly required that they be listed in the
+descriptor, but it is a good practice.
 
 The `format` element declares the which extension syntax the web script uses and
 defines a default output format. In this case, the web script uses the
 “extension” syntax—the extension on the URL specifies the format of the
 response. An alternative syntax is to use the “argument” syntax like this:
 
-    <url>/someco/whitepapers?format=json</url>
-    <url>/someco/whitepapers?format=html</url>
+```xml
+<url>/someco/whitepapers?format=json</url>
+<url>/someco/whitepapers?format=html</url>
+```
 
 Which syntax you use is really up to you. If you want to accept either syntax,
 you can use “any” as the format.
@@ -565,9 +574,9 @@ The `authentication` element declares the minimum level of authentication
 required for this script. If your web script access the repository this must be
 set to "guest" or higher. Other options are "none", "user", and "admin".
 
-The `transaction` element specifies the level of transaction required by
-the script. Listing whitepapers doesn't need a transaction, so in this example
-it is set to "none". Other possible values are:
+The `transaction` element specifies the level of transaction required by the
+script. Listing whitepapers doesn't need a transaction, so in this example it is
+set to "none". Other possible values are:
 
 * **required**: the web script requires a transaction and can be part of an
 existing transaction if one has already been started
@@ -578,32 +587,34 @@ The next step is to write the controller.
 ### Step 2: Write the controller
 
 The controller is where the logic that queries the whitepapers will live. Create
-a file called "[whitepapers.get.js](https://github.com/jpotts/alfresco-developer-series/blob/master/webscripts/webscripts-tutorial/webscripts-tutorial-platform-jar/src/main/resources/alfresco/extension/templates/webscripts/com/someco/whitepapers/whitepapers.get.js)"
+a file called "[whitepapers.get.js](https://github.com/jpotts/alfresco-developer-series/blob/master/webscripts/webscripts-tutorial/webscripts-tutorial-platform/src/main/resources/alfresco/extension/templates/webscripts/com/someco/whitepapers/whitepapers.get.js)"
 in the same directory as the controller. Edit the file with the following
 content:
 
-    <import resource="classpath:alfresco/extension/scripts/rating.js">
+```javascript
+<import resource="classpath:alfresco/extension/scripts/rating.js">
 
-    var whitepapers = search.luceneSearch("PATH:\"/app:company_home/cm:Someco/cm:Whitepapers/*\" +TYPE:\"{http://www.someco.com/model/content/1.0}whitepaper\"");
+var whitepapers = search.luceneSearch("PATH:\"/app:company_home/cm:Someco/cm:Whitepapers/*\" +TYPE:\"{http://www.someco.com/model/content/1.0}whitepaper\"");
 
-    if (whitepapers == null || whitepapers.length == 0) {
-        status.code = 404;
-        status.message = "No whitepapers found";
-        status.redirect = true;
-    } else {
-        var whitepaperInfo = new Array();
-        for (i = 0; i < whitepapers.length; i++) {
-            var whitepaper = new whitepaperEntry(whitepapers[i],
-            getRating(whitepapers[i]));
-            whitepaperInfo[i] = whitepaper;
-        }
-        model.whitepapers = whitepaperInfo;
+if (whitepapers == null || whitepapers.length == 0) {
+    status.code = 404;
+    status.message = "No whitepapers found";
+    status.redirect = true;
+} else {
+    var whitepaperInfo = new Array();
+    for (i = 0; i < whitepapers.length; i++) {
+        var whitepaper = new whitepaperEntry(whitepapers[i],
+        getRating(whitepapers[i]));
+        whitepaperInfo[i] = whitepaper;
     }
+    model.whitepapers = whitepaperInfo;
+}
 
-    function whitepaperEntry(whitepaper, rating) {
-        this.whitepaper = whitepaper;
-        this.rating = rating;
-    }
+function whitepaperEntry(whitepaper, rating) {
+    this.whitepaper = whitepaper;
+    this.rating = rating;
+}
+```
 
 The first thing to notice about the script is that it imports another script.
 The rating.js script was created as part of the [custom behaviors tutorial](https://ecmarchitect.com/alfresco-developer-series-tutorials/behaviors/tutorial/tutorial.html)
@@ -629,13 +640,15 @@ The `getRating()` function that is getting called resides in rating.js, which is
 part of the AMP you created in the custom behaviors tutorial. Just for
 reference, that function looks like this:
 
-    function getRating(curNode, curUser) {
-        var rating = {};
-        rating.average = curNode.properties["{http://www.someco.com/model/ratings/1.0}averageRating"];
-        rating.count = curNode.properties["{http://www.someco.com/model/ratings/1.0}ratingCount"];
-        rating.user = getUserRating(curNode, curUser);
-        return rating;
-    }
+```javascript
+function getRating(curNode, curUser) {
+    var rating = {};
+    rating.average = curNode.properties["{http://www.someco.com/model/ratings/1.0}averageRating"];
+    rating.count = curNode.properties["{http://www.someco.com/model/ratings/1.0}ratingCount"];
+    rating.user = getUserRating(curNode, curUser);
+    return rating;
+}
+```
 
 The function simply retrieves the `scr:averageRating` and `scr:ratingCount`
 properties from the specified node as well as the current user's rating for
@@ -645,75 +658,77 @@ this object, and returns everything in a single rating object.
 
 Assuming there are items in the search results, the web script will need
 FreeMarker templates to return them in the appropriate format. Let's create the
-HTML response template first. Create a new file called "[whitepapers.get.html.ftl](https://github.com/jpotts/alfresco-developer-series/blob/master/webscripts/webscripts-tutorial/webscripts-tutorial-platform-jar/src/main/resources/alfresco/extension/templates/webscripts/com/someco/whitepapers/whitepapers.get.html.ftl)"
+HTML response template first. Create a new file called "[whitepapers.get.html.ftl](https://github.com/jpotts/alfresco-developer-series/blob/master/webscripts/webscripts-tutorial/webscripts-tutorial-platform/src/main/resources/alfresco/extension/templates/webscripts/com/someco/whitepapers/whitepapers.get.html.ftl)"
 in the same directory as the controller you just created. Edit the file with the
 following content:
 
-    <#assign datetimeformat="EEE, dd MMM yyyy HH:mm:ss zzz">
-    <html>
-        <body>
-            <h3>Whitepapers</h3>
-            <table>
-                <#list whitepapers as child>
+```html
+<#assign datetimeformat="EEE, dd MMM yyyy HH:mm:ss zzz">
+<html>
+    <body>
+        <h3>Whitepapers</h3>
+        <table>
+            <#list whitepapers as child>
+                <tr>
+                    <td><b>Name</b></td>
+	                  <td>${child.whitepaper.properties.name}</td>
+                </tr>
+                <tr>
+                    <td><b>Title</b></td>
+	                  <td>${child.whitepaper.properties["cm:title"]!""}</td>
+                </tr>
+                <tr>
+                    <td><b>Link</b></td>
+	                  <td><a href="${url.context}${child.whitepaper.url}?guest=true">${url.context}${child.whitepaper.url}</a></td>
+                </tr>
+                <tr>
+                    <td><b>Type</b></td>
+	                  <td>${child.whitepaper.mimetype}</td>
+                </tr>
+                <tr>
+                    <td><b>Size</b></td>
+                  	<td>${child.whitepaper.size}</td>
+                </tr>
+                <tr>
+                    <td><b>Id</b></td>
+	                  <td>${child.whitepaper.id}</td>
+                </tr>
+                <tr>
+                    <td><b>Description</b></td>
+                    <td><p><#if child.whitepaper.properties["cm:description"]?exists
+                && child.whitepaper.properties["cm:description"] !=
+                "">${child.whitepaper.properties["cm:description"]}</#if></p>
+                    </td>
+                </tr>
+                <tr>
+                    <td><b>Pub Date</b></td>
+	                  <td>${child.whitepaper.properties["cm:modified"]?string(datetimeformat)}</td>
+                </tr>
+                <tr>
+                    <td><b><a href="${url.serviceContext}/rating.html?id=${child.whitepaper.id}&guest=true">Rating</a></b></td>
+                    <td>
+                        <table>
+                            <tr>
+                                <td><b>Average</b></td>
+		                            <td>${child.rating.average!"0"}</td>
+                            </tr>
+                            <tr>
+                                <td><b>Count</b></td>
+		                            <td>${child.rating.count!"0"}</td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+                <#if !(child.whitepaper == whitepapers?last.whitepaper)>
                     <tr>
-                        <td><b>Name</b></td>
-			<td>${child.whitepaper.properties.name}</td>
-                    </tr>
-                    <tr>
-                        <td><b>Title</b></td>
-			<td>${child.whitepaper.properties["cm:title"]!""}</td>
-                    </tr>
-                    <tr>
-                        <td><b>Link</b></td>
-			<td><a href="${url.context}${child.whitepaper.url}?guest=true">${url.context}${child.whitepaper.url}</a></td>
-                    </tr>
-                    <tr>
-                        <td><b>Type</b></td>
-			<td>${child.whitepaper.mimetype}</td>
-                    </tr>
-                    <tr>
-                        <td><b>Size</b></td>
-			<td>${child.whitepaper.size}</td>
-                    </tr>
-                    <tr>
-                        <td><b>Id</b></td>
-			<td>${child.whitepaper.id}</td>
-                    </tr>
-                    <tr>
-                        <td><b>Description</b></td>
-                        <td><p><#if child.whitepaper.properties["cm:description"]?exists
-                    && child.whitepaper.properties["cm:description"] !=
-                    "">${child.whitepaper.properties["cm:description"]}</#if></p>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td><b>Pub Date</b></td>
-			<td>${child.whitepaper.properties["cm:modified"]?string(datetimeformat)}</td>
-                    </tr>
-                    <tr>
-                        <td><b><a href="${url.serviceContext}/rating.html?id=${child.whitepaper.id}&guest=true">Rating</a></b></td>
-                        <td>
-                            <table>
-                                <tr>
-                                    <td><b>Average</b></td>
-				    <td>${child.rating.average!"0"}</td>
-                                </tr>
-                                <tr>
-                                    <td><b>Count</b></td>
-				    <td>${child.rating.count!"0"}</td>
-                                </tr>
-                            </table>
-                        </td>
-                    </tr>
-                    <#if !(child.whitepaper == whitepapers?last.whitepaper)>
-                        <tr>
-			    <td colspan="2" bgcolor="999999">&nbsp;</td>
-			</tr>
-                    </#if>
-                </#list>
-            </table>
-        </body>
-    </html>
+	                      <td colspan="2" bgcolor="999999">&nbsp;</td>
+	                  </tr>
+                </#if>
+            </#list>
+        </table>
+    </body>
+</html>
+```
 
 This template iterates through the query results passed in by the controller,
 and builds an HTML table with properties of each whitepaper. (Yes, the table is
@@ -722,33 +737,35 @@ table entirely. But for SomeCo, this response template is really for debugging
 purposes only and I didn't want to fool with the CSS so a table it is).
 
 Now create the response template for the JSON response. In the same directory
-as the HTML response template, create a file called "[whitepapers.get.json.ftl](https://github.com/jpotts/alfresco-developer-series/blob/master/webscripts/webscripts-tutorial/webscripts-tutorial-platform-jar/src/main/resources/alfresco/extension/templates/webscripts/com/someco/whitepapers/whitepapers.get.json.ftl)"
+as the HTML response template, create a file called "[whitepapers.get.json.ftl](https://github.com/jpotts/alfresco-developer-series/blob/master/webscripts/webscripts-tutorial/webscripts-tutorial-platform/src/main/resources/alfresco/extension/templates/webscripts/com/someco/whitepapers/whitepapers.get.json.ftl)"
 with the following content:
 
-    <#assign datetimeformat="EEE, dd MMM yyyy HH:mm:ss zzz">
-    {"whitepapers" : [
-        <#list whitepapers as child>
-            {
-                "name" : "${child.whitepaper.properties.name}",
-                "title" : "${child.whitepaper.properties["cm:title"]}",
-                "link" : "${url.context}${child.whitepaper.url}",
-                "type" : "${child.whitepaper.mimetype}",
-                "size" : "${child.whitepaper.size}",
-                "id" : "${child.whitepaper.id}",
-                "description" : "<#if child.whitepaper.properties["cm:description"]?exists && child.whitepaper.properties["cm:description"] != "">${child.whitepaper.properties["cm:description"]}</#if>",
-                "pubDate" : "${child.whitepaper.properties["cm:modified"]?string(datetimeformat)}",
-                "rating" : {
-                    "average" : "${child.rating.average!"0"}",
-                    "count" : "${child.rating.count!"0"}"
-                }
+```
+<#assign datetimeformat="EEE, dd MMM yyyy HH:mm:ss zzz">
+{"whitepapers" : [
+    <#list whitepapers as child>
+        {
+            "name" : "${child.whitepaper.properties.name}",
+            "title" : "${child.whitepaper.properties["cm:title"]}",
+            "link" : "${url.context}${child.whitepaper.url}",
+            "type" : "${child.whitepaper.mimetype}",
+            "size" : "${child.whitepaper.size}",
+            "id" : "${child.whitepaper.id}",
+            "description" : "<#if child.whitepaper.properties["cm:description"]?exists && child.whitepaper.properties["cm:description"] != "">${child.whitepaper.properties["cm:description"]}</#if>",
+            "pubDate" : "${child.whitepaper.properties["cm:modified"]?string(datetimeformat)}",
+            "rating" : {
+                "average" : "${child.rating.average!"0"}",
+                "count" : "${child.rating.count!"0"}"
             }
-            <#if !(child.whitepaper == whitepapers?last.whitepaper)>,</#if>
-        </#list>
-        ]
-    }
+        }
+        <#if !(child.whitepaper == whitepapers?last.whitepaper)>,</#if>
+    </#list>
+    ]
+}
+```
 
-Again, just like the HTML response template, the script iterates through
-the result set, but this one outputs JSON instead of HTML. The JSON structure is
+Again, just like the HTML response template, the script iterates through the
+result set, but this one outputs JSON instead of HTML. The JSON structure is
 completely arbitrary. In the real world, you would work this out with the
 front-end development team.
 
@@ -757,52 +774,35 @@ front-end development team.
 Recall that after you bootstrapped this project from the "all-in-one" archetype,
 you edited the pom.xml file to add the content, behavior, and actions AMPs as
 dependencies. That means you can easily test your web script by firing up the
-embedded Tomcat server and your webscripts will have the dependencies they expect.
-Plus, you'll be able to log in to Share and create test content, run the custom
-actions from the actions tutorial, and so on.
+Docker containers and your webscripts will have the dependencies they expect.
+Plus, you'll be able to log in to Share and create test content, run the
+custom actions from the actions tutorial, and so on.
 
 The dependencies from the earlier tutorials do the following:
 
-* **content-tutorial-platform-jar**. This is required because the web script looks for
-content with the `sc:isActive` flag set and that's defined in the SomeCo
-Content Model that is part of that project.
-* **behavior-tutorial-platform-jar**. This is required because it contains a behavior
-that calculates the average rating for a piece of content and because it has the
-rating.js server-side JavaScript file that the controllers in this tutorial
-import.
-* **actions-tutorial-platform-jar**. This one is optional. It contains a UI action that
-is used to set the `sc:isActive` flag from within the Alfresco Share user
-interface.
+* **content-tutorial-platform**. This is required because the web script
+looks for content with the `sc:isActive` flag set and that's defined in the
+SomeCo Content Model that is part of that project.
+* **behavior-tutorial-platform**. This is required because it contains a
+behavior that calculates the average rating for a piece of content and because
+it has the rating.js server-side JavaScript file that the controllers in this
+tutorial import.
+* **actions-tutorial-platform**. This one is optional. It contains a UI
+action that is used to set the `sc:isActive` flag from within the Alfresco Share
+user interface.
 
-Running the embedded Tomcat server with these dependencies installed automatically
-for you is really convenient. At some point, you'll want to deploy to an actual
-Alfresco installation.
+Running the SDK-generated Docker containers with these dependencies installed
+automatically for you is really convenient. At some point, you'll want to deploy
+to an actual Alfresco installation, which you can do either by manually
+deploying the AMPs for this project and the ones listed above or by building
+your own Docker images.
 
-You can deploy these AMPs to your Alfresco installation using the
-"apply_amps.sh" script. Alternatively, you can use the "alfresco:install" plugin
-that is part of the Alfresco Maven SDK to install each one.
+For now, it's easiest just to use the SDK-generated Docker containers. To start
+those up using Docker Compose, switch to the "webscripts-tutorial" directory and
+run `./run.sh build_start` or `run.bat build_start` depending on your platform.
 
-For example, on my machine, I have all three of those projects checked out from
-source as well as the webscripts-tutorial-platform-jar project. And, I have Alfresco
-running in $TOMCAT_HOME with an exploded Alfresco WAR. So, for each project I
-can do this:
-
-1. Switch to \$TUTORIAL\_HOME/\$PROJECT_DIRECTORY
-2. Run `mvn install` to build the AMP. Use `mvn install -DskipTests=true` to
-skip the unit tests some of those projects may have.
-3. Run `mvn alfresco:install -Dmaven.alfresco.warLocation=$TOMCAT_HOME/webapps/alfresco`
-to install the AMP to the exploded Alfresco web application. If you are running
-the alfresco.war unexploded you can specify the path to the WAR file instead.
-
-After doing that for all four projects (the three dependencies and the
-webscripts-tutorial-platform-jar project) start Tomcat and test.
-
-While you are developing, and for the rest of the tutorial, it's easiest to just
-use the embedded Tomcat server. You can do that by switching to the "webscripts-tutorial"
-directory and running `run.sh` or `run.bat` depending on your platform.
-
-Now that your Alfresco server is running the webscripts-tutorial-platform-jar AMP and
-its dependencies, you are ready to test out the whitepapers web script.
+Now that your Alfresco server is running the webscripts-tutorial-platform
+AMP and its dependencies, you are ready to test out the whitepapers web script.
 
 ### Testing
 
@@ -904,45 +904,48 @@ You have a working web script that fetches a list of whitepapers. Now let's
 create a web script that retrieves rating summary data for a specific object.
 
 This is pretty easy because of the existing `getRating()` function in
-rating.js. The controller is called "[rating.get.js](https://github.com/jpotts/alfresco-developer-series/blob/master/webscripts/webscripts-tutorial/webscripts-tutorial-platform-jar/src/main/resources/alfresco/extension/templates/webscripts/com/someco/ratings/rating.get.js)"
+rating.js. The controller is called "[rating.get.js](https://github.com/jpotts/alfresco-developer-series/blob/master/webscripts/webscripts-tutorial/webscripts-tutorial-platform/src/main/resources/alfresco/extension/templates/webscripts/com/someco/ratings/rating.get.js)"
 and it resides in:
 
-    $TUTORIAL_HOME/webscripts-tutorial-platform-jar/src/main/resources/alfresco/extension/templates/webscripts/com/someco/ratings
+    $TUTORIAL_HOME/webscripts-tutorial-platform/src/main/resources/alfresco/extension/templates/webscripts/com/someco/ratings
 
 All the controller has to do is grab the ID of the rateable object that is being
 requested, locate
 the node, then call `getRating()` as shown below:
 
-    <import resource="classpath:alfresco/module/behavior-tutorial-platform-jar/scripts/rating.js">
-    if (args.id == null || args.id.length == 0) {
-        status.code = 400;
-        status.message = "Node ID has not been provided";
+```javascript
+<import resource="classpath:alfresco/module/behavior-tutorial-platform/scripts/rating.js">
+if (args.id == null || args.id.length == 0) {
+    status.code = 400;
+    status.message = "Node ID has not been provided";
+    status.redirect = true;
+} else {
+    var curNode = search.findNode("workspace://SpacesStore/" + args.id);
+    if (curNode == null) {
+        status.code = 404;
+        status.message = "No node found for id:" + args.id;
         status.redirect = true;
     } else {
-        var curNode = search.findNode("workspace://SpacesStore/" + args.id);
-        if (curNode == null) {
-            status.code = 404;
-            status.message = "No node found for id:" + args.id;
-            status.redirect = true;
-        } else {
-            model.rating = getRating(curNode, args.user);
-        }
+        model.rating = getRating(curNode, args.user);
     }
+}
+```
 
 The descriptor and response templates are very similar to the whitepaper
 example so I won't include them here. If you want to grab them to copy them into
 your project, they are:
 
-* [rating.get.desc.xml](https://github.com/jpotts/alfresco-developer-series/blob/master/webscripts/webscripts-tutorial/webscripts-tutorial-platform-jar/src/main/resources/alfresco/extension/templates/webscripts/com/someco/ratings/rating.get.desc.xml)
-* [rating.get.html.ftl](https://github.com/jpotts/alfresco-developer-series/blob/master/webscripts/webscripts-tutorial/webscripts-tutorial-platform-jar/src/main/resources/alfresco/extension/templates/webscripts/com/someco/ratings/rating.get.html.ftl)
-* [rating.get.json.ftl](https://github.com/jpotts/alfresco-developer-series/blob/master/webscripts/webscripts-tutorial/webscripts-tutorial-platform-jar/src/main/resources/alfresco/extension/templates/webscripts/com/someco/ratings/rating.get.json.ftl)
+* [rating.get.desc.xml](https://github.com/jpotts/alfresco-developer-series/blob/master/webscripts/webscripts-tutorial/webscripts-tutorial-platform/src/main/resources/alfresco/extension/templates/webscripts/com/someco/ratings/rating.get.desc.xml)
+* [rating.get.html.ftl](https://github.com/jpotts/alfresco-developer-series/blob/master/webscripts/webscripts-tutorial/webscripts-tutorial-platform/src/main/resources/alfresco/extension/templates/webscripts/com/someco/ratings/rating.get.html.ftl)
+* [rating.get.json.ftl](https://github.com/jpotts/alfresco-developer-series/blob/master/webscripts/webscripts-tutorial/webscripts-tutorial-platform/src/main/resources/alfresco/extension/templates/webscripts/com/someco/ratings/rating.get.json.ftl)
 
 Now you can deploy and test the rating web script.
 
 ### Deploying and testing the rating web script
 
-If you are following along, build the AMP, install it, and start up the embedded
-Tomcat server by running `run.sh` or `run.bat`.
+If you are following along, build the AMPs by running `mvn install -DskipTests`
+from the $TUTORIAL_HOME directory. Once it builds successfully, you can restart
+the Alfresco container by running `./run.sh reload_acs`.
 
 Now invoke the whitepaper web script you created earlier:
 
@@ -955,12 +958,15 @@ rating web script for a specific whitepaper. The link should look similar to:
 
 If you change the ".html" suffix to ".json", the result should look like this:
 
-    {"rating" :
-        {
-            "average" : "1.923",
-            "count" : "13"
-        }
+```json
+{
+  "rating" :
+    {
+        "average" : "1.923",
+        "count" : "13"
     }
+}
+```
 
 Now you have a web script that can retrieve the rating information for a
 specific object. Next, you'll add a web script that creates new ratings.
@@ -1006,7 +1012,7 @@ Java will be used, the steps are the same at a high-level:
 The descriptor, together with the two views, reside in the same folder as the
 GET rating web script you worked on in the previous section, which is:
 
-    $TUTORIAL_HOME/webscripts-tutorial-platform-jar/src/main/resources/alfresco/extension/templates/webscripts/com/someco/ratings
+    $TUTORIAL_HOME/webscripts-tutorial-platform/src/main/resources/alfresco/extension/templates/webscripts/com/someco/ratings
 
 The controller will be written in the Java source code folder for the project,
 compiled, and packaged in a JAR as part of the AMP.
@@ -1015,7 +1021,7 @@ Let's look at each of the steps needed to implement the post rating web script.
 
 ### Step 1: Write the descriptor
 
-The descriptor, [rating.post.desc.xml](https://github.com/jpotts/alfresco-developer-series/blob/master/webscripts/webscripts-tutorial/webscripts-tutorial-platform-jar/src/main/resources/alfresco/extension/templates/webscripts/com/someco/ratings/rating.post.desc.xml), has two things you haven't seen yet. First, the `authentication` element uses the
+The descriptor, [rating.post.desc.xml](https://github.com/jpotts/alfresco-developer-series/blob/master/webscripts/webscripts-tutorial/webscripts-tutorial-platform/src/main/resources/alfresco/extension/templates/webscripts/com/someco/ratings/rating.post.desc.xml), has two things you haven't seen yet. First, the `authentication` element uses the
 `runas` attribute to specify that the web script should be executed as "admin"
 even though it only requires Guest access or higher to execute:
 
@@ -1054,53 +1060,57 @@ Let's take a look.
 
 At some point there might be other Java classes that need to create ratings. So
 the logic that does that should be generic. This class has a dependency on the
-"behavior-tutorial-platform-jar" project created in an earlier tutorial, so the first
-thing to do is to edit this project's [pom.xml](https://github.com/jpotts/alfresco-developer-series/blob/master/webscripts/webscripts-tutorial/webscripts-tutorial-platform-jar/pom.xml) file, which lives in:
+"behavior-tutorial-platform" project created in an earlier tutorial, so the first
+thing to do is to edit this project's [pom.xml](https://github.com/jpotts/alfresco-developer-series/blob/master/webscripts/webscripts-tutorial/webscripts-tutorial-platform/pom.xml) file, which lives in:
 
-    $TUTORIAL_HOME/webscripts-tutorial-platform-jar
+    $TUTORIAL_HOME/webscripts-tutorial-platform
 
 And add the dependency, which looks like this:
 
-    <dependency>
-        <groupId>com.someco</groupId>
-        <artifactId>behavior-tutorial-platform-jar</artifactId>
-        <version>1.0-SNAPSHOT</version>
-        <scope>provided</scope>
-    </dependency>
+```xml
+<dependency>
+    <groupId>com.someco</groupId>
+    <artifactId>behavior-tutorial-platform</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <scope>provided</scope>
+</dependency>
+```
 
 Create a new package called "com.someco.beans" in:
 
-    $TUTORIAL_HOME/webscripts-tutorial-platform-jar/src/main/java
+    $TUTORIAL_HOME/webscripts-tutorial-platform/src/main/java
 
-In that package, create a new class called "[RatingBean](https://github.com/jpotts/alfresco-developer-series/blob/master/webscripts/webscripts-tutorial/webscripts-tutorial-platform-jar/src/main/java/com/someco/beans/RatingBean.java)".
+In that package, create a new class called "[RatingBean](https://github.com/jpotts/alfresco-developer-series/blob/master/webscripts/webscripts-tutorial/webscripts-tutorial-platform/src/main/java/com/someco/beans/RatingBean.java)".
 The class (without the imports) looks like this:
 
-    public class RatingBean {
+```java
+public class RatingBean {
 
-        // Dependencies
-        private NodeService nodeService;
+    // Dependencies
+    private NodeService nodeService;
 
-        public void create(final NodeRef nodeRef, final int rating, final String user) {
-            // add the aspect to this document if it needs it
-            if (nodeService.hasAspect(nodeRef, QName.createQName(SomeCoRatingsModel.NAMESPACE_SOMECO_RATINGS_CONTENT_MODEL, SomeCoRatingsModel.ASPECT_SCR_RATEABLE))) {
-            } else {
-                nodeService.addAspect(nodeRef, QName.createQName(SomeCoRatingsModel.NAMESPACE_SOMECO_RATINGS_CONTENT_MODEL, SomeCoRatingsModel.ASPECT_SCR_RATEABLE), null);
-            }
-            Map<QName, Serializable> props = new HashMap<QName, Serializable>();
-            props.put(QName.createQName(SomeCoRatingsModel.NAMESPACE_SOMECO_RATINGS_CONTENT_MODEL, "rating"), rating);
-            props.put(QName.createQName(SomeCoRatingsModel.NAMESPACE_SOMECO_RATINGS_CONTENT_MODEL, "rater"), user);
-            nodeService.createNode(nodeRef, QName.createQName(SomeCoRatingsModel.NAMESPACE_SOMECO_RATINGS_CONTENT_MODEL, SomeCoRatingsModel.ASSN_SCR_RATINGS), QName.createQName(SomeCoRatingsModel.NAMESPACE_SOMECO_RATINGS_CONTENT_MODEL, "rating" + new Date().getTime()), QName.createQName(SomeCoRatingsModel.NAMESPACE_SOMECO_RATINGS_CONTENT_MODEL, SomeCoRatingsModel.TYPE_SCR_RATING), props);
+    public void create(final NodeRef nodeRef, final int rating, final String user) {
+        // add the aspect to this document if it needs it
+        if (nodeService.hasAspect(nodeRef, QName.createQName(SomeCoRatingsModel.NAMESPACE_SOMECO_RATINGS_CONTENT_MODEL, SomeCoRatingsModel.ASPECT_SCR_RATEABLE))) {
+        } else {
+            nodeService.addAspect(nodeRef, QName.createQName(SomeCoRatingsModel.NAMESPACE_SOMECO_RATINGS_CONTENT_MODEL, SomeCoRatingsModel.ASPECT_SCR_RATEABLE), null);
         }
-
-        public NodeService getNodeService() {
-            return nodeService;
-    	}
-
-
-        public void setNodeService(NodeService nodeService) {
-            this.nodeService = nodeService;
-    	}    
+        Map<QName, Serializable> props = new HashMap<QName, Serializable>();
+        props.put(QName.createQName(SomeCoRatingsModel.NAMESPACE_SOMECO_RATINGS_CONTENT_MODEL, "rating"), rating);
+        props.put(QName.createQName(SomeCoRatingsModel.NAMESPACE_SOMECO_RATINGS_CONTENT_MODEL, "rater"), user);
+        nodeService.createNode(nodeRef, QName.createQName(SomeCoRatingsModel.NAMESPACE_SOMECO_RATINGS_CONTENT_MODEL, SomeCoRatingsModel.ASSN_SCR_RATINGS), QName.createQName(SomeCoRatingsModel.NAMESPACE_SOMECO_RATINGS_CONTENT_MODEL, "rating" + new Date().getTime()), QName.createQName(SomeCoRatingsModel.NAMESPACE_SOMECO_RATINGS_CONTENT_MODEL, SomeCoRatingsModel.TYPE_SCR_RATING), props);
     }
+
+    public NodeService getNodeService() {
+        return nodeService;
+	  }
+
+
+    public void setNodeService(NodeService nodeService) {
+        this.nodeService = nodeService;
+	  }    
+}
+```
 
 The `create()` method expects a `nodeRef` that is being rated, a `rating`, and
 the `user` creating the rating. The method checks the node to see if it already
@@ -1125,66 +1135,67 @@ the `create()` method.
 
 To do that, create a new package called "com.someco.scripts" in:
 
-    $TUTORIAL_HOME/webscripts-tutorial-platform-jar/src/main/java
+    $TUTORIAL_HOME/webscripts-tutorial-platform/src/main/java
 
-Within that package, create a new class called "[PostRating](https://github.com/jpotts/alfresco-developer-series/blob/master/webscripts/webscripts-tutorial/webscripts-tutorial-platform-jar/src/main/java/com/someco/scripts/PostRating.java)".
+Within that package, create a new class called "[PostRating](https://github.com/jpotts/alfresco-developer-series/blob/master/webscripts/webscripts-tutorial/webscripts-tutorial-platform/src/main/java/com/someco/scripts/PostRating.java)".
 The class name isn't significant but following a descriptive convention is
 helpful as the number of Java-backed web scripts grows.
 
 The class needs to extend `org.alfresco.webscripts.DeclarativeWebScript`. The
 logic goes in `executeImpl` as shown below.
 
-    public class PostRating extends DeclarativeWebScript {
+```java
+public class PostRating extends DeclarativeWebScript {
 
-        private RatingBean ratingBean;
-        private NodeService nodeService;
+    private RatingBean ratingBean;
+    private NodeService nodeService;
 
-        @Override
-        protected Map<String, Object> executeImpl(WebScriptRequest req,
-                Status status) {
-            String id = req.getParameter("id");
-            String rating = req.getParameter("rating");
-            String user = req.getParameter("user");
+    @Override
+    protected Map<String, Object> executeImpl(WebScriptRequest req,
+            Status status) {
+        String id = req.getParameter("id");
+        String rating = req.getParameter("rating");
+        String user = req.getParameter("user");
 
-            if (id == null || rating == null || rating.equals("0") || user == null) {
-                status.setCode(400, "Required data has not been provided");
+        if (id == null || rating == null || rating.equals("0") || user == null) {
+            status.setCode(400, "Required data has not been provided");
+            status.setRedirect(true);
+        } else {
+            NodeRef curNode = new NodeRef("workspace://SpacesStore/" + id);
+            if (!nodeService.exists(curNode)) {
+                status.setCode(404, "No node found for id:" + id);
                 status.setRedirect(true);
             } else {
-                NodeRef curNode = new NodeRef("workspace://SpacesStore/" + id);
-                if (!nodeService.exists(curNode)) {
-                    status.setCode(404, "No node found for id:" + id);
-                    status.setRedirect(true);
-                } else {
-                    ratingBean.create(curNode, Integer.parseInt(rating), user);
-                }
-
+                ratingBean.create(curNode, Integer.parseInt(rating), user);
             }
 
-            Map<String, Object> model = new HashMap<String, Object>();
-            model.put("node", id);
-            model.put("rating", rating);
-            model.put("user", user);
-
-            return model;
         }
 
-        public NodeService getNodeService() {
-            return nodeService;
-        }
+        Map<String, Object> model = new HashMap<String, Object>();
+        model.put("node", id);
+        model.put("rating", rating);
+        model.put("user", user);
 
-        public void setNodeService(NodeService nodeService) {
-            this.nodeService = nodeService;
-        }
-
-        public RatingBean getRatingBean() {
-            return ratingBean;
-        }
-
-        public void setRatingBean(RatingBean ratingBean) {
-            this.ratingBean = ratingBean;
-        }
-
+        return model;
     }
+
+    public NodeService getNodeService() {
+        return nodeService;
+    }
+
+    public void setNodeService(NodeService nodeService) {
+        this.nodeService = nodeService;
+    }
+
+    public RatingBean getRatingBean() {
+        return ratingBean;
+    }
+
+    public void setRatingBean(RatingBean ratingBean) {
+        this.ratingBean = ratingBean;
+    }
+}
+```
 
 This code should look strikingly similar to a JavaScript controller and
 in fact it does the same thing. It checks the arguments, sets an error
@@ -1205,10 +1216,10 @@ know to invoke the `PostRating` class when the web script is called. All of that
 happens through Spring configuration.
 
 You learned in earlier tutorials that the Spring context file for a module is
-called [service-context.xml](https://github.com/jpotts/alfresco-developer-series/blob/master/webscripts/webscripts-tutorial/webscripts-tutorial-platform-jar/src/main/resources/alfresco/module/webscripts-tutorial-platform-jar/context/service-context.xml)
+called [service-context.xml](https://github.com/jpotts/alfresco-developer-series/blob/master/webscripts/webscripts-tutorial/webscripts-tutorial-platform/src/main/resources/alfresco/module/webscripts-tutorial-platform/context/service-context.xml)
 and it lives in:
 
-    $TUTORIAL_HOME/webscripts-tutorial-platform-jar/src/main/resources/alfresco/module/webscripts-tutorial-platform-jar/context
+    $TUTORIAL_HOME/webscripts-tutorial-platform/src/main/resources/alfresco/module/webscripts-tutorial-platform/context
 
 The Alfresco Maven SDK created that file for you when you used it to bootstrap
 the project.
@@ -1216,22 +1227,24 @@ the project.
 Edit that file. You can delete any sample bean elements that may already be in
 the file. Make the `beans` element look like this:
 
-    <beans>
-        <bean id="ratingBean" class="com.someco.beans.RatingBean">
-            <property name="nodeService">
-                <ref bean="NodeService" />
-            </property>
-        </bean>
+```xml
+<beans>
+    <bean id="ratingBean" class="com.someco.beans.RatingBean">
+        <property name="nodeService">
+            <ref bean="NodeService" />
+        </property>
+    </bean>
 
-        <bean id="webscript.com.someco.ratings.rating.post" class="com.someco.scripts.PostRating" parent="webscript">
-        	<property name="ratingBean">
-        		<ref bean="ratingBean" />    	
-            </property>
-            <property name="nodeService">
-                <ref bean="NodeService" />
-            </property>
-        </bean>    
-    </beans>
+    <bean id="webscript.com.someco.ratings.rating.post" class="com.someco.scripts.PostRating" parent="webscript">
+    	<property name="ratingBean">
+    		<ref bean="ratingBean" />    	
+        </property>
+        <property name="nodeService">
+            <ref bean="NodeService" />
+        </property>
+    </bean>    
+</beans>
+```
 
 The first `bean` element is simple--the `RatingBean` class needs the Alfresco
 `NodeService` so one is being injected.
@@ -1263,8 +1276,8 @@ The response templates for this web script look like the examples you've seen so
 far. Like previous examples, this web script can respond with either an HTML or
 JSON response:
 
-* [rating.post.html.ftl](https://github.com/jpotts/alfresco-developer-series/blob/master/webscripts/webscripts-tutorial/webscripts-tutorial-platform-jar/src/main/resources/alfresco/extension/templates/webscripts/com/someco/ratings/rating.post.html.ftl)
-* [rating.post.json.ftl](https://github.com/jpotts/alfresco-developer-series/blob/master/webscripts/webscripts-tutorial/webscripts-tutorial-platform-jar/src/main/resources/alfresco/extension/templates/webscripts/com/someco/ratings/rating.post.json.ftl)
+* [rating.post.html.ftl](https://github.com/jpotts/alfresco-developer-series/blob/master/webscripts/webscripts-tutorial/webscripts-tutorial-platform/src/main/resources/alfresco/extension/templates/webscripts/com/someco/ratings/rating.post.html.ftl)
+* [rating.post.json.ftl](https://github.com/jpotts/alfresco-developer-series/blob/master/webscripts/webscripts-tutorial/webscripts-tutorial-platform/src/main/resources/alfresco/extension/templates/webscripts/com/someco/ratings/rating.post.json.ftl)
 
 These should look similar to the views you've already created.
 
@@ -1285,13 +1298,16 @@ That `id` is from the node reference of an existing whitepaper.
 
 Running this returns:
 
-    {"rating" :
-            {
-             "node" : "802d6f27-82ec-4c9c-8e29-9b6e4a3401ef",
-             "rating" : "5",
-             "user" : "jpotts"
-            }
-    }
+```json
+{
+  "rating" :
+        {
+         "node" : "802d6f27-82ec-4c9c-8e29-9b6e4a3401ef",
+         "rating" : "5",
+         "user" : "jpotts"
+        }
+}
+```
 
 Assuming everything is okay, you now have web scripts that can retrieve as well
 as create content in the repository. Let's finish up the custom ratings API by
@@ -1310,10 +1326,10 @@ descriptor and the controller.
 It seems rare that you would want to delete all ratings for a given node but
 highly likely that if you are going to expose it, it should be for admins only.
 So let's tell Alfresco that this web script can only by run by administrators.
-The descriptor is named [rating.delete.desc.xml](https://github.com/jpotts/alfresco-developer-series/blob/master/webscripts/webscripts-tutorial/webscripts-tutorial-platform-jar/src/main/resources/alfresco/extension/templates/webscripts/com/someco/ratings/rating.delete.desc.xml).
+The descriptor is named [rating.delete.desc.xml](https://github.com/jpotts/alfresco-developer-series/blob/master/webscripts/webscripts-tutorial/webscripts-tutorial-platform/src/main/resources/alfresco/extension/templates/webscripts/com/someco/ratings/rating.delete.desc.xml).
 It lives in:
 
-    $TUTORIAL_HOME/webscripts-tutorial-platform-jar/src/main/resources/alfresco/extension/templates/webscripts/com/someco/ratings
+    $TUTORIAL_HOME/webscripts-tutorial-platform/src/main/resources/alfresco/extension/templates/webscripts/com/someco/ratings
 
 To restrict the web script to administrators, set the `authentication` element
 like this:
@@ -1324,33 +1340,35 @@ Now only administrators can execute the web script.
 
 ### Step 2: Write the controller
 
-As in previous examples, the controller JavaScript, [rating.delete.js](https://github.com/jpotts/alfresco-developer-series/blob/master/webscripts/webscripts-tutorial/webscripts-tutorial-platform-jar/src/main/resources/alfresco/extension/templates/webscripts/com/someco/ratings/rating.delete.js),
+As in previous examples, the controller JavaScript, [rating.delete.js](https://github.com/jpotts/alfresco-developer-series/blob/master/webscripts/webscripts-tutorial/webscripts-tutorial-platform/src/main/resources/alfresco/extension/templates/webscripts/com/someco/ratings/rating.delete.js),
 reads and checks the arguments then calls a function. In this case it is the
 `deleteRatings()` function that already exists in the rating.js file packaged in
-the behavior-tutorial project in the behavior-tutorial-platform-jar module.
+the behavior-tutorial project in the behavior-tutorial-platform module.
 The body of the function is:
 
-    function deleteRatings(curNode) {
-        // check the parent to make sure it has the right aspect
-        if (curNode.hasAspect("{http://www.someco.com/model/content/1.0}rateable")) {
-            // continue, this is what we want
-        } else {
-            logger.log("Node did not have rateable aspect.");
-            return;
-        }
+```javascript
+function deleteRatings(curNode) {
+    // check the parent to make sure it has the right aspect
+    if (curNode.hasAspect("{http://www.someco.com/model/content/1.0}rateable")) {
+        // continue, this is what we want
+    } else {
+        logger.log("Node did not have rateable aspect.");
+        return;
+    }
 
-        // get the node's children
-        var children = curNode.children;
+    // get the node's children
+    var children = curNode.children;
 
-        if (children != null && children.length \> 0) {
-            logger.log("Found children...iterating");
-            for (i in children) {
-                var child = children[i];
-                logger.log("Removing child: " + child.id);
-                child.remove();
-            }
+    if (children != null && children.length \> 0) {
+        logger.log("Found children...iterating");
+        for (i in children) {
+            var child = children[i];
+            logger.log("Removing child: " + child.id);
+            child.remove();
         }
     }
+}
+```
 
 The script bails if the node doesn't have the rateable aspect (because there
 wouldn't be any ratings). Otherwise, it grabs the children and deletes them.
@@ -1360,7 +1378,7 @@ more discriminating.
 
 ### Step 3: Create the view
 
-The delete web script has only a single view, [rating.delete.html.ftl](https://github.com/jpotts/alfresco-developer-series/blob/master/webscripts/webscripts-tutorial/webscripts-tutorial-platform-jar/src/main/resources/alfresco/extension/templates/webscripts/com/someco/ratings/rating.delete.html.ftl),
+The delete web script has only a single view, [rating.delete.html.ftl](https://github.com/jpotts/alfresco-developer-series/blob/master/webscripts/webscripts-tutorial/webscripts-tutorial-platform/src/main/resources/alfresco/extension/templates/webscripts/com/someco/ratings/rating.delete.html.ftl),
 and it is pretty boring. It echos back the ID of the object from which the
 ratings were deleted, then provides a link back to the GET rating web script.
 
@@ -1382,12 +1400,14 @@ requires an administrator to execute it.
 
 If everything goes as planned you will see something similar to:
 
-    <html>
-    <body>
-    <p>Successfully deleted ratings for node: 802d6f27-82ec-4c9c-8e29-9b6e4a3401ef</p>
-    <p><a href="/alfresco/s/someco/rating.html?id=802d6f27-82ec-4c9c-8e29-9b6e4a3401ef>Back to Ratings</a></p>
-    </body>
-    </html>
+```html
+<html>
+<body>
+<p>Successfully deleted ratings for node: 802d6f27-82ec-4c9c-8e29-9b6e4a3401ef</p>
+<p><a href="/alfresco/s/someco/rating.html?id=802d6f27-82ec-4c9c-8e29-9b6e4a3401ef">Back to Ratings</a></p>
+</body>
+</html>
+```
 
 If you then visit the GET rating web script, either in your browser or through
 curl, you'll see the object no longer has any ratings.
@@ -1448,11 +1468,11 @@ leverages the [prototype](http://prototypejs.org/) JavaScript library.
 The first step is to copy the JavaScript and images into the AMP project
 structure. The images reside in:
 
-    $TUTORIAL_HOME/webscripts-tutorial-platform-jar/src/main/amp/web/images
+    $TUTORIAL_HOME/webscripts-tutorial-platform/src/main/amp/web/images
 
 And the client-side JavaScript resides in:
 
-    $TUTORIAL_HOME/webscripts-tutorial-platform-jar/src/main/amp/web/scripts
+    $TUTORIAL_HOME/webscripts-tutorial-platform/src/main/amp/web/scripts
 
 Next you'll modify the rating web script to leverage these.
 
@@ -1461,22 +1481,24 @@ Step 2: Modify the GET rating web script to include client-side JavaScript
 
 Recall that the FreeMarker view for the rating GET web script resides in:
 
-    $TUTORIAL_HOME/webscripts-tutorial-platform-jar/src/main/resources/alfresco/extension/templates/webscripts/com/someco/ratings
+    $TUTORIAL_HOME/webscripts-tutorial-platform/src/main/resources/alfresco/extension/templates/webscripts/com/someco/ratings
 
-The file is called [rating.get.html.ftl](https://github.com/jpotts/alfresco-developer-series/blob/master/webscripts/webscripts-tutorial/webscripts-tutorial-platform-jar/src/main/resources/alfresco/extension/templates/webscripts/com/someco/ratings/rating.get.html.ftl), but let's focus on the main body of the HTML first. Here it is:
+The file is called [rating.get.html.ftl](https://github.com/jpotts/alfresco-developer-series/blob/master/webscripts/webscripts-tutorial/webscripts-tutorial-platform/src/main/resources/alfresco/extension/templates/webscripts/com/someco/ratings/rating.get.html.ftl), but let's focus on the main body of the HTML first. Here it is:
 
-    <p><a href="${url.serviceContext}/someco/whitepapers.html?guest=true">Back to the list</a> of whitepapers</p>
-    <p>Node: ${args.id}</p>
-    <p>Average: ${rating.average}</p>
-    <p># of Ratings: ${rating.count}</p>
-    <#if (rating.user > 0)>
-        <p>User rating: ${rating.user}</p>
-    </#if>
-    <form name="login">
-        Rater:<input name="userId"></input>
-    </form>
-    Rating: <div class="rating" id="rating_${args.id}" style="display:inline">${rating.average}</div>
-    <p><a href="#" onclick=deleteRatings("${args.id}")>Delete ratings</a> for this node</p>
+```html
+<p><a href="${url.serviceContext}/someco/whitepapers.html?guest=true">Back to the list</a> of whitepapers</p>
+<p>Node: ${args.id}</p>
+<p>Average: ${rating.average!''}</p>
+<p># of Ratings: ${rating.count!''}</p>
+<#if (rating.user > 0)>
+    <p>User rating: ${rating.user!''}</p>
+</#if>
+<form name="login">
+    Rater:<input name="userId"></input>
+</form>
+Rating: <div class="rating" id="rating_${args.id}" style="display:inline">${rating.average!'0'}</div>
+<p><a href="#" onclick=deleteRatings("${args.id}")>Delete ratings</a> for this node</p>
+```
 
 This is all basic HTML/FreeMarker stuff you've seen before. The last line sets
 up a `div` for the ratings widget. The `id` of the `div` uses the node ref of
@@ -1488,31 +1510,33 @@ Now take a look at the inline JavaScript. I'm going to omit some of the less
 interesting functions and just show the functions related to posting
 ratings.
 
-    function submitRating(evt) {
-        var tmp = Event.element(evt).getAttribute('id').substr(5);
-        var widgetId = tmp.substr(0, tmp.indexOf('_'));
-        var starNbr = tmp.substr(tmp.indexOf('_')+1);
-        if (document.login.userId.value != undefined && document.login.userId.value != "") {
-            curUser = document.login.userId.value;
-        } else {
-            curUser = "jpotts";
-        }
-        postRating(widgetId, starNbr, curUser);
-    }           
-
-    function postRating(id, rating, user) {
-        if (receiveReq.readyState == 4 || receiveReq.readyState == 0) {
-            receiveReq.open("POST", "${url.serviceContext}/someco/rating?id=" + id + "&rating=" + rating + "&guest=true&user=" + user, true);
-            receiveReq.onreadystatechange = handleRatingPosted;
-            receiveReq.send(null);
-        }
+```javascript
+function submitRating(evt) {
+    var tmp = Event.element(evt).getAttribute('id').substr(5);
+    var widgetId = tmp.substr(0, tmp.indexOf('_'));
+    var starNbr = tmp.substr(tmp.indexOf('_')+1);
+    if (document.login.userId.value != undefined && document.login.userId.value != "") {
+        curUser = document.login.userId.value;
+    } else {
+        curUser = "jpotts";
     }
+    postRating(widgetId, starNbr, curUser);
+}           
 
-    function handleRatingPosted() {
-        if (receiveReq.readyState == 4) {
-            window.location.reload(true);
-        }
+function postRating(id, rating, user) {
+    if (receiveReq.readyState == 4 || receiveReq.readyState == 0) {
+        receiveReq.open("POST", "${url.serviceContext}/someco/rating?id=" + id + "&rating=" + rating + "&guest=true&user=" + user, true);
+        receiveReq.onreadystatechange = handleRatingPosted;
+        receiveReq.send(null);
     }
+}
+
+function handleRatingPosted() {
+    if (receiveReq.readyState == 4) {
+        window.location.reload(true);
+    }
+}
+```
 
 Those of you familiar with AJAX techniques may be wondering why I didn't use the
 prototype library to make the post--it is already already being used with the
@@ -1595,5 +1619,6 @@ available at [docs.alfresco.com](http://docs.alfresco.com/).
 * Ask questions about web scripts in the [community](http://community.alfresco.com).
 * If you are ready to cover new ground, try another [ecmarchitect.com](https://ecmarchitect.com)
 tutorial in the [Alfresco Developer Series](https://ecmarchitect.com/alfresco-developer-series).
+The most logical next step is the [Custom Advanced Workflows](https://ecmarchitect.com/alfresco-developer-series-tutorials/workflow/tutorial/tutorial.html) tutorial.
 * Learn more about FreeMarker at [freemarker.sourceforge.net](http://freemarker.sourceforge.net/).
 * Learn more about JSON at [json.org](http://www.json.org/)
