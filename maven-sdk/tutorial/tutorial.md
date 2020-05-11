@@ -71,10 +71,12 @@ to write code that runs within either of those web applications, the Alfresco
 Maven SDK is where you need to start.
 
 A quick word about versions. This tutorial assumes you are using Alfresco Maven
-SDK 4.0 which works with Alfresco 6.0.1 and higher. If you are using a version
-of Alfresco older than 6.0.1 but greater than or equal to 4.2.7, you can use
-version 3.0.1 of the SDK. The biggest difference between 4.0 and 3.0.1 is the
-use of Docker instead of an embedded Tomcat and in-memory database.
+SDK 4.1 which works with Alfresco 6.2 and higher. If you are using a version of
+Alfresco older than 6.2 but greater than or equal to 6.0.1, you can use version
+4.0 of the SDK. If you are using a version of Alfresco older than 6.0.1 but
+greater than or equal to 4.2.7, you can use version 3.0.1 of the SDK. The
+biggest difference between 4.0 and 3.0.1 is the use of Docker instead of an
+embedded Tomcat and in-memory database.
 
 If you are using a version of Alfresco newer than 4.0 but older than 4.2.7 you
 can use version 2.x of the SDK. You can use the 2.x version of the SDK with this
@@ -91,11 +93,12 @@ Let me show you how easy it can be to get started with Alfresco development
 using the Alfresco Maven SDK. Before I start I'm going to assume you have the
 following installed:
 
-* Java 1.8.0_201
-* Apache Maven 3.3.9
-* Alfresco Maven SDK 4.0 (No download necessary)
-* Docker 18.09.2
-* Docker Compose 1.23.2
+* MacOS 10.15.4
+* Java OpenJDK 11.0.2
+* Apache Maven 3.6.3
+* Alfresco Maven SDK 4.1 (No download necessary)
+* Docker 19.03.8
+* Docker Compose 1.25.4
 
 You don't need to download anything else. Seriously. Not even Alfresco.
 
@@ -297,7 +300,7 @@ and to run them every time you build. Many organizations run CI (Continuous
 Integration) tools that depend on this being the case. Running `mvn test` will
 compile and run the project's unit tests.
 
-To run integration tests using SDK 4.0, first start up the server using
+To run integration tests using the SDK, first start up the server using
 `run.sh build_start`. Once it is running, do `run.sh test` to run the
 integration tests. You'll see something like:
 

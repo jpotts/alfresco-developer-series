@@ -61,7 +61,6 @@ Architect | Alfresco Developer Tutorials</title>
 <h1 id="license">License</h1>
 <div class="figure">
 <img src="./images/cc-by-sa-88x31.png" />
-
 </div>
 <p>This work is licensed under the Creative Commons Attribution-ShareAlike 3.0 Unported License. To view a copy of this license, visit http://creativecommons.org/licenses/by-sa/3.0/ or send a letter to Creative Commons, 444 Castro Street, Suite 900, Mountain View, California, 94041, USA.</p>
 <h1 id="introduction">Introduction</h1>
@@ -83,17 +82,18 @@ Architect | Alfresco Developer Tutorials</title>
 <h2 id="alfresco-maven-sdk">Alfresco Maven SDK</h2>
 <p>The goal of the Maven-based SDK is to make it extremely easy for you to get started with Alfresco development. It consists of a project template (an &quot;archetype&quot; in Maven parlance) and some built-in smarts that make Maven understand how to create AMPs and deploy them to Alfresco.</p>
 <p>If you are writing your own custom application that is separate from the Alfresco and Share WARs you don't need the Alfresco Maven SDK. But if you intend to write code that runs within either of those web applications, the Alfresco Maven SDK is where you need to start.</p>
-<p>A quick word about versions. This tutorial assumes you are using Alfresco Maven SDK 4.0 which works with Alfresco 6.0.1 and higher. If you are using a version of Alfresco older than 6.0.1 but greater than or equal to 4.2.7, you can use version 3.0.1 of the SDK. The biggest difference between 4.0 and 3.0.1 is the use of Docker instead of an embedded Tomcat and in-memory database.</p>
+<p>A quick word about versions. This tutorial assumes you are using Alfresco Maven SDK 4.1 which works with Alfresco 6.2 and higher. If you are using a version of Alfresco older than 6.2 but greater than or equal to 6.0.1, you can use version 4.0 of the SDK. If you are using a version of Alfresco older than 6.0.1 but greater than or equal to 4.2.7, you can use version 3.0.1 of the SDK. The biggest difference between 4.0 and 3.0.1 is the use of Docker instead of an embedded Tomcat and in-memory database.</p>
 <p>If you are using a version of Alfresco newer than 4.0 but older than 4.2.7 you can use version 2.x of the SDK. You can use the 2.x version of the SDK with this and other tutorials if you must, but you'll almost surely be affected by some differences. If you are using a version of Alfresco older than 4.x you'll have to use the old Ant-based SDK. The rest of this document won't apply to you.</p>
 <p>Now you have a high-level understanding of Apache Maven, AMPs, and the Alfresco Maven SDK. It's time to see them in action.</p>
 <h1 id="your-first-project">Your First Project</h1>
 <p>Let me show you how easy it can be to get started with Alfresco development using the Alfresco Maven SDK. Before I start I'm going to assume you have the following installed:</p>
 <ul>
-<li>Java 1.8.0_201</li>
-<li>Apache Maven 3.3.9</li>
-<li>Alfresco Maven SDK 4.0 (No download necessary)</li>
-<li>Docker 18.09.2</li>
-<li>Docker Compose 1.23.2</li>
+<li>MacOS 10.15.4</li>
+<li>Java OpenJDK 11.0.2</li>
+<li>Apache Maven 3.6.3</li>
+<li>Alfresco Maven SDK 4.1 (No download necessary)</li>
+<li>Docker 19.03.8</li>
+<li>Docker Compose 1.25.4</li>
 </ul>
 <p>You don't need to download anything else. Seriously. Not even Alfresco.</p>
 <p>Here are the steps:</p>
@@ -167,7 +167,7 @@ DemoComponent has been executed</code></pre>
 <h2 id="unit-integration-tests">Unit &amp; Integration Tests</h2>
 <p>You may have noticed that the default project includes a simple unit test in the platform module and some integration tests in the integration-tests module. By default, Maven will automatically run the unit tests and integration tests in your project unless you include <code>-DskipTests</code>.</p>
 <p>It's a good practice to make sure that your project always includes unit tests and to run them every time you build. Many organizations run CI (Continuous Integration) tools that depend on this being the case. Running <code>mvn test</code> will compile and run the project's unit tests.</p>
-<p>To run integration tests using SDK 4.0, first start up the server using <code>run.sh build_start</code>. Once it is running, do <code>run.sh test</code> to run the integration tests. You'll see something like:</p>
+<p>To run integration tests using the SDK, first start up the server using <code>run.sh build_start</code>. Once it is running, do <code>run.sh test</code> to run the integration tests. You'll see something like:</p>
 <pre><code>-------------------------------------------------------
  T E S T S
 -------------------------------------------------------
@@ -201,12 +201,10 @@ Tests run: 5, Failures: 0, Errors: 0, Skipped: 0</code></pre>
 <li><p>Select File, Import, Maven, Existing Maven Projects. Click Next.</p>
 <div class="figure">
 <img src="./images/import-maven-project.png" />
-
 </div></li>
 <li><p>Specify the directory that contains the maven-sdk-tutorial folder. Eclipse will inspect that folder and show your project in the projects list. Make sure the checkbox next to the project name is checked, then click Next.</p>
 <div class="figure">
 <img src="./images/select-maven-project.png" />
-
 </div></li>
 </ol>
 <p>After clicking Finish, the project is imported into your Eclipse workspace.</p>
@@ -253,30 +251,25 @@ Tests run: 5, Failures: 0, Errors: 0, Skipped: 0</code></pre>
 <li><p>Specify $TUTORIAL_HOME, then click next.</p>
 <div class="figure">
 <img src="./images/new-maven-project.png" />
-
 </div></li>
 <li><p>Click Configure so we can add Alfresco's catalog to the list.</p>
 <div class="figure">
 <img src="./images/select-an-archetype.png" />
-
 </div></li>
 <li>Click Add Remote Catalog</li>
 <li><p>Specify &quot;https://nexus.alfresco.com/nexus/content/groups/public/archetype-catalog.xml&quot; as the Catalog File. Specify &quot;Alfresco Archetypes&quot; as the description. Then, click OK and OK again to close the Preferences panel.</p>
 <div class="figure">
 <img src="./images/add-archetype-catalog.png" />
-
 </div></li>
 <li>Now select &quot;Alfresco Archetypes&quot; in the catalog and you'll see a bunch of archetypes show up in the list.</li>
 <li>Specify &quot;org.alfresco.maven.archetype&quot; in the filter and you'll see the same archetypes that were presented to you as options on the command line at the start of the tutorial.</li>
 <li><p>Select the alfresco-share-jar-archetype and click Next.</p>
 <div class="figure">
 <img src="./images/select-amp-archetype.png" />
-
 </div></li>
 <li><p>Specify &quot;com.someco&quot; for the groupId and &quot;maven-sdk-tutorial-share&quot; as the artifactId, then click Finish.</p>
 <div class="figure">
 <img src="./images/specify-archetype-params.png" />
-
 </div></li>
 </ol>
 <p>Now your new customization project is in your workspace. The next time you create a project using the archetype, it will be a few less steps because you won't have to add the catalog.</p>
@@ -289,7 +282,7 @@ Tests run: 5, Failures: 0, Errors: 0, Skipped: 0</code></pre>
 </ul>
 <h1 id="where-to-find-more-information">Where to Find More Information</h1>
 <ul>
-<li>The <a href="https://docs.alfresco.com/5.2/concepts/sdk-intro.html">official documentation</a> on the Alfresco Maven SDK is on <a href="https://docs.alfresco.com" class="uri">https://docs.alfresco.com</a>.</li>
+<li>The <a href="https://docs.alfresco.com/5.2/concepts/sdk-intro.html">official documentation</a> on the Alfresco Maven SDK is on <a href="https://docs.alfresco.com">https://docs.alfresco.com</a>.</li>
 <li>The <a href="https://ecmarchitect.com/alfresco-developer-series">Alfresco Developer Series</a> on <a href="https://ecmarchitect.com">ECM Architect</a> has free tutorials on custom content models, actions, behaviors, workflows, and web scripts.</li>
 </ul>
 					</div><!-- .entry-content -->
