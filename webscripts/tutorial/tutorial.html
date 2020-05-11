@@ -247,24 +247,28 @@ Foo: bar</code></pre>
         <span class="kw">&lt;groupId&gt;</span>com.someco<span class="kw">&lt;/groupId&gt;</span>
         <span class="kw">&lt;artifactId&gt;</span>webscripts-tutorial-platform<span class="kw">&lt;/artifactId&gt;</span>
         <span class="kw">&lt;version&gt;</span>1.0-SNAPSHOT<span class="kw">&lt;/version&gt;</span>
+        <span class="kw">&lt;type&gt;</span>amp<span class="kw">&lt;/type&gt;</span>
     <span class="kw">&lt;/dependency&gt;</span>
     <span class="co">&lt;!-- Bring in the content tutorial repo AMP so we can run embedded. --&gt;</span>
     <span class="kw">&lt;dependency&gt;</span>
         <span class="kw">&lt;groupId&gt;</span>com.someco<span class="kw">&lt;/groupId&gt;</span>
         <span class="kw">&lt;artifactId&gt;</span>content-tutorial-platform<span class="kw">&lt;/artifactId&gt;</span>
         <span class="kw">&lt;version&gt;</span>1.0-SNAPSHOT<span class="kw">&lt;/version&gt;</span>
+        <span class="kw">&lt;type&gt;</span>amp<span class="kw">&lt;/type&gt;</span>
     <span class="kw">&lt;/dependency&gt;</span>
     <span class="co">&lt;!-- Bring in the actions tutorial repo AMP so we can run embedded. --&gt;</span>
     <span class="kw">&lt;dependency&gt;</span>
         <span class="kw">&lt;groupId&gt;</span>com.someco<span class="kw">&lt;/groupId&gt;</span>
         <span class="kw">&lt;artifactId&gt;</span>actions-tutorial-platform<span class="kw">&lt;/artifactId&gt;</span>
         <span class="kw">&lt;version&gt;</span>1.0-SNAPSHOT<span class="kw">&lt;/version&gt;</span>
+        <span class="kw">&lt;type&gt;</span>amp<span class="kw">&lt;/type&gt;</span>
     <span class="kw">&lt;/dependency&gt;</span>
     <span class="co">&lt;!-- Bring in the behavior tutorial repo AMP so we can run embedded. --&gt;</span>
     <span class="kw">&lt;dependency&gt;</span>
         <span class="kw">&lt;groupId&gt;</span>com.someco<span class="kw">&lt;/groupId&gt;</span>
         <span class="kw">&lt;artifactId&gt;</span>behavior-tutorial-platform<span class="kw">&lt;/artifactId&gt;</span>
         <span class="kw">&lt;version&gt;</span>1.0-SNAPSHOT<span class="kw">&lt;/version&gt;</span>
+        <span class="kw">&lt;type&gt;</span>amp<span class="kw">&lt;/type&gt;</span>
     <span class="kw">&lt;/dependency&gt;</span>
 <span class="kw">&lt;/dependencies&gt;</span></code></pre>
 <p>We also want the Share AMPs from those same projects to be installed, so edit the pom.xml file in the &quot;webscripts-tutorial-share-docker&quot; directory to add the following Share dependencies:</p>
@@ -273,24 +277,28 @@ Foo: bar</code></pre>
         <span class="kw">&lt;groupId&gt;</span>com.someco<span class="kw">&lt;/groupId&gt;</span>
         <span class="kw">&lt;artifactId&gt;</span>webscripts-tutorial-share<span class="kw">&lt;/artifactId&gt;</span>
         <span class="kw">&lt;version&gt;</span>1.0-SNAPSHOT<span class="kw">&lt;/version&gt;</span>
+        <span class="kw">&lt;type&gt;</span>amp<span class="kw">&lt;/type&gt;</span>
     <span class="kw">&lt;/dependency&gt;</span>
     <span class="co">&lt;!-- Bring in the content tutorial share AMP so we can run embedded. --&gt;</span>
     <span class="kw">&lt;dependency&gt;</span>
         <span class="kw">&lt;groupId&gt;</span>com.someco<span class="kw">&lt;/groupId&gt;</span>
         <span class="kw">&lt;artifactId&gt;</span>content-tutorial-share<span class="kw">&lt;/artifactId&gt;</span>
         <span class="kw">&lt;version&gt;</span>1.0-SNAPSHOT<span class="kw">&lt;/version&gt;</span>
+        <span class="kw">&lt;type&gt;</span>amp<span class="kw">&lt;/type&gt;</span>
     <span class="kw">&lt;/dependency&gt;</span>
     <span class="co">&lt;!-- Bring in the actions tutorial share AMP so we can run embedded. --&gt;</span>
     <span class="kw">&lt;dependency&gt;</span>
         <span class="kw">&lt;groupId&gt;</span>com.someco<span class="kw">&lt;/groupId&gt;</span>
         <span class="kw">&lt;artifactId&gt;</span>actions-tutorial-share<span class="kw">&lt;/artifactId&gt;</span>
         <span class="kw">&lt;version&gt;</span>1.0-SNAPSHOT<span class="kw">&lt;/version&gt;</span>
+        <span class="kw">&lt;type&gt;</span>amp<span class="kw">&lt;/type&gt;</span>
     <span class="kw">&lt;/dependency&gt;</span>
     <span class="co">&lt;!-- Bring in the behavior tutorial share AMP so we can run embedded. --&gt;</span>
     <span class="kw">&lt;dependency&gt;</span>
         <span class="kw">&lt;groupId&gt;</span>com.someco<span class="kw">&lt;/groupId&gt;</span>
         <span class="kw">&lt;artifactId&gt;</span>behavior-tutorial-share<span class="kw">&lt;/artifactId&gt;</span>
         <span class="kw">&lt;version&gt;</span>1.0-SNAPSHOT<span class="kw">&lt;/version&gt;</span>
+        <span class="kw">&lt;type&gt;</span>amp<span class="kw">&lt;/type&gt;</span>
     <span class="kw">&lt;/dependency&gt;</span>
 <span class="kw">&lt;/dependencies&gt;</span></code></pre>
 <p>Finally, the tutorial will have a compile-time dependency on the behavior-tutorial. To address that, edit the pom.xml under &quot;webscripts-tutorial-platform&quot; and add the following dependency:</p>

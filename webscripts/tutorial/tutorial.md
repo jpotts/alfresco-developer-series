@@ -370,24 +370,28 @@ directory and add the following platform dependencies:
         <groupId>com.someco</groupId>
         <artifactId>webscripts-tutorial-platform</artifactId>
         <version>1.0-SNAPSHOT</version>
+        <type>amp</type>
     </dependency>
     <!-- Bring in the content tutorial repo AMP so we can run embedded. -->
     <dependency>
         <groupId>com.someco</groupId>
         <artifactId>content-tutorial-platform</artifactId>
         <version>1.0-SNAPSHOT</version>
+        <type>amp</type>
     </dependency>
     <!-- Bring in the actions tutorial repo AMP so we can run embedded. -->
     <dependency>
         <groupId>com.someco</groupId>
         <artifactId>actions-tutorial-platform</artifactId>
         <version>1.0-SNAPSHOT</version>
+        <type>amp</type>
     </dependency>
     <!-- Bring in the behavior tutorial repo AMP so we can run embedded. -->
     <dependency>
         <groupId>com.someco</groupId>
         <artifactId>behavior-tutorial-platform</artifactId>
         <version>1.0-SNAPSHOT</version>
+        <type>amp</type>
     </dependency>
 </dependencies>
 ```
@@ -402,24 +406,28 @@ following Share dependencies:
         <groupId>com.someco</groupId>
         <artifactId>webscripts-tutorial-share</artifactId>
         <version>1.0-SNAPSHOT</version>
+        <type>amp</type>
     </dependency>
     <!-- Bring in the content tutorial share AMP so we can run embedded. -->
     <dependency>
         <groupId>com.someco</groupId>
         <artifactId>content-tutorial-share</artifactId>
         <version>1.0-SNAPSHOT</version>
+        <type>amp</type>
     </dependency>
     <!-- Bring in the actions tutorial share AMP so we can run embedded. -->
     <dependency>
         <groupId>com.someco</groupId>
         <artifactId>actions-tutorial-share</artifactId>
         <version>1.0-SNAPSHOT</version>
+        <type>amp</type>
     </dependency>
     <!-- Bring in the behavior tutorial share AMP so we can run embedded. -->
     <dependency>
         <groupId>com.someco</groupId>
         <artifactId>behavior-tutorial-share</artifactId>
         <version>1.0-SNAPSHOT</version>
+        <type>amp</type>
     </dependency>
 </dependencies>
 ```
