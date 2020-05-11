@@ -9,6 +9,8 @@ actions/actions-tutorial-repo/alf_data_dev
 behaviors/behavior-tutorial-repo/alf_data_dev
 behaviors/alf_data_dev
 content/.idea
+.idea
+**/*.iml
 alfresco.log
 solr.log
 maven-sdk/someco-mvn-tutorial-repo/.idea
