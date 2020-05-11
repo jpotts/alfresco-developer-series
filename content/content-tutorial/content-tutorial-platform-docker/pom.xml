@@ -22,6 +22,25 @@
             <artifactId>content-tutorial-platform</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
+        <dependency>
+            <groupId>com.someco</groupId>
+            <artifactId>content-tutorial-integration-tests</artifactId>
+            <version>1.0-SNAPSHOT</version>
+            <scope>test</scope>
+            <classifier>tests</classifier>
+        </dependency>
+        <!-- Add any additional AMPs or extension JARs here that you want to be deployed in Alfresco -->
+        <!-- IMPORTANT: 
+             If using amp extensions only, add <includeTypes>amp</includeTypes> to the "collect-extensions" execution below.
+             If using both amp and jar extensions, you have to add: 
+                <exclusions>
+                  <exclusion>
+                    <groupId>*</groupId>
+                    <artifactId>*</artifactId>
+                  </exclusion>
+                </exclusions>
+             to each amp dependency definition.
+         -->
     </dependencies>
 
     <build>
@@ -29,75 +48,30 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
-                <version>3.0.2</version>
                 <executions>
                     <!-- Copy the repository extension and the dependencies required for execute integration tests -->
                     <execution>
-                        <id>copy-repo-extension</id>
-                        <phase>pre-integration-test</phase>
-                        <goals>
-                            <goal>copy</goal>
-                        </goals>
-                        <configuration>
-                            <artifactItems>
-                                <artifactItem>
-                                    <groupId>com.someco</groupId>
-                                    <artifactId>content-tutorial-platform</artifactId>
-                                    <version>1.0-SNAPSHOT</version>
-                                    <overWrite>false</overWrite>
-                                    <outputDirectory>${project.build.directory}/extensions</outputDirectory>
-                                </artifactItem>
-                                <!-- Test dependencies -->
-                                <!-- We need these dependencies installed in ACS in order to execute the test remotely making use of the Alfresco RAD module -->
-                                <artifactItem>
-                                    <groupId>org.alfresco.maven</groupId>
-                                    <artifactId>alfresco-rad</artifactId>
-                                    <version>${alfresco.sdk.version}</version>
-                                    <overWrite>false</overWrite>
-                                    <outputDirectory>${project.build.directory}/extensions</outputDirectory>
-                                </artifactItem>
-                                <artifactItem>
-                                    <groupId>com.someco</groupId>
-                                    <artifactId>integration-tests</artifactId>
-                                    <version>1.0-SNAPSHOT</version>
-                                    <classifier>tests</classifier>
-                                    <overWrite>false</overWrite>
-                                    <outputDirectory>${project.build.directory}/extensions</outputDirectory>
-                                </artifactItem>
-                                <artifactItem>
-                                    <groupId>junit</groupId>
-                                    <artifactId>junit</artifactId>
-                                    <version>4.12</version>
-                                    <overWrite>false</overWrite>
-                                    <outputDirectory>${project.build.directory}/extensions</outputDirectory>
-                                </artifactItem>
-                                <artifactItem>
-                                    <groupId>org.mockito</groupId>
-                                    <artifactId>mockito-all</artifactId>
-                                    <version>1.9.5</version>
-                                    <overWrite>false</overWrite>
-                                    <outputDirectory>${project.build.directory}/extensions</outputDirectory>
-                                </artifactItem>
-                                <artifactItem>
-                                    <groupId>org.apache.httpcomponents</groupId>
-                                    <artifactId>httpclient</artifactId>
-                                    <version>4.5.2</version>
-                                    <overWrite>false</overWrite>
-                                    <outputDirectory>${project.build.directory}/extensions</outputDirectory>
-                                </artifactItem>
-                            </artifactItems>
-                        </configuration>
-                    </execution>
-                    <!-- Copy other dependencies (JARs or AMPs) declared in the platform module -->
-                    <execution>
-                        <id>copy-third-party-dependencies</id>
+                        <id>collect-test-artifacts</id>
                         <phase>pre-integration-test</phase>
                         <goals>
                             <goal>copy-dependencies</goal>
                         </goals>
                         <configuration>
                             <outputDirectory>${project.build.directory}/extensions</outputDirectory>
+                            <excludeScope>compile</excludeScope>
+                        </configuration>
+                    </execution>
+                    <!-- Collect extensions (JARs or AMPs) declared in this module do be deployed to docker -->
+                    <execution>
+                        <id>collect-extensions</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>copy-dependencies</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}/extensions</outputDirectory>
                             <includeScope>runtime</includeScope>
+                            <!-- IMPORTANT: if using amp dependencies only, add <includeTypes>amp</includeTypes> -->
                         </configuration>
                     </execution>
                 </executions>
@@ -106,7 +80,6 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-resources-plugin</artifactId>
-                <version>3.0.1</version>
                 <executions>
                     <execution>
                         <id>copy-and-filter-docker-resources</id>
@@ -123,6 +96,7 @@
                                     <excludes>
                                         <exclude>**/*.jar</exclude>
                                         <exclude>**/*.so</exclude>
+                                        <exclude>**/*.gz</exclude>
                                     </excludes>
                                 </resource>
                             </resources>
@@ -143,6 +117,7 @@
                                     <includes>
                                         <include>**/*.jar</include>
                                         <include>**/*.so</include>
+                                        <include>**/*.gz</include>
                                     </includes>
                                 </resource>
                             </resources>
