@@ -12,41 +12,23 @@
 Architect | Alfresco Developer Tutorials</title>
   <style type="text/css">code{white-space: pre;}</style>
   <style type="text/css">
-div.sourceCode { overflow-x: auto; }
 table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
   margin: 0; padding: 0; vertical-align: baseline; border: none; }
 table.sourceCode { width: 100%; line-height: 100%; }
 td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
 td.sourceCode { padding-left: 5px; }
-code > span.kw { color: #007020; font-weight: bold; } /* Keyword */
-code > span.dt { color: #902000; } /* DataType */
-code > span.dv { color: #40a070; } /* DecVal */
-code > span.bn { color: #40a070; } /* BaseN */
-code > span.fl { color: #40a070; } /* Float */
-code > span.ch { color: #4070a0; } /* Char */
-code > span.st { color: #4070a0; } /* String */
-code > span.co { color: #60a0b0; font-style: italic; } /* Comment */
-code > span.ot { color: #007020; } /* Other */
-code > span.al { color: #ff0000; font-weight: bold; } /* Alert */
-code > span.fu { color: #06287e; } /* Function */
-code > span.er { color: #ff0000; font-weight: bold; } /* Error */
-code > span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
-code > span.cn { color: #880000; } /* Constant */
-code > span.sc { color: #4070a0; } /* SpecialChar */
-code > span.vs { color: #4070a0; } /* VerbatimString */
-code > span.ss { color: #bb6688; } /* SpecialString */
-code > span.im { } /* Import */
-code > span.va { color: #19177c; } /* Variable */
-code > span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
-code > span.op { color: #666666; } /* Operator */
-code > span.bu { } /* BuiltIn */
-code > span.ex { } /* Extension */
-code > span.pp { color: #bc7a00; } /* Preprocessor */
-code > span.at { color: #7d9029; } /* Attribute */
-code > span.do { color: #ba2121; font-style: italic; } /* Documentation */
-code > span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
-code > span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
-code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code > span.kw { color: #007020; font-weight: bold; }
+code > span.dt { color: #902000; }
+code > span.dv { color: #40a070; }
+code > span.bn { color: #40a070; }
+code > span.fl { color: #40a070; }
+code > span.ch { color: #4070a0; }
+code > span.st { color: #4070a0; }
+code > span.co { color: #60a0b0; font-style: italic; }
+code > span.ot { color: #007020; }
+code > span.al { color: #ff0000; font-weight: bold; }
+code > span.fu { color: #06287e; }
+code > span.er { color: #ff0000; font-weight: bold; }
   </style>
   <link rel="stylesheet" href="../../tutorial-common/style.css" type="text/css" />
 </head>
@@ -67,7 +49,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <div id="header">
 <h1 class="entry-title">Creating Custom Actions in Alfresco</h1>
 <h2 class="author">Jeff Potts, <a href="https://www.metaversant.com">Metaversant Group</a></h2>
-<h3 class="date">February, 2019</h3>
+<h3 class="date">May, 2020</h3>
 </div>
 <div id="TOC">
 <ul>
@@ -123,7 +105,6 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <h1 id="license">License</h1>
 <div class="figure">
 <img src="./images/cc-by-sa-88x31.png" />
-
 </div>
 <p>This work is licensed under the Creative Commons Attribution-ShareAlike 3.0 Unported License. To view a copy of this license, visit http://creativecommons.org/licenses/by-sa/3.0/ or send a letter to Creative Commons, 444 Castro Street, Suite 900, Mountain View, California, 94041, USA.</p>
 <h1 id="introduction">Introduction</h1>
@@ -152,12 +133,12 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <h2 id="tools">Tools</h2>
 <p>Here is what I am using on my machine:</p>
 <ul>
-<li>Ubuntu 16.04.5 LTS</li>
-<li>Java 1.8.0_201</li>
-<li>Apache Maven 3.3.9</li>
-<li>Alfresco Maven SDK 4.0 (No download necessary)</li>
-<li>Docker 18.09.2</li>
-<li>Docker Compose 1.23.2</li>
+<li>MacOS 10.15.4</li>
+<li>Java OpenJDK 11.0.2</li>
+<li>Apache Maven 3.6.3</li>
+<li>Alfresco Maven SDK 4.1 (No download necessary)</li>
+<li>Docker 19.03.8</li>
+<li>Docker Compose 1.25.4</li>
 </ul>
 <p>By default, when you create an Alfresco project using the Alfresco Maven SDK the project will be configured to depend on the latest stable Alfresco Community Edition build.</p>
 <p>An IDE is optional. Most people working with Alfresco use IntelliJ, Eclipse, or something similar.</p>
@@ -171,7 +152,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <ol style="list-style-type: decimal">
 <li>First, we always want to generate AMP files. Starting with SDK 3.0.0, the default is to generate only a JAR file. That's easily fixed by uncommenting the &quot;maven-assembly-plugin&quot; in the list of plugins in the pom.xml file.</li>
 <li><p>Second, as I just mentioned, the actions tutorial project depends on the content tutorial project. When we launch the actions-tutorial project's Docker containers, we want the AMPs from the content tutorial to be installed, so those need to be set up as dependencies in the pom.xml of the platform docker module:</p>
-<div class="sourceCode"><pre class="sourceCode xml"><code class="sourceCode xml"><span class="kw">&lt;dependencies&gt;</span>
+<pre class="sourceCode xml"><code class="sourceCode xml"><span class="kw">&lt;dependencies&gt;</span>
     <span class="kw">&lt;dependency&gt;</span>
         <span class="kw">&lt;groupId&gt;</span>com.someco<span class="kw">&lt;/groupId&gt;</span>
         <span class="kw">&lt;artifactId&gt;</span>actions-tutorial-platform<span class="kw">&lt;/artifactId&gt;</span>
@@ -184,9 +165,9 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
         <span class="kw">&lt;version&gt;</span>1.0-SNAPSHOT<span class="kw">&lt;/version&gt;</span>
         <span class="kw">&lt;type&gt;</span>amp<span class="kw">&lt;/type&gt;</span>            
     <span class="kw">&lt;/dependency&gt;</span>
-<span class="kw">&lt;/dependencies&gt;</span></code></pre></div>
+<span class="kw">&lt;/dependencies&gt;</span></code></pre>
 <p>And also in the pom.xml of the share docker module:</p>
-<div class="sourceCode"><pre class="sourceCode xml"><code class="sourceCode xml"><span class="kw">&lt;dependencies&gt;</span>
+<pre class="sourceCode xml"><code class="sourceCode xml"><span class="kw">&lt;dependencies&gt;</span>
     <span class="kw">&lt;dependency&gt;</span>
         <span class="kw">&lt;groupId&gt;</span>com.someco<span class="kw">&lt;/groupId&gt;</span>
         <span class="kw">&lt;artifactId&gt;</span>actions-tutorial-share<span class="kw">&lt;/artifactId&gt;</span>
@@ -199,16 +180,16 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
         <span class="kw">&lt;version&gt;</span>1.0-SNAPSHOT<span class="kw">&lt;/version&gt;</span>
         <span class="kw">&lt;type&gt;</span>amp<span class="kw">&lt;/type&gt;</span>
     <span class="kw">&lt;/dependency&gt;</span>        
-<span class="kw">&lt;/dependencies&gt;</span></code></pre></div></li>
+<span class="kw">&lt;/dependencies&gt;</span></code></pre></li>
 <li><p>Third, not only do we want the content tutorial AMPs installed, but the actions tutorial actually has a compile-time dependency on that project. So, go into the &quot;actions-tutorial-platform&quot; directory and add the dependency to the pom.xml:</p>
-<div class="sourceCode"><pre class="sourceCode xml"><code class="sourceCode xml"><span class="kw">&lt;dependencies&gt;</span>
+<pre class="sourceCode xml"><code class="sourceCode xml"><span class="kw">&lt;dependencies&gt;</span>
     <span class="kw">&lt;dependency&gt;</span>
         <span class="kw">&lt;groupId&gt;</span>com.someco<span class="kw">&lt;/groupId&gt;</span>
         <span class="kw">&lt;artifactId&gt;</span>content-tutorial-platform<span class="kw">&lt;/artifactId&gt;</span>
         <span class="kw">&lt;version&gt;</span>1.0-SNAPSHOT<span class="kw">&lt;/version&gt;</span>
         <span class="kw">&lt;scope&gt;</span>provided<span class="kw">&lt;/scope&gt;</span>
     <span class="kw">&lt;/dependency&gt;</span>
-<span class="kw">&lt;/dependencies&gt;</span></code></pre></div></li>
+<span class="kw">&lt;/dependencies&gt;</span></code></pre></li>
 </ol>
 <p>Now we're ready to begin.</p>
 <h1 id="part-1-implementing-an-action">Part 1: Implementing an Action</h1>
@@ -218,18 +199,15 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <p>Sometimes, the term “rule action” is used to describe this type of action. That's because actions are frequently used when configuring a rule on a folder. For example, suppose that there is a requirement to always create a PNG version of GIFs checked in to a specific folder. This is easily done by creating a rule that watches for new or updated GIFs and then runs the “Transform and Copy Image” action when it finds an object that meets the criteria.</p>
 <p>The screenshots below show some of the out-of-the-box actions available when configuring a rule in Alfresco Share:</p>
 <div class="figure">
-<img src="./images/rule-actions-share.png" alt="Actions in Share rule config" />
-<p class="caption">Actions in Share rule config</p>
+<img src="./images/rule-actions-share.png" alt="Actions in Share rule config" /><p class="caption">Actions in Share rule config</p>
 </div>
 <p>But actions aren't limited to running as part of a rule. Actions can be called from menu items in the Alfresco Share user interface. These are often called “UI actions” to distinguish the actual menu item, the UI action, from the thing that actually does the work, the “rule action” or simply, the “action”.</p>
 <p>These screenshots show the UI actions available in Alfresco Share's document library's document list as well as the document details page:</p>
 <div class="figure">
-<img src="./images/ui-actions-browse-share.png" alt="Browse UI actions in Share" />
-<p class="caption">Browse UI actions in Share</p>
+<img src="./images/ui-actions-browse-share.png" alt="Browse UI actions in Share" /><p class="caption">Browse UI actions in Share</p>
 </div>
 <div class="figure">
-<img src="./images/ui-actions-details-share.png" alt="Details UI actions in Share" />
-<p class="caption">Details UI actions in Share</p>
+<img src="./images/ui-actions-details-share.png" alt="Details UI actions in Share" /><p class="caption">Details UI actions in Share</p>
 </div>
 <p>So actions can be invoked from a rule and can be triggered from a menu item. Actions can also be called from code which means they can be invoked from server-side JavaScript, workflows, web scripts, or any other piece of code that can get to the Action Service.</p>
 <p>Because the same action can be invoked from all of these places, actions are a powerful way to write content operations once and then leverage them in many places.</p>
@@ -255,7 +233,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <p>The new action is doing a move, so the existing Move action is a good place to start. In fact, the only difference between the Move action and the custom Move Replaced action is that the node being moved isn't the current node--it's the node on the target end of a &quot;replaces&quot; association.</p>
 <p>Alfresco's executer class for the Move action is called <code>org.alfresco.repo.action.executer.MoveActionExecuter</code>. If you have the Alfresco source you can find it in the repository project. I'll copy it into my own repository project and call it &quot;<a href="https://github.com/jpotts/alfresco-developer-series/blob/master/actions/actions-tutorial/actions-tutorial-platform/src/main/java/com/someco/action/executer/MoveReplacedActionExecuter.java">MoveReplacedActionExecuter</a>&quot;.</p>
 <p>The out-of-the-box <code>executeImpl()</code> method is where the move logic is handled. It looks like this:</p>
-<div class="sourceCode"><pre class="sourceCode java"><code class="sourceCode java"><span class="kw">public</span> <span class="dt">void</span> <span class="fu">executeImpl</span>(Action ruleAction, NodeRef actionedUponNodeRef)
+<pre class="sourceCode java"><code class="sourceCode java"><span class="kw">public</span> <span class="dt">void</span> <span class="fu">executeImpl</span>(Action ruleAction, NodeRef actionedUponNodeRef)
 {
     NodeRef destinationParent = (NodeRef)ruleAction.<span class="fu">getParameterValue</span>(PARAM_DESTINATION_FOLDER);
     <span class="kw">try</span>
@@ -266,9 +244,9 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
     {
         <span class="co">// Do nothing</span>
     }
-}</code></pre></div>
+}</code></pre>
 <p>The code simply grabs the parameter value for the destination folder and then calls the <code>FileFolderService</code> to do the move. This is a good start for Move Replaced. All I need to do is modify the <code>executeImpl()</code> method to find the nodes related to the current node by a &quot;replaces&quot; association, and then for each result, set up and perform a move.</p>
-<div class="sourceCode"><pre class="sourceCode java"><code class="sourceCode java"><span class="kw">public</span> <span class="dt">void</span> <span class="fu">executeImpl</span>(Action ruleAction, NodeRef actionedUponNodeRef) {
+<pre class="sourceCode java"><code class="sourceCode java"><span class="kw">public</span> <span class="dt">void</span> <span class="fu">executeImpl</span>(Action ruleAction, NodeRef actionedUponNodeRef) {
     <span class="co">// get the replaces associations for this node</span>
     List&lt;AssociationRef&gt; assocRefs = nodeService.<span class="fu">getTargetAssocs</span>(actionedUponNodeRef, ((QNamePattern) QName.<span class="fu">createQName</span>(NamespaceService.<span class="fu">CONTENT_MODEL_1_0_URI</span>, <span class="st">&quot;replaces&quot;</span>)) );
 
@@ -291,21 +269,21 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
             }
         } <span class="co">// next assocNode</span>
     } <span class="co">// end if isEmpty</span>
-}</code></pre></div>
+}</code></pre>
 <p>The only other change needed is to change the value of the constant NAME from &quot;move&quot; to &quot;move-replaced&quot;. (Throughout this document I'll only include relevant pieces of these classes—check the source that accompanies this tutorial for code that actually compiles).</p>
 <h3 id="step-2-configure-the-action-in-spring">Step 2: Configure the action in Spring</h3>
 <p>In the content types tutorial, you learned that Spring bean configurations go in the context file for the AMP. That file is called &quot;service-context.xml&quot; and it resides in:</p>
 <pre><code>$TUTORIAL_HOME/actions-tutorial-platform/src/main/resources/alfresco/module/actions-tutorial-platform/context</code></pre>
 <p>The file is created for you by the Alfresco Maven SDK. Initially, it contains some <code>bean</code> elements for some demo classes that are also created by the Alfresco Maven SDK. It is safe to delete the demo beans. If you deleted the demo Java code that the SDK created, you must also delete the demo beans.</p>
 <p>Add the following <code>bean</code> element to the existing <code>beans</code> element:</p>
-<div class="sourceCode"><pre class="sourceCode xml"><code class="sourceCode xml"><span class="kw">&lt;bean</span><span class="ot"> id=</span><span class="st">&quot;move-replaced&quot;</span><span class="ot"> class=</span><span class="st">&quot;com.someco.action.executer.MoveReplacedActionExecuter&quot;</span><span class="ot"> parent=</span><span class="st">&quot;action-executer&quot;</span><span class="kw">&gt;</span>
+<pre class="sourceCode xml"><code class="sourceCode xml"><span class="kw">&lt;bean</span><span class="ot"> id=</span><span class="st">&quot;move-replaced&quot;</span><span class="ot"> class=</span><span class="st">&quot;com.someco.action.executer.MoveReplacedActionExecuter&quot;</span><span class="ot"> parent=</span><span class="st">&quot;action-executer&quot;</span><span class="kw">&gt;</span>
     <span class="kw">&lt;property</span><span class="ot"> name=</span><span class="st">&quot;fileFolderService&quot;</span><span class="kw">&gt;</span>
         <span class="kw">&lt;ref</span><span class="ot"> bean=</span><span class="st">&quot;FileFolderService&quot;</span> <span class="kw">/&gt;</span>
     <span class="kw">&lt;/property&gt;</span>
     <span class="kw">&lt;property</span><span class="ot"> name=</span><span class="st">&quot;nodeService&quot;</span><span class="kw">&gt;</span>
         <span class="kw">&lt;ref</span><span class="ot"> bean=</span><span class="st">&quot;NodeService&quot;</span> <span class="kw">/&gt;</span>
     <span class="kw">&lt;/property&gt;</span>
-<span class="kw">&lt;/bean&gt;</span></code></pre></div>
+<span class="kw">&lt;/bean&gt;</span></code></pre>
 <p>That's all there is to it. You can now invoke either of these two actions with the Action Service.</p>
 <h3 id="testing-the-action">Testing the Action</h3>
 <p>In the source code that accompanies this tutorial, I've included some integration tests. The integration tests just attempt to use the <code>ActionService</code> to get the action. For the Move Replaced action, I also execute the action.</p>
@@ -326,7 +304,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <p>Then, the action will be ready to use.</p>
 <h3 id="step-1-write-the-setwebflag-action-executer-class">Step 1: Write the SetWebFlag action executer class</h3>
 <p>Like the <code>MoveReplacedAction</code>, this action class extends <code>ActionExecuterAbstractBase</code>. The action takes a parameter that specifies the value for the <code>sc:isActive</code> flag. Actions declare parameters by overriding the <code>addParameterDefinitions()</code> method, like this:</p>
-<div class="sourceCode"><pre class="sourceCode java"><code class="sourceCode java"><span class="fu">@Override</span>
+<pre class="sourceCode java"><code class="sourceCode java"><span class="fu">@Override</span>
 <span class="kw">protected</span> <span class="dt">void</span> <span class="fu">addParameterDefinitions</span>(List&lt;ParameterDefinition&gt; paramList) {
     paramList.<span class="fu">add</span>(
         <span class="kw">new</span> <span class="fu">ParameterDefinitionImpl</span>(
@@ -334,10 +312,10 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
                 DataTypeDefinition.<span class="fu">BOOLEAN</span>,
                 <span class="kw">false</span>,
                 <span class="fu">getParamDisplayLabel</span>(PARAM_ACTIVE)));
-}</code></pre></div>
+}</code></pre>
 <p>The constructor for the <code>ParameterDefinitionImpl</code> takes the name of the parameter, the parameter's data type, whether or not the parameter is mandatory, and a label. If the custom action had additional parameters this method would have one <code>paramList.add()</code> call for each parameter.</p>
 <p>The next step is to create the action's logic in the <code>executeImpl()</code> method:</p>
-<div class="sourceCode"><pre class="sourceCode java"><code class="sourceCode java"><span class="fu">@Override</span>
+<pre class="sourceCode java"><code class="sourceCode java"><span class="fu">@Override</span>
 <span class="kw">protected</span> <span class="dt">void</span> <span class="fu">executeImpl</span>(Action action, NodeRef actionedUponNodeRef) {    
     Boolean activeFlag = (Boolean)action.<span class="fu">getParameterValue</span>(PARAM_ACTIVE);
 
@@ -367,15 +345,15 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
                     SomeCoModel.<span class="fu">NAMESPACE_SOMECO_CONTENT_MODEL</span>,
                     SomeCoModel.<span class="fu">ASPECT_SC_WEBABLE</span>), properties);
     }                  
-}</code></pre></div>
+}</code></pre>
 <p>The logic should be pretty easy to follow. The code grabs the value of the <code>active</code> parameter. Then, it sets up a <code>Map</code> to hold properties. If the active flag is being set to <code>true</code>, the date property is added to the <code>Map</code>. The last part of the method just checks to see whether the aspect needs to be added or not. If so, the aspect can be added and the properties set in a single call.</p>
 <h3 id="step-2-configure-the-action-in-spring-1">Step 2: Configure the action in Spring</h3>
 <p>The Spring configuration for this action goes in the same context file as the pervious action (service-context.xml):</p>
-<div class="sourceCode"><pre class="sourceCode xml"><code class="sourceCode xml"><span class="kw">&lt;bean</span><span class="ot"> id=</span><span class="st">&quot;set-web-flag&quot;</span><span class="ot"> class=</span><span class="st">&quot;com.someco.action.executer.SetWebFlag&quot;</span><span class="ot"> parent=</span><span class="st">&quot;action-executer&quot;</span><span class="kw">&gt;</span>
+<pre class="sourceCode xml"><code class="sourceCode xml"><span class="kw">&lt;bean</span><span class="ot"> id=</span><span class="st">&quot;set-web-flag&quot;</span><span class="ot"> class=</span><span class="st">&quot;com.someco.action.executer.SetWebFlag&quot;</span><span class="ot"> parent=</span><span class="st">&quot;action-executer&quot;</span><span class="kw">&gt;</span>
     <span class="kw">&lt;property</span><span class="ot"> name=</span><span class="st">&quot;nodeService&quot;</span><span class="kw">&gt;</span>
         <span class="kw">&lt;ref</span><span class="ot"> bean=</span><span class="st">&quot;NodeService&quot;</span> <span class="kw">/&gt;</span>
     <span class="kw">&lt;/property&gt;</span>
-<span class="kw">&lt;/bean&gt;</span></code></pre></div>
+<span class="kw">&lt;/bean&gt;</span></code></pre>
 <p>The action can now be invoked by the Action Service. If you want, you can test it by starting up the Docker containers and then running <code>./run.sh test</code> just like you did for the Move Replaced action.</p>
 <h2 id="localizing-the-actions">Localizing the actions</h2>
 <p>This step isn't strictly necessary at this point, but it will save a step later. There are some places in the Alfresco Share user interface that get localized values from the repository tier. So a user-friendly title and description for each of these actions needs to be set.</p>
@@ -391,13 +369,13 @@ move-replaced.description=This will move the target node of a replaces associati
 set-web-flag.title=Sets the SC Web Flag
 set-web-flag.description=This will add the sc:webable aspect and set the isActive flag.</code></pre>
 <p>Spring needs to know about this properties bundle, so I replaced the demo Spring beans in bootstrap-context.xml with this bean:</p>
-<div class="sourceCode"><pre class="sourceCode xml"><code class="sourceCode xml"><span class="kw">&lt;bean</span><span class="ot"> id=</span><span class="st">&quot;${project.artifactId}_actionResourceBundles&quot;</span><span class="ot"> parent=</span><span class="st">&quot;actionResourceBundles&quot;</span><span class="kw">&gt;</span>
+<pre class="sourceCode xml"><code class="sourceCode xml"><span class="kw">&lt;bean</span><span class="ot"> id=</span><span class="st">&quot;${project.artifactId}_actionResourceBundles&quot;</span><span class="ot"> parent=</span><span class="st">&quot;actionResourceBundles&quot;</span><span class="kw">&gt;</span>
     <span class="kw">&lt;property</span><span class="ot"> name=</span><span class="st">&quot;resourceBundles&quot;</span><span class="kw">&gt;</span>
         <span class="kw">&lt;list&gt;</span>
             <span class="kw">&lt;value&gt;</span>alfresco.module.${project.artifactId}.messages.somecoactions<span class="kw">&lt;/value&gt;</span>
         <span class="kw">&lt;/list&gt;</span>
     <span class="kw">&lt;/property&gt;</span>
-<span class="kw">&lt;/bean&gt;</span></code></pre></div>
+<span class="kw">&lt;/bean&gt;</span></code></pre>
 <p>Now when Alfresco Share asks for the title or description of these actions, it will get the appropriate values.</p>
 <p>Both of these actions are now ready to be wired in to the user interface. That's covered in Part 2.</p>
 <h1 id="part-2-configuring-the-actions-front-end-in-share">Part 2: Configuring the Action's Front-End in Share</h1>
@@ -410,7 +388,7 @@ set-web-flag.description=This will add the sc:webable aspect and set the isAct
 <pre><code>$TUTORIAL_HOME/actions-tutorial-share/src/main/resources/META-INF</code></pre>
 <p>You can replace the demo config elements the SDK populated in share-config-custom.xml as instructed in this section.</p>
 <p>The <code>cm:replaceable</code> aspect can be added to the list of aspects a user can see by adding some document library configuation to share-config-custom.xml, like this:</p>
-<div class="sourceCode"><pre class="sourceCode xml"><code class="sourceCode xml"><span class="kw">&lt;alfresco-config&gt;</span>
+<pre class="sourceCode xml"><code class="sourceCode xml"><span class="kw">&lt;alfresco-config&gt;</span>
     <span class="co">&lt;!-- Document Library config section --&gt;</span>
     <span class="kw">&lt;config</span><span class="ot"> evaluator=</span><span class="st">&quot;string-compare&quot;</span><span class="ot"> condition=</span><span class="st">&quot;DocumentLibrary&quot;</span><span class="kw">&gt;</span>
         <span class="kw">&lt;aspects&gt;</span>
@@ -428,21 +406,21 @@ set-web-flag.description=This will add the sc:webable aspect and set the isAct
             <span class="kw">&lt;/removeable&gt;</span>
         <span class="kw">&lt;/aspects&gt;</span>
     <span class="kw">&lt;/config&gt;</span>
-<span class="kw">&lt;/alfresco-config&gt;</span></code></pre></div>
+<span class="kw">&lt;/alfresco-config&gt;</span></code></pre>
 <p>Next, the <code>cm:replaces</code> association needs to show up when editing properties. In this example, SomeCo will use instances of <code>cm:content</code> for policies, but this would work the same way if a specific content type, like <code>sc:hrPolicy</code>, were used instead. So I've copied the form configuration for <code>cm:content</code> from the out-of-the-box form configuration into share-config-custom.xml.</p>
 <p>Just like in the content types tutorial, the association is configured by adding children to the <code>field-visibility</code> and <code>appearance</code> elements, like this:</p>
-<div class="sourceCode"><pre class="sourceCode xml"><code class="sourceCode xml">   <span class="kw">&lt;show</span><span class="ot"> id=</span><span class="st">&quot;surf:mid&quot;</span><span class="kw">/&gt;</span>
+<pre class="sourceCode xml"><code class="sourceCode xml">   <span class="kw">&lt;show</span><span class="ot"> id=</span><span class="st">&quot;surf:mid&quot;</span><span class="kw">/&gt;</span>
    <span class="kw">&lt;show</span><span class="ot"> id=</span><span class="st">&quot;surf:label&quot;</span><span class="kw">/&gt;</span>
 
    <span class="co">&lt;!-- cm:replaceable --&gt;</span>
    <span class="kw">&lt;show</span><span class="ot"> id=</span><span class="st">&quot;cm:replaces&quot;</span> <span class="kw">/&gt;</span>
 
-<span class="er">&lt;</span>/field-visibility&gt;</code></pre></div>
+<span class="er">&lt;</span>/field-visibility&gt;</code></pre>
 <p>and this:</p>
-<div class="sourceCode"><pre class="sourceCode xml"><code class="sourceCode xml">   <span class="kw">&lt;field</span><span class="ot"> id=</span><span class="st">&quot;cm:sentdate&quot;</span><span class="ot"> read-only=</span><span class="st">&quot;true&quot;</span> <span class="kw">/&gt;</span>
+<pre class="sourceCode xml"><code class="sourceCode xml">   <span class="kw">&lt;field</span><span class="ot"> id=</span><span class="st">&quot;cm:sentdate&quot;</span><span class="ot"> read-only=</span><span class="st">&quot;true&quot;</span> <span class="kw">/&gt;</span>
    <span class="kw">&lt;field</span><span class="ot"> id=</span><span class="st">&quot;cm:subjectline&quot;</span><span class="ot"> read-only=</span><span class="st">&quot;true&quot;</span> <span class="kw">/&gt;</span>
    <span class="kw">&lt;field</span><span class="ot"> id=</span><span class="st">&quot;cm:replaces&quot;</span><span class="ot"> label-id=</span><span class="st">&quot;assoc.cm_replaces&quot;</span><span class="kw">/&gt;</span>
-<span class="er">&lt;</span>/appearance&gt;</code></pre></div>
+<span class="er">&lt;</span>/appearance&gt;</code></pre>
 <h3 id="step-2-localize-the-labels">Step 2: Localize the labels</h3>
 <p>The last step in exposing the <code>cm:replaceable</code> aspect and <code>cm:replaces</code> association is localizing the labels. As you saw in the content types tutorial, custom labels go in:</p>
 <pre><code>$TUTORIAL_HOME/actions-tutorial-share/src/main/resources/alfresco/web-extension/messages</code></pre>
@@ -454,20 +432,19 @@ assoc.cm_replaces=Replaces</code></pre>
 <p>The custom properties file needs to be configured using Spring. So, again, just like the custom content types tutorial, I'll edit a context file called &quot;actions-tutorial-slingshot-application-context.xml&quot; in:</p>
 <pre><code>$TUTORIAL_HOME/actions-tutorial-share/src/main/resources/alfresco/web-extension</code></pre>
 <p>Replace the demo bean that the SDK created for you with this:</p>
-<div class="sourceCode"><pre class="sourceCode xml"><code class="sourceCode xml"><span class="co">&lt;!-- Add Someco messages --&gt;</span>
+<pre class="sourceCode xml"><code class="sourceCode xml"><span class="co">&lt;!-- Add Someco messages --&gt;</span>
 <span class="kw">&lt;bean</span><span class="ot"> id=</span><span class="st">&quot;${project.artifactId}_resources&quot;</span><span class="ot"> class=</span><span class="st">&quot;org.springframework.extensions.surf.util.ResourceBundleBootstrapComponent&quot;</span><span class="kw">&gt;</span>
     <span class="kw">&lt;property</span><span class="ot"> name=</span><span class="st">&quot;resourceBundles&quot;</span><span class="kw">&gt;</span>
         <span class="kw">&lt;list&gt;</span>
             <span class="kw">&lt;value&gt;</span>alfresco.web-extension.messages.scActions<span class="kw">&lt;/value&gt;</span>
         <span class="kw">&lt;/list&gt;</span>
     <span class="kw">&lt;/property&gt;</span>
-<span class="kw">&lt;/bean&gt;</span></code></pre></div>
+<span class="kw">&lt;/bean&gt;</span></code></pre>
 <p>Now the replaceable aspect can be added to and removed from documents using Alfresco Share. The next step is to configure the Move Replaced Rule Action in Share.</p>
 <h2 id="configuring-the-move-replaced-rule-action-in-share">Configuring the Move Replaced Rule Action in Share</h2>
 <p>Share is pretty smart. If you deploy the Move Replaced action as-is it will automatically get added to the list of actions users can select when configuring a rule. So for simple actions, you won't have to do anything further. But in this example, the action takes an argument. By default, Share will try to render a plain text field for the argument, like this:</p>
 <div class="figure">
-<img src="./images/unconfigured-move-replaced-param.png" alt="By default, Share renders a plain text field for the action&#39;s parameter" />
-<p class="caption">By default, Share renders a plain text field for the action's parameter</p>
+<img src="./images/unconfigured-move-replaced-param.png" alt="By default, Share renders a plain text field for the action&#39;s parameter" /><p class="caption">By default, Share renders a plain text field for the action's parameter</p>
 </div>
 <p>A plain text field for the parameter might work in some cases, but this action takes a node reference as an argument and making an end-user provide a node reference for the target folder would be a very bad thing. Instead, Share needs to render a folder picker dialog for the target folder argument. Luckily, Alfresco has already developed such a dialog—Share just has to be told to use it.</p>
 <p>Unfortunately, at the moment, getting a folder picker to show up for this action takes a bit more work than it ought to. Here is what is involved:</p>
@@ -483,12 +460,12 @@ assoc.cm_replaces=Replaces</code></pre>
 <p>into your own project. For example, in the code that accompanies this tutorial, I copied the file into:</p>
 <pre><code>$TUTORIAL_HOME/actions-tutorial-share/src/main/resources/alfresco/web-extension/site-webscripts/org/alfresco/components/rules/config</code></pre>
 <p>The first change is to specify a custom client-side JavaScript component:</p>
-<div class="sourceCode"><pre class="sourceCode xml"><code class="sourceCode xml"><span class="kw">&lt;rule-config</span><span class="ot"> type=</span><span class="st">&quot;action&quot;</span><span class="kw">&gt;</span>
+<pre class="sourceCode xml"><code class="sourceCode xml"><span class="kw">&lt;rule-config</span><span class="ot"> type=</span><span class="st">&quot;action&quot;</span><span class="kw">&gt;</span>
    <span class="kw">&lt;component&gt;</span>SomeCo.RuleConfigActionCustom<span class="kw">&lt;/component&gt;</span>
-   <span class="kw">&lt;config-definitions</span><span class="ot"> webscript=</span><span class="st">&quot;/api/actiondefinitions&quot;</span><span class="kw">&gt;</span></code></pre></div>
+   <span class="kw">&lt;config-definitions</span><span class="ot"> webscript=</span><span class="st">&quot;/api/actiondefinitions&quot;</span><span class="kw">&gt;</span></code></pre>
 <p>This will be a new client-side JavaScript component that will get created shortly.</p>
 <p>Next, the action gets arranged in the list of actions. In this case, it makes sense to see it in the list right after “Move” so a new <code>action</code> element gets added accordingly:</p>
-<div class="sourceCode"><pre class="sourceCode xml"><code class="sourceCode xml"><span class="kw">&lt;menu&gt;</span>
+<pre class="sourceCode xml"><code class="sourceCode xml"><span class="kw">&lt;menu&gt;</span>
     <span class="kw">&lt;group&gt;</span>
         <span class="kw">&lt;item</span><span class="ot"> id=</span><span class="st">&quot;select&quot;</span><span class="kw">/&gt;</span>
     <span class="kw">&lt;/group&gt;</span>
@@ -499,12 +476,12 @@ assoc.cm_replaces=Replaces</code></pre>
         <span class="kw">&lt;action</span><span class="ot"> name=</span><span class="st">&quot;copy&quot;</span><span class="kw">/&gt;</span>
         <span class="kw">&lt;action</span><span class="ot"> name=</span><span class="st">&quot;move&quot;</span><span class="kw">/&gt;</span>
         <span class="kw">&lt;action</span><span class="ot"> name=</span><span class="st">&quot;move-replaced&quot;</span><span class="kw">/&gt;</span>
-    <span class="kw">&lt;/group&gt;</span></code></pre></div>
+    <span class="kw">&lt;/group&gt;</span></code></pre>
 <p>Finally, the <code>move-replaced</code> action gets bound with a client-side JavaScript function called <code>MoveReplaced</code>:</p>
-<div class="sourceCode"><pre class="sourceCode xml"><code class="sourceCode xml"><span class="kw">&lt;action</span><span class="ot"> name=</span><span class="st">&quot;copy&quot;</span><span class="kw">&gt;</span>Copy<span class="kw">&lt;/action&gt;</span>
+<pre class="sourceCode xml"><code class="sourceCode xml"><span class="kw">&lt;action</span><span class="ot"> name=</span><span class="st">&quot;copy&quot;</span><span class="kw">&gt;</span>Copy<span class="kw">&lt;/action&gt;</span>
 <span class="kw">&lt;action</span><span class="ot"> name=</span><span class="st">&quot;move&quot;</span><span class="kw">&gt;</span>Move<span class="kw">&lt;/action&gt;</span>
 <span class="kw">&lt;action</span><span class="ot"> name=</span><span class="st">&quot;move-replaced&quot;</span><span class="kw">&gt;</span>MoveReplaced<span class="kw">&lt;/action&gt;</span>      
-<span class="kw">&lt;action</span><span class="ot"> name=</span><span class="st">&quot;simple-workflow&quot;</span><span class="kw">&gt;</span>SimpleWorkflow<span class="kw">&lt;/action&gt;</span></code></pre></div>
+<span class="kw">&lt;action</span><span class="ot"> name=</span><span class="st">&quot;simple-workflow&quot;</span><span class="kw">&gt;</span>SimpleWorkflow<span class="kw">&lt;/action&gt;</span></code></pre>
 <p>With this configuration in place, the custom Move Replaced action will show up in the list of actions that can be performed as part of a rule.</p>
 <h3 id="step-2-add-a-reference-to-the-custom-client-side-javascript-file-to-the-head">Step 2: Add a reference to the custom client-side JavaScript file to the head</h3>
 <p>The <code>move-replaced</code> action is going to be invoking some client-side JavaScript. So a reference to the file that contains the JavaScript needs to be added to the page so it can be loaded by the browser. The preferred way to point to a client-side resource is by adding it to the Freemarker view as a dependency. To do that, the rule-details.get.html.ftl and rule-edit.get.html.ftl files are copied from:</p>
@@ -524,68 +501,67 @@ assoc.cm_replaces=Replaces</code></pre>
 <pre><code>$TUTORIAL_HOME/actions-tutorial-share/src/main/resources/META-INF/resources/components/someco/rules/config</code></pre>
 <p>Alfresco has their rule-related client-side JavaScript under “components/rules/config” so I used the same folder structure, using &quot;someco&quot; to keep my stuff separate from Alfresco's.</p>
 <p>The first thing the rule-config-action-custom.js file does is declare a SomeCo namespace. It is important that you namespace everything in Alfresco to avoid collisions with Alfresco's code or other add-ons you might install.</p>
-<div class="sourceCode"><pre class="sourceCode javascript"><code class="sourceCode javascript"><span class="cf">if</span> (<span class="kw">typeof</span> SomeCo <span class="op">==</span> <span class="st">&quot;undefined&quot;</span> <span class="op">||</span> <span class="op">!</span>SomeCo)
-<span class="op">{</span>
-   <span class="kw">var</span> SomeCo <span class="op">=</span> <span class="op">{};</span>
-<span class="op">}</span></code></pre></div>
+<pre class="sourceCode javascript"><code class="sourceCode javascript"><span class="kw">if</span> (<span class="kw">typeof</span> SomeCo == <span class="st">&quot;undefined&quot;</span> || !SomeCo)
+{
+   <span class="kw">var</span> SomeCo = {};
+}</code></pre>
 <p>Next, comes the constructor for the component (I've left out some boring stuff, check the <a href="https://github.com/jpotts/alfresco-developer-series/blob/master/actions/actions-tutorial/actions-tutorial-share/src/main/resources/META-INF/resources/components/someco/rules/config/rule-config-action-custom.js">source</a> for the full listing):</p>
-<div class="sourceCode"><pre class="sourceCode javascript"><code class="sourceCode javascript"><span class="va">SomeCo</span>.<span class="at">RuleConfigActionCustom</span> <span class="op">=</span> <span class="kw">function</span>(htmlId)
-<span class="op">{</span>
-   <span class="va">SomeCo</span>.<span class="va">RuleConfigActionCustom</span>.<span class="va">superclass</span>.<span class="va">constructor</span>.<span class="at">call</span>(<span class="kw">this</span><span class="op">,</span> htmlId)<span class="op">;</span>
+<pre class="sourceCode javascript"><code class="sourceCode javascript"><span class="ot">SomeCo</span>.<span class="fu">RuleConfigActionCustom</span> = <span class="kw">function</span>(htmlId)
+{
+   <span class="ot">SomeCo</span>.<span class="ot">RuleConfigActionCustom</span>.<span class="ot">superclass</span>.<span class="ot">constructor</span>.<span class="fu">call</span>(<span class="kw">this</span>, htmlId);
 
    <span class="co">// Re-register with our own name</span>
-   <span class="kw">this</span>.<span class="at">name</span> <span class="op">=</span> <span class="st">&quot;SomeCo.RuleConfigActionCustom&quot;</span><span class="op">;</span>
-   <span class="va">Alfresco</span>.<span class="va">util</span>.<span class="va">ComponentManager</span>.<span class="at">reregister</span>(<span class="kw">this</span>)<span class="op">;</span>
+   <span class="kw">this</span>.<span class="fu">name</span> = <span class="st">&quot;SomeCo.RuleConfigActionCustom&quot;</span>;
+   <span class="ot">Alfresco</span>.<span class="ot">util</span>.<span class="ot">ComponentManager</span>.<span class="fu">reregister</span>(<span class="kw">this</span>);
 
    <span class="co">// Instance variables</span>
-   <span class="kw">this</span>.<span class="at">customisations</span> <span class="op">=</span> <span class="va">YAHOO</span>.<span class="va">lang</span>.<span class="at">merge</span>(<span class="kw">this</span>.<span class="at">customisations</span><span class="op">,</span> <span class="va">SomeCo</span>.<span class="va">RuleConfigActionCustom</span>.<span class="va">superclass</span>.<span class="at">customisations</span>)<span class="op">;</span>
-   <span class="kw">this</span>.<span class="at">renderers</span> <span class="op">=</span> <span class="va">YAHOO</span>.<span class="va">lang</span>.<span class="at">merge</span>(<span class="kw">this</span>.<span class="at">renderers</span><span class="op">,</span> <span class="va">SomeCo</span>.<span class="va">RuleConfigActionCustom</span>.<span class="va">superclass</span>.<span class="at">renderers</span>)<span class="op">;</span>
+   <span class="kw">this</span>.<span class="fu">customisations</span> = <span class="ot">YAHOO</span>.<span class="ot">lang</span>.<span class="fu">merge</span>(<span class="kw">this</span>.<span class="fu">customisations</span>, <span class="ot">SomeCo</span>.<span class="ot">RuleConfigActionCustom</span>.<span class="ot">superclass</span>.<span class="fu">customisations</span>);
+   <span class="kw">this</span>.<span class="fu">renderers</span> = <span class="ot">YAHOO</span>.<span class="ot">lang</span>.<span class="fu">merge</span>(<span class="kw">this</span>.<span class="fu">renderers</span>, <span class="ot">SomeCo</span>.<span class="ot">RuleConfigActionCustom</span>.<span class="ot">superclass</span>.<span class="fu">renderers</span>);
 
-   <span class="cf">return</span> <span class="kw">this</span><span class="op">;</span>
-<span class="op">};</span></code></pre></div>
+   <span class="kw">return</span> <span class="kw">this</span>;
+};</code></pre>
 <p>What's going on here is that the constructor is calling its superclass constructor, then it is registering itself with the Alfresco component manager. The YUI merge calls provide a way to avoid re-typing a bunch of code that exists in the parent class.</p>
 <p>The final bit is where the extend actually happens, and the <code>MoveReplaced</code> handler is defined:</p>
-<div class="sourceCode"><pre class="sourceCode javascript"><code class="sourceCode javascript"><span class="va">YAHOO</span>.<span class="at">extend</span>(<span class="va">SomeCo</span>.<span class="at">RuleConfigActionCustom</span><span class="op">,</span> <span class="va">Alfresco</span>.<span class="at">RuleConfigAction</span><span class="op">,</span>
-<span class="op">{</span>
+<pre class="sourceCode javascript"><code class="sourceCode javascript"><span class="ot">YAHOO</span>.<span class="fu">extend</span>(<span class="ot">SomeCo</span>.<span class="fu">RuleConfigActionCustom</span>, <span class="ot">Alfresco</span>.<span class="fu">RuleConfigAction</span>,
+{
 
    <span class="co">/**</span>
 <span class="co">    * CUSTOMISATIONS</span>
 <span class="co">    */</span>
 
-   <span class="dt">customisations</span><span class="op">:</span>
-   <span class="op">{</span>         
-      <span class="dt">MoveReplaced</span><span class="op">:</span>
-      <span class="op">{</span>
-         <span class="dt">text</span><span class="op">:</span> <span class="kw">function</span>(configDef<span class="op">,</span> ruleConfig<span class="op">,</span> configEl)
-         <span class="op">{</span>
+   <span class="dt">customisations</span>:
+   {         
+      <span class="dt">MoveReplaced</span>:
+      {
+         <span class="dt">text</span>: <span class="kw">function</span>(configDef, ruleConfig, configEl)
+         {
               <span class="co">// Display as path</span>
-              <span class="kw">this</span>.<span class="at">_getParamDef</span>(configDef<span class="op">,</span> <span class="st">&quot;destination-folder&quot;</span>).<span class="at">_type</span> <span class="op">=</span> <span class="st">&quot;path&quot;</span><span class="op">;</span>
-              <span class="cf">return</span> configDef<span class="op">;</span>
-         <span class="op">},</span>
-         <span class="dt">edit</span><span class="op">:</span> <span class="kw">function</span>(configDef<span class="op">,</span> ruleConfig<span class="op">,</span> configEl)
-         <span class="op">{</span>
+              <span class="kw">this</span>.<span class="fu">_getParamDef</span>(configDef, <span class="st">&quot;destination-folder&quot;</span>).<span class="fu">_type</span> = <span class="st">&quot;path&quot;</span>;
+              <span class="kw">return</span> configDef;
+         },
+         <span class="dt">edit</span>: <span class="kw">function</span>(configDef, ruleConfig, configEl)
+         {
              <span class="co">// Hide all parameters since we are using a cusotm ui but set default values</span>
-             <span class="kw">this</span>.<span class="at">_hideParameters</span>(<span class="va">configDef</span>.<span class="at">parameterDefinitions</span>)<span class="op">;</span>
+             <span class="kw">this</span>.<span class="fu">_hideParameters</span>(<span class="ot">configDef</span>.<span class="fu">parameterDefinitions</span>);
 
              <span class="co">// Make parameter renderer create a &quot;Destination&quot; button that displays an destination folder browser</span>
-             <span class="va">configDef</span>.<span class="va">parameterDefinitions</span>.<span class="at">splice</span>(<span class="dv">0</span><span class="op">,</span><span class="dv">0</span><span class="op">,{</span>
-                <span class="dt">type</span><span class="op">:</span> <span class="st">&quot;arca:destination-dialog-button&quot;</span><span class="op">,</span>
-                <span class="dt">displayLabel</span><span class="op">:</span> <span class="kw">this</span>.<span class="at">msg</span>(<span class="st">&quot;label.to&quot;</span>)<span class="op">,</span>
-                <span class="dt">_buttonLabel</span><span class="op">:</span> <span class="kw">this</span>.<span class="at">msg</span>(<span class="st">&quot;button.select-folder&quot;</span>)<span class="op">,</span>
-                <span class="dt">_destinationParam</span><span class="op">:</span> <span class="st">&quot;destination-folder&quot;</span>
-             <span class="op">}</span>)<span class="op">;</span>
-             <span class="cf">return</span> configDef<span class="op">;</span>
-         <span class="op">}</span>
-      <span class="op">},</span>
-   <span class="op">},</span>
+             <span class="ot">configDef</span>.<span class="ot">parameterDefinitions</span>.<span class="fu">splice</span>(<span class="dv">0</span>,<span class="dv">0</span>,{
+                <span class="dt">type</span>: <span class="st">&quot;arca:destination-dialog-button&quot;</span>,
+                <span class="dt">displayLabel</span>: <span class="kw">this</span>.<span class="fu">msg</span>(<span class="st">&quot;label.to&quot;</span>),
+                <span class="dt">_buttonLabel</span>: <span class="kw">this</span>.<span class="fu">msg</span>(<span class="st">&quot;button.select-folder&quot;</span>),
+                <span class="dt">_destinationParam</span>: <span class="st">&quot;destination-folder&quot;</span>
+             });
+             <span class="kw">return</span> configDef;
+         }
+      },
+   },
 
-<span class="op">}</span>)<span class="op">;</span></code></pre></div>
+});</code></pre>
 <p>This part is a copy of the out-of-the-box handler for <code>Move</code> with the object renamed to <code>MoveReplaced</code>. The <code>MoveReplaced</code> object has two methods: <code>text</code> and <code>edit</code>. The <code>text</code> method returns what is displayed for the component in read mode. Edit is for edit mode. The <code>edit</code> method is what is responsible for generating the button that invokes the folder picker. In this case, <code>edit</code> leverages an existing renderer called <code>arca:destination-dialog-button</code> that is defined in the superclass. If you needed to produce markup for a parameter for which Alfresco doesn't already have a renderer, you would add the appropriate code to the renderers object.</p>
 <p>With this final step in place, end-users can configure a rule that invokes the Move Replaced action. The rule editor will use the custom handler for the action so that a folder picker dialog is used to select the target folder.</p>
 <p>You can see this happening in the screenshot below. You can see the dialog that gets launched when the Select button is clicked as well as the little folder icon and folder path that are rendered once a selection is made.</p>
 <div class="figure">
-<img src="./images/move-replaced-config-share.png" alt="Configuring the Move Replaced action in Share" />
-<p class="caption">Configuring the Move Replaced action in Share</p>
+<img src="./images/move-replaced-config-share.png" alt="Configuring the Move Replaced action in Share" /><p class="caption">Configuring the Move Replaced action in Share</p>
 </div>
 <h3 id="testing-your-share-configuration">Testing Your Share Configuration</h3>
 <p>You can use the Alfresco Maven SDK to run the actions-tutorial project using Docker and Docker Compose. The Alfresco and Share WARs installed in the Tomcat servers in the Docker containers will have the content-tutorial AMPs installed because we added them to the Docker modules' pom.xml and, of course, will also have the actions-tutorial AMPs installed.</p>
@@ -609,26 +585,26 @@ assoc.cm_replaces=Replaces</code></pre>
 </ol>
 <h3 id="step-1-create-two-new-repository-tier-actions">Step 1: Create two new repository tier actions</h3>
 <p>You created action executer classes in Part 1 of this tutorial so this is nothing new. We're creating two new ones that don't take any parameters because we want to easily take advantage of the logic Alfresco Share already has for invoking actions that don't take parameters. There needs to be one action for enabling the active flag and one for disabling it and neither should take a parameter. By sub-classing the existing <code>SetWebFlag</code> action, code can be kept to a minimum. Here's the <code>EnableWebFlag</code> action executer in its entirety:</p>
-<div class="sourceCode"><pre class="sourceCode java"><code class="sourceCode java"><span class="kw">public</span> <span class="kw">class</span> EnableWebFlag <span class="kw">extends</span> SetWebFlag {
+<pre class="sourceCode java"><code class="sourceCode java"><span class="kw">public</span> <span class="kw">class</span> EnableWebFlag <span class="kw">extends</span> SetWebFlag {
     <span class="fu">@Override</span>
     <span class="kw">protected</span> <span class="dt">void</span> <span class="fu">executeImpl</span>(Action action, NodeRef actionedUponNodeRef) {
         action.<span class="fu">setParameterValue</span>(SetWebFlag.<span class="fu">PARAM_ACTIVE</span>, <span class="kw">true</span>);
         <span class="kw">super</span>.<span class="fu">executeImpl</span>(action, actionedUponNodeRef);
     }
-}</code></pre></div>
+}</code></pre>
 <p>The <code>DisableWebFlag</code> action looks just like this but sets the <code>active</code> flag to <code>false</code>. I won't repeat it here.</p>
 <p>The Spring configuration for the action is similarly short. It goes in service-context.xml:</p>
-<div class="sourceCode"><pre class="sourceCode xml"><code class="sourceCode xml"><span class="kw">&lt;bean</span><span class="ot"> id=</span><span class="st">&quot;enable-web-flag&quot;</span><span class="ot"> class=</span><span class="st">&quot;com.someco.action.executer.EnableWebFlag&quot;</span><span class="ot"> parent=</span><span class="st">&quot;set-web-flag&quot;</span><span class="kw">&gt;</span>
+<pre class="sourceCode xml"><code class="sourceCode xml"><span class="kw">&lt;bean</span><span class="ot"> id=</span><span class="st">&quot;enable-web-flag&quot;</span><span class="ot"> class=</span><span class="st">&quot;com.someco.action.executer.EnableWebFlag&quot;</span><span class="ot"> parent=</span><span class="st">&quot;set-web-flag&quot;</span><span class="kw">&gt;</span>
     <span class="kw">&lt;property</span><span class="ot"> name=</span><span class="st">&quot;publicAction&quot;</span><span class="kw">&gt;</span>
         <span class="kw">&lt;value&gt;</span>false<span class="kw">&lt;/value&gt;</span>
     <span class="kw">&lt;/property&gt;</span>
-<span class="kw">&lt;/bean&gt;</span></code></pre></div>
+<span class="kw">&lt;/bean&gt;</span></code></pre>
 <p>Again, I'm leaving out the <code>disable-web-flag</code> bean but it looks just like this one with a different class. Setting the <code>publicAction</code> property to false hides these actions from the action dropdowns. There's no real reason to do that, in this case—it's just an example.</p>
 <h3 id="step-2-update-share-config-custom.xml-with-the-action-configuration">Step 2: Update share-config-custom.xml with the action configuration</h3>
 <p>The next step is to configure the Share user interface to show the UI actions in the document library and document details menus. While we're at it, I'm going to also drop in a UI action that calls a web page just for kicks.</p>
 <p>The action config is in share-config-custom.xml. Action configuration consists of two parts. The <code>actions</code> element contains a list of action definitions. The <code>actionGroups</code> element contains a list of action groups. Action groups are things like the list of actions shown in the document library document list or the document details page.</p>
 <p>Actions and action groups live in the <code>DocLibActions</code> config within share-config-custom.xml. Here are the action definitions for the web site action and web enable:</p>
-<div class="sourceCode"><pre class="sourceCode xml"><code class="sourceCode xml"><span class="co">&lt;!-- Actions --&gt;</span>
+<pre class="sourceCode xml"><code class="sourceCode xml"><span class="co">&lt;!-- Actions --&gt;</span>
 <span class="kw">&lt;config</span><span class="ot"> evaluator=</span><span class="st">&quot;string-compare&quot;</span><span class="ot"> condition=</span><span class="st">&quot;DocLibActions&quot;</span><span class="kw">&gt;</span>
     <span class="kw">&lt;actions&gt;</span>
         <span class="kw">&lt;action</span><span class="ot"> id=</span><span class="st">&quot;someco-web-site&quot;</span><span class="ot"> type=</span><span class="st">&quot;link&quot;</span><span class="ot"> label=</span><span class="st">&quot;actions.someco.web-site&quot;</span><span class="ot"> icon=</span><span class="st">&quot;someco-website&quot;</span><span class="kw">&gt;</span>
@@ -643,13 +619,13 @@ assoc.cm_replaces=Replaces</code></pre>
             <span class="kw">&lt;param</span><span class="ot"> name=</span><span class="st">&quot;action&quot;</span><span class="kw">&gt;</span>enable-web-flag<span class="kw">&lt;/param&gt;</span>
             <span class="kw">&lt;param</span><span class="ot"> name=</span><span class="st">&quot;successMessage&quot;</span><span class="kw">&gt;</span>message.web-flag.enabled<span class="kw">&lt;/param&gt;</span>
             <span class="kw">&lt;param</span><span class="ot"> name=</span><span class="st">&quot;failureMessage&quot;</span><span class="kw">&gt;</span>message.web-flag.failure<span class="kw">&lt;/param&gt;</span>
-        <span class="kw">&lt;/action&gt;</span></code></pre></div>
+        <span class="kw">&lt;/action&gt;</span></code></pre>
 <p>The <code>someco-web-site</code> action is really simple. It is a <code>link</code> type of an action, which means it is invoking a URL that is provided in a parameter. The labels and icons will get set up in the next step.</p>
 <p>The <code>someco-web-enable</code> action is a little more involved. It is a “javascript” action, which means it is calling a client-side JavaScript handler. What's cool is that Alfresco has already provided a client-side handler called “onSimpleRepoAction”. It just needs to know the name of the repository tier action to invoke (the ones created in Step 1) and messages to display on success and failure.</p>
 <p>I've left out <code>someco-web-disable</code> because it is so similar.</p>
 <p>This action uses the built-in <code>onActionSimpleRepoAction</code>, but what if you needed to gather parameters from the end-user before calling the action? For that you can use <code>onActionFormDialog</code>. The <code>itemId</code> specifies a form ID corresponding to a form defined in share-config-custom.xml. Take a look at the out-of-the-box <code>document-transform</code> action as an example.</p>
 <p>The last part of the config is the action definitions. This slots the actions into the appropriate groups:</p>
-<div class="sourceCode"><pre class="sourceCode xml"><code class="sourceCode xml">    <span class="kw">&lt;actionGroups&gt;</span>
+<pre class="sourceCode xml"><code class="sourceCode xml">    <span class="kw">&lt;actionGroups&gt;</span>
         <span class="kw">&lt;actionGroup</span><span class="ot"> id=</span><span class="st">&quot;document-browse&quot;</span><span class="kw">&gt;</span>
             <span class="kw">&lt;action</span><span class="ot"> index=</span><span class="st">&quot;500&quot;</span><span class="ot"> id=</span><span class="st">&quot;someco-web-site&quot;</span> <span class="kw">/&gt;</span>
             <span class="kw">&lt;action</span><span class="ot"> index=</span><span class="st">&quot;510&quot;</span><span class="ot"> id=</span><span class="st">&quot;someco-web-enable&quot;</span> <span class="kw">/&gt;</span>
@@ -661,7 +637,7 @@ assoc.cm_replaces=Replaces</code></pre>
             <span class="kw">&lt;action</span><span class="ot"> index=</span><span class="st">&quot;520&quot;</span><span class="ot"> id=</span><span class="st">&quot;someco-web-disable&quot;</span> <span class="kw">/&gt;</span>                
         <span class="kw">&lt;/actionGroup&gt;</span>
     <span class="kw">&lt;/actionGroups&gt;</span>
-<span class="er">&lt;</span>/config&gt;</code></pre></div>
+<span class="er">&lt;</span>/config&gt;</code></pre>
 <p>There are a couple of things to note about the action configuration. First, you don't have to copy in the out-of-the-box actions and action groups. They will get merged in. Second, the order of the action items in the list can be controlled by setting the index attribute. The higher the index, the lower in the list the menu items appear.</p>
 <h3 id="step-3-create-icons-and-localize-the-strings">Step 3: Create icons and localize the strings</h3>
 <p>The last step is to provide some icons for the actions and localize the action labels. In step 2 the action element had an “icon” attribute. Alfresco will look in a path for an icon that starts with that name and ends with “-16.png”. Entirely lacking in graphics skills, I grabbed a couple of out-of-the-box icons that looked somewhat applicable and copied them in to my project under:</p>
@@ -679,8 +655,7 @@ message.web-flag.failure=Error setting the SomeCo active flag</code></pre>
 <p>If you don't know whether or not your containers are still running, do a <code>docker ps</code> to list the running containers.</p>
 <p>Once you are able to log in to Share you'll notice that both the Enable and Disable UI actions show up at the same time, which is lame. Check it out:</p>
 <div class="figure">
-<img src="./images/enable-disable-same-time.png" alt="Yuck, SC Enable and SC Disable show up simultaneously" />
-<p class="caption">Yuck, SC Enable and SC Disable show up simultaneously</p>
+<img src="./images/enable-disable-same-time.png" alt="Yuck, SC Enable and SC Disable show up simultaneously" /><p class="caption">Yuck, SC Enable and SC Disable show up simultaneously</p>
 </div>
 <p>The enable should only show up when the active flag is not set to <code>true</code>. The disable should only show up when the active flag is set to <code>true</code>. That's easy to fix with an evaluator and that's covered in the next section.</p>
 <h2 id="finishing-touches-evaluators-indicators">Finishing Touches: Evaluators &amp; Indicators</h2>
@@ -705,19 +680,19 @@ message.web-flag.failure=Error setting the SomeCo active flag</code></pre>
 <p>After these steps are complete, the UI actions will show or hide themselves appropriately and end-users will be able to see documents with the <code>sc:isActive</code> flag set to <code>true</code> from the document list.</p>
 <h3 id="step-1-declare-a-new-evaluator-in-spring-config">Step 1: Declare a new evaluator in Spring config</h3>
 <p>Only one evaluator is needed for this example. The evaluator just needs to know the value of the <code>sc:isActive</code> flag—the UI actions can show or hide themselves based on that. Evaluators live in Spring config. This project already has “actions-tutorial-share-slingshot-application-context.xml” so I added the evaluator to that file:</p>
-<div class="sourceCode"><pre class="sourceCode xml"><code class="sourceCode xml"><span class="kw">&lt;bean</span><span class="ot"> id=</span><span class="st">&quot;someco.evaluator.doclib.action.isActive&quot;</span><span class="ot"> parent=</span><span class="st">&quot;evaluator.doclib.action.value&quot;</span><span class="kw">&gt;</span>
+<pre class="sourceCode xml"><code class="sourceCode xml"><span class="kw">&lt;bean</span><span class="ot"> id=</span><span class="st">&quot;someco.evaluator.doclib.action.isActive&quot;</span><span class="ot"> parent=</span><span class="st">&quot;evaluator.doclib.action.value&quot;</span><span class="kw">&gt;</span>
     <span class="kw">&lt;property</span><span class="ot"> name=</span><span class="st">&quot;accessor&quot;</span><span class="ot"> value=</span><span class="st">&quot;node.properties.sc:isActive&quot;</span> <span class="kw">/&gt;</span>
     <span class="kw">&lt;property</span><span class="ot"> name=</span><span class="st">&quot;comparator&quot;</span><span class="kw">&gt;</span>
         <span class="kw">&lt;bean</span><span class="ot"> class=</span><span class="st">&quot;org.alfresco.web.evaluator.StringEqualsComparator&quot;</span><span class="kw">&gt;</span>
             <span class="kw">&lt;property</span><span class="ot"> name=</span><span class="st">&quot;value&quot;</span><span class="ot"> value=</span><span class="st">&quot;true&quot;</span> <span class="kw">/&gt;</span>
         <span class="kw">&lt;/bean&gt;</span>
     <span class="kw">&lt;/property&gt;</span>
-<span class="kw">&lt;/bean&gt;</span></code></pre></div>
+<span class="kw">&lt;/bean&gt;</span></code></pre>
 <p>This bean extends the out-of-the-box “value” evaluator and provides properties specific to our needs. In this case, the <code>accessor</code> is the name of the property the evaluator needs to inspect. The comparator does a string comparison against the value of “true”. Note the use of “someco” in the bean ID. This is another place where you want to make sure you are using your own namespace.</p>
 <p>All evaluators work similarly. If you wanted to check for a specific aspect, for example, you would extend the aspect evaluator and then specify the aspect you are looking for in one of the properties.</p>
 <h3 id="step-2-update-the-action-config-in-share-config-custom.xml">Step 2: Update the action config in share-config-custom.xml</h3>
 <p>With an evaluator declared the next step is to tell the action configuration which evaluator to use to decide whether or not to show the UI action. So, back over in share-config-custom.xml, I've added two new <code>evaluator</code> elements to the existing <code>action</code> elements. The <code>evaluator</code> elements point to the <code>someco.evaluator.doclib.action.isActive</code> evaluator configured in the previous step:</p>
-<div class="sourceCode"><pre class="sourceCode xml"><code class="sourceCode xml"><span class="kw">&lt;action</span><span class="ot"> id=</span><span class="st">&quot;someco-web-enable&quot;</span><span class="ot"> type=</span><span class="st">&quot;javascript&quot;</span><span class="ot"> label=</span><span class="st">&quot;actions.someco.web-enable&quot;</span><span class="ot"> icon=</span><span class="st">&quot;someco-create-website&quot;</span><span class="kw">&gt;</span>
+<pre class="sourceCode xml"><code class="sourceCode xml"><span class="kw">&lt;action</span><span class="ot"> id=</span><span class="st">&quot;someco-web-enable&quot;</span><span class="ot"> type=</span><span class="st">&quot;javascript&quot;</span><span class="ot"> label=</span><span class="st">&quot;actions.someco.web-enable&quot;</span><span class="ot"> icon=</span><span class="st">&quot;someco-create-website&quot;</span><span class="kw">&gt;</span>
     <span class="kw">&lt;param</span><span class="ot"> name=</span><span class="st">&quot;function&quot;</span><span class="kw">&gt;</span>onActionSimpleRepoAction<span class="kw">&lt;/param&gt;</span>
     <span class="kw">&lt;permissions&gt;</span>
         <span class="kw">&lt;permission</span><span class="ot"> allow=</span><span class="st">&quot;true&quot;</span><span class="kw">&gt;</span>Write<span class="kw">&lt;/permission&gt;</span>
@@ -736,13 +711,13 @@ message.web-flag.failure=Error setting the SomeCo active flag</code></pre>
     <span class="kw">&lt;param</span><span class="ot"> name=</span><span class="st">&quot;successMessage&quot;</span><span class="kw">&gt;</span>message.web-flag.disabled<span class="kw">&lt;/param&gt;</span>
     <span class="kw">&lt;param</span><span class="ot"> name=</span><span class="st">&quot;failureMessage&quot;</span><span class="kw">&gt;</span>message.web-flag.failure<span class="kw">&lt;/param&gt;</span>
     <span class="kw">&lt;evaluator&gt;</span>someco.evaluator.doclib.action.isActive<span class="kw">&lt;/evaluator&gt;</span>
-<span class="kw">&lt;/action&gt;</span></code></pre></div>
+<span class="kw">&lt;/action&gt;</span></code></pre>
 <p>Both actions use the same evaluator. For the <code>someco-web-enable</code> action, the evaluator is negated. So if the evaluator returns true (i.e., the <code>sc:isActive</code> property is set to <code>true</code>) the web enable action will be hidden. If the evaluator returns <code>false</code>, the action will show itself.</p>
 <h3 id="step-3-update-the-share-config-custom.xml-file-to-show-a-document-library-indicator">Step 3: Update the share-config-custom.xml file to show a document library indicator</h3>
 <p>The last step is really not needed at all if all you are doing is adding an action to the menu. But because it is easy to do and leverages the same evaluator written in the previous step, I didn't think you'd mind.</p>
 <p>The goal here is to show a little icon in the document library only if the <code>sc:isActive</code> property is set to <code>true</code>. If you are already thinking, “Hey, that sounds like an evaluator!” you've got it.</p>
 <p>Indicators are part of the “DocumentLibrary” config in share-config-custom.xml. All it needs is a pointer to an evaluator. In this case, the one created earlier can be reused:</p>
-<div class="sourceCode"><pre class="sourceCode xml"><code class="sourceCode xml">    <span class="er">&lt;</span>/types&gt;
+<pre class="sourceCode xml"><code class="sourceCode xml">    <span class="er">&lt;</span>/types&gt;
 
     <span class="co">&lt;!-- Custom Indicators --&gt;</span>
     <span class="kw">&lt;indicators&gt;</span>
@@ -750,7 +725,7 @@ message.web-flag.failure=Error setting the SomeCo active flag</code></pre>
             <span class="kw">&lt;evaluator&gt;</span>someco.evaluator.doclib.action.isActive<span class="kw">&lt;/evaluator&gt;</span>
         <span class="kw">&lt;/indicator&gt;</span>
     <span class="kw">&lt;/indicators&gt;</span>
-<span class="er">&lt;</span>/config&gt;</code></pre></div>
+<span class="er">&lt;</span>/config&gt;</code></pre>
 <p>Alfresco will use the indicator's id attribute appended with “-16.png” for the icon. I copied the same icon used for the “enable” action into:</p>
 <pre><code>$TUTORIAL_HOME/actions-tutorial-share/src/main/resources/META-INF/resources/components/documentlibrary/indicators</code></pre>
 <p>for this purpose.</p>
@@ -762,16 +737,13 @@ message.web-flag.failure=Error setting the SomeCo active flag</code></pre>
 <p>Regardless of the method you choose, you'll need to deploy a total of four AMPs (two repository tier AMPs and two Share tier AMPs) for this to work because the action tutorial AMPs depend on the content tutorial AMPs.</p>
 <p>If everything is working correctly, you should see the SomeCo web site link and either the SC Web Enable or the SC Web Disable menu items from both the browse menu and the details page as shown below.</p>
 <div class="figure">
-<img src="./images/indicators-browse-share.png" alt="Indicators show which content has the active flag set in Share" />
-<p class="caption">Indicators show which content has the active flag set in Share</p>
+<img src="./images/indicators-browse-share.png" alt="Indicators show which content has the active flag set in Share" /><p class="caption">Indicators show which content has the active flag set in Share</p>
 </div>
 <div class="figure">
-<img src="./images/ui-actions-disable-details-share.png" alt="Custom UI actions in the document details page" />
-<p class="caption">Custom UI actions in the document details page</p>
+<img src="./images/ui-actions-disable-details-share.png" alt="Custom UI actions in the document details page" /><p class="caption">Custom UI actions in the document details page</p>
 </div>
 <div class="figure">
-<img src="./images/ui-actions-disable-browse-share.png" alt="Custom UI actions in the document list" />
-<p class="caption">Custom UI actions in the document list</p>
+<img src="./images/ui-actions-disable-browse-share.png" alt="Custom UI actions in the document list" /><p class="caption">Custom UI actions in the document list</p>
 </div>
 <p>Clicking the “SomeCo” menu item will open a browser window to the URL specified in the configuration. Clicking the “SC Disable Web” should invoke the action on the repository tier and then refresh the metadata and the action list.</p>
 <h1 id="topics-to-explore-on-your-own">Topics to Explore On Your Own</h1>

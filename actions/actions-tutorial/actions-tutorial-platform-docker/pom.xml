@@ -30,12 +30,6 @@
             <scope>test</scope>
             <classifier>tests</classifier>
         </dependency>
-        <dependency>
-           <groupId>com.someco</groupId>
-           <artifactId>content-tutorial-platform</artifactId>
-           <version>1.0-SNAPSHOT</version>
-           <type>amp</type>
-        </dependency>
         <!-- Add any additional AMPs or extension JARs here that you want to be deployed in Alfresco -->
         <!-- IMPORTANT:
              If using amp extensions only, add <includeTypes>amp</includeTypes> to the "collect-extensions" execution below.
@@ -48,6 +42,12 @@
                 </exclusions>
              to each amp dependency definition.
          -->
+        <dependency>
+            <groupId>com.someco</groupId>
+            <artifactId>content-tutorial-platform</artifactId>
+            <version>1.0-SNAPSHOT</version>
+            <type>amp</type>
+        </dependency>
     </dependencies>
 
     <build>

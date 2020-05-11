@@ -62,7 +62,7 @@ tail_all() {
 }
 
 test() {
-    $MVN_EXEC verify -pl integration-tests
+    $MVN_EXEC verify -pl actions-tutorial-integration-tests
 }
 
 case "$1" in
