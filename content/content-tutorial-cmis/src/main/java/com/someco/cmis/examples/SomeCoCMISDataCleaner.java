@@ -26,6 +26,7 @@ public class SomeCoCMISDataCleaner extends CMISExampleBase {
     	sccdc.setPassword(args[1]);
     	sccdc.setFolderName(args[2]);    	
     	sccdc.clean();
+		System.exit(0);
     }
 
 	public void clean() throws Exception {

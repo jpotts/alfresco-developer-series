@@ -18,6 +18,7 @@ public class TypeDefinitionExample extends CMISExampleBase {
     	} catch (Exception e) {
     		e.printStackTrace();
     	}
+		System.exit(0);
     }
     
     public void doExample(String typeId, String propId) throws Exception {

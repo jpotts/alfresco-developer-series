@@ -17,6 +17,7 @@ public class PermissionExample extends CMISExampleBase {
         pe.setUser("admin");
         pe.setPassword("admin");
         pe.doExample();
+        System.exit(0);
     }
 
     public void doExample() {

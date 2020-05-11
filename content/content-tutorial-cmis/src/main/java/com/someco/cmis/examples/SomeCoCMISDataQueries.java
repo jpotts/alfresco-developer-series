@@ -33,6 +33,7 @@ public class SomeCoCMISDataQueries extends CMISExampleBase {
     	sccdq.setPassword(args[1]);
     	sccdq.setFolderName(args[2]);
     	sccdq.doExamples();
+		System.exit(0);
 	}
 	
 	/**

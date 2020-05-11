@@ -31,7 +31,9 @@ import com.someco.examples.ExampleBase;
  * @author jpotts
  */
 public class CMISExampleBase extends ExampleBase {
-    //private String serviceUrl = "http://localhost:8080/alfresco/api/-default-/public/cmis/versions/1.0/atom"; // Uncomment for Atom Pub binding
+	private static final String USAGE = "java CMISExampleBase <username> <password>";
+
+	//private String serviceUrl = "http://localhost:8080/alfresco/api/-default-/public/cmis/versions/1.0/atom"; // Uncomment for Atom Pub binding
 	private String serviceUrl = "http://localhost:8080/alfresco/api/-default-/public/cmis/versions/1.1/browser"; // Uncomment for Browser binding
     //private String serviceUrl = "http://localhost:8080/alfresco/api/-default-/public/cmis/versions/1.1/atom"; // Uncomment for Atom Pub binding
 
@@ -42,9 +44,11 @@ public class CMISExampleBase extends ExampleBase {
 
     public static void main(String[] args) throws Exception {
     	CMISExampleBase ex = new CMISExampleBase();
+    	if (args.length != 2) doUsage(CMISExampleBase.USAGE);
     	ex.setUser(args[0]);
     	ex.setPassword(args[1]);
     	ex.getProductInfo();
+		System.exit(0);
     }
     
     public void getProductInfo() {

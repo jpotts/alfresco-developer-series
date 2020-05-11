@@ -12,6 +12,7 @@ public class FolderFinderByNameSearch extends CMISExampleBase {
     	fc.setUser(args[0]);
     	fc.setPassword(args[1]);
     	System.out.println("Does folder: " + args[0] + " exist? " + fc.doesFolderExist(args[0]));
+		System.exit(0);
     }
     
     public boolean doesFolderExist(String folderName) {

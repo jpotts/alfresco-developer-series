@@ -24,6 +24,7 @@ public class BulkExample extends CMISExampleBase {
     	cce.setUser(args[0]);
     	cce.setPassword(args[1]);
     	cce.doExample(args[2]);
+    	System.exit(0);
     }
     
     public void doExample(String folderPath) {

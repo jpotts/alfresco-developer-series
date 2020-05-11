@@ -41,6 +41,7 @@ public class SomeCoCMISDataRelater extends CMISExampleBase {
     		sccdr.setTargetObjectId(args[6]);
     	}
     	sccdr.relate();
+		System.exit(0);
     }
     
     public void relate() throws Exception {

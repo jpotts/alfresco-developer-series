@@ -20,6 +20,7 @@ public class SomeCoCMISParents extends CMISExampleBase {
     	sccp.setContentType(args[3]);
     	sccp.setContentName(args[4]);
     	sccp.getParents();
+		System.exit(0);
     }
 	
 	public void getParents() {

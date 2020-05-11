@@ -22,6 +22,7 @@ public class SomeCoCMISDataCreator extends CMISExampleBase {
     	sccdc.setContentType(args[3]);
     	sccdc.setContentName(args[4]);
     	sccdc.create();
+		System.exit(0);
     }
 	
 	public void create() {

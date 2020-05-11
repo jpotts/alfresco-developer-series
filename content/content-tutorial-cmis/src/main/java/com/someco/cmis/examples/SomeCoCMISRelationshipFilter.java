@@ -38,6 +38,7 @@ public class SomeCoCMISRelationshipFilter extends CMISExampleBase {
     	sccdr.setFolderName(args[2]);
     	sccdr.createTestDocs();
     	sccdr.relate();
+		System.exit(0);
     }
 
     public void createTestDocs() {

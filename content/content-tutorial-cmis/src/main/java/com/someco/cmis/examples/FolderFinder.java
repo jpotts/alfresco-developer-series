@@ -17,6 +17,7 @@ public class FolderFinder extends CMISExampleBase {
     	ff.setUser(args[0]);
     	ff.setPassword(args[1]);
     	ff.doExample(args[2]);
+		System.exit(0);
     }
 
 	public void doExample(String folderPath) {
