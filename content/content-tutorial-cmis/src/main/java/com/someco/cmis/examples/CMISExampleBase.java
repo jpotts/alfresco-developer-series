@@ -53,32 +53,32 @@ public class CMISExampleBase extends ExampleBase {
     	System.out.println(session.getRepositoryInfo().getProductVersion());
     	System.out.println(session.getRepositoryInfo().getId());
     }
-    
+
 	public Session getSession() {
 
 		if (session == null) {
 			// default factory implementation
 			SessionFactory factory = SessionFactoryImpl.newInstance();
 			Map<String, String> parameter = new HashMap<String, String>();
-	
+
 			// user credentials
 			parameter.put(SessionParameter.USER, getUser());
 			parameter.put(SessionParameter.PASSWORD, getPassword());
-	
+
 			// connection settings
 			//parameter.put(SessionParameter.ATOMPUB_URL, getServiceUrl()); // Uncomment for Atom Pub binding
 			parameter.put(SessionParameter.BINDING_TYPE, BindingType.ATOMPUB.value()); // Uncomment for Atom Pub binding
 
 			parameter.put(SessionParameter.BROWSER_URL, getServiceUrl()); // Uncomment for Browser binding
 			parameter.put(SessionParameter.BINDING_TYPE, BindingType.BROWSER.value()); // Uncomment for Browser binding
-			
+
 			// Set the alfresco object factory
 			// Used when using the CMIS extension for Alfresco for working with aspects and CMIS 1.0
 			// This is not needed when using CMIS 1.1
 			//parameter.put(SessionParameter.OBJECT_FACTORY_CLASS, "org.alfresco.cmis.client.impl.AlfrescoObjectFactoryImpl");
-			
+
 			List<Repository> repositories = factory.getRepositories(parameter);
-	
+
 			this.session = repositories.get(0).createSession();
 		}
 		return this.session;

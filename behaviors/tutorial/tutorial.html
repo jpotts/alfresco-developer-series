@@ -11,6 +11,43 @@
   <title>Implementing Custom Behaviors in Alfresco | ECM
 Architect | Alfresco Developer Tutorials</title>
   <style type="text/css">code{white-space: pre;}</style>
+  <style type="text/css">
+div.sourceCode { overflow-x: auto; }
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
+td.sourceCode { padding-left: 5px; }
+code > span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code > span.dt { color: #902000; } /* DataType */
+code > span.dv { color: #40a070; } /* DecVal */
+code > span.bn { color: #40a070; } /* BaseN */
+code > span.fl { color: #40a070; } /* Float */
+code > span.ch { color: #4070a0; } /* Char */
+code > span.st { color: #4070a0; } /* String */
+code > span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code > span.ot { color: #007020; } /* Other */
+code > span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code > span.fu { color: #06287e; } /* Function */
+code > span.er { color: #ff0000; font-weight: bold; } /* Error */
+code > span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+code > span.cn { color: #880000; } /* Constant */
+code > span.sc { color: #4070a0; } /* SpecialChar */
+code > span.vs { color: #4070a0; } /* VerbatimString */
+code > span.ss { color: #bb6688; } /* SpecialString */
+code > span.im { } /* Import */
+code > span.va { color: #19177c; } /* Variable */
+code > span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code > span.op { color: #666666; } /* Operator */
+code > span.bu { } /* BuiltIn */
+code > span.ex { } /* Extension */
+code > span.pp { color: #bc7a00; } /* Preprocessor */
+code > span.at { color: #7d9029; } /* Attribute */
+code > span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code > span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code > span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+  </style>
   <link rel="stylesheet" href="../../tutorial-common/style.css" type="text/css" />
 </head>
 <body class="page page-template page-template-onecolumn-page-php custom-background">
@@ -30,7 +67,7 @@ Architect | Alfresco Developer Tutorials</title>
 <div id="header">
 <h1 class="entry-title">Implementing Custom Behaviors in Alfresco</h1>
 <h2 class="author">Jeff Potts, <a href="https://www.metaversant.com">Metaversant Group</a></h2>
-<h3 class="date">April, 2018</h3>
+<h3 class="date">February, 2019</h3>
 </div>
 <div id="TOC">
 <ul>
@@ -184,10 +221,12 @@ calculateVersionLabel</td>
 <h2 id="tools">Tools</h2>
 <p>Here is what I am using on my machine:</p>
 <ul>
-<li>Mac OS X 10.12.6</li>
-<li>Java 1.8.0_77</li>
-<li>Apache Maven 3.5.3 (installed using Macports)</li>
-<li>Alfresco Maven SDK 3.0.1 (No download necessary)</li>
+<li>Ubuntu 16.04.5 LTS</li>
+<li>Java 1.8.0_201</li>
+<li>Apache Maven 3.3.9</li>
+<li>Alfresco Maven SDK 4.0 (No download necessary)</li>
+<li>Docker 18.09.2</li>
+<li>Docker Compose 1.23.2</li>
 </ul>
 <p>By default, when you create an Alfresco project using the Alfresco Maven SDK the project will be configured to depend on the latest stable Alfresco Community Edition build.</p>
 <p>An IDE is optional. Most people working with Alfresco use IntelliJ, Eclipse, or something similar.</p>
@@ -197,13 +236,13 @@ calculateVersionLabel</td>
 <p>If you are planning on following along, go ahead and use the Alfresco Maven SDK to create a new project. Use a <code>groupId</code> of &quot;com.someco&quot; and an <code>artifactId</code> of &quot;behavior-tutorial&quot;.</p>
 <p>I'm going to make a couple of quick changes to the generated project.</p>
 <p>First, we always want to generate AMP files for our projects. Starting with SDK 3.0.0, the default is to generate JAR files. That's easily fixed by uncommenting the &quot;maven-assembly-plugin&quot; in the list of plugins in the pom.xml file.</p>
-<p>Next, the Java code we are about to write has a compile-time dependency on the content tutorial repo tier project. To satisfy that, edit the &quot;pom.xml&quot; file in the behavior-tutorial-platform-jar folder to add the following dependency:</p>
-<pre><code>    &lt;dependency&gt;
-        &lt;groupId&gt;com.someco&lt;/groupId&gt;
-        &lt;artifactId&gt;content-tutorial-platform-jar&lt;/artifactId&gt;
-        &lt;version&gt;1.0-SNAPSHOT&lt;/version&gt;
-        &lt;scope&gt;provided&lt;/scope&gt;
-    &lt;/dependency&gt;</code></pre>
+<p>Next, the Java code we are about to write has a compile-time dependency on the content tutorial repo tier project. To satisfy that, edit the &quot;pom.xml&quot; file in the behavior-tutorial-platform folder to add the following dependency:</p>
+<div class="sourceCode"><pre class="sourceCode xml"><code class="sourceCode xml"><span class="kw">&lt;dependency&gt;</span>
+    <span class="kw">&lt;groupId&gt;</span>com.someco<span class="kw">&lt;/groupId&gt;</span>
+    <span class="kw">&lt;artifactId&gt;</span>content-tutorial-platform<span class="kw">&lt;/artifactId&gt;</span>
+    <span class="kw">&lt;version&gt;</span>1.0-SNAPSHOT<span class="kw">&lt;/version&gt;</span>
+    <span class="kw">&lt;scope&gt;</span>provided<span class="kw">&lt;/scope&gt;</span>
+<span class="kw">&lt;/dependency&gt;</span></code></pre></div>
 <p>Now we're ready to begin.</p>
 <h1 id="implementing-and-deploying-the-custom-behavior-in-java">Implementing and deploying the custom behavior in Java</h1>
 <p>Let's do the Java example first. Here are the steps:</p>
@@ -217,106 +256,106 @@ calculateVersionLabel</td>
 <p>In this step you will implement a content model used to persist ratings, optionally configure the user interface so you can see the average rating and rating count in Alfresco Share, define a Java class to hold constants for the model, and write an integration test to test the new aspect.</p>
 <h3 id="implement-the-rating-type-and-rateable-aspect">Implement the rating type and rateable aspect</h3>
 <p>As you learned in the content types tutorial, models are defined using XML and the XML file resides in:</p>
-<pre><code>$TUTORIAL_HOME/behavior-tutorial-platform-jar/src/main/main/resources/alfresco/module/behavior-tutorial-platform-jar/model</code></pre>
+<pre><code>$TUTORIAL_HOME/behavior-tutorial-platform/src/main/main/resources/alfresco/module/behavior-tutorial-platform/model</code></pre>
 <p>The Alfresco Maven SDK should have created a model directory for you and it may have populated it with sample content model files. Delete those files as they are not needed.</p>
-<p>Now, create a new model XML file called &quot;<a href="https://github.com/jpotts/alfresco-developer-series/blob/master/behaviors/behavior-tutorial/behavior-tutorial-platform-jar/src/main/resources/alfresco/module/behavior-tutorial-platform-jar/model/scRatingsModel.xml">scRatingsModel.xml</a>&quot; with the following content:</p>
-<pre><code>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
-&lt;!-- Definition of new Model --&gt;
-&lt;model name=&quot;scr:somecoratingsmodel&quot; xmlns=&quot;http://www.alfresco.org/model/dictionary/1.0&quot;&gt;
+<p>Now, create a new model XML file called &quot;<a href="https://github.com/jpotts/alfresco-developer-series/blob/master/behaviors/behavior-tutorial/behavior-tutorial-platform/src/main/resources/alfresco/module/behavior-tutorial-platform/model/scRatingsModel.xml">scRatingsModel.xml</a>&quot; with the following content:</p>
+<div class="sourceCode"><pre class="sourceCode xml"><code class="sourceCode xml"><span class="kw">&lt;?xml</span> version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;<span class="kw">?&gt;</span>
+<span class="co">&lt;!-- Definition of new Model --&gt;</span>
+<span class="kw">&lt;model</span><span class="ot"> name=</span><span class="st">&quot;scr:somecoratingsmodel&quot;</span><span class="ot"> xmlns=</span><span class="st">&quot;http://www.alfresco.org/model/dictionary/1.0&quot;</span><span class="kw">&gt;</span>
 
-    &lt;!-- Optional meta-data about the model --&gt;
-    &lt;description&gt;Someco Ratings Model&lt;/description&gt;
-    &lt;author&gt;Jeff Potts&lt;/author&gt;
-    &lt;version&gt;1.0&lt;/version&gt;
+    <span class="co">&lt;!-- Optional meta-data about the model --&gt;</span>
+    <span class="kw">&lt;description&gt;</span>Someco Ratings Model<span class="kw">&lt;/description&gt;</span>
+    <span class="kw">&lt;author&gt;</span>Jeff Potts<span class="kw">&lt;/author&gt;</span>
+    <span class="kw">&lt;version&gt;</span>1.0<span class="kw">&lt;/version&gt;</span>
 
-    &lt;!-- Imports are required to allow references to definitions in other models --&gt;
-    &lt;imports&gt;
-        &lt;!-- Import Alfresco Dictionary Definitions --&gt;
-        &lt;import uri=&quot;http://www.alfresco.org/model/dictionary/1.0&quot; prefix=&quot;d&quot; /&gt;
-        &lt;!-- Import Alfresco Content Domain Model Definitions --&gt;
-        &lt;import uri=&quot;http://www.alfresco.org/model/content/1.0&quot; prefix=&quot;cm&quot; /&gt;
-        &lt;import uri=&quot;http://www.alfresco.org/model/system/1.0&quot; prefix=&quot;sys&quot; /&gt;
-    &lt;/imports&gt;
+    <span class="co">&lt;!-- Imports are required to allow references to definitions in other models --&gt;</span>
+    <span class="kw">&lt;imports&gt;</span>
+        <span class="co">&lt;!-- Import Alfresco Dictionary Definitions --&gt;</span>
+        <span class="kw">&lt;import</span><span class="ot"> uri=</span><span class="st">&quot;http://www.alfresco.org/model/dictionary/1.0&quot;</span><span class="ot"> prefix=</span><span class="st">&quot;d&quot;</span> <span class="kw">/&gt;</span>
+        <span class="co">&lt;!-- Import Alfresco Content Domain Model Definitions --&gt;</span>
+        <span class="kw">&lt;import</span><span class="ot"> uri=</span><span class="st">&quot;http://www.alfresco.org/model/content/1.0&quot;</span><span class="ot"> prefix=</span><span class="st">&quot;cm&quot;</span> <span class="kw">/&gt;</span>
+        <span class="kw">&lt;import</span><span class="ot"> uri=</span><span class="st">&quot;http://www.alfresco.org/model/system/1.0&quot;</span><span class="ot"> prefix=</span><span class="st">&quot;sys&quot;</span> <span class="kw">/&gt;</span>
+      <span class="kw">&lt;/imports&gt;</span>
 
-    &lt;!-- Introduction of new namespaces defined by this model --&gt;
-    &lt;namespaces&gt;
-        &lt;namespace uri=&quot;http://www.someco.com/model/ratings/1.0&quot; prefix=&quot;scr&quot; /&gt;
-    &lt;/namespaces&gt;
-&lt;/model&gt;</code></pre>
+    <span class="co">&lt;!-- Introduction of new namespaces defined by this model --&gt;</span>
+    <span class="kw">&lt;namespaces&gt;</span>
+        <span class="kw">&lt;namespace</span><span class="ot"> uri=</span><span class="st">&quot;http://www.someco.com/model/ratings/1.0&quot;</span><span class="ot"> prefix=</span><span class="st">&quot;scr&quot;</span> <span class="kw">/&gt;</span>
+    <span class="kw">&lt;/namespaces&gt;</span>
+<span class="kw">&lt;/model&gt;</span></code></pre></div>
 <p>The model needs a type and an aspect. The chunk of XML below adds the type. Insert it after the closing <code>namespaces</code> element:</p>
-<pre><code>&lt;types&gt;
-    &lt;type name=&quot;scr:rating&quot;&gt;
-        &lt;title&gt;Someco Rating&lt;/title&gt;
-        &lt;parent&gt;sys:base&lt;/parent&gt;
-        &lt;properties&gt;
-            &lt;property name=&quot;scr:rating&quot;&gt;
-                &lt;type&gt;d:int&lt;/type&gt;
-                &lt;mandatory&gt;true&lt;/mandatory&gt;
-            &lt;/property&gt;
-            &lt;property name=&quot;scr:rater&quot;&gt;
-                &lt;type&gt;d:text&lt;/type&gt;
-                &lt;mandatory&gt;true&lt;/mandatory&gt;
-            &lt;/property&gt;
-        &lt;/properties&gt;
-    &lt;/type&gt;
-&lt;/types&gt;</code></pre>
+<div class="sourceCode"><pre class="sourceCode xml"><code class="sourceCode xml"><span class="kw">&lt;types&gt;</span>
+    <span class="kw">&lt;type</span><span class="ot"> name=</span><span class="st">&quot;scr:rating&quot;</span><span class="kw">&gt;</span>
+        <span class="kw">&lt;title&gt;</span>Someco Rating<span class="kw">&lt;/title&gt;</span>
+        <span class="kw">&lt;parent&gt;</span>sys:base<span class="kw">&lt;/parent&gt;</span>
+        <span class="kw">&lt;properties&gt;</span>
+            <span class="kw">&lt;property</span><span class="ot"> name=</span><span class="st">&quot;scr:rating&quot;</span><span class="kw">&gt;</span>
+                <span class="kw">&lt;type&gt;</span>d:int<span class="kw">&lt;/type&gt;</span>
+                <span class="kw">&lt;mandatory&gt;</span>true<span class="kw">&lt;/mandatory&gt;</span>
+            <span class="kw">&lt;/property&gt;</span>
+            <span class="kw">&lt;property</span><span class="ot"> name=</span><span class="st">&quot;scr:rater&quot;</span><span class="kw">&gt;</span>
+                <span class="kw">&lt;type&gt;</span>d:text<span class="kw">&lt;/type&gt;</span>
+                <span class="kw">&lt;mandatory&gt;</span>true<span class="kw">&lt;/mandatory&gt;</span>
+            <span class="kw">&lt;/property&gt;</span>
+        <span class="kw">&lt;/properties&gt;</span>
+    <span class="kw">&lt;/type&gt;</span>
+<span class="kw">&lt;/types&gt;</span></code></pre></div>
 <p>Note that <code>scr:rating</code> inherits from <code>sys:base</code>. That's because rating objects aren't going to store any content, they will only store properties.</p>
 <p>Now add the <code>scr:rateable</code> aspect. The <code>aspects</code> element goes after the closing <code>types</code> element:</p>
-<pre><code>&lt;aspects&gt;
-    &lt;aspect name=&quot;scr:rateable&quot;&gt;
-        &lt;title&gt;Someco Rateable&lt;/title&gt;
-        &lt;properties&gt;
-            &lt;property name=&quot;scr:averageRating&quot;&gt;
-                &lt;type&gt;d:double&lt;/type&gt;
-                &lt;mandatory&gt;false&lt;/mandatory&gt;
-            &lt;/property&gt;
-            &lt;property name=&quot;scr:totalRating&quot;&gt;
-                &lt;type&gt;d:int&lt;/type&gt;
-                &lt;mandatory&gt;false&lt;/mandatory&gt;
-            &lt;/property&gt;
-            &lt;property name=&quot;scr:ratingCount&quot;&gt;
-                &lt;type&gt;d:int&lt;/type&gt;
-                &lt;mandatory&gt;false&lt;/mandatory&gt;
-            &lt;/property&gt;             
-        &lt;/properties&gt;
-        &lt;associations&gt;
-            &lt;child-association name=&quot;scr:ratings&quot;&gt;
-                &lt;title&gt;Rating&lt;/title&gt;
-                &lt;source&gt;
-                    &lt;mandatory&gt;false&lt;/mandatory&gt;
-                    &lt;many&gt;true&lt;/many&gt;
-                &lt;/source&gt;
-                &lt;target&gt;
-                    &lt;class&gt;scr:rating&lt;/class&gt;
-                    &lt;mandatory&gt;false&lt;/mandatory&gt;
-                    &lt;many&gt;true&lt;/many&gt;
-                &lt;/target&gt;
-            &lt;/child-association&gt;
-        &lt;/associations&gt;
-    &lt;/aspect&gt;
-&lt;/aspects&gt;</code></pre>
+<div class="sourceCode"><pre class="sourceCode xml"><code class="sourceCode xml"><span class="kw">&lt;aspects&gt;</span>
+    <span class="kw">&lt;aspect</span><span class="ot"> name=</span><span class="st">&quot;scr:rateable&quot;</span><span class="kw">&gt;</span>
+        <span class="kw">&lt;title&gt;</span>Someco Rateable<span class="kw">&lt;/title&gt;</span>
+        <span class="kw">&lt;properties&gt;</span>
+            <span class="kw">&lt;property</span><span class="ot"> name=</span><span class="st">&quot;scr:averageRating&quot;</span><span class="kw">&gt;</span>
+                <span class="kw">&lt;type&gt;</span>d:double<span class="kw">&lt;/type&gt;</span>
+                <span class="kw">&lt;mandatory&gt;</span>false<span class="kw">&lt;/mandatory&gt;</span>
+            <span class="kw">&lt;/property&gt;</span>
+            <span class="kw">&lt;property</span><span class="ot"> name=</span><span class="st">&quot;scr:totalRating&quot;</span><span class="kw">&gt;</span>
+                <span class="kw">&lt;type&gt;</span>d:int<span class="kw">&lt;/type&gt;</span>
+                <span class="kw">&lt;mandatory&gt;</span>false<span class="kw">&lt;/mandatory&gt;</span>
+            <span class="kw">&lt;/property&gt;</span>
+            <span class="kw">&lt;property</span><span class="ot"> name=</span><span class="st">&quot;scr:ratingCount&quot;</span><span class="kw">&gt;</span>
+                <span class="kw">&lt;type&gt;</span>d:int<span class="kw">&lt;/type&gt;</span>
+                <span class="kw">&lt;mandatory&gt;</span>false<span class="kw">&lt;/mandatory&gt;</span>
+            <span class="kw">&lt;/property&gt;</span>             
+        <span class="kw">&lt;/properties&gt;</span>
+        <span class="kw">&lt;associations&gt;</span>
+            <span class="kw">&lt;child-association</span><span class="ot"> name=</span><span class="st">&quot;scr:ratings&quot;</span><span class="kw">&gt;</span>
+                <span class="kw">&lt;title&gt;</span>Rating<span class="kw">&lt;/title&gt;</span>
+                <span class="kw">&lt;source&gt;</span>
+                    <span class="kw">&lt;mandatory&gt;</span>false<span class="kw">&lt;/mandatory&gt;</span>
+                    <span class="kw">&lt;many&gt;</span>true<span class="kw">&lt;/many&gt;</span>
+                <span class="kw">&lt;/source&gt;</span>
+                <span class="kw">&lt;target&gt;</span>
+                    <span class="kw">&lt;class&gt;</span>scr:rating<span class="kw">&lt;/class&gt;</span>
+                    <span class="kw">&lt;mandatory&gt;</span>false<span class="kw">&lt;/mandatory&gt;</span>
+                    <span class="kw">&lt;many&gt;</span>true<span class="kw">&lt;/many&gt;</span>
+                <span class="kw">&lt;/target&gt;</span>
+            <span class="kw">&lt;/child-association&gt;</span>
+        <span class="kw">&lt;/associations&gt;</span>
+    <span class="kw">&lt;/aspect&gt;</span>
+<span class="kw">&lt;/aspects&gt;</span></code></pre></div>
 <p>The <code>scr:rateable</code> aspect has three properties used to store the average rating, total rating, and rating count. It also defines the child association between a piece of content and its ratings.</p>
 <p>Using an aspect means any piece of content in the repository can become &quot;rateable&quot; simply by adding the aspect to the object. SomeCo may start out using ratings only for whitepapers and then decide later to use them for other types of content. If so, it won't require any code changes. That's the beauty of aspects.</p>
-<p>Alfresco needs to know about the new model. Models are registered through Spring. There are multiple Spring context files. It doesn't really matter which one you use to wire in your models. Newer versions of the SDK use the bootstrap-context.xml file, so let's use that. is called <a href="https://github.com/jpotts/alfresco-developer-series/blob/master/behaviors/behavior-tutorial/behavior-tutorial-platform-jar/src/main/resources/alfresco/module/behavior-tutorial-platform-jar/context/bootstrap-context.xml">service-context.xml</a> and it lives in:</p>
-<pre><code>$TUTORIAL_HOME/behavior-tutorial-platform-jar/src/main/resources/alfresco/module/behavior-tutorial-platform-jar/context</code></pre>
+<p>Alfresco needs to know about the new model. Models are registered through Spring. There are multiple Spring context files. It doesn't really matter which one you use to wire in your models. Newer versions of the SDK use the bootstrap-context.xml file, so let's use that. is called <a href="https://github.com/jpotts/alfresco-developer-series/blob/master/behaviors/behavior-tutorial/behavior-tutorial-platform/src/main/resources/alfresco/module/behavior-tutorial-platform/context/bootstrap-context.xml">service-context.xml</a> and it lives in:</p>
+<pre><code>$TUTORIAL_HOME/behavior-tutorial-platform/src/main/resources/alfresco/module/behavior-tutorial-platform/context</code></pre>
 <p>The context file may already exist and probably contains sample Spring beans used to wire in sample models and labels. Replace whatever is there with the bean below. It refers to the model XML file created earlier as well as a properties file that doesn't exist yet:</p>
-<pre><code>&lt;bean id=&quot;${project.artifactId}_dictionaryBootstrap&quot; parent=&quot;dictionaryModelBootstrap&quot; depends-on=&quot;dictionaryBootstrap&quot;&gt;
-    &lt;property name=&quot;models&quot;&gt;
-        &lt;list&gt;                
-            &lt;value&gt;alfresco/module/${project.artifactId}/model/scRatingsModel.xml&lt;/value&gt;                
-        &lt;/list&gt;
-    &lt;/property&gt;
-    &lt;property name=&quot;labels&quot;&gt;
-        &lt;list&gt;
-            &lt;value&gt;alfresco/module/${project.artifactId}/messages/scRatingsModel&lt;/value&gt;
-        &lt;/list&gt;        
-    &lt;/property&gt;        
-&lt;/bean&gt;</code></pre>
+<div class="sourceCode"><pre class="sourceCode xml"><code class="sourceCode xml"><span class="kw">&lt;bean</span><span class="ot"> id=</span><span class="st">&quot;${project.artifactId}_dictionaryBootstrap&quot;</span><span class="ot"> parent=</span><span class="st">&quot;dictionaryModelBootstrap&quot;</span><span class="ot"> depends-on=</span><span class="st">&quot;dictionaryBootstrap&quot;</span><span class="kw">&gt;</span>
+    <span class="kw">&lt;property</span><span class="ot"> name=</span><span class="st">&quot;models&quot;</span><span class="kw">&gt;</span>
+        <span class="kw">&lt;list&gt;</span>                
+            <span class="kw">&lt;value&gt;</span>alfresco/module/${project.artifactId}/model/scRatingsModel.xml<span class="kw">&lt;/value&gt;</span>                
+        <span class="kw">&lt;/list&gt;</span>
+    <span class="kw">&lt;/property&gt;</span>
+    <span class="kw">&lt;property</span><span class="ot"> name=</span><span class="st">&quot;labels&quot;</span><span class="kw">&gt;</span>
+        <span class="kw">&lt;list&gt;</span>
+            <span class="kw">&lt;value&gt;</span>alfresco/module/${project.artifactId}/messages/scRatingsModel<span class="kw">&lt;/value&gt;</span>
+        <span class="kw">&lt;/list&gt;</span>        
+    <span class="kw">&lt;/property&gt;</span>        
+<span class="kw">&lt;/bean&gt;</span></code></pre></div>
 <p>With that, the model is set up and ready to go.</p>
 <h3 id="optionally-configure-the-user-interface">Optionally configure the user interface</h3>
 <p>Behaviors operate behind the scenes. So, really, there is no reason to configure the user interface at all. But I like to do it because it makes it easier to debug. And, SomeCo might want to use Alfresco Share to see the average rating and rating count for a piece of content that has the rateable aspect.</p>
-<p>In the previous step you added a Spring bean that referred to a properties bundle used for the labels associated with the model. The labels go in a file called <a href="https://github.com/jpotts/alfresco-developer-series/blob/master/behaviors/behavior-tutorial/behavior-tutorial-platform-jar/src/main/resources/alfresco/module/behavior-tutorial-platform-jar/messages/scRatingsModel.properties">scRatingsModel.properties</a>. That file lives in:</p>
-<pre><code>$TUTORIAL_HOME/behavior-tutorial-platform-jar/src/main/resources/alfresco/module/behavior-tutorial-platform-jar/messages</code></pre>
+<p>In the previous step you added a Spring bean that referred to a properties bundle used for the labels associated with the model. The labels go in a file called <a href="https://github.com/jpotts/alfresco-developer-series/blob/master/behaviors/behavior-tutorial/behavior-tutorial-platform/src/main/resources/alfresco/module/behavior-tutorial-platform/messages/scRatingsModel.properties">scRatingsModel.properties</a>. That file lives in:</p>
+<pre><code>$TUTORIAL_HOME/behavior-tutorial-platform/src/main/resources/alfresco/module/behavior-tutorial-platform/messages</code></pre>
 <p>The content of that file looks like this:</p>
 <pre><code>#scr:rating
 scr_somecoratingsmodel.type.scr_rating.title=Rating
@@ -328,301 +367,302 @@ scr_somecoratingsmodel.aspect.scr_rateable.title=SomeCo Rateable
 scr_somecoratingsmodel.property.scr_averageRating=Average Rating
 scr_somecoratingsmodel.association.scr_ratings.title=Ratings</code></pre>
 <p>You can delete the example properties file that may already be in the messages directory.</p>
-<p>That's all that's needed in the behavior-tutorial-platform-jar project. The rest of the user interface configuration takes place in the behavior-tutorial-share-jar project.</p>
+<p>That's all that's needed in the behavior-tutorial-platform project. The rest of the user interface configuration takes place in the behavior-tutorial-share project.</p>
 <p>Because these steps have already been covered in the custom content types tutorial, I'll just list the files here and you can either copy them into your project or do without them:</p>
 <ul>
-<li>$TUTORIAL_HOME/behavior-tutorial-share-jar/src/main/resources/META-INF/<a href="https://github.com/jpotts/alfresco-developer-series/blob/master/behaviors/behavior-tutorial/behavior-tutorial-share-jar/src/main/resources/META-INF/share-config-custom.xml">share-config-custom.xml</a>. The configuration in this file adds the rateable aspect to the list of aspects users can manage. It also defines which properties should be displayed when showing the property list for a piece of content with the rateable aspect applied.</li>
-<li>$TUTORIAL_HOME/behavior-tutorial-share-jar/src/main/resources/alfresco/web-extension/<a href="https://github.com/jpotts/alfresco-developer-series/blob/master/behaviors/behavior-tutorial/behavior-tutorial-share-jar/src/main/resources/alfresco/web-extension/behavior-tutorial-share-context.xml">behavior-tutorial-share-context.xml</a>. This is the Spring context file that tells Alfresco Share where to find the properties bundle.</li>
-<li>$TUTORIAL_HOME/behavior-tutorial-share-jar/src/main/resources/alfresco/web-extension/messages/<a href="https://github.com/jpotts/alfresco-developer-series/blob/master/behaviors/behavior-tutorial/behavior-tutorial-share-jar/src/main/resources/alfresco/web-extension/messages/scRatingsModel.properties">scRatingsModel.properties</a>. This is the properties bundle for the module that Alfresco Share will use to localize the labels.</li>
+<li>$TUTORIAL_HOME/behavior-tutorial-share/src/main/resources/META-INF/<a href="https://github.com/jpotts/alfresco-developer-series/blob/master/behaviors/behavior-tutorial/behavior-tutorial-share/src/main/resources/META-INF/share-config-custom.xml">share-config-custom.xml</a>. The configuration in this file adds the rateable aspect to the list of aspects users can manage. It also defines which properties should be displayed when showing the property list for a piece of content with the rateable aspect applied.</li>
+<li>$TUTORIAL_HOME/behavior-tutorial-share/src/main/resources/alfresco/web-extension/<a href="https://github.com/jpotts/alfresco-developer-series/blob/master/behaviors/behavior-tutorial/behavior-tutorial-share/src/main/resources/alfresco/web-extension/behavior-tutorial-share-context.xml">behavior-tutorial-share-context.xml</a>. This is the Spring context file that tells Alfresco Share where to find the properties bundle.</li>
+<li>$TUTORIAL_HOME/behavior-tutorial-share/src/main/resources/alfresco/web-extension/messages/<a href="https://github.com/jpotts/alfresco-developer-series/blob/master/behaviors/behavior-tutorial/behavior-tutorial-share/src/main/resources/alfresco/web-extension/messages/scRatingsModel.properties">scRatingsModel.properties</a>. This is the properties bundle for the module that Alfresco Share will use to localize the labels.</li>
 </ul>
 <p>Now the Alfresco Share user interface will know how to show values for the average rating and rating count when a piece of content with the rateable aspect is displayed.</p>
 <h3 id="define-a-java-class-to-hold-constants">Define a Java class to hold constants</h3>
 <p>It is often convenient to put model-related constants in a class. In this case, that class is called SomeCoRatingsModel and it looks like this:</p>
-<pre><code>public interface SomeCoRatingsModel {
+<div class="sourceCode"><pre class="sourceCode java"><code class="sourceCode java"><span class="kw">public</span> <span class="kw">interface</span> SomeCoRatingsModel {
 
-    // Namespaces
-    public static final String NAMESPACE_SOMECO_RATINGS_CONTENT_MODEL  = &quot;http://www.someco.com/model/ratings/1.0&quot;;
+    <span class="co">// Namespaces</span>
+    <span class="kw">public</span> <span class="dt">static</span> <span class="dt">final</span> String NAMESPACE_SOMECO_RATINGS_CONTENT_MODEL  = <span class="st">&quot;http://www.someco.com/model/ratings/1.0&quot;</span>;
 
-    // Types
-    public static final String TYPE_SCR_RATING = &quot;rating&quot;;
+    <span class="co">// Types</span>
+    <span class="kw">public</span> <span class="dt">static</span> <span class="dt">final</span> String TYPE_SCR_RATING = <span class="st">&quot;rating&quot;</span>;
 
-    // Aspects
-    public static final String ASPECT_SCR_RATEABLE = &quot;rateable&quot;;
+    <span class="co">// Aspects</span>
+    <span class="kw">public</span> <span class="dt">static</span> <span class="dt">final</span> String ASPECT_SCR_RATEABLE = <span class="st">&quot;rateable&quot;</span>;
 
-    // Properties
-    public static final String PROP_RATING = &quot;rating&quot;;
-    public static final String PROP_RATER = &quot;rater&quot;;
-    public static final String PROP_AVERAGE_RATING= &quot;averageRating&quot;;
-    public static final String PROP_TOTAL_RATING= &quot;totalRating&quot;;
-    public static final String PROP_RATING_COUNT= &quot;ratingCount&quot;;
+    <span class="co">// Properties</span>
+    <span class="kw">public</span> <span class="dt">static</span> <span class="dt">final</span> String PROP_RATING = <span class="st">&quot;rating&quot;</span>;
+    <span class="kw">public</span> <span class="dt">static</span> <span class="dt">final</span> String PROP_RATER = <span class="st">&quot;rater&quot;</span>;
+    <span class="kw">public</span> <span class="dt">static</span> <span class="dt">final</span> String PROP_AVERAGE_RATING= <span class="st">&quot;averageRating&quot;</span>;
+    <span class="kw">public</span> <span class="dt">static</span> <span class="dt">final</span> String PROP_TOTAL_RATING= <span class="st">&quot;totalRating&quot;</span>;
+    <span class="kw">public</span> <span class="dt">static</span> <span class="dt">final</span> String PROP_RATING_COUNT= <span class="st">&quot;ratingCount&quot;</span>;
 
-    // Associations
-    public static final String ASSN_SCR_RATINGS = &quot;ratings&quot;;
-}</code></pre>
+    <span class="co">// Associations</span>
+    <span class="kw">public</span> <span class="dt">static</span> <span class="dt">final</span> String ASSN_SCR_RATINGS = <span class="st">&quot;ratings&quot;</span>;
+}</code></pre></div>
 <p>These are just constants that will be used by the behavior class and other classes in other tutorials when they need to refer to the rating type, rateable aspect, or any of the properties by name.</p>
 <h3 id="write-integration-tests">Write integration tests</h3>
-<p>The Alfresco Maven SDK will automatically run integration tests when <code>mvn install</code> runs. If you're a TDD (Test-Driven Development) kind of person you could add a test for the to-be-developed behavior. For now, I'll just create a test to make sure I can successfully add the <code>scr:rateable</code> aspect to a piece of content. The rating type will get tested shortly.</p>
+<p>The old 3.0.1 version of the Alfresco Maven SDK will automatically run integration tests when <code>mvn install</code> runs. In SDK 4.0 you must first start up the Docker containers, then run <code>./run.sh test</code>.</p>
+<p>If you're a TDD (Test-Driven Development) kind of person you could add a test for the to-be-developed behavior. For now, I'll just create a test to make sure I can successfully add the <code>scr:rateable</code> aspect to a piece of content. The rating type will get tested shortly.</p>
 <p>The test class goes in:</p>
-<pre><code>$TUTORIAL_HOME/integration-tests/src/test/java/com/someco/test</code></pre>
-<p>Here is the <a href="https://github.com/jpotts/alfresco-developer-series/blob/master/behaviors/behavior-tutorial/integration-tests/src/test/java/com/someco/test/SomecoRatingModelIT.java">SomecoRatingModelIT</a> test class:</p>
-<pre><code>@RunWith(value = AlfrescoTestRunner.class)
-public class SomecoRatingModelIT extends BaseIT {
+<pre><code>$TUTORIAL_HOME/behavior-tutorial-integration-tests/src/test/java/com/someco/test</code></pre>
+<p>Here is the <a href="https://github.com/jpotts/alfresco-developer-series/blob/master/behaviors/behavior-tutorial/behavior-tutorial-integration-tests/src/test/java/com/someco/test/SomecoRatingModelIT.java">SomecoRatingModelIT</a> test class:</p>
+<div class="sourceCode"><pre class="sourceCode java"><code class="sourceCode java"><span class="fu">@RunWith</span>(value = AlfrescoTestRunner.<span class="fu">class</span>)
+<span class="kw">public</span> <span class="kw">class</span> SomecoRatingModelIT <span class="kw">extends</span> BaseIT {
 
-    @Test
-    public void testRateableAspect() {
-        final double AVG_RATING = 1.0;
-        final int RATING_COUNT = 1;
-        final int TOTAL = 1;
+    <span class="fu">@Test</span>
+    <span class="kw">public</span> <span class="dt">void</span> <span class="fu">testRateableAspect</span>() {
+        <span class="dt">final</span> <span class="dt">double</span> AVG_RATING = <span class="fl">1.0</span>;
+        <span class="dt">final</span> <span class="dt">int</span> RATING_COUNT = <span class="dv">1</span>;
+        <span class="dt">final</span> <span class="dt">int</span> TOTAL = <span class="dv">1</span>;
 
-        NodeService nodeService = getServiceRegistry().getNodeService();
+        NodeService nodeService = <span class="fu">getServiceRegistry</span>().<span class="fu">getNodeService</span>();
 
-        Map&lt;QName, Serializable&gt; nodeProperties = new HashMap&lt;&gt;();
-        this.nodeRef = createNode(getFilename(), ContentModel.TYPE_CONTENT, nodeProperties);
+        Map&lt;QName, Serializable&gt; nodeProperties = <span class="kw">new</span> HashMap&lt;&gt;();
+        <span class="kw">this</span>.<span class="fu">nodeRef</span> = <span class="fu">createNode</span>(<span class="fu">getFilename</span>(), ContentModel.<span class="fu">TYPE_CONTENT</span>, nodeProperties);
 
-        QName aspectQName = createQName(SomeCoRatingsModel.NAMESPACE_SOMECO_RATINGS_CONTENT_MODEL, SomeCoRatingsModel.ASPECT_SCR_RATEABLE);
+        QName aspectQName = <span class="fu">createQName</span>(SomeCoRatingsModel.<span class="fu">NAMESPACE_SOMECO_RATINGS_CONTENT_MODEL</span>, SomeCoRatingsModel.<span class="fu">ASPECT_SCR_RATEABLE</span>);
 
-        // set up some aspect-based properties
-        Map&lt;QName, Serializable&gt; aspectProps = new HashMap&lt;QName, Serializable&gt;();
+        <span class="co">// set up some aspect-based properties</span>
+        Map&lt;QName, Serializable&gt; aspectProps = <span class="kw">new</span> HashMap&lt;QName, Serializable&gt;();
 
-        aspectProps.put(PROP_AVG_RATING_QNAME, AVG_RATING);
-        aspectProps.put(PROP_TOTAL_QNAME, TOTAL);
-        aspectProps.put(PROP_COUNT_QNAME, RATING_COUNT);
+        aspectProps.<span class="fu">put</span>(PROP_AVG_RATING_QNAME, AVG_RATING);
+        aspectProps.<span class="fu">put</span>(PROP_TOTAL_QNAME, TOTAL);
+        aspectProps.<span class="fu">put</span>(PROP_COUNT_QNAME, RATING_COUNT);
 
-        nodeService.addAspect(nodeRef, aspectQName, aspectProps);
+        nodeService.<span class="fu">addAspect</span>(nodeRef, aspectQName, aspectProps);
 
-        assertEquals(AVG_RATING, nodeService.getProperty(this.nodeRef, PROP_AVG_RATING_QNAME));
-        assertEquals(TOTAL, nodeService.getProperty(this.nodeRef, PROP_TOTAL_QNAME));
-        assertEquals(RATING_COUNT, nodeService.getProperty(this.nodeRef, PROP_COUNT_QNAME));
+        <span class="fu">assertEquals</span>(AVG_RATING, nodeService.<span class="fu">getProperty</span>(<span class="kw">this</span>.<span class="fu">nodeRef</span>, PROP_AVG_RATING_QNAME));
+        <span class="fu">assertEquals</span>(TOTAL, nodeService.<span class="fu">getProperty</span>(<span class="kw">this</span>.<span class="fu">nodeRef</span>, PROP_TOTAL_QNAME));
+        <span class="fu">assertEquals</span>(RATING_COUNT, nodeService.<span class="fu">getProperty</span>(<span class="kw">this</span>.<span class="fu">nodeRef</span>, PROP_COUNT_QNAME));
 
-        assertTrue(&quot;Missing aspect&quot;,
-                getServiceRegistry().getNodeService().hasAspect(nodeRef, aspectQName));
+        <span class="fu">assertTrue</span>(<span class="st">&quot;Missing aspect&quot;</span>,
+                <span class="fu">getServiceRegistry</span>().<span class="fu">getNodeService</span>().<span class="fu">hasAspect</span>(nodeRef, aspectQName));
     }
-
-}</code></pre>
+}</code></pre></div>
 <p>The test creates a new content node in Company Home and then adds the <code>scr:rateable</code> aspect to it, simultaneously setting the aspect-based properties to test values. It then makes sure it can get those same test values back.</p>
-<p>To run the test, you have a few options. If you've already launched the embedded Tomcat with <code>run.sh</code> or <code>mvn alfresco:run</code> then you can just run the test from your IDE, for example.</p>
-<p>If the embedded Tomcat server is not running, you can switch to the root of your project directory and run <code>mvn install</code> from the command line.</p>
+<p>To run the test, first start the Docker containers by running <code>./run.sh build_start</code>. Once everything comes up, run <code>./run.sh test</code>.</p>
+<p>In SDK 3.0.1 the embedded Tomcat server is started and tests are run automatically when you run <code>mvn install</code>. Or, if the Tomcat server is already running you can run <code>mvn test</code>.</p>
 <p>In SDK 3.0.1 you may see a stack trace after running <code>mvn install</code>. Scroll up a bit and you should see that the test ran successfully.</p>
 <p>Assuming everything went okay, you now have your model in place and tested and you are ready to write the behavior.</p>
 <h2 id="step-2-implement-the-custom-behavior">Step 2: Implement the custom behavior</h2>
 <p>Implementing the behavior involves writing some Java, configuring a Spring Bean, and adding an integration test for the behavior.</p>
 <h3 id="write-the-behavior-class">Write the behavior class</h3>
-<p>The custom behavior is implemented as a Java class called <a href="https://github.com/jpotts/alfresco-developer-series/blob/master/behaviors/behavior-tutorial/behavior-tutorial-platform-jar/src/main/java/com/someco/behavior/Rating.java">Rating</a>. The class implements the interfaces that correspond to the policies the behavior needs to bind to. In this example, the two policy interfaces are: <code>NodeServicePolicies.OnDeleteNodePolicy</code> and <code>NodeServicePolicies.OnCreateNodePolicy</code> so the class declaration is:</p>
-<pre><code>public class Rating
-implements NodeServicePolicies.OnDeleteNodePolicy,
-NodeServicePolicies.OnCreateNodePolicy {</code></pre>
+<p>The custom behavior is implemented as a Java class called <a href="https://github.com/jpotts/alfresco-developer-series/blob/master/behaviors/behavior-tutorial/behavior-tutorial-platform/src/main/java/com/someco/behavior/Rating.java">Rating</a>. The class implements the interfaces that correspond to the policies the behavior needs to bind to. In this example, the two policy interfaces are: <code>NodeServicePolicies.OnDeleteNodePolicy</code> and <code>NodeServicePolicies.OnCreateNodePolicy</code> so the class declaration is:</p>
+<div class="sourceCode"><pre class="sourceCode java"><code class="sourceCode java"><span class="kw">public</span> <span class="kw">class</span> Rating
+<span class="kw">implements</span> NodeServicePolicies.<span class="fu">OnDeleteNodePolicy</span>,
+NodeServicePolicies.<span class="fu">OnCreateNodePolicy</span> {
+  <span class="co">// SNIP</span>
+}</code></pre></div>
 <p>The class has two dependencies that Spring will handle for us. One is the <code>NodeService</code> which will be used in the average calculation logic and the other is the <code>PolicyComponent</code> which is used to bind the behavior to the policies.</p>
-<pre><code>// Dependencies
-private NodeService nodeService;
-private PolicyComponent policyComponent;
+<div class="sourceCode"><pre class="sourceCode java"><code class="sourceCode java"><span class="co">// Dependencies</span>
+<span class="kw">private</span> NodeService nodeService;
+<span class="kw">private</span> PolicyComponent policyComponent;
 
-// Behaviours
-private Behaviour onCreateNode;
-private Behaviour onDeleteNode;</code></pre>
+<span class="co">// Behaviours</span>
+<span class="kw">private</span> Behaviour onCreateNode;
+<span class="kw">private</span> Behaviour onDeleteNode;</code></pre></div>
 <p>At some point Alfresco has to know that the behavior needs to be bound to a policy. A method called <code>init()</code> will handle the binding. It will get called when Spring loads the bean.</p>
-<pre><code>public void init() {
+<div class="sourceCode"><pre class="sourceCode java"><code class="sourceCode java"><span class="kw">public</span> <span class="dt">void</span> <span class="fu">init</span>() {
 
-    // Create behaviours
-    this.onCreateNode = new JavaBehaviour(this, &quot;onCreateNode&quot;, NotificationFrequency.EVERY_EVENT);
+    <span class="co">// Create behaviours</span>
+    <span class="kw">this</span>.<span class="fu">onCreateNode</span> = <span class="kw">new</span> <span class="fu">JavaBehaviour</span>(<span class="kw">this</span>, <span class="st">&quot;onCreateNode&quot;</span>, NotificationFrequency.<span class="fu">EVERY_EVENT</span>);
 
-    this.onDeleteNode = new JavaBehaviour(this, &quot;onDeleteNode&quot;, NotificationFrequency.EVERY_EVENT);
+    <span class="kw">this</span>.<span class="fu">onDeleteNode</span> = <span class="kw">new</span> <span class="fu">JavaBehaviour</span>(<span class="kw">this</span>, <span class="st">&quot;onDeleteNode&quot;</span>, NotificationFrequency.<span class="fu">EVERY_EVENT</span>);
 
-    // Bind behaviours to node policies
-    this.policyComponent.bindClassBehaviour(
-        Qname.createQName(NamespaceService.ALFRESCO_URI, &quot;onCreateNode&quot;),
-        Qname.createQName(SomeCoRatingsModel.NAMESPACE_SOMECO_RATINGS_CONTENT_MODEL, SomeCoRatingsModel.TYPE_SCR_RATING),
-        this.onCreateNode
+    <span class="co">// Bind behaviours to node policies</span>
+    <span class="kw">this</span>.<span class="fu">policyComponent</span>.<span class="fu">bindClassBehaviour</span>(
+        Qname.<span class="fu">createQName</span>(NamespaceService.<span class="fu">ALFRESCO_URI</span>, <span class="st">&quot;onCreateNode&quot;</span>),
+        Qname.<span class="fu">createQName</span>(SomeCoModel.<span class="fu">NAMESPACE_SOMECO_CONTENT_MODEL</span>, SomeCoModel.<span class="fu">TYPE_SC_RATING</span>),
+        <span class="kw">this</span>.<span class="fu">onCreateNode</span>
     );
 
-    this.policyComponent.bindClassBehaviour(
-        QName.createQName(NamespaceService.ALFRESCO_URI, &quot;onDeleteNode&quot;),
-        Qname.createQName(SomeCoRatingsModel.NAMESPACE_SOMECO_RATINGS_CONTENT_MODEL, SomeCoRatingsModel.TYPE_SCR_RATING),
-        this.onDeleteNode
+    <span class="kw">this</span>.<span class="fu">policyComponent</span>.<span class="fu">bindClassBehaviour</span>(
+        QName.<span class="fu">createQName</span>(NamespaceService.<span class="fu">ALFRESCO_URI</span>, <span class="st">&quot;onDeleteNode&quot;</span>),
+        Qname.<span class="fu">createQName</span>(SomeCoModel.<span class="fu">NAMESPACE_SOMECO_CONTENT_MODEL</span>, SomeCoModel.<span class="fu">TYPE_SC_RATING</span>),
+        <span class="kw">this</span>.<span class="fu">onDeleteNode</span>
     );
 
-}</code></pre>
+}</code></pre></div>
 <p>The first thing to notice here is that you can decide when the behavior should be invoked by specifying the appropriate <code>NotificationFrequency</code>. Besides <code>EVERY_EVENT</code>, other choices include <code>FIRST_EVENT</code> and <code>TRANSACTION_COMMIT</code>. I chose <code>EVERY_EVENT</code> here because there are times when I might want the behavior to trigger before the transaction is actually committed. It doesn't matter to me that the average will be re-computed potentially multiple times because I don't anticipate there to be a lot of ratings. You'll need to think about your case and choose what works for your requirements.</p>
 <p>Also note that there are a few different overloaded methods for <code>bindClassBehaviour</code>. In this case the code binds the Qname of a behavior to the Qname of our type (“Rating”) and tells Alfresco to call the <code>onCreateNode</code> and <code>onDeleteNode</code> behaviors that will be defined in this class.</p>
 <p>There are also additional bind methods for associations (<code>bindAssociationBehaviour</code>) and properties (<code>bindPropertyBehaviour</code>) that you should use depending on the type of policy you are binding to.</p>
 <p>Next are the methods required by the two policy interfaces. Regardless of whether a ratings node is created or deleted, the average needs to be recalculated. So the <code>onCreateNode</code> and <code>onDeleteNode</code> methods call <code>computeAverage</code> and pass in the rating node reference.</p>
-<pre><code>public void onCreateNode(ChildAssociationRef childAssocRef) {
+<div class="sourceCode"><pre class="sourceCode java"><code class="sourceCode java"><span class="kw">public</span> <span class="dt">void</span> <span class="fu">onCreateNode</span>(ChildAssociationRef childAssocRef) {
 
-    computeAverage(childAssocRef);
+    <span class="fu">computeAverage</span>(childAssocRef);
 
 }
 
-public void onDeleteNode(ChildAssociationRef childAssocRef, boolean isNodeArchived) {
+<span class="kw">public</span> <span class="dt">void</span> <span class="fu">onDeleteNode</span>(ChildAssociationRef childAssocRef, <span class="dt">boolean</span> isNodeArchived) {
 
-    computeAverage(childAssocRef);
+    <span class="fu">computeAverage</span>(childAssocRef);
 
-}</code></pre>
+}</code></pre></div>
 <p>The <code>computeAverage</code> method asks the child (the rating object) for its parent node reference (the rateable object) and asks the parent for a list of its children. It iterates over the children, computes an average, and sets the average property on the content.</p>
-<pre><code>public void computeAverage(ChildAssociationRef childAssocRef) {
+<div class="sourceCode"><pre class="sourceCode java"><code class="sourceCode java"><span class="kw">public</span> <span class="dt">void</span> <span class="fu">computeAverage</span>(ChildAssociationRef childAssocRef) {
 
-    // get the parent node
-    NodeRef parentRef = childAssocRef.getParentRef();
+    <span class="co">// get the parent node</span>
+    NodeRef parentRef = childAssocRef.<span class="fu">getParentRef</span>();
 
-    // check the parent to make sure it has the right aspect
-    if (nodeService.exists(parentRef) &amp;&amp; nodeService.hasAspect(parentRef, Qname.createQName(SomeCoRatingsModel.NAMESPACE_SOMECO_RATINGS_CONTENT_MODEL, SomeCoRatingsModel.ASPECT_SCR_RATEABLE))) {
+    <span class="co">// check the parent to make sure it has the right aspect</span>
+    <span class="kw">if</span> (nodeService.<span class="fu">exists</span>(parentRef) &amp;&amp; nodeService.<span class="fu">hasAspect</span>(parentRef, Qname.<span class="fu">createQName</span>(SomeCoModel.<span class="fu">NAMESPACE_SOMECO_CONTENT_MODEL</span>, SomeCoModel.<span class="fu">ASPECT_SC_RATEABLE</span>))) {
 
-        // continue, this is what we want
+        <span class="co">// continue, this is what we want</span>
 
-    } else {
+    } <span class="kw">else</span> {
 
-        return;
+        <span class="kw">return</span>;
 
     }
 
-    // get the parent node&#39;s children
-    List&lt;ChildAssociationRef&gt; children = nodeService.getChildAssocs(parentRef);
+    <span class="co">// get the parent node&#39;s children</span>
+    List&lt;ChildAssociationRef&gt; children = nodeService.<span class="fu">getChildAssocs</span>(parentRef);
 
-    // iterate through the children to compute the total
+    <span class="co">// iterate through the children to compute the total</span>
     Double average = 0d;
-    int total = 0;
-    for (ChildAssociationRef child : children) {
-        int rating = (Integer)nodeService.getProperty(
-        child.getChildRef(),
-        Qname.createQName(SomeCoRatingsModel.NAMESPACE_SOMECO_RATINGS_CONTENT_MODEL, SomeCoRatingsModel.PROP_RATING));
+    <span class="dt">int</span> total = <span class="dv">0</span>;
+    <span class="kw">for</span> (ChildAssociationRef child : children) {
+        <span class="dt">int</span> rating = (Integer)nodeService.<span class="fu">getProperty</span>(
+        child.<span class="fu">getChildRef</span>(),
+        Qname.<span class="fu">createQName</span>(SomeCoModel.<span class="fu">NAMESPACE_SOMECO_CONTENT_MODEL</span>, SomeCoModel.<span class="fu">PROP_RATING</span>));
         total += rating;
     }
 
-    // compute the average
-    average = total / (children.size() / 1.0d);
+    <span class="co">// compute the average</span>
+    average = total / (children.<span class="fu">size</span>() / <span class="fl">1.</span>0d);
 
-    // store the average, total, count on the parent node
-    nodeService.setProperty(
+    <span class="co">// store the average, total, count on the parent node</span>
+    nodeService.<span class="fu">setProperty</span>(
         parentRef,
-        QName.createQName(
-            SomeCoRatingsModel.NAMESPACE_SOMECO_RATINGS_CONTENT_MODEL,
-            SomeCoRatingsModel.PROP_AVERAGE_RATING),
+        QName.<span class="fu">createQName</span>(
+            SomeCoRatingsModel.<span class="fu">NAMESPACE_SOMECO_RATINGS_CONTENT_MODEL</span>,
+            SomeCoRatingsModel.<span class="fu">PROP_AVERAGE_RATING</span>),
         average);
 
-    nodeService.setProperty(
+    nodeService.<span class="fu">setProperty</span>(
         parentRef,
-        QName.createQName(
-            SomeCoRatingsModel.NAMESPACE_SOMECO_RATINGS_CONTENT_MODEL,
-            SomeCoRatingsModel.PROP_TOTAL_RATING),
+        QName.<span class="fu">createQName</span>(
+            SomeCoRatingsModel.<span class="fu">NAMESPACE_SOMECO_RATINGS_CONTENT_MODEL</span>,
+            SomeCoRatingsModel.<span class="fu">PROP_TOTAL_RATING</span>),
         total);
 
-    nodeService.setProperty(
+    nodeService.<span class="fu">setProperty</span>(
         parentRef,
-        QName.createQName(
-            SomeCoRatingsModel.NAMESPACE_SOMECO_RATINGS_CONTENT_MODEL,
-            SomeCoRatingsModel.PROP_RATING_COUNT),
+        QName.<span class="fu">createQName</span>(
+            SomeCoRatingsModel.<span class="fu">NAMESPACE_SOMECO_RATINGS_CONTENT_MODEL</span>,
+            SomeCoRatingsModel.<span class="fu">PROP_RATING_COUNT</span>),
         count);     
 
-    return;
+    <span class="kw">return</span>;
 
-}</code></pre>
+}</code></pre></div>
 <p>The class stores the total rating and rating count, so it could actually compute the average without iterating over the rating objects. All it really needs to know is the value of the new rating. For this example we'll only have a handful of associations anyway but in the real world, you need to think carefully about such performance considerations when you write your behaviors.</p>
 <h3 id="configure-a-spring-bean">Configure a Spring bean</h3>
-<p>The last step before testing is to configure the behavior class as a Spring bean. The bean config goes in <a href="https://github.com/jpotts/alfresco-developer-series/blob/master/behaviors/behavior-tutorial/behavior-tutorial-platform-jar/src/main/resources/alfresco/module/behavior-tutorial-platform-jar/context/service-context.xml">service-context.xml</a>, which, as a reminder, lives in:</p>
-<pre><code>$TUTORIAL_HOME/behavior-tutorial-platform-jar/src/main/resources/alfresco/module/behavior-tutorial-platform-jar/context</code></pre>
+<p>The last step before testing is to configure the behavior class as a Spring bean. The bean config goes in <a href="https://github.com/jpotts/alfresco-developer-series/blob/master/behaviors/behavior-tutorial/behavior-tutorial-platform/src/main/resources/alfresco/module/behavior-tutorial-platform/context/service-context.xml">service-context.xml</a>, which, as a reminder, lives in:</p>
+<pre><code>$TUTORIAL_HOME/behavior-tutorial-platform/src/main/resources/alfresco/module/behavior-tutorial-platform/context</code></pre>
 <p>You can delete any demo or sample beans that may already be in this file.</p>
 <p>Add the following before the closing <code>beans</code> element:</p>
-<pre><code>&lt;bean id=&quot;ratingBehavior&quot; class=&quot;com.someco.behavior.Rating&quot;
-init-method=&quot;init&quot;&gt;
-    &lt;property name=&quot;nodeService&quot;&gt;
-        &lt;ref bean=&quot;NodeService&quot; /&gt;
-    &lt;/property&gt;
-    &lt;property name=&quot;policyComponent&quot;&gt;
-        &lt;ref bean=&quot;policyComponent&quot; /&gt;
-    &lt;/property&gt;
-&lt;/bean&gt;</code></pre>
+<div class="sourceCode"><pre class="sourceCode xml"><code class="sourceCode xml"><span class="kw">&lt;bean</span><span class="ot"> id=</span><span class="st">&quot;ratingBehavior&quot;</span><span class="ot"> class=</span><span class="st">&quot;com.someco.behavior.Rating&quot;</span>
+<span class="ot">init-method=</span><span class="st">&quot;init&quot;</span><span class="kw">&gt;</span>
+    <span class="kw">&lt;property</span><span class="ot"> name=</span><span class="st">&quot;nodeService&quot;</span><span class="kw">&gt;</span>
+        <span class="kw">&lt;ref</span><span class="ot"> bean=</span><span class="st">&quot;NodeService&quot;</span> <span class="kw">/&gt;</span>
+    <span class="kw">&lt;/property&gt;</span>
+    <span class="kw">&lt;property</span><span class="ot"> name=</span><span class="st">&quot;policyComponent&quot;</span><span class="kw">&gt;</span>
+        <span class="kw">&lt;ref</span><span class="ot"> bean=</span><span class="st">&quot;policyComponent&quot;</span> <span class="kw">/&gt;</span>
+    <span class="kw">&lt;/property&gt;</span>
+<span class="kw">&lt;/bean&gt;</span></code></pre></div>
 <p>This bean declares the <code>init</code> method and injects the dependencies the behavior needs.</p>
 <h2 id="step-3-create-an-integration-test-for-the-behavior">Step 3: Create an integration test for the behavior</h2>
 <p>The behavior should be able to calculate the average rating when rating objects are created or deleted from any piece of content that has the <code>scr:rateable</code> aspect. It's easy to test that with an integration test.</p>
-<p>I'll add a class called <a href="https://github.com/jpotts/alfresco-developer-series/blob/master/behaviors/behavior-tutorial/integration-tests/src/test/java/com/someco/test/RatingBehaviorIT.java">RatingBehaviorIT</a> to the same test package that <code>SomecoRatingModelIT</code> is in. The test will:</p>
+<p>I'll add a class called <a href="https://github.com/jpotts/alfresco-developer-series/blob/master/behaviors/behavior-tutorial/behavior-tutorial-integration-tests/src/test/java/com/someco/test/RatingBehaviorIT.java">RatingBehaviorIT</a> to the same test package that <code>SomecoRatingModelIT</code> is in. The test will:</p>
 <ol style="list-style-type: decimal">
 <li>Create a piece of content and add the <code>scr:rateable</code> aspect to it.</li>
 <li>Add three test ratings, checking the values for the average rating, total rating and rating count.</li>
 <li>Delete one of the test ratings, checking the values again to make sure the delete was handled appropriately.</li>
 </ol>
 <p>Here's the code:</p>
-<pre><code>@RunWith(value = AlfrescoTestRunner.class)
-public class RatingBehaviorIT extends BaseIT {
+<div class="sourceCode"><pre class="sourceCode java"><code class="sourceCode java"><span class="fu">@RunWith</span>(value = AlfrescoTestRunner.<span class="fu">class</span>)
+<span class="kw">public</span> <span class="kw">class</span> RatingBehaviorIT <span class="kw">extends</span> BaseIT {
 
-    static Logger log = Logger.getLogger(RatingBehaviorIT.class);
+    <span class="dt">static</span> Logger log = Logger.<span class="fu">getLogger</span>(RatingBehaviorIT.<span class="fu">class</span>);
 
-    @Test
-    public void ratingTypeTest() {
-        final String RATER = &quot;jpotts&quot;;
+    <span class="fu">@Test</span>
+    <span class="kw">public</span> <span class="dt">void</span> <span class="fu">ratingTypeTest</span>() {
+        <span class="dt">final</span> String RATER = <span class="st">&quot;jpotts&quot;</span>;
 
-        NodeService nodeService = getServiceRegistry().getNodeService();
+        NodeService nodeService = <span class="fu">getServiceRegistry</span>().<span class="fu">getNodeService</span>();
 
-        Map&lt;QName, Serializable&gt; nodeProperties = new HashMap&lt;&gt;();
-        this.nodeRef = createNode(getFilename(), ContentModel.TYPE_CONTENT, nodeProperties);
+        Map&lt;QName, Serializable&gt; nodeProperties = <span class="kw">new</span> HashMap&lt;&gt;();
+        <span class="kw">this</span>.<span class="fu">nodeRef</span> = <span class="fu">createNode</span>(<span class="fu">getFilename</span>(), ContentModel.<span class="fu">TYPE_CONTENT</span>, nodeProperties);
 
-        QName aspectQName = createQName(SomeCoRatingsModel.NAMESPACE_SOMECO_RATINGS_CONTENT_MODEL, SomeCoRatingsModel.ASPECT_SCR_RATEABLE);
-        nodeService.addAspect(nodeRef, aspectQName, null);
+        QName aspectQName = <span class="fu">createQName</span>(SomeCoRatingsModel.<span class="fu">NAMESPACE_SOMECO_RATINGS_CONTENT_MODEL</span>, SomeCoRatingsModel.<span class="fu">ASPECT_SCR_RATEABLE</span>);
+        nodeService.<span class="fu">addAspect</span>(nodeRef, aspectQName, <span class="kw">null</span>);
 
-        createRating(this.nodeRef, 1, RATER);
+        <span class="fu">createRating</span>(<span class="kw">this</span>.<span class="fu">nodeRef</span>, <span class="dv">1</span>, RATER);
 
-        assertEquals(1.0, nodeService.getProperty(this.nodeRef, PROP_AVG_RATING_QNAME));
-        assertEquals(1, nodeService.getProperty(this.nodeRef, PROP_TOTAL_QNAME));
-        assertEquals(1, nodeService.getProperty(this.nodeRef, PROP_COUNT_QNAME));
+        <span class="fu">assertEquals</span>(<span class="fl">1.0</span>, nodeService.<span class="fu">getProperty</span>(<span class="kw">this</span>.<span class="fu">nodeRef</span>, PROP_AVG_RATING_QNAME));
+        <span class="fu">assertEquals</span>(<span class="dv">1</span>, nodeService.<span class="fu">getProperty</span>(<span class="kw">this</span>.<span class="fu">nodeRef</span>, PROP_TOTAL_QNAME));
+        <span class="fu">assertEquals</span>(<span class="dv">1</span>, nodeService.<span class="fu">getProperty</span>(<span class="kw">this</span>.<span class="fu">nodeRef</span>, PROP_COUNT_QNAME));
 
-        NodeRef rating2 = createRating(this.nodeRef, 2, RATER);
+        NodeRef rating2 = <span class="fu">createRating</span>(<span class="kw">this</span>.<span class="fu">nodeRef</span>, <span class="dv">2</span>, RATER);
 
-        assertEquals(1.5, nodeService.getProperty(this.nodeRef, PROP_AVG_RATING_QNAME));
-        assertEquals(3, nodeService.getProperty(this.nodeRef, PROP_TOTAL_QNAME));
-        assertEquals(2, nodeService.getProperty(this.nodeRef, PROP_COUNT_QNAME));
+        <span class="fu">assertEquals</span>(<span class="fl">1.5</span>, nodeService.<span class="fu">getProperty</span>(<span class="kw">this</span>.<span class="fu">nodeRef</span>, PROP_AVG_RATING_QNAME));
+        <span class="fu">assertEquals</span>(<span class="dv">3</span>, nodeService.<span class="fu">getProperty</span>(<span class="kw">this</span>.<span class="fu">nodeRef</span>, PROP_TOTAL_QNAME));
+        <span class="fu">assertEquals</span>(<span class="dv">2</span>, nodeService.<span class="fu">getProperty</span>(<span class="kw">this</span>.<span class="fu">nodeRef</span>, PROP_COUNT_QNAME));
 
-        createRating(this.nodeRef, 3, RATER);
+        <span class="fu">createRating</span>(<span class="kw">this</span>.<span class="fu">nodeRef</span>, <span class="dv">3</span>, RATER);
 
-        assertEquals(2.0, nodeService.getProperty(this.nodeRef, PROP_AVG_RATING_QNAME));
-        assertEquals(6, nodeService.getProperty(this.nodeRef, PROP_TOTAL_QNAME));
-        assertEquals(3, nodeService.getProperty(this.nodeRef, PROP_COUNT_QNAME));
+        <span class="fu">assertEquals</span>(<span class="fl">2.0</span>, nodeService.<span class="fu">getProperty</span>(<span class="kw">this</span>.<span class="fu">nodeRef</span>, PROP_AVG_RATING_QNAME));
+        <span class="fu">assertEquals</span>(<span class="dv">6</span>, nodeService.<span class="fu">getProperty</span>(<span class="kw">this</span>.<span class="fu">nodeRef</span>, PROP_TOTAL_QNAME));
+        <span class="fu">assertEquals</span>(<span class="dv">3</span>, nodeService.<span class="fu">getProperty</span>(<span class="kw">this</span>.<span class="fu">nodeRef</span>, PROP_COUNT_QNAME));
 
-        nodeService.deleteNode(rating2);
+        nodeService.<span class="fu">deleteNode</span>(rating2);
 
-        assertEquals(nodeService.getProperty(this.nodeRef, PROP_AVG_RATING_QNAME), 2.0);
-        assertEquals(nodeService.getProperty(this.nodeRef, PROP_TOTAL_QNAME), 4);
-        assertEquals(nodeService.getProperty(this.nodeRef, PROP_COUNT_QNAME), 2);
+        <span class="fu">assertEquals</span>(nodeService.<span class="fu">getProperty</span>(<span class="kw">this</span>.<span class="fu">nodeRef</span>, PROP_AVG_RATING_QNAME), <span class="fl">2.0</span>);
+        <span class="fu">assertEquals</span>(nodeService.<span class="fu">getProperty</span>(<span class="kw">this</span>.<span class="fu">nodeRef</span>, PROP_TOTAL_QNAME), <span class="dv">4</span>);
+        <span class="fu">assertEquals</span>(nodeService.<span class="fu">getProperty</span>(<span class="kw">this</span>.<span class="fu">nodeRef</span>, PROP_COUNT_QNAME), <span class="dv">2</span>);
     }
 
-    public NodeRef createRating(NodeRef nodeRef, int rating, String rater) {
-        NodeService nodeService = getServiceRegistry().getNodeService();
+    <span class="kw">public</span> NodeRef <span class="fu">createRating</span>(NodeRef nodeRef, <span class="dt">int</span> rating, String rater) {
+        NodeService nodeService = <span class="fu">getServiceRegistry</span>().<span class="fu">getNodeService</span>();
 
-        // assign name
-        String name = &quot;Rating (&quot; + System.currentTimeMillis() + &quot;)&quot;;
-        Map&lt;QName, Serializable&gt; contentProps = new HashMap&lt;QName, Serializable&gt;();
-        contentProps.put(ContentModel.PROP_NAME, name);
-        contentProps.put(PROP_RATING_QNAME, rating);
-        contentProps.put(PROP_RATER_QNAME, rater);
+        <span class="co">// assign name</span>
+        String name = <span class="st">&quot;Rating (&quot;</span> + System.<span class="fu">currentTimeMillis</span>() + <span class="st">&quot;)&quot;</span>;
+        Map&lt;QName, Serializable&gt; contentProps = <span class="kw">new</span> HashMap&lt;QName, Serializable&gt;();
+        contentProps.<span class="fu">put</span>(ContentModel.<span class="fu">PROP_NAME</span>, name);
+        contentProps.<span class="fu">put</span>(PROP_RATING_QNAME, rating);
+        contentProps.<span class="fu">put</span>(PROP_RATER_QNAME, rater);
 
-        // create rating as a child of the content node using the scr:ratings child association
-        ChildAssociationRef association = nodeService.createNode(
+        <span class="co">// create rating as a child of the content node using the scr:ratings child association</span>
+        ChildAssociationRef association = nodeService.<span class="fu">createNode</span>(
                         nodeRef,
-                        QName.createQName(
-                                SomeCoRatingsModel.NAMESPACE_SOMECO_RATINGS_CONTENT_MODEL,
-                                SomeCoRatingsModel.ASSN_SCR_RATINGS),
-                        QName.createQName(NamespaceService.CONTENT_MODEL_PREFIX, name),
-                        QName.createQName(
-                                SomeCoRatingsModel.NAMESPACE_SOMECO_RATINGS_CONTENT_MODEL,
-                                SomeCoRatingsModel.TYPE_SCR_RATING),
+                        QName.<span class="fu">createQName</span>(
+                                SomeCoRatingsModel.<span class="fu">NAMESPACE_SOMECO_RATINGS_CONTENT_MODEL</span>,
+                                SomeCoRatingsModel.<span class="fu">ASSN_SCR_RATINGS</span>),
+                        QName.<span class="fu">createQName</span>(NamespaceService.<span class="fu">CONTENT_MODEL_PREFIX</span>, name),
+                        QName.<span class="fu">createQName</span>(
+                                SomeCoRatingsModel.<span class="fu">NAMESPACE_SOMECO_RATINGS_CONTENT_MODEL</span>,
+                                SomeCoRatingsModel.<span class="fu">TYPE_SCR_RATING</span>),
                         contentProps
                         );
 
-        return association.getChildRef();
+        <span class="kw">return</span> association.<span class="fu">getChildRef</span>();
     }
-}</code></pre>
-<p>To run the test, switch to the $TUTORIAL_HOME directory and run <code>run.sh</code> or <code>run.bat</code> depending on your operating system. Apache Maven will start up an embedded instance of Alfresco with your repo AMP deployed and will then run the tests. If you see something like this:</p>
+}</code></pre></div>
+<p>To run the test, first, check to see if your containers are running by doing a <code>docker ps</code>. If any are running, do <code>./run.sh stop</code>. Next, run <code>mvn install -DskipTests</code> to re-build everything. Now start fresh containers by doing <code>./run.sh build_start</code>.</p>
+<p>Once everything is up-and-running, run <code>./run.sh test</code>. If you see something like this:</p>
 <pre><code>[INFO] ------------------------------------------------------------------------
 [INFO] BUILD SUCCESS
 [INFO] ------------------------------------------------------------------------
-[INFO] Total time: 48.090s
-[INFO] Finished at: Wed Jan 29 18:19:01 CST 2014
-[INFO] Final Memory: 13M/122M
+[INFO] Total time: 4.554 s
+[INFO] Finished at: 2019-02-11T16:19:16-06:00
+[INFO] Final Memory: 32M/489M
 [INFO] ------------------------------------------------------------------------</code></pre>
 <p>...it means your behavior is working.</p>
-<p>If something is broken, try changing <a href="https://github.com/jpotts/alfresco-developer-series/blob/master/behaviors/behavior-tutorial/behavior-tutorial-platform-jar/src/main/resources/alfresco/module/behavior-tutorial-platform-jar/log4j.properties">log4j.properties</a> in:</p>
-<pre><code>$TUTORIAL_HOME/behavior-tutorial-platform-jar/src/main/resources/alfresco/module</code></pre>
+<p>If something is broken, try changing <a href="https://github.com/jpotts/alfresco-developer-series/blob/master/behaviors/behavior-tutorial/behavior-tutorial-platform/src/main/resources/alfresco/module/behavior-tutorial-platform/log4j.properties">log4j.properties</a> in:</p>
+<pre><code>$TUTORIAL_HOME/behavior-tutorial-platform/src/main/resources/alfresco/module</code></pre>
 <p>To:</p>
-<pre><code>log4j.logger.com.someco=${module.log.level}</code></pre>
-<p>And then run:</p>
-<pre><code>mvn install -Dmodule.log.level=DEBUG</code></pre>
-<p>You can then look for the debug messages in the log.</p>
+<pre><code>log4j.logger.com.someco=DEBUG</code></pre>
+<p>And then re-build the AMPs by running <code>mvn install -DskipTests</code>. Once the build is complete, stop and start the Alfresco container by doing <code>./run.sh reload_acs</code>. You can then look for the debug messages in the log.</p>
 <h1 id="re-implementing-the-behavior-in-javascript">Re-implementing the behavior in JavaScript</h1>
 <p>You've seen how to implement the average rating calculation behavior in Java, but what if you wanted to implement the behavior using JavaScript instead? Behaviors can be implemented in server-side JavaScript and bound to policies through Spring. Let's re-implement the Rating bean using JavaScript.</p>
 <p>The high-level steps are:</p>
@@ -640,139 +680,140 @@ public class RatingBehaviorIT extends BaseIT {
 <li>rating.js will contain the average rating calculation logic and will be imported by the other two scripts using the <code>import</code> tag.</li>
 </ol>
 <p>In this example, the scripts are going to reside as part of the web application rather than being uploaded to the repository. I'll place them in:</p>
-<pre><code>$TUTORIAL_HOME/behavior-tutorial-platform-jar/src/main/resources/alfresco/module/behavior-tutorial-platform-jar/scripts</code></pre>
+<pre><code>$TUTORIAL_HOME/behavior-tutorial-platform/src/main/resources/alfresco/module/behavior-tutorial-platform/scripts</code></pre>
 <p>If you are following along, you'll need to create the scripts directory.</p>
-<p>The <a href="https://github.com/jpotts/alfresco-developer-series/blob/master/behaviors/behavior-tutorial/behavior-tutorial-platform-jar/src/main/resources/alfresco/module/behavior-tutorial-platform-jar/scripts/onCreateRating.js">onCreateRating.js</a> and <a href="https://github.com/jpotts/alfresco-developer-series/blob/master/behaviors/behavior-tutorial/behavior-tutorial-platform-jar/src/main/resources/alfresco/module/behavior-tutorial-platform-jar/scripts/onDeleteRating.js">onDeleteRating.js</a> files are virtually identical. They just need to do some basic error checking and then call the <code>computeAverage()</code> function. Here is what onCreateRating.js looks like:</p>
-<pre><code>&lt;import resource=&quot;classpath:alfresco/module/behavior-tutorial-platform-jar/scripts/rating.js&quot;&gt;
+<p>The <a href="https://github.com/jpotts/alfresco-developer-series/blob/master/behaviors/behavior-tutorial/behavior-tutorial-platform/src/main/resources/alfresco/module/behavior-tutorial-platform/scripts/onCreateRating.js">onCreateRating.js</a> and <a href="https://github.com/jpotts/alfresco-developer-series/blob/master/behaviors/behavior-tutorial/behavior-tutorial-platform/src/main/resources/alfresco/module/behavior-tutorial-platform/scripts/onDeleteRating.js">onDeleteRating.js</a> files are virtually identical. They just need to do some basic error checking and then call the <code>computeAverage()</code> function. Here is what onCreateRating.js looks like:</p>
+<div class="sourceCode"><pre class="sourceCode javascript"><code class="sourceCode javascript"><span class="op">&lt;</span><span class="im">import</span> resource<span class="op">=</span><span class="st">&quot;classpath:alfresco/module/behavior-tutorial-platform/scripts/rating.js&quot;</span><span class="op">&gt;</span>
 
-// Check behaviour is set and the name of the behaviour
-if (!behaviour || (behaviour.name == null || behaviour.name != &quot;onCreateNode&quot;)) {
-    logger.log(&quot;The behaviour behaviour object or name has not been set correctly.&quot;);
-} else {
-    logger.log(&quot;Behaviour name: &quot; + behaviour.name);
+<span class="co">// Check behaviour is set and the name of the behaviour</span>
+<span class="cf">if</span> (<span class="op">!</span>behaviour <span class="op">||</span> (<span class="va">behaviour</span>.<span class="at">name</span> <span class="op">==</span> <span class="kw">null</span> <span class="op">||</span> <span class="va">behaviour</span>.<span class="at">name</span> <span class="op">!=</span> <span class="st">&quot;onCreateNode&quot;</span>)) <span class="op">{</span>
+    <span class="va">logger</span>.<span class="at">log</span>(<span class="st">&quot;The behaviour behaviour object or name has not been set correctly.&quot;</span>)<span class="op">;</span>
+<span class="op">}</span> <span class="cf">else</span> <span class="op">{</span>
+    <span class="va">logger</span>.<span class="at">log</span>(<span class="st">&quot;Behaviour name: &quot;</span> <span class="op">+</span> <span class="va">behaviour</span>.<span class="at">name</span>)<span class="op">;</span>
 
-    // Check the arguments
-    if (behaviour.args == null) {
-        logger.log(&quot;The args have not been set.&quot;);
-    } else {
-        if (behaviour.args.length == 1) {
-            var childAssoc = behaviour.args[0];
-            logger.log(&quot;Calling compute average&quot;);
-            computeAverage(childAssoc);
-        } else {
-            logger.log(&quot;The number of arguments is incorrect.&quot;);
-        }
-    }
-}</code></pre>
+    <span class="co">// Check the arguments</span>
+    <span class="cf">if</span> (<span class="va">behaviour</span>.<span class="at">args</span> <span class="op">==</span> <span class="kw">null</span>) <span class="op">{</span>
+        <span class="va">logger</span>.<span class="at">log</span>(<span class="st">&quot;The args have not been set.&quot;</span>)<span class="op">;</span>
+    <span class="op">}</span> <span class="cf">else</span> <span class="op">{</span>
+        <span class="cf">if</span> (<span class="va">behaviour</span>.<span class="va">args</span>.<span class="at">length</span> <span class="op">==</span> <span class="dv">1</span>) <span class="op">{</span>
+            <span class="kw">var</span> childAssoc <span class="op">=</span> <span class="va">behaviour</span>.<span class="at">args</span>[<span class="dv">0</span>]<span class="op">;</span>
+            <span class="va">logger</span>.<span class="at">log</span>(<span class="st">&quot;Calling compute average&quot;</span>)<span class="op">;</span>
+            <span class="at">computeAverage</span>(childAssoc)<span class="op">;</span>
+        <span class="op">}</span> <span class="cf">else</span> <span class="op">{</span>
+            <span class="va">logger</span>.<span class="at">log</span>(<span class="st">&quot;The number of arguments is incorrect.&quot;</span>)<span class="op">;</span>
+        <span class="op">}</span>
+    <span class="op">}</span>
+<span class="op">}</span></code></pre></div>
 <p>The code for onDeleteRating.js is identical with the exception of the behavior name and the number of arguments expected (2 instead of 1) so I won't duplicate the listing here.</p>
-<p>The <code>computeAverage()</code> function lives in <a href="https://github.com/jpotts/alfresco-developer-series/blob/master/behaviors/behavior-tutorial/behavior-tutorial-platform-jar/src/main/resources/alfresco/module/behavior-tutorial-platform-jar/scripts/rating.js">rating.js</a>. It does pretty much the same thing as the <code>computeAverage()</code> method in the Java example, but obviously in JavaScript:</p>
-<pre><code>//calculate rating
-function computeAverage(childAssocRef) {
+<p>The <code>computeAverage()</code> function lives in <a href="https://github.com/jpotts/alfresco-developer-series/blob/master/behaviors/behavior-tutorial/behavior-tutorial-platform/src/main/resources/alfresco/module/behavior-tutorial-platform/scripts/rating.js">rating.js</a>. It does pretty much the same thing as the <code>computeAverage()</code> method in the Java example, but obviously in JavaScript:</p>
+<div class="sourceCode"><pre class="sourceCode javascript"><code class="sourceCode javascript"><span class="co">//calculate rating</span>
+<span class="kw">function</span> <span class="at">computeAverage</span>(childAssocRef) <span class="op">{</span>
 
-    var parentRef = childAssocRef.parent;
+    <span class="kw">var</span> parentRef <span class="op">=</span> <span class="va">childAssocRef</span>.<span class="at">parent</span><span class="op">;</span>
 
-    // check the parent to make sure it has the right aspect
-    if (!parentRef.hasAspect(&quot;{http://www.someco.com/model/ratings/1.0}rateable&quot;)) {
-        logger.log(&quot;Rating&#39;s parent ref did not have rateable aspect.&quot;);
-        return;
-    }
+    <span class="co">// check the parent to make sure it has the right aspect</span>
+    <span class="cf">if</span> (<span class="op">!</span><span class="va">parentRef</span>.<span class="at">hasAspect</span>(<span class="st">&quot;{http://www.someco.com/model/ratings/1.0}rateable&quot;</span>)) <span class="op">{</span>
+        <span class="va">logger</span>.<span class="at">log</span>(<span class="st">&quot;Rating&#39;s parent ref did not have rateable aspect.&quot;</span>)<span class="op">;</span>
+        <span class="cf">return</span><span class="op">;</span>
+    <span class="op">}</span>
 
-    // get the parent node&#39;s children
-    var children = parentRef.children;
+    <span class="co">// get the parent node&#39;s children</span>
+    <span class="kw">var</span> children <span class="op">=</span> <span class="va">parentRef</span>.<span class="at">children</span><span class="op">;</span>
 
-    // iterate through the children to compute the total
-    var average = 0.0;
-    var total = 0;
+    <span class="co">// iterate through the children to compute the total</span>
+    <span class="kw">var</span> average <span class="op">=</span> <span class="fl">0.0</span><span class="op">;</span>
+    <span class="kw">var</span> total <span class="op">=</span> <span class="dv">0</span><span class="op">;</span>
 
-    if (children != null &amp;&amp; children.length &gt; 0) {
-        for (i in children) {
-            var child = children[i];
-            var rating = child.properties[&quot;{http://www.someco.com/model/content/1.0}rating&quot;];
-            total += rating;
-        }
+    <span class="cf">if</span> (children <span class="op">!=</span> <span class="kw">null</span> <span class="op">&amp;&amp;</span> <span class="va">children</span>.<span class="at">length</span> <span class="op">&gt;</span> <span class="dv">0</span>) <span class="op">{</span>
+        <span class="cf">for</span> (i <span class="kw">in</span> children) <span class="op">{</span>
+            <span class="kw">var</span> child <span class="op">=</span> children[i]<span class="op">;</span>
+            <span class="kw">var</span> rating <span class="op">=</span> <span class="va">child</span>.<span class="at">properties</span>[<span class="st">&quot;{http://www.someco.com/model/content/1.0}rating&quot;</span>]<span class="op">;</span>
+            total <span class="op">+=</span> rating<span class="op">;</span>
+        <span class="op">}</span>
 
-        // compute the average
-        average = total / children.length;
-    }
+        <span class="co">// compute the average</span>
+        average <span class="op">=</span> total / <span class="va">children</span>.<span class="at">length</span><span class="op">;</span>
+    <span class="op">}</span>
 
-    logger.log(&quot;Computed average:&quot; + average);
+    <span class="va">logger</span>.<span class="at">log</span>(<span class="st">&quot;Computed average:&quot;</span> <span class="op">+</span> average)<span class="op">;</span>
 
-    // store the average, total, count on the parent node
-    parentRef.properties[&quot;{http://www.someco.com/model/ratings/1.0}averageRating&quot;] = average;
-    parentRef.properties[&quot;{http://www.someco.com/model/ratings/1.0}totalRating&quot;] = total;
-    parentRef.properties[&quot;{http://www.someco.com/model/ratings/1.0}ratingCount&quot;] = children.length;
-    parentRef.save();
+    <span class="co">// store the average, total, count on the parent node</span>
+    <span class="va">parentRef</span>.<span class="at">properties</span>[<span class="st">&quot;{http://www.someco.com/model/ratings/1.0}averageRating&quot;</span>] <span class="op">=</span> average<span class="op">;</span>
+    <span class="va">parentRef</span>.<span class="at">properties</span>[<span class="st">&quot;{http://www.someco.com/model/ratings/1.0}totalRating&quot;</span>] <span class="op">=</span> total<span class="op">;</span>
+    <span class="va">parentRef</span>.<span class="at">properties</span>[<span class="st">&quot;{http://www.someco.com/model/ratings/1.0}ratingCount&quot;</span>] <span class="op">=</span> <span class="va">children</span>.<span class="at">length</span><span class="op">;</span>
+    <span class="va">parentRef</span>.<span class="at">save</span>()<span class="op">;</span>
 
-    logger.log(&quot;Property set&quot;);
-}</code></pre>
+    <span class="va">logger</span>.<span class="at">log</span>(<span class="st">&quot;Property set&quot;</span>)<span class="op">;</span>
+<span class="op">}</span></code></pre></div>
 <p>As you can see, this is the same logic used in the Java example modified to follow the Alfresco JavaScript API syntax.</p>
 <h2 id="step-2-configure-a-spring-bean-to-bind-the-script-to-the-appropriate-policies">Step 2: Configure a Spring bean to bind the script to the appropriate policies</h2>
 <p>The Java example used an <code>init()</code> method on the <code>Rating</code> bean to make calls to the <code>bindClassBehaviour()</code> method of <code>PolicyComponent</code>. The JavaScript example doesn't do that. Instead, it uses Spring to associate the JavaScript files with the <code>onCreateNode</code> and <code>onDeleteNode</code> policies.</p>
-<p>As you've seen, the Spring context, <a href="https://github.com/jpotts/alfresco-developer-series/blob/master/behaviors/behavior-tutorial/behavior-tutorial-platform-jar/src/main/resources/alfresco/module/behavior-tutorial-platform-jar/context/service-context.xml">service-context.xml</a> file resides in:</p>
-<pre><code>$TUTORIAL_HOME/behavior-tutorial-platform-jar/src/main/resources/alfresco/module/behavior-tutorial-platform-jar/context</code></pre>
+<p>As you've seen, the Spring context, <a href="https://github.com/jpotts/alfresco-developer-series/blob/master/behaviors/behavior-tutorial/behavior-tutorial-platform/src/main/resources/alfresco/module/behavior-tutorial-platform/context/service-context.xml">service-context.xml</a> file resides in:</p>
+<pre><code>$TUTORIAL_HOME/behavior-tutorial-platform/src/main/resources/alfresco/module/behavior-tutorial-platform/context</code></pre>
 <p>Edit the file. Comment out the <code>ratingBehavior</code> bean element used for the Java example and add two new bean configs below it for the JavaScript behavior code—one for the create and one for the delete:</p>
-<pre><code>&lt;bean id=&quot;onCreateRatingNode&quot;
-class=&quot;org.alfresco.repo.policy.registration.ClassPolicyRegistration&quot;
-parent=&quot;policyRegistration&quot;&gt;
-    &lt;property name=&quot;policyName&quot;&gt;
-        &lt;value&gt;{http://www.alfresco.org}onCreateNode&lt;/value&gt;
-    &lt;/property&gt;
-    &lt;property name=&quot;className&quot;&gt;
-        &lt;value&gt;{http://www.someco.com/model/ratings/1.0}rating&lt;/value&gt;
-    &lt;/property&gt;
-    &lt;property name=&quot;behaviour&quot;&gt;
-        &lt;bean class=&quot;org.alfresco.repo.jscript.ScriptBehaviour&quot; parent=&quot;scriptBehaviour&quot;&gt;
-            &lt;property name=&quot;location&quot;&gt;
-                &lt;bean class=&quot;org.alfresco.repo.jscript.ClasspathScriptLocation&quot;&gt;
-                    &lt;constructor-arg&gt;
-                        &lt;value&gt;alfresco/module/${project.artifactId}/scripts/onCreateRating.js&lt;/value&gt;
-                    &lt;/constructor-arg&gt;
-                &lt;/bean&gt;
-            &lt;/property&gt;
-        &lt;/bean&gt;
-    &lt;/property&gt;
-&lt;/bean&gt;
-&lt;bean id=&quot;onDeleteRatingNode&quot;
-class=&quot;org.alfresco.repo.policy.registration.ClassPolicyRegistration&quot;
-parent=&quot;policyRegistration&quot;&gt;
-    &lt;property name=&quot;policyName&quot;&gt;
-        &lt;value&gt;{http://www.alfresco.org}onDeleteNode&lt;/value&gt;
-    &lt;/property&gt;
-    &lt;property name=&quot;className&quot;&gt;
-        &lt;value&gt;{http://www.someco.com/model/ratings/1.0}rating&lt;/value&gt;
-    &lt;/property&gt;
-    &lt;property name=&quot;behaviour&quot;&gt;
-        &lt;bean class=&quot;org.alfresco.repo.jscript.ScriptBehaviour&quot; parent=&quot;scriptBehaviour&quot;&gt;
-            &lt;property name=&quot;location&quot;&gt;
-                &lt;bean class=&quot;org.alfresco.repo.jscript.ClasspathScriptLocation&quot;&gt;
-                    &lt;constructor-arg&gt;
-                        &lt;value&gt;alfresco/module/${project.artifactId}/scripts/onDeleteRating.js&lt;/value&gt;
-                    &lt;/constructor-arg&gt;
-                &lt;/bean&gt;
-            &lt;/property&gt;
-        &lt;/bean&gt;
-    &lt;/property&gt;
-&lt;/bean&gt;</code></pre>
+<div class="sourceCode"><pre class="sourceCode xml"><code class="sourceCode xml"><span class="kw">&lt;bean</span><span class="ot"> id=</span><span class="st">&quot;onCreateRatingNode&quot;</span>
+<span class="ot">class=</span><span class="st">&quot;org.alfresco.repo.policy.registration.ClassPolicyRegistration&quot;</span>
+<span class="ot">parent=</span><span class="st">&quot;policyRegistration&quot;</span><span class="kw">&gt;</span>
+    <span class="kw">&lt;property</span><span class="ot"> name=</span><span class="st">&quot;policyName&quot;</span><span class="kw">&gt;</span>
+        <span class="kw">&lt;value&gt;</span>{http://www.alfresco.org}onCreateNode<span class="kw">&lt;/value&gt;</span>
+    <span class="kw">&lt;/property&gt;</span>
+    <span class="kw">&lt;property</span><span class="ot"> name=</span><span class="st">&quot;className&quot;</span><span class="kw">&gt;</span>
+        <span class="kw">&lt;value&gt;</span>{http://www.someco.com/model/ratings/1.0}rating<span class="kw">&lt;/value&gt;</span>
+    <span class="kw">&lt;/property&gt;</span>
+    <span class="kw">&lt;property</span><span class="ot"> name=</span><span class="st">&quot;behaviour&quot;</span><span class="kw">&gt;</span>
+        <span class="kw">&lt;bean</span><span class="ot"> class=</span><span class="st">&quot;org.alfresco.repo.jscript.ScriptBehaviour&quot;</span><span class="ot"> parent=</span><span class="st">&quot;scriptBehaviour&quot;</span><span class="kw">&gt;</span>
+            <span class="kw">&lt;property</span><span class="ot"> name=</span><span class="st">&quot;location&quot;</span><span class="kw">&gt;</span>
+                <span class="kw">&lt;bean</span><span class="ot"> class=</span><span class="st">&quot;org.alfresco.repo.jscript.ClasspathScriptLocation&quot;</span><span class="kw">&gt;</span>
+                    <span class="kw">&lt;constructor-arg&gt;</span>
+                        <span class="kw">&lt;value&gt;</span>alfresco/module/${project.artifactId}/scripts/onCreateRating.js<span class="kw">&lt;/value&gt;</span>
+                    <span class="kw">&lt;/constructor-arg&gt;</span>
+                <span class="kw">&lt;/bean&gt;</span>
+            <span class="kw">&lt;/property&gt;</span>
+        <span class="kw">&lt;/bean&gt;</span>
+    <span class="kw">&lt;/property&gt;</span>
+<span class="kw">&lt;/bean&gt;</span>
+<span class="kw">&lt;bean</span><span class="ot"> id=</span><span class="st">&quot;onDeleteRatingNode&quot;</span>
+<span class="ot">class=</span><span class="st">&quot;org.alfresco.repo.policy.registration.ClassPolicyRegistration&quot;</span>
+<span class="ot">parent=</span><span class="st">&quot;policyRegistration&quot;</span><span class="kw">&gt;</span>
+    <span class="kw">&lt;property</span><span class="ot"> name=</span><span class="st">&quot;policyName&quot;</span><span class="kw">&gt;</span>
+        <span class="kw">&lt;value&gt;</span>{http://www.alfresco.org}onDeleteNode<span class="kw">&lt;/value&gt;</span>
+    <span class="kw">&lt;/property&gt;</span>
+    <span class="kw">&lt;property</span><span class="ot"> name=</span><span class="st">&quot;className&quot;</span><span class="kw">&gt;</span>
+        <span class="kw">&lt;value&gt;</span>{http://www.someco.com/model/ratings/1.0}rating<span class="kw">&lt;/value&gt;</span>
+    <span class="kw">&lt;/property&gt;</span>
+    <span class="kw">&lt;property</span><span class="ot"> name=</span><span class="st">&quot;behaviour&quot;</span><span class="kw">&gt;</span>
+        <span class="kw">&lt;bean</span><span class="ot"> class=</span><span class="st">&quot;org.alfresco.repo.jscript.ScriptBehaviour&quot;</span><span class="ot"> parent=</span><span class="st">&quot;scriptBehaviour&quot;</span><span class="kw">&gt;</span>
+            <span class="kw">&lt;property</span><span class="ot"> name=</span><span class="st">&quot;location&quot;</span><span class="kw">&gt;</span>
+                <span class="kw">&lt;bean</span><span class="ot"> class=</span><span class="st">&quot;org.alfresco.repo.jscript.ClasspathScriptLocation&quot;</span><span class="kw">&gt;</span>
+                    <span class="kw">&lt;constructor-arg&gt;</span>
+                        <span class="kw">&lt;value&gt;</span>alfresco/module/${project.artifactId}/scripts/onDeleteRating.js<span class="kw">&lt;/value&gt;</span>
+                    <span class="kw">&lt;/constructor-arg&gt;</span>
+                <span class="kw">&lt;/bean&gt;</span>
+            <span class="kw">&lt;/property&gt;</span>
+        <span class="kw">&lt;/bean&gt;</span>
+    <span class="kw">&lt;/property&gt;</span>
+<span class="kw">&lt;/bean&gt;</span></code></pre></div>
 <p>Now Alfresco will use the two server-side JavaScript files as the behavior implementation instead of the Java-based behavior created earlier.</p>
 <h2 id="step-3-test-the-javascript-based-behavior">Step 3: Test the JavaScript-based behavior</h2>
 <p>If you are following along and you already did the Java-based behavior, this step is easy. The integration test doesn't have to change at all because all that is different is that the underlying behavior logic is written in JavaScript instead of Java.</p>
-<p>So, switch to the $TUTORIAL_HOME directory and run <code>run.sh</code> or <code>run.bat</code>. Just like the Java example, you should see something like this:</p>
+<p>So, switch to the $TUTORIAL_HOME directory and run <code>mvn install -DskipTests</code> to rebuild the AMPs, then <code>./run.sh reload_acs</code> to re-build and re-start the Alfresco image. Once it is back up, run <code>./run.sh test</code>. Just like the Java example, you should see something like this:</p>
 <pre><code>[INFO] ------------------------------------------------------------------------
 [INFO] BUILD SUCCESS
 [INFO] ------------------------------------------------------------------------
-[INFO] Total time: 55.326s
-[INFO] Finished at: Thu Jan 30 17:04:55 CST 2014
-[INFO] Final Memory: 14M/122M
+[INFO] Total time: 3.887 s
+[INFO] Finished at: 2019-02-11T17:26:19-06:00
+[INFO] Final Memory: 32M/488M
 [INFO] ------------------------------------------------------------------------</code></pre>
 <p>Successful tests are certainly comforting, but they are not very satisfying. Wouldn't you like to actually see this behavior working in the user interface? In the web scripts tutorial I'll show you how to create a little web page that lets you click on stars and post ratings for whitepapers. For now, if you'd like to run a simple web script that creates test rating objects on specified content, follow these steps:</p>
 <ol style="list-style-type: decimal">
-<li><p>If you are using the source code checked out from GitHub instead of creating your own project you can move on to step 2. Otherwise, if you are following along in your own project directories, copy the following directory and its descendants from the source code that accompanies this tutorial into your behavior-tutorial-platform-jar module. Copy:</p>
-<pre><code>$TUTORIAL_SOURCE/behavior-tutorial-platform-jar/src/main/resources/alfresco/extension/templates/webscripts</code></pre>
+<li><p>If you are using the source code checked out from GitHub instead of creating your own project you can move on to step 2. Otherwise, if you are following along in your own project directories, copy the following directory and its descendants from the source code that accompanies this tutorial into your behavior-tutorial-platform module. Copy:</p>
+<pre><code>$TUTORIAL_SOURCE/behavior-tutorial-platform/src/main/resources/alfresco/extension/templates/webscripts</code></pre>
 <p>to:</p>
-<pre><code>$TUTORIAL_HOME/behavior-tutorial-platform-jar/src/main/resources/alfresco/extension/templates/webscripts</code></pre>
+<pre><code>$TUTORIAL_HOME/behavior-tutorial-platform/src/main/resources/alfresco/extension/templates/webscripts</code></pre>
 <p>The directory contains the files that make up a quick-and-dirty web script that will create random ratings on a specified piece of content.</p></li>
-<li><p>Switch to $TUTORIAL_HOME and run <code>run.sh</code> or <code>run.bat</code>.</p></li>
-<li><p>Once the server comes up, log in to http://localhost:8080/share as admin, password admin.</p></li>
+<li><p>Switch to $TUTORIAL_HOME and run <code>mvn install -DskipTests</code> to re-build the AMPs.</p></li>
+<li><p>Run <code>./run.sh reload_acs</code> to stop and start the Alfresco container.</p></li>
+<li><p>Once the server comes up, log in to http://localhost:8180/share as admin, password admin.</p></li>
 <li><p>Create a piece of test content somewhere in the repository. It doesn't matter what it is or what it is named.</p></li>
 <li><p>Grab the test content's nodeRef. The easiest way to do this is to copy it from the URL that is displayed when you view the content's details page. For example, when you look at the details for your test content, the URL should look something like this:</p>
 <pre><code>http://localhost:8080/share/page/document-details?nodeRef=workspace://SpacesStore/00408a65-1e9e-42ad-b02c-aa3546624d07</code></pre>
@@ -788,16 +829,13 @@ parent=&quot;policyRegistration&quot;&gt;
 </div>
 <p>This shouldn't be too surprising--you are using a web script to exercise the same behavior as the integration test, but at least this way you can log in to Share and see for yourself that the behavior works.</p>
 <h1 id="deploying-the-amps-to-your-alfresco-server">Deploying the AMPs to your Alfresco server</h1>
-<p>When you are ready, you can deploy these AMPs to any Alfresco server. Both the platform-jar module and the share-jar module directories should have a directory called target. Maven puts the AMP there when you run <code>mvn install</code>. You can install those AMPs as you normally would. For example, if you installed Alfresco with the binary installer, you would:</p>
+<p>When you are ready, you can deploy these AMPs to any Alfresco server. Both the platform module and the share module directories should have a directory called target. Maven puts the AMP there when you run <code>mvn install</code>. You can install those AMPs as you normally would. For example, if you installed Alfresco in your own manually set up Tomcat server, you would:</p>
 <ol style="list-style-type: decimal">
 <li>Copy the repo tier AMP to $ALFRESCO_HOME/amps</li>
 <li>Copy the share tier AMP to $ALFRESCO_HOME/amps_share</li>
 <li>Install the AMPs by running $ALFRESCO_HOME/bin/apply_amps.sh</li>
 </ol>
-<p>Alternatively, you can use the Alfresco Maven SDK to install the AMPs by changing into each of the two project directories and doing:</p>
-<pre><code>mvn install
-mvn alfresco:install -Dmaven.alfresco.warLocation=$TOMCAT_HOME/webapps/[alfresco or share]</code></pre>
-<p>In my case, I run the alfresco.war and share.war files exploded under $TOMCAT_HOME/webapps, so I would specify $TOMCAT_HOME/webapps/alfresco or $TOMCAT_HOME/webapps/share for my <code>warLocation</code> depending on which AMPs I am installing. If you are running the WAR files unexploded you can specify the file path of each WAR.</p>
+<p>If you deployed Alfresco using Docker Compose or Kubernetes you'll need to build new images that copy the AMPs to the containers and then invoke the Alfresco MMT to install them into the Alfresco and Share WARs.</p>
 <h1 id="conclusion">Conclusion</h1>
 <p>This tutorial has shown how to bind custom behavior to Alfresco policies. Specifically, the tutorial showed how to implement a custom &quot;rateable&quot; aspect and a custom &quot;rating&quot; type that can be used to persist user ratings of content stored in the repository. The custom behavior is responsible for calculating the average rating for a piece of content any time a rating is created or deleted. The tutorial showed how to implement the average rating calculation behavior in Java as well as JavaScript.</p>
 <h1 id="where-to-find-more-information">Where to Find More Information</h1>
@@ -805,7 +843,7 @@ mvn alfresco:install -Dmaven.alfresco.warLocation=$TOMCAT_HOME/webapps/[alfresco
 <li>The complete source code for these examples is available on <a href="https://github.com/jpotts/alfresco-developer-series">GitHub</a>.</li>
 <li>Official documentation for both Enterprise Edition and Community Edition is available at <a href="http://docs.alfresco.com/">docs.alfresco.com</a>.</li>
 <li>Get help from the <a href="http://community.alfresco.com">community</a>.</li>
-<li>If you are ready to cover new ground, try another <a href="https://ecmarchitect.com">ecmarchitect.com</a> tutorial in the <a href="https://ecmarchitect.com/alfresco-developer-series">Alfresco Developer Series</a>.</li>
+<li>If you are ready to cover new ground, try another <a href="https://ecmarchitect.com">ecmarchitect.com</a> tutorial in the <a href="https://ecmarchitect.com/alfresco-developer-series">Alfresco Developer Series</a>. The most logical next step is the <a href="https://ecmarchitect.com/alfresco-developer-series-tutorials/webscripts/tutorial/tutorial.html">Intro to the Web Script Framework</a> tutorial.</li>
 </ul>
 					</div><!-- .entry-content -->
 				</div><!-- #post-## -->

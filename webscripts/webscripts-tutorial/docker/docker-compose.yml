@@ -1,0 +1,58 @@
+version: '3.4'
+services:
+  webscripts-tutorial-share:
+    image: alfresco-share-webscripts-tutorial:development
+    build:
+      dockerfile: ./Dockerfile
+      context: ../../../webscripts-tutorial-share-docker/target
+    environment:
+      CATALINA_OPTS: "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=8888"
+      REPO_HOST: webscripts-tutorial-acs
+      REPO_PORT: 8080
+    ports:
+      - "${share.port}:8080"
+      - "${share.debug.port}:8888"
+  webscripts-tutorial-acs:
+    image: alfresco-content-services-webscripts-tutorial:development
+    build:
+      dockerfile: ./Dockerfile
+      context: ../../../webscripts-tutorial-platform-docker/target
+    environment:
+      CATALINA_OPTS: "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=8888"
+    ports:
+      - "${acs.port}:8080"
+      - "${acs.debug.port}:8888"
+    volumes:
+      - webscripts-tutorial-acs-volume:/usr/local/tomcat/alf_data
+    depends_on:
+      - webscripts-tutorial-postgres
+  webscripts-tutorial-postgres:
+    image: postgres:9.6
+    environment:
+      POSTGRES_DB: alfresco
+      POSTGRES_USER: alfresco
+      POSTGRES_PASSWORD: alfresco
+    ports:
+      - "${postgres.port}:5432"
+    volumes:
+      - webscripts-tutorial-db-volume:/var/lib/postgresql/data
+  webscripts-tutorial-ass:
+    image: alfresco/alfresco-search-services:1.2.0
+    environment:
+      SOLR_ALFRESCO_HOST: webscripts-tutorial-acs
+      SOLR_ALFRESCO_PORT: 8080
+      SOLR_SOLR_HOST: webscripts-tutorial-ass
+      SOLR_SOLR_PORT: 8983
+      SOLR_CREATE_ALFRESCO_DEFAULTS: alfresco,archive
+    ports:
+      - "8983:8983"
+    volumes:
+      - webscripts-tutorial-ass-volume:/opt/alfresco-search-services/contentstore
+      - webscripts-tutorial-ass-volume:/opt/alfresco-search-services/data
+volumes:
+  webscripts-tutorial-acs-volume:
+    external: true
+  webscripts-tutorial-db-volume:
+    external: true
+  webscripts-tutorial-ass-volume:
+    external: true

@@ -3,7 +3,10 @@ Alfresco Developer Series Tutorials
 
 Source code from the [ecmarchitect.com Alfresco Developer Series](https://ecmarchitect.com/alfresco-developer-series) tutorials.
 
-These tutorials are written for Alfresco Community Edition 5.2.f and Alfresco Enterprise 5.1. They leverage the Alfresco SDK 3.0.1. That version of the SDK should work with older versions of Alfresco, but certain releases may require modification.
+These tutorials are written for Alfresco 6.x, both Community and Enterprise
+Editions. They leverage Alfresco SDK 4.0. That version of the SDK will not work
+with older versions of Alfresco. If you want to go through these tutorials using
+an older version of Alfresco and the SDK, switch to the sdk-3.0.1 tag.
 
 The tutorials build upon each other. The recommended order of progression is:
 
@@ -17,6 +20,15 @@ The tutorials build upon each other. The recommended order of progression is:
 Repository Structure
 --------------------
 
-The repository contains a folder for each tutorial. Within that, there is a tutorial directory that contains the actual tutorial text and images as well as one or more project folders that contain source code that goes along with the tutorial.
+The repository contains a folder for each tutorial. Within that, there is a
+tutorial directory that contains the actual tutorial text and images as well as
+one or more project folders that contain source code that goes along with the
+tutorial.
 
-The projects roughly build on each other. So, for example, if you want to work through the Actions tutorial, you'll need to understand the content tutorial and you will need to deploy the repo and share AMPs the content tutorial produces for subsequent tutorial source code to run in your own Alfresco repository.
+The projects roughly build on each other. So, for example, if you want to work
+through the Actions tutorial, you'll need to understand the content tutorial and
+you will need to check out the content tutorial source code and build it locally
+so that the actions project can pull in the content project as a dependency.
+
+Each tutorial contains specifics on which earlier tutorials it needs as
+dependencies.

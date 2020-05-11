@@ -22,10 +22,10 @@ public class CheckoutCheckinExample extends CMISExampleBase {
     	Document doc = (Document) getSession().getObjectByPath(filePath);
     	System.out.println("Found document in repo. Current version: " + doc.getProperty("cmis:versionLabel").getValueAsString());
     	String fileName = doc.getName();
-    	ObjectId pwcId = doc.checkOut(); // Checkout the document
-    	Document pwc = (Document) getSession().getObject(pwcId); // Get the working copy
-    	
-    	// Set up an updated content stream
+		ObjectId pwcId = doc.checkOut(); // Checkout the document
+		Document pwc = (Document) getSession().getObject(pwcId); // Get the working copy
+
+		// Set up an updated content stream
 		String docText = "This is a new major version.";
 		byte[] content = docText.getBytes();
 		InputStream stream = new ByteArrayInputStream(content);
@@ -33,9 +33,9 @@ public class CheckoutCheckinExample extends CMISExampleBase {
 
 		// Check in the working copy as a major version with a comment
 		System.out.println("Updating document...");
-    	ObjectId updatedId = pwc.checkIn(true, null, contentStream, "My new version comment");
-    	doc = (Document) getSession().getObject(updatedId);
-    	System.out.println("Doc is now version: " + doc.getProperty("cmis:versionLabel").getValueAsString());
+		ObjectId updatedId = pwc.checkIn(true, null, contentStream, "My new version comment");
+		doc = (Document) getSession().getObject(updatedId);
+		System.out.println("Doc is now version: " + doc.getProperty("cmis:versionLabel").getValueAsString());
     }
     
 }
