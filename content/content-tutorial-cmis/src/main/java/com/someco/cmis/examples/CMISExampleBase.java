@@ -71,7 +71,7 @@ public class CMISExampleBase extends ExampleBase {
 
 			// connection settings
 			//parameter.put(SessionParameter.ATOMPUB_URL, getServiceUrl()); // Uncomment for Atom Pub binding
-			parameter.put(SessionParameter.BINDING_TYPE, BindingType.ATOMPUB.value()); // Uncomment for Atom Pub binding
+			//parameter.put(SessionParameter.BINDING_TYPE, BindingType.ATOMPUB.value()); // Uncomment for Atom Pub binding
 
 			parameter.put(SessionParameter.BROWSER_URL, getServiceUrl()); // Uncomment for Browser binding
 			parameter.put(SessionParameter.BINDING_TYPE, BindingType.BROWSER.value()); // Uncomment for Browser binding
