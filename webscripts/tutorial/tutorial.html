@@ -447,19 +447,19 @@ Foo: bar</code></pre>
             <span class="er">&lt;</span>#list whitepapers as child&gt;
                 <span class="kw">&lt;tr&gt;</span>
                     <span class="kw">&lt;td&gt;&lt;b&gt;</span>Name<span class="kw">&lt;/b&gt;&lt;/td&gt;</span>
-                      <span class="kw">&lt;td&gt;</span>${child.whitepaper.properties.name}<span class="kw">&lt;/td&gt;</span>
+                    <span class="kw">&lt;td&gt;</span>${child.whitepaper.properties.name}<span class="kw">&lt;/td&gt;</span>
                 <span class="kw">&lt;/tr&gt;</span>
                 <span class="kw">&lt;tr&gt;</span>
                     <span class="kw">&lt;td&gt;&lt;b&gt;</span>Title<span class="kw">&lt;/b&gt;&lt;/td&gt;</span>
-                      <span class="kw">&lt;td&gt;</span>${child.whitepaper.properties[&quot;cm:title&quot;]!&quot;&quot;}<span class="kw">&lt;/td&gt;</span>
+                    <span class="kw">&lt;td&gt;</span>${child.whitepaper.properties[&quot;cm:title&quot;]!&quot;&quot;}<span class="kw">&lt;/td&gt;</span>
                 <span class="kw">&lt;/tr&gt;</span>
                 <span class="kw">&lt;tr&gt;</span>
                     <span class="kw">&lt;td&gt;&lt;b&gt;</span>Link<span class="kw">&lt;/b&gt;&lt;/td&gt;</span>
-                      <span class="kw">&lt;td&gt;&lt;a</span><span class="ot"> href=</span><span class="st">&quot;${url.context}${child.whitepaper.url}?guest=true&quot;</span><span class="kw">&gt;</span>${url.context}${child.whitepaper.url}<span class="kw">&lt;/a&gt;&lt;/td&gt;</span>
+                    <span class="kw">&lt;td&gt;&lt;a</span><span class="ot"> href=</span><span class="st">&quot;${url.serviceContext}/api/node/workspace/SpacesStore/${child.whitepaper.id}/content?guest=true&quot;</span><span class="kw">&gt;</span>${url.serviceContext}/api/node/workspace/SpacesStore/${child.whitepaper.id}/content<span class="kw">&lt;/a&gt;&lt;/td&gt;</span>
                 <span class="kw">&lt;/tr&gt;</span>
                 <span class="kw">&lt;tr&gt;</span>
                     <span class="kw">&lt;td&gt;&lt;b&gt;</span>Type<span class="kw">&lt;/b&gt;&lt;/td&gt;</span>
-                      <span class="kw">&lt;td&gt;</span>${child.whitepaper.mimetype}<span class="kw">&lt;/td&gt;</span>
+                    <span class="kw">&lt;td&gt;</span>${child.whitepaper.mimetype}<span class="kw">&lt;/td&gt;</span>
                 <span class="kw">&lt;/tr&gt;</span>
                 <span class="kw">&lt;tr&gt;</span>
                     <span class="kw">&lt;td&gt;&lt;b&gt;</span>Size<span class="kw">&lt;/b&gt;&lt;/td&gt;</span>
@@ -467,7 +467,7 @@ Foo: bar</code></pre>
                 <span class="kw">&lt;/tr&gt;</span>
                 <span class="kw">&lt;tr&gt;</span>
                     <span class="kw">&lt;td&gt;&lt;b&gt;</span>Id<span class="kw">&lt;/b&gt;&lt;/td&gt;</span>
-                      <span class="kw">&lt;td&gt;</span>${child.whitepaper.id}<span class="kw">&lt;/td&gt;</span>
+                    <span class="kw">&lt;td&gt;</span>${child.whitepaper.id}<span class="kw">&lt;/td&gt;</span>
                 <span class="kw">&lt;/tr&gt;</span>
                 <span class="kw">&lt;tr&gt;</span>
                     <span class="kw">&lt;td&gt;&lt;b&gt;</span>Description<span class="kw">&lt;/b&gt;&lt;/td&gt;</span>
@@ -478,7 +478,7 @@ Foo: bar</code></pre>
                 <span class="kw">&lt;/tr&gt;</span>
                 <span class="kw">&lt;tr&gt;</span>
                     <span class="kw">&lt;td&gt;&lt;b&gt;</span>Pub Date<span class="kw">&lt;/b&gt;&lt;/td&gt;</span>
-                      <span class="kw">&lt;td&gt;</span>${child.whitepaper.properties[&quot;cm:modified&quot;]?string(datetimeformat)}<span class="kw">&lt;/td&gt;</span>
+                    <span class="kw">&lt;td&gt;</span>${child.whitepaper.properties[&quot;cm:modified&quot;]?string(datetimeformat)}<span class="kw">&lt;/td&gt;</span>
                 <span class="kw">&lt;/tr&gt;</span>
                 <span class="kw">&lt;tr&gt;</span>
                     <span class="kw">&lt;td&gt;&lt;b&gt;&lt;a</span><span class="ot"> href=</span><span class="st">&quot;${url.serviceContext}/rating.html?id=${child.whitepaper.id}</span><span class="er">&amp;</span><span class="st">guest=true&quot;</span><span class="kw">&gt;</span>Rating<span class="kw">&lt;/a&gt;&lt;/b&gt;&lt;/td&gt;</span>
@@ -497,8 +497,8 @@ Foo: bar</code></pre>
                 <span class="kw">&lt;/tr&gt;</span>
                 <span class="er">&lt;</span>#if !(child.whitepaper == whitepapers?last.whitepaper)&gt;
                     <span class="kw">&lt;tr&gt;</span>
-                          <span class="kw">&lt;td</span><span class="ot"> colspan=</span><span class="st">&quot;2&quot;</span><span class="ot"> bgcolor=</span><span class="st">&quot;999999&quot;</span><span class="kw">&gt;</span><span class="dv">&amp;nbsp;</span><span class="kw">&lt;/td&gt;</span>
-                      <span class="kw">&lt;/tr&gt;</span>
+                        <span class="kw">&lt;td</span><span class="ot"> colspan=</span><span class="st">&quot;2&quot;</span><span class="ot"> bgcolor=</span><span class="st">&quot;999999&quot;</span><span class="kw">&gt;</span><span class="dv">&amp;nbsp;</span><span class="kw">&lt;/td&gt;</span>
+                    <span class="kw">&lt;/tr&gt;</span>
                 <span class="er">&lt;</span>/#if&gt;
             <span class="er">&lt;</span>/#list&gt;
         <span class="kw">&lt;/table&gt;</span>
@@ -512,7 +512,7 @@ Foo: bar</code></pre>
         {
             &quot;name&quot; : &quot;${child.whitepaper.properties.name}&quot;,
             &quot;title&quot; : &quot;${child.whitepaper.properties[&quot;cm:title&quot;]}&quot;,
-            &quot;link&quot; : &quot;${url.context}${child.whitepaper.url}&quot;,
+            &quot;link&quot; : &quot;${url.serviceContext}/api/node/workspace/SpacesStore/${child.whitepaper.id}/content&quot;,
             &quot;type&quot; : &quot;${child.whitepaper.mimetype}&quot;,
             &quot;size&quot; : &quot;${child.whitepaper.size}&quot;,
             &quot;id&quot; : &quot;${child.whitepaper.id}&quot;,
@@ -688,12 +688,12 @@ Foo: bar</code></pre>
 
     <span class="kw">public</span> NodeService <span class="fu">getNodeService</span>() {
         <span class="kw">return</span> nodeService;
-      }
+    }
 
 
     <span class="kw">public</span> <span class="dt">void</span> <span class="fu">setNodeService</span>(NodeService nodeService) {
         <span class="kw">this</span>.<span class="fu">nodeService</span> = nodeService;
-      }    
+    }    
 }</code></pre>
 <p>The <code>create()</code> method expects a <code>nodeRef</code> that is being rated, a <code>rating</code>, and the <code>user</code> creating the rating. The method checks the node to see if it already has the rateable aspect and adds it if it does not. Then, it sets up the rating and user properties to be set on the rating object. Finally, it calls <code>createNode()</code> on the Alfresco node service to create the rating as a child of the object being rated.</p>
 <p>As you can see, this class does not know that it will be invoked by a web script. It's generic enough to be used by anything that needs to create a rating.</p>

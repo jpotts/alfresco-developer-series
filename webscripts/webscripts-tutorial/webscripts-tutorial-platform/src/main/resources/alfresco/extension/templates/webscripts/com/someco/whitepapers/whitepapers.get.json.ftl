@@ -4,7 +4,7 @@
         {
             "name" : "${child.whitepaper.properties.name}",
             "title" : "${child.whitepaper.properties["cm:title"]!''}",
-            "link" : "${url.context}${child.whitepaper.url}",
+            "link" : "${url.serviceContext}/api/node/workspace/SpacesStore/${child.whitepaper.id}/content",
             "type" : "${child.whitepaper.mimetype}",
             "size" : "${child.whitepaper.size}",
             "id" : "${child.whitepaper.id}",

@@ -679,19 +679,19 @@ following content:
             <#list whitepapers as child>
                 <tr>
                     <td><b>Name</b></td>
-	                  <td>${child.whitepaper.properties.name}</td>
+	                <td>${child.whitepaper.properties.name}</td>
                 </tr>
                 <tr>
                     <td><b>Title</b></td>
-	                  <td>${child.whitepaper.properties["cm:title"]!""}</td>
+	                <td>${child.whitepaper.properties["cm:title"]!""}</td>
                 </tr>
                 <tr>
                     <td><b>Link</b></td>
-	                  <td><a href="${url.context}${child.whitepaper.url}?guest=true">${url.context}${child.whitepaper.url}</a></td>
+	                <td><a href="${url.serviceContext}/api/node/workspace/SpacesStore/${child.whitepaper.id}/content?guest=true">${url.serviceContext}/api/node/workspace/SpacesStore/${child.whitepaper.id}/content</a></td>
                 </tr>
                 <tr>
                     <td><b>Type</b></td>
-	                  <td>${child.whitepaper.mimetype}</td>
+	                <td>${child.whitepaper.mimetype}</td>
                 </tr>
                 <tr>
                     <td><b>Size</b></td>
@@ -699,7 +699,7 @@ following content:
                 </tr>
                 <tr>
                     <td><b>Id</b></td>
-	                  <td>${child.whitepaper.id}</td>
+	                <td>${child.whitepaper.id}</td>
                 </tr>
                 <tr>
                     <td><b>Description</b></td>
@@ -710,7 +710,7 @@ following content:
                 </tr>
                 <tr>
                     <td><b>Pub Date</b></td>
-	                  <td>${child.whitepaper.properties["cm:modified"]?string(datetimeformat)}</td>
+	                <td>${child.whitepaper.properties["cm:modified"]?string(datetimeformat)}</td>
                 </tr>
                 <tr>
                     <td><b><a href="${url.serviceContext}/rating.html?id=${child.whitepaper.id}&guest=true">Rating</a></b></td>
@@ -729,8 +729,8 @@ following content:
                 </tr>
                 <#if !(child.whitepaper == whitepapers?last.whitepaper)>
                     <tr>
-	                      <td colspan="2" bgcolor="999999">&nbsp;</td>
-	                  </tr>
+	                    <td colspan="2" bgcolor="999999">&nbsp;</td>
+	                </tr>
                 </#if>
             </#list>
         </table>
@@ -755,7 +755,7 @@ with the following content:
         {
             "name" : "${child.whitepaper.properties.name}",
             "title" : "${child.whitepaper.properties["cm:title"]}",
-            "link" : "${url.context}${child.whitepaper.url}",
+            "link" : "${url.serviceContext}/api/node/workspace/SpacesStore/${child.whitepaper.id}/content",
             "type" : "${child.whitepaper.mimetype}",
             "size" : "${child.whitepaper.size}",
             "id" : "${child.whitepaper.id}",
@@ -1111,12 +1111,12 @@ public class RatingBean {
 
     public NodeService getNodeService() {
         return nodeService;
-	  }
+	}
 
 
     public void setNodeService(NodeService nodeService) {
         this.nodeService = nodeService;
-	  }    
+	}    
 }
 ```
 
