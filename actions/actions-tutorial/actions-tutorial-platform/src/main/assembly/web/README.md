@@ -10,7 +10,7 @@ any existing web resources in the Alfresco.WAR.
 `
 <moduleDependency>
     <groupId>${project.groupId}</groupId>
-    <artifactId>some-platform-jar</artifactId>
+    <artifactId>some-platform</artifactId>
     <version>${project.version}</version>
     <type>amp</type>
 </moduleDependency>

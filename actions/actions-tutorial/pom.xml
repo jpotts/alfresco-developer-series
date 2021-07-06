@@ -4,8 +4,8 @@
     <groupId>com.someco</groupId>
     <artifactId>actions-tutorial</artifactId>
     <version>1.0-SNAPSHOT</version>
-    <name>AIO - SDK 4.0</name>
-    <description>All-In-One (AIO) project for SDK 4.0</description>
+    <name>AIO - SDK 4.2</name>
+    <description>All-In-One (AIO) project for SDK 4.2</description>
     <packaging>pom</packaging>
 
     <prerequisites>
@@ -14,19 +14,30 @@
 
     <properties>
         <!-- Alfresco Maven Plugin version to use -->
-        <alfresco.sdk.version>4.1.0</alfresco.sdk.version>
+        <alfresco.sdk.version>4.2.0</alfresco.sdk.version>
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
         <!-- Properties used in dependency declarations, you don't need to change these -->
         <alfresco.groupId>org.alfresco</alfresco.groupId>
         <alfresco.bomDependencyArtifactId>acs-community-packaging</alfresco.bomDependencyArtifactId>
-        <alfresco.platform.version>6.2.0-ea</alfresco.platform.version>
-        <alfresco.share.version>6.2.0</alfresco.share.version>
+        <alfresco.platform.version>7.0.0</alfresco.platform.version>
+        <alfresco.share.version>7.0.0</alfresco.share.version>
 
         <!-- Docker images -->
         <docker.acs.image>alfresco/alfresco-content-repository-community</docker.acs.image>
         <docker.share.image>alfresco/alfresco-share</docker.share.image>
+
+        <keystore.settings>-Dencryption.keystore.type=JCEKS
+            -Dencryption.cipherAlgorithm=AES/CBC/PKCS5Padding
+            -Dencryption.keyAlgorithm=AES
+            -Dencryption.keystore.location=/usr/local/tomcat/shared/classes/alfresco/extension/keystore/keystore
+            -Dmetadata-keystore.password=mp6yc0UD9e
+            -Dmetadata-keystore.aliases=metadata
+            -Dmetadata-keystore.metadata.password=oKIWzVdEdA
+            -Dmetadata-keystore.metadata.algorithm=AES</keystore.settings>
+
+        <activemq.version>5.16.1</activemq.version>
 
         <!-- JRebel Hot reloading of classpath stuff and web resource stuff -->
         <jrebel.version>1.1.8</jrebel.version>

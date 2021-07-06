@@ -1,6 +1,6 @@
 % Creating Custom Actions in Alfresco
 % Jeff Potts, [Metaversant Group](https://www.metaversant.com)
-% May, 2020
+% July, 2021
 
 License
 =======
@@ -72,12 +72,12 @@ Tools
 -----
 Here is what I am using on my machine:
 
-* MacOS 10.15.4
+* MacOS 11.4
 * Java OpenJDK 11.0.2
-* Apache Maven 3.6.3
-* Alfresco Maven SDK 4.1 (No download necessary)
-* Docker 19.03.8
-* Docker Compose 1.25.4
+* Apache Maven 3.8.5
+* Alfresco Maven SDK 4.2 (No download necessary)
+* Docker 20.10.6
+* Docker Compose 1.29.1
 
 By default, when you create an Alfresco project using the Alfresco Maven SDK the
 project will be configured to depend on the latest stable Alfresco Community
@@ -411,15 +411,9 @@ If you are following along, you can copy the `MoveReplacedActionIT` class into:
     $TUTORIAL_HOME/actions-tutorial-platform/src/test/java/com/someco/action/test
 
 Once you do that (or if you have simply checked out the tutorial source from
-GitHub) you can then run `./run.sh build_start` to start up the Alfresco Docker
-containers with your extensions installed. Once everything is up, run `./run.sh test`
-to compile and run the integration tests.
-
-In SDK 3.0.1 you can run Alfresco in the embedded Tomcat server and execute the
-integration tests in a single step by running `mvn install`. You may see some
-stack traces that make it seem like something didn't work. If you scroll up a
-little bit you should see that the tests ran successfully. The stack traces are
-a known issue with version 3.0.1 of the SDK.
+GitHub) you can then run `./run.sh build_start_it_supported` to start up the
+Alfresco Docker containers with your extensions installed. Once everything is
+up, run `./run.sh test` to compile and run the integration tests.
 
 So at this point, you've got one new custom action, but it isn't configured in
 the Alfresco Share user interface. Before doing that, let's look at another

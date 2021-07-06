@@ -31,9 +31,9 @@
             <classifier>tests</classifier>
         </dependency>
         <!-- Add any additional AMPs or extension JARs here that you want to be deployed in Alfresco -->
-        <!-- IMPORTANT:
+        <!-- IMPORTANT: 
              If using amp extensions only, add <includeTypes>amp</includeTypes> to the "collect-extensions" execution below.
-             If using both amp and jar extensions, you have to add:
+             If using both amp and jar extensions, you have to add: 
                 <exclusions>
                   <exclusion>
                     <groupId>*</groupId>
