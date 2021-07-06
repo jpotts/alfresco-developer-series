@@ -1,6 +1,6 @@
 % Getting Started with the Alfresco Maven SDK
 % Jeff Potts, [Metaversant Group](https://www.metaversant.com)
-% May, 2020
+% July, 2021
 
 License
 =======
@@ -71,12 +71,13 @@ to write code that runs within either of those web applications, the Alfresco
 Maven SDK is where you need to start.
 
 A quick word about versions. This tutorial assumes you are using Alfresco Maven
-SDK 4.1 which works with Alfresco 6.2 and higher. If you are using a version of
-Alfresco older than 6.2 but greater than or equal to 6.0.1, you can use version
-4.0 of the SDK. If you are using a version of Alfresco older than 6.0.1 but
-greater than or equal to 4.2.7, you can use version 3.0.1 of the SDK. The
-biggest difference between 4.0 and 3.0.1 is the use of Docker instead of an
-embedded Tomcat and in-memory database.
+SDK 4.2 which works with Alfresco 7.0. If you are using a version of Alfresco
+older than 7.0 but greater than or equal to 6.2, you can use version 4.1 of the
+SDK. If you are using a version of Alfresco older than 6.2 but greater than or
+equal to 6.0.1, you can use version 4.0 of the SDK. If you are using a version
+of Alfresco older than 6.0.1 but greater than or equal to 4.2.7, you can use
+version 3.0.1 of the SDK. The biggest difference between 4.0 and 3.0.1 is the
+use of Docker instead of an embedded Tomcat and in-memory database.
 
 If you are using a version of Alfresco newer than 4.0 but older than 4.2.7 you
 can use version 2.x of the SDK. You can use the 2.x version of the SDK with this
@@ -93,12 +94,12 @@ Let me show you how easy it can be to get started with Alfresco development
 using the Alfresco Maven SDK. Before I start I'm going to assume you have the
 following installed:
 
-* MacOS 10.15.4
+* MacOS 11.4
 * Java OpenJDK 11.0.2
-* Apache Maven 3.6.3
-* Alfresco Maven SDK 4.1 (No download necessary)
-* Docker 19.03.8
-* Docker Compose 1.25.4
+* Apache Maven 3.8.1
+* Alfresco Maven SDK 4.2 (No download necessary)
+* Docker 20.10.6
+* Docker Compose 1.29.1
 
 You don't need to download anything else. Seriously. Not even Alfresco.
 
@@ -136,7 +137,7 @@ several available:
     (2 in this example) and hit enter.
 
 4. If Maven asks you to specify the version of the archetype you want, choose
-4.0.
+4.2.
 
 5. Maven now asks for a groupId. You should be thinking "Java package". My
 examples always assume I am working at a fictitious company called SomeCo,
@@ -285,7 +286,7 @@ In 3.0.1 you may see some stack traces after running `mvn install`. If you
 scroll up a bit, you'll see that the tests ran successfully. The stack traces
 are a known issue related to Tomcat shutdown hooks and can safely be ignored.
 
-In 4.0, the containers need to be running before executing the tests. We'll
+In SDK 4.x, the containers need to be running before executing the tests. We'll
 cover that in the next section.
 
 Unit & Integration Tests
@@ -409,10 +410,12 @@ Inside the project directory, you'll see:
 * *pom.xml* In the root of the project directory you'll see pom.xml. This tells
 Maven everything it needs to know about your project. Remember those settings
 you specified when you created the project from the archetype? You can make
-changes to those settings here. For example, version 4.0 of the archetype
-assumes you are working with Alfresco Community Edition 6.0.7. If you wanted to
+changes to those settings here. For example, version 4.2 of the archetype
+assumes you are working with Alfresco Community Edition 7.0.0. If you wanted to
 work with a different version, you would simply change those properties and then
-tell Maven to update and it will take care of the rest.
+tell Maven to update and it will take care of the rest. Check the Alfresco docs
+to make sure the version of Alfresco you are trying to use is compatible with
+the version of the SDK you are using.
 
 Now look at "maven-sdk-tutorial-platform". In it, you'll find:
 
