@@ -1032,7 +1032,7 @@ The last line calls a method that queries the associations for a given reference
 If you want to run this on your own using Maven, it would look something like this, with your own values for the source and target object ID’s:
 
     mvn exec:java \
-    -Dexec.mainClass="com.someco.cmis.examples.SomeCoCMISDataRelater"
+    -Dexec.mainClass="com.someco.cmis.examples.SomeCoCMISDataRelater" \
     -Dexec.args="admin admin SomeCo whitepaper test dbe2a709-5fd8-453e-9f9d-dff1e4c785d3;1.0 bfd4b553-ff58-4d6e-a71b-00a470bd86c9;1.0"
 
 Running the Java snippet as above, assuming no other relationships exist on the source object produces:
