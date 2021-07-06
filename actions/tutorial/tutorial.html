@@ -49,7 +49,7 @@ code > span.er { color: #ff0000; font-weight: bold; }
 <div id="header">
 <h1 class="entry-title">Creating Custom Actions in Alfresco</h1>
 <h2 class="author">Jeff Potts, <a href="https://www.metaversant.com">Metaversant Group</a></h2>
-<h3 class="date">May, 2020</h3>
+<h3 class="date">July, 2021</h3>
 </div>
 <div id="TOC">
 <ul>
@@ -133,12 +133,12 @@ code > span.er { color: #ff0000; font-weight: bold; }
 <h2 id="tools">Tools</h2>
 <p>Here is what I am using on my machine:</p>
 <ul>
-<li>MacOS 10.15.4</li>
+<li>MacOS 11.4</li>
 <li>Java OpenJDK 11.0.2</li>
-<li>Apache Maven 3.6.3</li>
-<li>Alfresco Maven SDK 4.1 (No download necessary)</li>
-<li>Docker 19.03.8</li>
-<li>Docker Compose 1.25.4</li>
+<li>Apache Maven 3.8.5</li>
+<li>Alfresco Maven SDK 4.2 (No download necessary)</li>
+<li>Docker 20.10.6</li>
+<li>Docker Compose 1.29.1</li>
 </ul>
 <p>By default, when you create an Alfresco project using the Alfresco Maven SDK the project will be configured to depend on the latest stable Alfresco Community Edition build.</p>
 <p>An IDE is optional. Most people working with Alfresco use IntelliJ, Eclipse, or something similar.</p>
@@ -289,8 +289,7 @@ code > span.er { color: #ff0000; font-weight: bold; }
 <p>In the source code that accompanies this tutorial, I've included some integration tests. The integration tests just attempt to use the <code>ActionService</code> to get the action. For the Move Replaced action, I also execute the action.</p>
 <p>If you are following along, you can copy the <code>MoveReplacedActionIT</code> class into:</p>
 <pre><code>$TUTORIAL_HOME/actions-tutorial-platform/src/test/java/com/someco/action/test</code></pre>
-<p>Once you do that (or if you have simply checked out the tutorial source from GitHub) you can then run <code>./run.sh build_start</code> to start up the Alfresco Docker containers with your extensions installed. Once everything is up, run <code>./run.sh test</code> to compile and run the integration tests.</p>
-<p>In SDK 3.0.1 you can run Alfresco in the embedded Tomcat server and execute the integration tests in a single step by running <code>mvn install</code>. You may see some stack traces that make it seem like something didn't work. If you scroll up a little bit you should see that the tests ran successfully. The stack traces are a known issue with version 3.0.1 of the SDK.</p>
+<p>Once you do that (or if you have simply checked out the tutorial source from GitHub) you can then run <code>./run.sh build_start_it_supported</code> to start up the Alfresco Docker containers with your extensions installed. Once everything is up, run <code>./run.sh test</code> to compile and run the integration tests.</p>
 <p>So at this point, you've got one new custom action, but it isn't configured in the Alfresco Share user interface. Before doing that, let's look at another Action Executer example, then we'll configure them both in the UI.</p>
 <h2 id="implementing-the-set-web-flag-action">Implementing the Set Web Flag action</h2>
 <p>This action will be used to set the flag on content which should be shown in the SomeCo portal. Recall from the content types tutorial that the property that controls whether or not content should show up in the portal is a boolean named <code>sc:isActive</code> which is defined as part of an aspect named <code>sc:webable</code>. Also in that aspect is a date property named <code>sc:published</code> that keeps track of when the content was last published to the portal.</p>

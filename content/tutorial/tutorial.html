@@ -49,7 +49,7 @@ code > span.er { color: #ff0000; font-weight: bold; }
 <div id="header">
 <h1 class="entry-title">Working With Custom Content Types in Alfresco</h1>
 <h2 class="author">Jeff Potts, <a href="https://www.metaversant.com">Metaversant Group</a></h2>
-<h3 class="date">May, 2020</h3>
+<h3 class="date">July, 2021</h3>
 </div>
 <div id="TOC">
 <ul>
@@ -280,16 +280,16 @@ code > span.er { color: #ff0000; font-weight: bold; }
 <h4 id="tools">Tools</h4>
 <p>Here is what I am using on my machine:</p>
 <ul>
-<li>MacOS 10.15.4</li>
+<li>MacOS 11.4</li>
 <li>Java OpenJDK 11.0.2</li>
-<li>Apache Maven 3.6.3</li>
-<li>Alfresco Maven SDK 4.1 (No download necessary)</li>
-<li>Docker 19.03.8</li>
-<li>Docker Compose 1.25.4</li>
+<li>Apache Maven 3.8.1</li>
+<li>Alfresco Maven SDK 4.2 (No download necessary)</li>
+<li>Docker 20.10.6</li>
+<li>Docker Compose 1.29.1</li>
 </ul>
 <p>By default, when you create an Alfresco project using the Alfresco Maven SDK the project will be configured to depend on the latest stable Alfresco Community Edition build.</p>
-<p>Note that version 3.0.x of the Alfresco Maven SDK works with Alfresco 4.2.7 through and including Alfresco 5.2.x. Version 4.0 of the SDK works with Alfresco 6.0 and higher. This tutorial assumes you are using SDK 4.0.x.</p>
-<p>Projects created using the Alfresco Maven SDK are runnable. Version 3.0.x of the SDK uses an embedded Tomcat server and an H2 in-memory database while version 4.0.x of the SDK uses Docker and Docker Compose. This makes <a href="http://www.alfresco.com/products/community">downloading</a> and installing Alfresco optional. But if you want to run a full Alfresco server locally, you are welcome to do that.</p>
+<p>Note that version 3.0.x of the Alfresco Maven SDK works with Alfresco 4.2.7 through and including Alfresco 5.2.x. Version 4.0 of the SDK works with Alfresco 6.0 and higher. Version 4.2 of the SDK works with Alfresco 7.0. This tutorial assumes you are using SDK 4.2.0.</p>
+<p>Projects created using the Alfresco Maven SDK are runnable. Version 3.0.x of the SDK uses an embedded Tomcat server and an H2 in-memory database while version 4.0.x of the SDK (and newer) uses Docker and Docker Compose. This makes <a href="http://www.alfresco.com/products/community">downloading</a> and installing Alfresco optional. But if you want to run a full Alfresco server locally, you are welcome to do that.</p>
 <p>An IDE is also optional. Most people working with Alfresco use IntelliJ, Eclipse, or something similar.</p>
 <h4 id="project-organization">Project Organization</h4>
 <p>The Alfresco Maven SDK is used to bootstrap the project. It will be configured to package customizations into two AMPs (Alfresco Module Packages): One AMP is for the Alfresco web application (the &quot;repo&quot; tier) and the other is for the Alfresco Share web application (the &quot;Share&quot; tier).</p>
@@ -316,7 +316,7 @@ code > span.er { color: #ff0000; font-weight: bold; }
 <li><p>Now use the Alfresco Maven SDK to create a project for the repo tier AMP. Using the command line, change directories to $TUTORIAL_HOME, then run:</p>
 <pre><code>mvn archetype:generate -Dfilter=org.alfresco:</code></pre></li>
 <li>Choose the &quot;alfresco-allinone-archetype&quot; archetype.</li>
-<li>Choose version 4.0 of the archetype if prompted.</li>
+<li>Choose version 4.2.0 of the archetype if prompted.</li>
 <li>Specify &quot;com.someco&quot; for the <code>groupId</code>.</li>
 <li>Specify &quot;content-tutorial&quot; for the <code>artifactId</code>.</li>
 <li><p>If your IDE isn't running, start it up and import the content-tutorial project you just created.</p></li>
@@ -838,7 +838,7 @@ prop.sc_version=Version</code></pre></li>
 <pre class="sourceCode xml"><code class="sourceCode xml"><span class="kw">&lt;dependency&gt;</span>
     <span class="kw">&lt;groupId&gt;</span>org.apache.chemistry.opencmis<span class="kw">&lt;/groupId&gt;</span>
     <span class="kw">&lt;artifactId&gt;</span>chemistry-opencmis-client-impl<span class="kw">&lt;/artifactId&gt;</span>
-    <span class="kw">&lt;version&gt;</span>1.0.0<span class="kw">&lt;/version&gt;</span>
+    <span class="kw">&lt;version&gt;</span>1.1.0<span class="kw">&lt;/version&gt;</span>
 <span class="kw">&lt;/dependency&gt;</span>
 <span class="kw">&lt;dependency&gt;</span>
     <span class="kw">&lt;groupId&gt;</span>com.someco<span class="kw">&lt;/groupId&gt;</span>
@@ -947,7 +947,7 @@ System.<span class="fu">out</span>.<span class="fu">println</span>(<span class="
 <p>The last line calls a method that queries the associations for a given reference. This should dump the association that was just created plus any other associations that have been created for this object.</p>
 <p>If you want to run this on your own using Maven, it would look something like this, with your own values for the source and target object ID’s:</p>
 <pre><code>mvn exec:java \
--Dexec.mainClass=&quot;com.someco.cmis.examples.SomeCoCMISDataRelater&quot;
+-Dexec.mainClass=&quot;com.someco.cmis.examples.SomeCoCMISDataRelater&quot; \
 -Dexec.args=&quot;admin admin SomeCo whitepaper test dbe2a709-5fd8-453e-9f9d-dff1e4c785d3;1.0 bfd4b553-ff58-4d6e-a71b-00a470bd86c9;1.0&quot;</code></pre>
 <p>Running the Java snippet as above, assuming no other relationships exist on the source object produces:</p>
 <pre><code>Associations of objectId: dbe2a709-5fd8-453e-9f9d-dff1e4c785d3;1.0

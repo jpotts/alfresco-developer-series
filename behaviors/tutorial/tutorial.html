@@ -49,7 +49,7 @@ code > span.er { color: #ff0000; font-weight: bold; }
 <div id="header">
 <h1 class="entry-title">Implementing Custom Behaviors in Alfresco</h1>
 <h2 class="author">Jeff Potts, <a href="https://www.metaversant.com">Metaversant Group</a></h2>
-<h3 class="date">May, 2020</h3>
+<h3 class="date">July, 2021</h3>
 </div>
 <div id="TOC">
 <ul>
@@ -167,12 +167,12 @@ code > span.er { color: #ff0000; font-weight: bold; }
 <h2 id="tools">Tools</h2>
 <p>Here is what I am using on my machine:</p>
 <ul>
-<li>MacOS 10.15.4</li>
+<li>MacOS 11.4</li>
 <li>Java OpenJDK 11.0.2</li>
-<li>Apache Maven 3.6.3</li>
-<li>Alfresco Maven SDK 4.1 (No download necessary)</li>
-<li>Docker 19.03.8</li>
-<li>Docker Compose 1.25.4</li>
+<li>Apache Maven 3.8.1</li>
+<li>Alfresco Maven SDK 4.2 (No download necessary)</li>
+<li>Docker 20.10.6</li>
+<li>Docker Compose 1.29.1</li>
 </ul>
 <p>By default, when you create an Alfresco project using the Alfresco Maven SDK the project will be configured to depend on the latest stable Alfresco Community Edition build.</p>
 <p>An IDE is optional. Most people working with Alfresco use IntelliJ, Eclipse, or something similar.</p>
@@ -346,7 +346,7 @@ scr_somecoratingsmodel.association.scr_ratings.title=Ratings</code></pre>
 }</code></pre>
 <p>These are just constants that will be used by the behavior class and other classes in other tutorials when they need to refer to the rating type, rateable aspect, or any of the properties by name.</p>
 <h3 id="write-integration-tests">Write integration tests</h3>
-<p>The old 3.0.1 version of the Alfresco Maven SDK will automatically run integration tests when <code>mvn install</code> runs. In SDK 4.0 you must first start up the Docker containers, then run <code>./run.sh test</code>.</p>
+<p>The old 3.0.1 version of the Alfresco Maven SDK will automatically run integration tests when <code>mvn install</code> runs. In SDK 4.0 and higher you must first start up the Docker containers, then run <code>./run.sh test</code>.</p>
 <p>If you're a TDD (Test-Driven Development) kind of person you could add a test for the to-be-developed behavior. For now, I'll just create a test to make sure I can successfully add the <code>scr:rateable</code> aspect to a piece of content. The rating type will get tested shortly.</p>
 <p>The test class goes in:</p>
 <pre><code>$TUTORIAL_HOME/behavior-tutorial-integration-tests/src/test/java/com/someco/test</code></pre>
@@ -385,9 +385,7 @@ scr_somecoratingsmodel.association.scr_ratings.title=Ratings</code></pre>
     }
 }</code></pre>
 <p>The test creates a new content node in Company Home and then adds the <code>scr:rateable</code> aspect to it, simultaneously setting the aspect-based properties to test values. It then makes sure it can get those same test values back.</p>
-<p>To run the test, first start the Docker containers by running <code>./run.sh build_start</code>. Once everything comes up, run <code>./run.sh test</code>.</p>
-<p>In SDK 3.0.1 the embedded Tomcat server is started and tests are run automatically when you run <code>mvn install</code>. Or, if the Tomcat server is already running you can run <code>mvn test</code>.</p>
-<p>In SDK 3.0.1 you may see a stack trace after running <code>mvn install</code>. Scroll up a bit and you should see that the test ran successfully.</p>
+<p>To run the test, first start the Docker containers by running <code>./run.sh build_start_it_supported</code>. Once everything comes up, run <code>./run.sh test</code>.</p>
 <p>Assuming everything went okay, you now have your model in place and tested and you are ready to write the behavior.</p>
 <h2 id="step-2-implement-the-custom-behavior">Step 2: Implement the custom behavior</h2>
 <p>Implementing the behavior involves writing some Java, configuring a Spring Bean, and adding an integration test for the behavior.</p>
@@ -594,7 +592,7 @@ NodeServicePolicies.<span class="fu">OnCreateNodePolicy</span> {
         <span class="kw">return</span> association.<span class="fu">getChildRef</span>();
     }
 }</code></pre>
-<p>To run the test, first, check to see if your containers are running by doing a <code>docker ps</code>. If any are running, do <code>./run.sh stop</code>. Next, run <code>mvn install -DskipTests</code> to re-build everything. Now start fresh containers by doing <code>./run.sh build_start</code>.</p>
+<p>To run the test, first, check to see if your containers are running by doing a <code>docker ps</code>. If any are running, do <code>./run.sh stop</code>. Next, run <code>mvn install -DskipTests</code> to re-build everything. Now start fresh containers by doing <code>./run.sh build_start_it_supported</code>.</p>
 <p>Once everything is up-and-running, run <code>./run.sh test</code>. If you see something like this:</p>
 <pre><code>[INFO] ------------------------------------------------------------------------
 [INFO] BUILD SUCCESS
