@@ -1,6 +1,6 @@
 % Creating Custom Advanced Workflows in Alfresco
 % Jeff Potts, [Metaversant Group](https://www.ecmarchitect.com/)
-% May, 2020
+% July, 2021
 
 License
 =======
@@ -313,12 +313,12 @@ Tools
 -----
 Here is what I am using on my machine:
 
-* MacOS 10.15.4
+* MacOS 11.4
 * Java OpenJDK 11.0.2
-* Apache Maven 3.6.3
-* Alfresco Maven SDK 4.1 (No download necessary)
-* Docker 19.03.8
-* Docker Compose 1.25.4
+* Apache Maven 3.8.1
+* Alfresco Maven SDK 4.2 (No download necessary)
+* Docker 20.10.6
+* Docker Compose 1.29.1
 * Eclipse Java EE IDE for Web Developers, Neon
 * Activiti Eclipse BPMN 2.0 Designer 5.18 ([Eclipse Update Site](http://www.activiti.org/designer/update/))
 * Apache James 2.3.1 (for testing third-party notification via SMTP)
