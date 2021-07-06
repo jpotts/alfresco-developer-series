@@ -42,6 +42,7 @@
                 </exclusions>
              to each amp dependency definition.
          -->
+        <!-- Bring in the content tutorial repo AMP so we can run embedded. -->
         <dependency>
             <groupId>com.someco</groupId>
             <artifactId>content-tutorial-platform</artifactId>

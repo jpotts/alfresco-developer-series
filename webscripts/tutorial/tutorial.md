@@ -1,6 +1,6 @@
 % Introduction to the Web Script Framework
 % Jeff Potts, [Metaversant Group](https://www.metaversant.com)
-% May, 2020
+% July, 2021
 
 License
 =======
@@ -317,12 +317,12 @@ Tools
 -----
 Here is what I am using on my machine:
 
-* MacOS 10.15.4
+* MacOS 11.4
 * Java OpenJDK 11.0.2
-* Apache Maven 3.6.3
-* Alfresco Maven SDK 4.1 (No download necessary)
-* Docker 19.03.8
-* Docker Compose 1.25.4
+* Apache Maven 3.8.1
+* Alfresco Maven SDK 4.2 (No download necessary)
+* Docker 20.10.6
+* Docker Compose 1.29.1
 
 By default, when you create an Alfresco project using the Alfresco Maven
 SDK the project will be configured to depend on the latest stable Alfresco

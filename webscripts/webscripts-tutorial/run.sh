@@ -1,6 +1,6 @@
 #!/bin/sh
 
-export COMPOSE_FILE_PATH=${PWD}/target/classes/docker/docker-compose.yml
+export COMPOSE_FILE_PATH="${PWD}/target/classes/docker/docker-compose.yml"
 
 if [ -z "${M2_HOME}" ]; then
   export MVN_EXEC="mvn"
@@ -12,20 +12,20 @@ start() {
     docker volume create webscripts-tutorial-acs-volume
     docker volume create webscripts-tutorial-db-volume
     docker volume create webscripts-tutorial-ass-volume
-    docker-compose -f $COMPOSE_FILE_PATH up --build -d
+    docker-compose -f "$COMPOSE_FILE_PATH" up --build -d
 }
 
 start_share() {
-    docker-compose -f $COMPOSE_FILE_PATH up --build -d webscripts-tutorial-share
+    docker-compose -f "$COMPOSE_FILE_PATH" up --build -d webscripts-tutorial-share
 }
 
 start_acs() {
-    docker-compose -f $COMPOSE_FILE_PATH up --build -d webscripts-tutorial-acs
+    docker-compose -f "$COMPOSE_FILE_PATH" up --build -d webscripts-tutorial-acs
 }
 
 down() {
-    if [ -f $COMPOSE_FILE_PATH ]; then
-        docker-compose -f $COMPOSE_FILE_PATH down
+    if [ -f "$COMPOSE_FILE_PATH" ]; then
+        docker-compose -f "$COMPOSE_FILE_PATH" down
     fi
 }
 
@@ -40,23 +40,23 @@ build() {
 }
 
 build_share() {
-    docker-compose -f $COMPOSE_FILE_PATH kill webscripts-tutorial-share
-    yes | docker-compose -f $COMPOSE_FILE_PATH rm -f webscripts-tutorial-share
+    docker-compose -f "$COMPOSE_FILE_PATH" kill webscripts-tutorial-share
+    yes | docker-compose -f "$COMPOSE_FILE_PATH" rm -f webscripts-tutorial-share
     $MVN_EXEC clean package -pl webscripts-tutorial-share,webscripts-tutorial-share-docker
 }
 
 build_acs() {
-    docker-compose -f $COMPOSE_FILE_PATH kill webscripts-tutorial-acs
-    yes | docker-compose -f $COMPOSE_FILE_PATH rm -f webscripts-tutorial-acs
+    docker-compose -f "$COMPOSE_FILE_PATH" kill webscripts-tutorial-acs
+    yes | docker-compose -f "$COMPOSE_FILE_PATH" rm -f webscripts-tutorial-acs
     $MVN_EXEC clean package -pl webscripts-tutorial-integration-tests,webscripts-tutorial-platform,webscripts-tutorial-platform-docker
 }
 
 tail() {
-    docker-compose -f $COMPOSE_FILE_PATH logs -f
+    docker-compose -f "$COMPOSE_FILE_PATH" logs -f
 }
 
 tail_all() {
-    docker-compose -f $COMPOSE_FILE_PATH logs --tail="all"
+    docker-compose -f "$COMPOSE_FILE_PATH" logs --tail="all"
 }
 
 prepare_test() {
