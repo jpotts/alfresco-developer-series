@@ -1,6 +1,6 @@
 #!/bin/sh
 
-export COMPOSE_FILE_PATH=${PWD}/target/classes/docker/docker-compose.yml
+export COMPOSE_FILE_PATH="${PWD}/target/classes/docker/docker-compose.yml"
 
 if [ -z "${M2_HOME}" ]; then
   export MVN_EXEC="mvn"
@@ -12,20 +12,20 @@ start() {
     docker volume create maven-sdk-tutorial-acs-volume
     docker volume create maven-sdk-tutorial-db-volume
     docker volume create maven-sdk-tutorial-ass-volume
-    docker-compose -f $COMPOSE_FILE_PATH up --build -d
+    docker-compose -f "$COMPOSE_FILE_PATH" up --build -d
 }
 
 start_share() {
-    docker-compose -f $COMPOSE_FILE_PATH up --build -d maven-sdk-tutorial-share
+    docker-compose -f "$COMPOSE_FILE_PATH" up --build -d maven-sdk-tutorial-share
 }
 
 start_acs() {
-    docker-compose -f $COMPOSE_FILE_PATH up --build -d maven-sdk-tutorial-acs
+    docker-compose -f "$COMPOSE_FILE_PATH" up --build -d maven-sdk-tutorial-acs
 }
 
 down() {
-    if [ -f $COMPOSE_FILE_PATH ]; then
-        docker-compose -f $COMPOSE_FILE_PATH down
+    if [ -f "$COMPOSE_FILE_PATH" ]; then
+        docker-compose -f "$COMPOSE_FILE_PATH" down
     fi
 }
 
@@ -40,23 +40,23 @@ build() {
 }
 
 build_share() {
-    docker-compose -f $COMPOSE_FILE_PATH kill maven-sdk-tutorial-share
-    yes | docker-compose -f $COMPOSE_FILE_PATH rm -f maven-sdk-tutorial-share
+    docker-compose -f "$COMPOSE_FILE_PATH" kill maven-sdk-tutorial-share
+    yes | docker-compose -f "$COMPOSE_FILE_PATH" rm -f maven-sdk-tutorial-share
     $MVN_EXEC clean package -pl maven-sdk-tutorial-share,maven-sdk-tutorial-share-docker
 }
 
 build_acs() {
-    docker-compose -f $COMPOSE_FILE_PATH kill maven-sdk-tutorial-acs
-    yes | docker-compose -f $COMPOSE_FILE_PATH rm -f maven-sdk-tutorial-acs
+    docker-compose -f "$COMPOSE_FILE_PATH" kill maven-sdk-tutorial-acs
+    yes | docker-compose -f "$COMPOSE_FILE_PATH" rm -f maven-sdk-tutorial-acs
     $MVN_EXEC clean package -pl maven-sdk-tutorial-integration-tests,maven-sdk-tutorial-platform,maven-sdk-tutorial-platform-docker
 }
 
 tail() {
-    docker-compose -f $COMPOSE_FILE_PATH logs -f
+    docker-compose -f "$COMPOSE_FILE_PATH" logs -f
 }
 
 tail_all() {
-    docker-compose -f $COMPOSE_FILE_PATH logs --tail="all"
+    docker-compose -f "$COMPOSE_FILE_PATH" logs --tail="all"
 }
 
 prepare_test() {
