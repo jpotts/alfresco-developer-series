@@ -11,13 +11,21 @@ IF NOT [%M2_HOME%]==[] (
 )
 
 IF [%1]==[] (
-    echo "Usage: %0 {build_start|start|stop|purge|tail|reload_share|reload_acs|build_test|test}"
+    echo "Usage: %0 {build_start|build_start_it_supported|start|stop|purge|tail|reload_share|reload_acs|build_test|test}"
     GOTO END
 )
 
 IF %1==build_start (
     CALL :down
     CALL :build
+    CALL :start
+    CALL :tail
+    GOTO END
+)
+IF %1==build_start_it_supported (
+    CALL :down
+    CALL :build
+    CALL :prepare-test
     CALL :start
     CALL :tail
     GOTO END
@@ -55,6 +63,7 @@ IF %1==reload_acs (
 IF %1==build_test (
     CALL :down
     CALL :build
+    CALL :prepare-test
     CALL :start
     CALL :test
     CALL :tail_all
@@ -82,24 +91,22 @@ EXIT /B 0
     docker-compose -f "%COMPOSE_FILE_PATH%" up --build -d content-tutorial-acs
 EXIT /B 0
 :down
-    docker-compose -f "%COMPOSE_FILE_PATH%" down
+    if exist "%COMPOSE_FILE_PATH%" (
+        docker-compose -f "%COMPOSE_FILE_PATH%" down
+    )
 EXIT /B 0
 :build
-    docker rmi alfresco-content-services-content-tutorial:development
-    docker rmi alfresco-share-content-tutorial:development
-	call %MVN_EXEC% clean install -DskipTests
+	call %MVN_EXEC% clean package
 EXIT /B 0
 :build_share
     docker-compose -f "%COMPOSE_FILE_PATH%" kill content-tutorial-share
     docker-compose -f "%COMPOSE_FILE_PATH%" rm -f content-tutorial-share
-    docker rmi alfresco-share-content-tutorial:development
-	call %MVN_EXEC% clean install -DskipTests -pl content-tutorial-share
+	call %MVN_EXEC% clean package -pl content-tutorial-share,content-tutorial-share-docker
 EXIT /B 0
 :build_acs
     docker-compose -f "%COMPOSE_FILE_PATH%" kill content-tutorial-acs
     docker-compose -f "%COMPOSE_FILE_PATH%" rm -f content-tutorial-acs
-    docker rmi alfresco-content-services-content-tutorial:development
-	call %MVN_EXEC% clean install -DskipTests -pl content-tutorial-platform
+	call %MVN_EXEC% clean package -pl content-tutorial-integration-tests,content-tutorial-platform,content-tutorial-platform-docker
 EXIT /B 0
 :tail
     docker-compose -f "%COMPOSE_FILE_PATH%" logs -f
@@ -107,11 +114,14 @@ EXIT /B 0
 :tail_all
     docker-compose -f "%COMPOSE_FILE_PATH%" logs --tail="all"
 EXIT /B 0
+:prepare-test
+    call %MVN_EXEC% verify -DskipTests=true -pl content-tutorial-platform,content-tutorial-integration-tests,content-tutorial-platform-docker
+EXIT /B 0
 :test
-    call %MVN_EXEC% verify -pl integration-tests
+    call %MVN_EXEC% verify -pl content-tutorial-platform,content-tutorial-integration-tests
 EXIT /B 0
 :purge
-    docker volume rm content-tutorial-acs-volume
-    docker volume rm content-tutorial-db-volume
-    docker volume rm content-tutorial-ass-volume
+    docker volume rm -f content-tutorial-acs-volume
+    docker volume rm -f content-tutorial-db-volume
+    docker volume rm -f content-tutorial-ass-volume
 EXIT /B 0

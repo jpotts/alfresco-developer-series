@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>content-tutorial-integration-tests</artifactId>
     <name>Integration Tests Module</name>
-    <description>Integration Tests module for in-container integration testing - part of AIO - SDK 4.0</description>
+    <description>Integration Tests module for in-container integration testing - part of AIO - SDK 4.2</description>
     <packaging>jar</packaging> <!-- Note. this just runs Integration Tests, but it needs to be a JAR otherwise
                                             nothing is compiled (i.e. you cannot set it to pom) -->
 
