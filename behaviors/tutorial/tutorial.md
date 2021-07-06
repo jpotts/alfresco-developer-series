@@ -1,6 +1,6 @@
 % Implementing Custom Behaviors in Alfresco
 % Jeff Potts, [Metaversant Group](https://www.metaversant.com)
-% May, 2020
+% July, 2021
 
 License
 =======
@@ -201,12 +201,12 @@ Tools
 -----
 Here is what I am using on my machine:
 
-* MacOS 10.15.4
+* MacOS 11.4
 * Java OpenJDK 11.0.2
-* Apache Maven 3.6.3
-* Alfresco Maven SDK 4.1 (No download necessary)
-* Docker 19.03.8
-* Docker Compose 1.25.4
+* Apache Maven 3.8.1
+* Alfresco Maven SDK 4.2 (No download necessary)
+* Docker 20.10.6
+* Docker Compose 1.29.1
 
 By default, when you create an Alfresco project using the Alfresco Maven
 SDK the project will be configured to depend on the latest stable Alfresco
@@ -509,8 +509,8 @@ aspect, or any of the properties by name.
 ### Write integration tests
 
 The old 3.0.1 version of the Alfresco Maven SDK will automatically run
-integration tests when `mvn install` runs. In SDK 4.0 you must first start up
-the Docker containers, then run `./run.sh test`.
+integration tests when `mvn install` runs. In SDK 4.0 and higher you must first
+start up the Docker containers, then run `./run.sh test`.
 
 If you're a TDD (Test-Driven Development) kind of person you could add a test
 for the to-be-developed behavior. For now, I'll just create a test to make sure
@@ -564,15 +564,8 @@ The test creates a new content node in Company Home and then adds the
 `scr:rateable` aspect to it, simultaneously setting the aspect-based properties
 to test values. It then makes sure it can get those same test values back.
 
-To run the test, first start the Docker containers by running `./run.sh build_start`.
+To run the test, first start the Docker containers by running `./run.sh build_start_it_supported`.
 Once everything comes up, run `./run.sh test`.
-
-In SDK 3.0.1 the embedded Tomcat server is started and tests are run
-automatically when you run `mvn install`. Or, if the Tomcat server is already
-running you can run `mvn test`.
-
-In SDK 3.0.1 you may see a stack trace after running `mvn install`. Scroll up a
-bit and you should see that the test ran successfully.
 
 Assuming everything went okay, you now have your model in place and tested and
 you are ready to write the behavior.
@@ -867,7 +860,7 @@ public class RatingBehaviorIT extends BaseIT {
 
 To run the test, first, check to see if your containers are running by doing a
 `docker ps`. If any are running, do `./run.sh stop`. Next, run `mvn install -DskipTests`
-to re-build everything. Now start fresh containers by doing `./run.sh build_start`.
+to re-build everything. Now start fresh containers by doing `./run.sh build_start_it_supported`.
 
 Once everything is up-and-running, run `./run.sh test`. If you see something
 like this:

@@ -18,6 +18,7 @@ services:
       dockerfile: ./Dockerfile
       context: ../../../behavior-tutorial-platform-docker/target
     environment:
+      JAVA_TOOL_OPTIONS: "${keystore.settings}"
       CATALINA_OPTS: "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=0.0.0.0:8888"
     ports:
       - "${acs.port}:8080"
