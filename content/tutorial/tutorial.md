@@ -1,6 +1,6 @@
 % Working With Custom Content Types in Alfresco
 % Jeff Potts, [Metaversant Group](https://www.metaversant.com)
-% May, 2020
+% July, 2021
 
 License
 =======
@@ -172,18 +172,20 @@ Before starting, let's get a local development environment set up. First I'll gi
 
 Here is what I am using on my machine:
 
-* MacOS 10.15.4
+* MacOS 11.4
 * Java OpenJDK 11.0.2
-* Apache Maven 3.6.3
-* Alfresco Maven SDK 4.1 (No download necessary)
-* Docker 19.03.8
-* Docker Compose 1.25.4
+* Apache Maven 3.8.1
+* Alfresco Maven SDK 4.2 (No download necessary)
+* Docker 20.10.6
+* Docker Compose 1.29.1
 
 By default, when you create an Alfresco project using the Alfresco Maven SDK the project will be configured to depend on the latest stable Alfresco Community Edition build.
 
-Note that version 3.0.x of the Alfresco Maven SDK works with Alfresco 4.2.7 through and including Alfresco 5.2.x. Version 4.0 of the SDK works with Alfresco 6.0 and higher. This tutorial assumes you are using SDK 4.0.x.
+Note that version 3.0.x of the Alfresco Maven SDK works with Alfresco 4.2.7 through and including Alfresco 5.2.x. Version 4.0 of the SDK works with Alfresco 6.0 and higher.
+Version 4.2 of the SDK works with Alfresco 7.0. This tutorial assumes you are using SDK 4.2.0.
 
-Projects created using the Alfresco Maven SDK are runnable. Version 3.0.x of the SDK uses an embedded Tomcat server and an H2 in-memory database while version 4.0.x of the SDK uses Docker and Docker Compose. This makes [downloading](http://www.alfresco.com/products/community) and installing Alfresco optional. But if you want to run a full Alfresco server locally, you are welcome to do that.
+Projects created using the Alfresco Maven SDK are runnable. Version 3.0.x of the SDK uses an embedded Tomcat server and an H2 in-memory database while version 4.0.x of the SDK
+(and newer) uses Docker and Docker Compose. This makes [downloading](http://www.alfresco.com/products/community) and installing Alfresco optional. But if you want to run a full Alfresco server locally, you are welcome to do that.
 
 An IDE is also optional. Most people working with Alfresco use IntelliJ, Eclipse, or something similar.
 
@@ -223,7 +225,7 @@ The first step is to **create a new project** using the Alfresco Maven SDK. Foll
     ```
 
 3. Choose the "alfresco-allinone-archetype" archetype.
-4. Choose version 4.0 of the archetype if prompted.
+4. Choose version 4.2.0 of the archetype if prompted.
 5. Specify "com.someco" for the `groupId`.
 6. Specify "content-tutorial" for the `artifactId`.
 7. If your IDE isn't running, start it up and import the content-tutorial project you just created.
@@ -865,7 +867,7 @@ To create the CMIS project, do this:
     <dependency>
         <groupId>org.apache.chemistry.opencmis</groupId>
         <artifactId>chemistry-opencmis-client-impl</artifactId>
-        <version>1.0.0</version>
+        <version>1.1.0</version>
     </dependency>
     <dependency>
         <groupId>com.someco</groupId>
